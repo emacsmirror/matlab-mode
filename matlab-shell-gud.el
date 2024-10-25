@@ -1,6 +1,6 @@
-;;; matlab-shell-gud.el --- GUD support in matlab-shell.
+;;; matlab-shell-gud.el --- GUD support in matlab-shell. -*- lexical-binding: t -*-
 ;;
-;; Copyright (C) 2019 Eric Ludlam
+;; Copyright (C) 2024 Eric Ludlam
 ;;
 ;; Author: Eric Ludlam <eludlam@emacsvm>
 ;;
@@ -143,6 +143,7 @@ Disable this option if the tooltips are too slow in your setup."
   "Argument message for starting matlab file.
 I don't think I have to do anything, but I'm not sure.
 FILE is ignored, and ARGS is returned."
+  (ignore file)
   args)
 
 (defun gud-matlab-find-file (f)
@@ -238,7 +239,7 @@ FILE is ignored, and ARGS is returned."
                          (m1 (string-match "dbhotlink()%%%\n" matlab-shell-gud--marker-acc))
                          (expr-start (match-end 0))
                          (expression (substring matlab-shell-gud--marker-acc expr-start expr-end)))
-
+                    (ignore m1)
                     (when (> (length expression) 0)
                       (condition-case ERR
                           (let ((forms (read expression)))
@@ -526,25 +527,24 @@ Must be bound to event E."
   "Choose the stack the under the cursor.
 Visit the file presented in that stack frame."
   (interactive)
-  (let ((topic nil) (fun nil) (p (point)))
-    (save-excursion
-      (beginning-of-line)
-      (forward-char 10)
-      (let* ((sf (get-text-property (point) 'object))
-             (f (oref sf file))
-             (l (oref sf line))
-             (buff (find-file-noselect f t)))
-        (display-buffer
-         buff
-         '((display-buffer-reuse-window display-buffer-use-some-window)
-           (inhibit-same-window . t))
-         )
-        (let ((win (selected-window)))
-          (select-window (get-buffer-window buff))
-          (goto-char (point-min))
-          (forward-line (1- l))
-          (select-window win))
-        ))))
+  (save-excursion
+    (beginning-of-line)
+    (forward-char 10)
+    (let* ((sf (get-text-property (point) 'object))
+           (f (oref sf file))
+           (l (oref sf line))
+           (buff (find-file-noselect f t)))
+      (display-buffer
+       buff
+       '((display-buffer-reuse-window display-buffer-use-some-window)
+         (inhibit-same-window . t))
+       )
+      (let ((win (selected-window)))
+        (select-window (get-buffer-window buff))
+        (goto-char (point-min))
+        (forward-line (1- l))
+        (select-window win))
+      )))
 
 ;;; Breakpoint Trackers
 ;;
@@ -591,7 +591,7 @@ LONGESTNAME specifies the how long the longest name we can expect is."
   (setq matlab-gud-visible-breakpoints nil))
 
 (defun mlg-add-breakpoint (file fcn line)
-  "Add a visible breakpoint to FILE at LINE."
+  "Add a visible breakpoint to FILE FCN at LINE."
   (let ((found nil))
     (dolist (BP matlab-gud-visible-breakpoints)
       (when (and (string= (oref BP file) file)
@@ -612,7 +612,9 @@ LONGESTNAME specifies the how long the longest name we can expect is."
   )
 
 (defun mlg-del-breakpoint (file fcn line)
-  "Add a visible breakpoint to FILE at LINE."
+  "Add a visible breakpoint to FILE at LINE.
+FCN is ignored."
+  (ignore fcn)
   (let ((BPS matlab-gud-visible-breakpoints)
         (NBPS nil))
     (while BPS
@@ -652,15 +654,15 @@ LONGESTNAME specifies the how long the longest name we can expect is."
       (with-current-buffer buff
         (goto-char (point-min))
         (forward-line (1- (oref bp line)))
-        (let ((ol (matlab-make-overlay (save-excursion
+        (let ((ol (make-overlay (save-excursion
                                          (back-to-indentation)
                                          (point))
-                                       (point-at-eol) buff nil nil)))
+                                       (line-end-position) buff nil nil)))
           ;; Store it
           (oset bp overlay ol)
           ;; Setup cool stuff
-          (matlab-overlay-put ol 'face 'mlg-breakpoint-face)
-          (matlab-overlay-put ol 'before-string
+          (overlay-put ol 'face 'mlg-breakpoint-face)
+          (overlay-put ol 'before-string
                               (propertize "#"
                                           'display
                                           '(left-fringe
@@ -794,32 +796,30 @@ Must be bound to event E."
   "Choose the breakpoint the under the cursor.
 Visit the file presented in that breakpoint frame."
   (interactive)
-  (let ((topic nil) (fun nil) (p (point)))
-    (save-excursion
-      (beginning-of-line)
-      (forward-char 10)
-      (let* ((sf (get-text-property (point) 'object))
-             (f (oref sf file))
-             (l (oref sf line))
-             (buff (find-file-noselect f t)))
-        (display-buffer
-         buff
-         '((display-buffer-reuse-window display-buffer-use-some-window)
-           (inhibit-same-window . t))
-         )
-        (let ((win (selected-window)))
-          (select-window (get-buffer-window buff))
-          (goto-char (point-min))
-          (forward-line (1- l))
-          (select-window win))
-        ))))
-
+  (save-excursion
+    (beginning-of-line)
+    (forward-char 10)
+    (let* ((sf (get-text-property (point) 'object))
+           (f (oref sf file))
+           (l (oref sf line))
+           (buff (find-file-noselect f t)))
+      (display-buffer
+       buff
+       '((display-buffer-reuse-window display-buffer-use-some-window)
+         (inhibit-same-window . t))
+       )
+      (let ((win (selected-window)))
+        (select-window (get-buffer-window buff))
+        (goto-char (point-min))
+        (forward-line (1- l))
+        (select-window win))
+      )))
 
 ;;; K prompt state and hooks.
 ;;
 
 (defun gud-matlab-debug-tracker ()
-  "Function called when new prompts appear.
+  "Function called when new prompt appear.
 Call debug activate/deactivate features."
   (save-excursion
     (let ((inhibit-field-text-motion t))
@@ -932,7 +932,9 @@ Debug commands are:
  \\[matlab-shell-gud-show-symbol-value]        - Evaluate expression
  \\[mlg-show-stack]        - Where am I (ebstack)
  \\[mlgud-stop-subjob]        - Quit (dbquit)"
-  nil " MGUD" matlab-shell-gud-minor-mode-map
+  :init-value nil
+  :lighter " MGUD"
+  :keymap matlab-shell-gud-minor-mode-map
 
   ;; Make the buffer read only
   (if matlab-shell-gud-minor-mode
@@ -961,12 +963,13 @@ Debug commands are:
       (kill-local-variable 'tool-bar-map))))
 
 ;;;###autoload
-(define-global-minor-mode global-matlab-shell-gud-minor-mode
+(define-globalized-minor-mode global-matlab-shell-gud-minor-mode
   matlab-shell-gud-minor-mode
   (lambda ()
     "Should we turn on in this buffer? Only if in a MATLAB mode."
     (when (eq major-mode 'matlab-mode)
-      (matlab-shell-gud-minor-mode 1))))
+      (matlab-shell-gud-minor-mode 1)))
+  :group 'matlab-shell)
 
 ;;; MATLAB SHELL Inactive GUD Minor Mode
 
@@ -1000,9 +1003,10 @@ Debug commands are:
 Debug commands are:
  \\[mlgud-break]        - Add breakpoint (ebstop in FILE at point)
  \\[mlgud-remove]        - Remove breakpoint (ebclear in FILE at point)
- \\[mlgud-list-breakpoints]        - List breakpoints (ebstatus)
-"
-  nil " I-MGUD" matlab-shell-inactive-gud-minor-mode-map
+ \\[mlgud-list-breakpoints]        - List breakpoints (ebstatus)"
+  :init-value nil
+  :lighter " I-MGUD"
+  :keymap matlab-shell-inactive-gud-minor-mode-map
 
   ;; Always disable tooltips, in case configured while in the mode.
   (mlgud-tooltip-mode -1)
@@ -1017,13 +1021,15 @@ Debug commands are:
   (describe-minor-mode 'matlab-shell-gud-minor-mode))
 
 ;;;###autoload
-(define-global-minor-mode global-matlab-shell-inactive-gud-minor-mode
+(define-globalized-minor-mode global-matlab-shell-inactive-gud-minor-mode
   matlab-shell-inactive-gud-minor-mode
   (lambda ()
     "Should we turn on in this buffer? Only if in a MATLAB mode."
     (when (eq major-mode 'matlab-mode)
-      (matlab-shell-inactive-gud-minor-mode 1))))
+      (matlab-shell-inactive-gud-minor-mode 1)))
+  :group 'matlab-shell)
 
+(defvar tooltip-use-echo-area) ;; quiet warning
 ;;; Tooltips
 ;;
 ;; Using the mlgud tooltip feature for a bunch of setup, but then
@@ -1101,7 +1107,7 @@ if it looks like a function call, it will return nil."
 
 ;;; matlab-shell-gud.el ends here
 
-;; LocalWords:  el Ludlam eludlam emacsvm eieio defcustom keymap dolist subjob
+;; LocalWords:  el Ludlam eludlam emacsvm eieio defcustom keymap dolist subjob mlgud kbd SPC
 ;; LocalWords:  cdr netshell defmacro defun fboundp ebstop ebclear ebstatus
 ;; LocalWords:  ebstack boundp setq realfname progn aset buf noselect dbhotlink
 ;; LocalWords:  COMINT errortext dbhlcmd comint endprompt mello mlg EMACSCAP

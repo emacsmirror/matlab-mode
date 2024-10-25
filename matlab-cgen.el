@@ -1,6 +1,6 @@
-;;; matlab-cgen.el --- In buffer code generation features (templates, etc)
+;;; matlab-cgen.el --- In buffer code generation features (templates, etc) -*- lexical-binding: t -*-
 ;;
-;; Copyright (C) 2019 Eric Ludlam
+;; Copyright (C) 2024 Eric Ludlam
 ;;
 ;; Author: Eric Ludlam <zappo@gnu.org>
 ;;
@@ -31,7 +31,7 @@
   "List of templates used in MATLAB mode.")
 
 ;; This trick allows this file to be autoloaded ONLY when the user uses the insert prefix.
-;; 
+;;
 ;;;###autoload (autoload 'matlab-insert-map-fcn "matlab-cgen" "Keymap for C-c C-c in matlab-mode" t 'keymap)
 
 (defvar matlab-insert-map
@@ -52,7 +52,7 @@
   "Keymap used for inserting simple texts based on context.")
 
 (defvar matlab-insert-map-fcn nil
-  "Keymap for C-c C-c in matlab-mode.")
+  "Keymap for `matlab-insert-map' (C-c C-c) in `matlab-mode'.")
 
 (fset 'matlab-insert-map-fcn (setq matlab-insert-map-fcn matlab-insert-map))
 
@@ -75,11 +75,12 @@
 ;;
 (defun matlab-insert-end-block (&optional reindent)
   "Insert and END block based on the current syntax.
-Optional argument REINDENT indicates if the specified block should be re-indented."
+Optional argument REINDENT indicates if the specified block
+should be re-indented."
   (interactive "P")
   (when (not (matlab-line-empty-p (matlab-compute-line-context 1)))
     (end-of-line) (insert "\n"))
-  
+
   (let ((valid t) (begin nil))
     (save-excursion
       (condition-case nil
@@ -211,7 +212,7 @@ Optional argument REINDENT indicates if the specified block should be re-indente
  )
 
 (defun matlab-stringify-region (begin end)
-  "Put MATLAB 's around region, and quote all quotes in the string.
+  "Put MATLAB single quotes (\\=') around region and quote all quotes within it.
 Stringification allows you to type in normal MATLAB code, mark it, and
 then turn it into a MATLAB string that will output exactly what's in
 the region.  BEGIN and END mark the region to be stringified."
@@ -230,57 +231,9 @@ the region.  BEGIN and END mark the region to be stringified."
       (goto-char m)
       (insert "'"))))
 
-;;; SPELLING
-;;
-
-(defun matlab-ispell-strings-and-comments-region (begin end)
-  "Spell check valid strings in region with Ispell.
-Argument BEGIN and END mark the region boundary."
-  (interactive "r")
-  (error "This function needs to be reimplemented.")
-  (require 'ispell)
-  (save-excursion
-    (goto-char begin)
-    ;; Here we use the font lock function for finding strings.
-    ;; Its cheap, fast, and accurate.
-    ;; NOTE: This now also does comments
-    ;;(while (and (matlab-font-lock-allstring-comment-match-normal end)
-    ;;	(ispell-region (match-beginning 0) (match-end 0))))
-    ))
-
-(defun matlab-ispell-strings-and-comments ()
-  "Spell check valid strings in the current buffer with Ispell.
-Calls `matlab-ispell-strings-region'"
-  (interactive)
-  (matlab-ispell-strings-and-comments-region (point-min) (point-max)))
-
-;;; Printing
-;;
-
-;;;###autoload
-(defun matlab-generate-latex ()
-  "Convert a MATLAB M file into a Latex document for printing.
-Author: Uwe Brauer oub@eucmos.sim.ucm.es
-Created: 14 Feb 2002"
-  (interactive "*")
-  (save-restriction
-    (save-excursion
-      (goto-char (point-min))
-      (insert "\\documentclass[12pt]{report}\n
-\\usepackage{listings}
-\\lstloadlanguages{Matlab}
-\\lstset{language=Matlab,keywordstyle=\\bfseries,labelstep=1,escapechar=\\#}
-\\begin{document}
-\\begin{lstlisting}{}")
-      (newline)
-      (goto-char (point-max))
-      (insert "\n\\end{lstlisting}\n\\end{document}")
-      (widen)))
-  (font-lock-mode nil)
-  (LaTeX-mode)
-  (font-lock-mode nil))
-
-
 (provide 'matlab-cgen)
 
 ;;; matlab-cgen.el ends here
+
+;; LocalWords:  Ludlam zappo autoloaded Keymap keymap fset setq defun dolist reindent progn sexp
+;; LocalWords:  stringp fname nondirectory upcase allstring

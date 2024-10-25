@@ -1,4 +1,4 @@
-;;; matlab.el --- major mode for MATLAB(R) dot-m files
+;;; matlab.el --- major mode for MATLAB(R) dot-m files -*- lexical-binding: t -*-
 
 ;; Author: Matt Wette <mwette@alumni.caltech.edu>,
 ;;         Eric M. Ludlam <eludlam@mathworks.com>
@@ -7,11 +7,11 @@
 ;; Keywords: MATLAB(R)
 ;; Version:
 
-(defconst matlab-mode-version "5.0"
+(defconst matlab-mode-version "6.0"
   "Current version of MATLAB(R) mode.")
 
 ;;
-;; Copyright (C) 1997-2022 Eric M. Ludlam
+;; Copyright (C) 1997-2024 Eric M. Ludlam
 ;; Copyright (C) 1991-1997 Matthew R. Wette
 ;;
 ;; This program is free software; you can redistribute it and/or modify
@@ -53,8 +53,10 @@
 (require 'matlab-compat)
 (require 'matlab-syntax)
 (require 'matlab-scan)
-(require 'easymenu)
+(require 'matlab-sections)
+
 (require 'derived)
+(require 'easymenu)
 
 (eval-when-compile
   (require 'elec-pair))
@@ -71,13 +73,12 @@
 
 (defcustom matlab-mode-for-new-mfiles 'maybe
   "*Enter `matlab-mode' for new *.m files.
-The `matlab' package will automatically enter `matlab-mode' when
-the first part of a *.m file is doesn't contain Objective-C
-comments or '#' characters. If you want new (empty) files to
-automatically enter `matlab-mode', specify this item as
-t (always). If you specify 'maybe, new files will enter
-`matlab-mode' when you have an existing MATLAB buffer. Specifying
-nil (never) means that new *.m files will not enter
+Enter `matlab-mode' when the first part of a *.m file is not
+Objective-C comments or # characters.  If you want new (empty)
+files to automatically enter `matlab-mode', specify this item as
+t (always).  If you specify \\='maybe, new files will enter
+`matlab-mode' when you have an existing MATLAB buffer.
+Specifying nil (never) means that new *.m files will not enter
 `matlab-mode', and with default Emacs settings they will enter
 `objc-mode'"
   :group 'matlab
@@ -96,7 +97,8 @@ nil (never) means that new *.m files will not enter
   :type 'integer)
 
 (defcustom matlab-array-continuation-indent-level 2
-  "*Basic indentation after continuation within an array if no other methods are found."
+  "*Basic indentation after continuation within an array.
+Applies when no other methods are found."
   :group 'matlab
   :type 'integer)
 
@@ -170,10 +172,10 @@ are simply indented by `matlab-continuation-indent-level'."
   "*If non-nil, indent body of function.
 If the global value is nil, do not indent function bodies.
 If the global value is t, always indent function bodies.
-If the global value is 'guess, then the local value will be set to
+If the global value is \\='guess, then the local value will be set to
 either nil or t when the MATLAB mode is started in a buffer based on the
 file's current indentation.
-If the global value is 'MathWorks-Standard, then the local value is not
+If the global value is \\='MathWorks-Standard, then the local value is not
 changed, and functions are indented based on `matlab-functions-have-end'."
   :group 'matlab
   :type '(choice (const :tag "Always" t)
@@ -187,7 +189,7 @@ changed, and functions are indented based on `matlab-functions-have-end'."
 
 (defcustom matlab-functions-have-end 'guess
   "*If non-nil, functions-have-end minor mode is on by default.
-If the value is 'guess, then we guess if a file has end when
+If the value is \\='guess, then we guess if a file has end when
 `matlab-mode' is initialized."
   :group 'matlab
   :type 'boolean)
@@ -201,41 +203,41 @@ If the value is 'guess, then we guess if a file has end when
   (matlab-toggle-functions-have-end-minor-mode))
 
 ;; The following minor mode is on if and only if the above variable is true;
-(easy-mmode-define-minor-mode
- matlab-functions-have-end-minor-mode
- "Toggle functions-have-end minor mode, indicating function/end pairing."
- nil
- (:eval (cond ((eq matlab-functions-have-end 'guess)
-               " function... ?")
-              ((eq matlab-functions-have-end 'class)
-               " classdef...end")
-              (matlab-functions-have-end
-               " function...end")
-              (t
-               " function...")))
- nil ; empty mode-map
- ;; body of matlab-functions-have-end-minor-mode
- (let ((type (matlab-guess-script-type)))
-   (if matlab-functions-have-end-minor-mode
-       (if (eq type 'empty)
-           (setq matlab-functions-have-end 'guess)
-         (setq matlab-functions-have-end type))
-     (setq matlab-functions-have-end nil)
-     )
-   ;; Depending on the kind of end, lets set other variables.
-   (cond ((eq matlab-functions-have-end 'guess)
-          ;;(setq matlab-syntax-support-command-dual t)
-          )
-         ((eq matlab-functions-have-end 'class)
-          ;;(setq matlab-syntax-support-command-dual nil)
-          )
-         (matlab-functions-have-end
-          ;;(setq matlab-syntax-support-command-dual t)
-          )
-         (t
-          ;;(setq matlab-syntax-support-command-dual nil)
-          ))
-   ))
+(define-minor-mode
+  matlab-functions-have-end-minor-mode
+  "Toggle functions-have-end minor mode, indicating function/end pairing."
+  :init-value nil
+  :lighter (:eval (cond ((eq matlab-functions-have-end 'guess)
+                         " function... ?")
+                        ((eq matlab-functions-have-end 'class)
+                         " classdef...end")
+                        (matlab-functions-have-end
+                         " function...end")
+                        (t
+                         " function...")))
+  :keymap: nil ; empty mode-map
+  ;; body of matlab-functions-have-end-minor-mode
+  (let ((type (matlab-guess-script-type)))
+    (if matlab-functions-have-end-minor-mode
+        (if (eq type 'empty)
+            (setq matlab-functions-have-end 'guess)
+          (setq matlab-functions-have-end type))
+      (setq matlab-functions-have-end nil)
+      )
+    ;; Depending on the kind of end, lets set other variables.
+    (cond ((eq matlab-functions-have-end 'guess)
+           ;;(setq matlab-syntax-support-command-dual t)
+           )
+          ((eq matlab-functions-have-end 'class)
+           ;;(setq matlab-syntax-support-command-dual nil)
+           )
+          (matlab-functions-have-end
+           ;;(setq matlab-syntax-support-command-dual t)
+           )
+          (t
+           ;;(setq matlab-syntax-support-command-dual nil)
+           ))
+    ))
 
 (defvar matlab-last-script-type-guess nil
   "The last time we guessed the script type, what was it?")
@@ -244,8 +246,8 @@ If the value is 'guess, then we guess if a file has end when
   (memq matlab-last-script-type-guess '(function class)))
 
 (defun matlab-guess-script-type ()
-  "Guess the type of script this `matlab-mode' file contains.
-Returns one of 'empty, 'script, 'function, 'class."
+  "Guess the type of script this `matlab-mode' file is.
+Returns one of \\='empty, \\='script, \\='function, \\='class."
   (setq
    matlab-last-script-type-guess
    (cond
@@ -271,16 +273,18 @@ Returns one of 'empty, 'script, 'function, 'class."
                          'function)
                         ((string= str "classdef")
                          'class)
-                        (t (error "Error in script guessing algorithm.")))))
+                        (t (error "Error in script guessing algorithm")))))
 
                (t
                 ;; No function or class - just a script.
                 'script))))))))
 
 (defun matlab-do-functions-have-end-p (&optional no-navigate)
-  "Look at the contents of the current buffer and decide if functions have end.
-If the current value of `matlab-functions-have-end' is 'guess, look @ the buffer.
-If the value is t, then return that."
+  "Do functions have end statements based on buffer content?
+Look at the contents of the current buffer and decide if functions
+have end.  If the current value of `matlab-functions-have-end' is
+\\='guess, look @ the buffer.  If the value is t, then return that.
+Specify NO-NAVIGATE to avoid searching."
   (if (eq matlab-functions-have-end 'guess)
       ;; Lets guess what we think the answer is.
       (let ((type (matlab-guess-script-type)))
@@ -394,7 +398,7 @@ This overcomes situations where the `fill-column' plus the
   :group 'matlab
   :type 'integer)
 
-(defcustom matlab-elipsis-string "..."
+(defcustom matlab-ellipsis-string "..."
   "Text used to perform continuation on code lines.
 This is used to generate and identify continuation lines."
   :group 'matlab
@@ -408,14 +412,14 @@ This is used to generate and identify continuation lines."
 (defcustom matlab-fill-count-ellipsis-flag t
   "*Non-nil means to count the ellipsis when auto filling.
 This effectively shortens the `fill-column' by the length of
-`matlab-elipsis-string'."
+`matlab-ellipsis-string'."
   :group 'matlab
   :type 'boolean)
 
 (defcustom matlab-fill-strings-flag t
   "*Non-nil means that when auto-fill is on, strings are broken across lines.
 If `matlab-fill-count-ellipsis-flag' is non nil, this shortens the
-`fill-column' by the length of `matlab-elipsis-string'."
+`fill-column' by the length of `matlab-ellipsis-string'."
   :group 'matlab
   :type 'boolean)
 
@@ -545,7 +549,7 @@ point, but it will be restored for them."
     ;; Connecting to MATLAB Shell
     (define-key km [(control c) (control s)] 'matlab-shell-save-and-go)
     (define-key km [(control c) (control r)] 'matlab-shell-run-region)
-    (define-key km [(meta control return)] 'matlab-shell-run-cell)
+    (define-key km [(meta control return)] 'matlab-shell-run-code-section)
     (define-key km [(control return)] 'matlab-shell-run-region-or-line)
     (define-key km [(control c) (control t)] 'matlab-show-line-info)
     (define-key km [(control c) ?. ] 'matlab-shell-locate-fcn)
@@ -565,7 +569,7 @@ point, but it will be restored for them."
   "Keymap used in MATLAB mode to provide a menu.")
 
 ;; make a menu keymap
-(easy-menu-define matlab-mode-menu matlab-mode-map "MATLAB menu"
+(easy-menu-define matlab-mode-menu matlab-mode-map "MATLAB menu."
   '("MATLAB"
     ["Start MATLAB" matlab-shell
      :active (not (matlab-shell-active-p))
@@ -577,7 +581,7 @@ point, but it will be restored for them."
      :active (matlab-any-shell-active-p) ]
     ["Run Region" matlab-shell-run-region
      :active (matlab-any-shell-active-p) ]
-    ["Run Cell" matlab-shell-run-cell
+    ["Run Code Section" matlab-shell-run-code-section
      :active (matlab-any-shell-active-p) ]
     ["Version" matlab-show-version t]
     "----"
@@ -590,7 +594,6 @@ point, but it will be restored for them."
      ]
     ("Auto Fix"
      ["Verify/Fix source" matlab-mode-verify-fix-file t]
-     ["Spell check strings and comments" matlab-ispell-strings-and-comments t]
      ["Quiesce source" matlab-mode-vf-quiesce-buffer t]
      )
     ("Format"
@@ -692,7 +695,6 @@ point, but it will be restored for them."
     ["Describe Variable" matlab-shell-describe-variable (matlab-shell-active-p)]
     ["Command Apropos" matlab-shell-apropos (matlab-shell-active-p)]
     ))
-(easy-menu-add matlab-mode-menu matlab-mode-map)
 
 
 ;;; Font Lock : Character Vectors, Strings and Comments ================================
@@ -718,9 +720,6 @@ point, but it will be restored for them."
 
 (defvar matlab-cross-function-variable-face 'matlab-cross-function-variable-face
   "Self reference for cross-function variables.")
-
-(defvar matlab-cellbreak-face 'matlab-cellbreak-face
-  "Self reference for cellbreaks.")
 
 (defvar matlab-math-face 'matlab-math-face
   "Self reference for math.")
@@ -754,12 +753,6 @@ point, but it will be restored for them."
   "*Face to use for cross-function variables."
   :group 'matlab)
 
-(defface matlab-cellbreak-face
-  '((t :inherit font-lock-comment-face
-       :overline t
-       :bold t))
-  "*Face to use for cellbreak %% lines.")
-
 (defface matlab-ignored-comment-face
   '((t :inherit font-lock-comment-face
        :slant italic))
@@ -769,12 +762,12 @@ Ignored comments are lines that start with '% $$$'  or '%^'.")
 (defface matlab-pragma-face
   '((t :inherit font-lock-comment-face
        :bold t))
-  "*Face to use for cellbreak %% lines.")
+  "*Face to use for cellbreak %% lines.") ;; TODO: Wrong docstring?
 
 (defface matlab-math-face
   '((t :inherit font-lock-constant-face
        :slant italic))
-  "*Face to use for cellbreak %% lines.")
+  "*Face to use for cellbreak %% lines.") ;; TODO: Wrong docstring?
 
 ;;; Font Lock MLINT data highlighting
 
@@ -791,21 +784,21 @@ Argument LIMIT is the maximum distance to search."
     (let ((pos (point))
           overlays)
       (while (< pos limit)
-        (setq overlays (matlab-overlays-at pos))
+        (setq overlays (overlays-at pos))
         (while overlays
           (let ((overlay (car overlays)))
-            (when (matlab-overlay-get overlay 'nested-function)
-              (when (= pos (matlab-overlay-start overlay))
+            (when (overlay-get overlay 'nested-function)
+              (when (= pos (overlay-start overlay))
                 (goto-char pos)
                 ;; The following line presumably returns true.
                 (throw 'result (re-search-forward "function" (+ pos 8) t)))
-              (let ((end-of-overlay (- (matlab-overlay-end overlay) 3)))
+              (let ((end-of-overlay (- (overlay-end overlay) 3)))
                 (when (<= pos end-of-overlay)
                   (goto-char end-of-overlay)
                   (throw 'result
                          (re-search-forward "end" (+ end-of-overlay 3) t))))))
           (setq overlays (cdr overlays)))
-        (setq pos (matlab-next-overlay-change pos)))
+        (setq pos (next-overlay-change pos)))
       nil ;; no matches, stop
       )))
 
@@ -814,22 +807,22 @@ Argument LIMIT is the maximum distance to search."
 Argument LIMIT is the maximum distance to search."
   (catch 'result
     (let ((pos (point))
-          overlays variables)
+          variables)
       (while (< pos limit)
-        (let ((overlays (matlab-overlays-at pos)))
+        (let ((overlays (overlays-at pos)))
           (while overlays
             (let ((overlay (car overlays)))
-              (setq variables (matlab-overlay-get
+              (setq variables (overlay-get
                                overlay 'cross-function-variables))
               (if variables
                   (progn
                     (goto-char pos)
-                    (setq pos (min limit (matlab-overlay-end overlay)))
+                    (setq pos (min limit (overlay-end overlay)))
                     (if (re-search-forward variables pos t)
                         (progn
                           (throw 'result t))))))
             (setq overlays (cdr overlays))))
-        (setq pos (matlab-next-overlay-change pos)))
+        (setq pos (next-overlay-change pos)))
       nil ;; no matches, stop
       )))
 
@@ -899,7 +892,7 @@ Customizing this variable is only useful if `regexp-opt' is available."
 
 (defun matlab-font-lock-regexp-opt (keywordlist)
   "Create a font-lock usable KEYWORDLIST matching regular expression.
-Uses `regex-opt' if available.  Otherwise creates a 'dumb' expression."
+Uses `regex-opt' if available.  Otherwise creates a dumb expression."
   (concat "\\_<\\("
           (if (fboundp 'regexp-opt)
               (regexp-opt keywordlist)
@@ -910,17 +903,19 @@ Uses `regex-opt' if available.  Otherwise creates a 'dumb' expression."
 ;;
 (defun matlab-font-lock-basic-keyword-match (limit)
   "Font lock matcher for basic keywords.
-Fails to match when keywords show up as variables, etc."
+Fails to match when keywords show up as variables, etc.
+Argument LIMIT ."
   (matlab--scan-next-keyword 'fl-simple limit))
 
 (defun matlab-font-lock-vardecl-keyword-match (limit)
   "Font lock matcher for mcos keywords.
-Fails to match when keywords show up as variables, etc."
+Fails to match when keywords show up as variables, etc.
+Argument LIMIT ."
   (matlab--scan-next-keyword 'vardecl limit))
 
 (defvar matlab-fl-anchor-keyword nil)
 (defun matlab-font-lock-mcos-keyword-match (limit)
-  "Font lock matcher for mcos keywords.
+  "Font lock matcher for mcos keywords up to LIMIT.
 Fails to match when keywords show up as variables, etc."
   (when (and (eq matlab-functions-have-end 'class)
              (setq matlab-fl-anchor-keyword
@@ -931,7 +926,7 @@ Fails to match when keywords show up as variables, etc."
     t))
 
 (defun matlab-font-lock-args-keyword-match (limit)
-  "Font lock matcher for mcos keywords.
+  "Font lock matcher for mcos keywords up to LIMIT.
 Fails to match when keywords show up as variables, etc."
   (setq matlab-fl-anchor-keyword
         (matlab--scan-next-keyword 'args limit)))
@@ -948,9 +943,9 @@ color support."
            (blockmatch (when (not tmp) (matlab--mk-keyword-node))))
       (when (and (member (nth 1 blockmatch) '("properties" "events" "arguments"))
                  (matlab--valid-keyword-node blockmatch))
-        (setq font-lock-beg (min font-lock-beg (point-at-bol)))
+        (setq font-lock-beg (min font-lock-beg (line-beginning-position)))
         (when (not (matlab--scan-next-keyword 'all (window-end)))
-          (setq font-lock-end (max font-lock-end (point-at-eol)))))
+          (setq font-lock-end (max font-lock-end (line-end-position)))))
 
       (if (and (eq font-lock-beg flb)
                (eq font-lock-end fle))
@@ -977,7 +972,9 @@ color support."
 
 (defun matlab-font-lock-anchor-variable-match (limit)
   "After finding a keyword like PROPERTIES or ARGUMENTS, match vars.
+LIMIT is the search limit.
 This matcher will handle a range of variable features."
+  (ignore limit)
   (when (member (nth 1 matlab-fl-anchor-keyword)
                 '("properties" "events" "arguments"))
     (let* ((match (re-search-forward "\\(?:^\\|[,;]\\)\\s-+\\(\\(?:\\w+\\|\\.\\)+\\)\\_>" ml-fl-anchor-limit t))
@@ -991,7 +988,7 @@ This matcher will handle a range of variable features."
                   (list (nth 1 md1) (nth 1 md1))))
            (newmdata (append md1 md1 tm1)))
       (when match
-        (goto-char (point-at-eol))
+        (goto-char (line-end-position))
         (set-match-data newmdata)
         t))))
 
@@ -1019,7 +1016,7 @@ This matcher will handle a range of variable features."
     (matlab-font-lock-regexp-opt matlab-constants-keyword-list)
     1 'matlab-math-face)
    ;; Imaginary number support
-   '("\\<[0-9]\\.?\\(i\\|j\\)\\_>" 1 font-lock-reference-face)
+   '("\\<[0-9]\\.?\\(i\\|j\\)\\_>" 1 font-lock-constant-face)
    )
   "Basic Expressions to highlight in MATLAB mode or shell.")
 
@@ -1080,7 +1077,7 @@ This matcher will handle a range of variable features."
                '(save-excursion
                   (condition-case nil
                       (matlab-scan-end-of-command)
-                    (error (point-at-eol))))
+                    (error (line-end-position))))
                nil
                '(1 font-lock-variable-name-face)))
    ;; ARGUMENTS have variables to highlight
@@ -1100,10 +1097,10 @@ This matcher will handle a range of variable features."
 \\(\\([^\n,;%(]+\\|([^\n%)]+)\\)+\\)"
      (1 font-lock-keyword-face)
      (2 font-lock-variable-name-face append)
-     (3 font-lock-reference-face append))
+     (3 font-lock-constant-face append))
    ;; Items after a switch statements are cool
    '("\\_<\\(case\\|switch\\)\\_>\\s-+\\({[^}\n]+}\\|[^,%\n]+\\)"
-     (2 font-lock-reference-face))
+     (2 font-lock-constant-face))
    ;; set_param and waitfor have input variables that can be highlighted.
    (list (concat matlab-indent-past-arg1-functions "\\s-*")
          '("(\\s-*\\(\\(?:\\w\\|\\.\\)+\\)\\s-*\\(,\\|)\\)" nil  nil
@@ -1168,14 +1165,14 @@ This matcher will handle a range of variable features."
     (list (concat "^" matlab-comment-line-s "\\s-*"
                   "\\(\\([A-Z]+\\s-*=\\s-+\\|\\[[^]]+]\\s-*=\\s-+\\|\\)"
                   "\\([A-Z][0-9A-Z]+\\)\\(([^)\n]+)\\| \\)\\)")
-          '(1 font-lock-reference-face prepend))
+          '(1 font-lock-constant-face prepend))
     (list (concat "^" matlab-comment-line-s "\\s-*"
                   "See also\\s-+")
           '("\\([A-Z][A-Z0-9]+\\)\\([,.]\\| and\\|$\\) *" nil  nil
-            (1 font-lock-reference-face prepend)))
+            (1 font-lock-constant-face prepend)))
     (list (concat "^" matlab-comment-line-s "\\s-*"
                   "\\(\\$" "Revision" "[^\n$]+\\$\\)")
-          '(1 font-lock-reference-face prepend))
+          '(1 font-lock-constant-face prepend))
     ;; Debugging Keywords
     (list (matlab-font-lock-regexp-opt matlab-debug-list)
           '(0 'bold))
@@ -1207,9 +1204,9 @@ This matcher will handle a range of variable features."
 
 ;;;###autoload
 (defun matlab-is-matlab-file ()
-  "Enter `matlab-mode' when file content looks like a MATLAB *.m
-file or for empty files *.m files when `matlab-mode-for-new-mfiles'
-indicates as such."
+  "Enter `matlab-mode' when file content is likely a MATLAB *.m file.
+This will also enter `matlab-mode' for empty files *.m files when
+`matlab-mode-for-new-mfiles' indicates as such."
   (and buffer-file-name ;; have a file?
        ;; AND a valid MATLAB file name
        (string-match
@@ -1261,7 +1258,7 @@ indicates as such."
 (defvar show-paren-data-function)
 
 (defun matlab-mode-leave ()
-  "When leaving `matlab-mode', turn off `mlint-minor-mode'"
+  "When leaving `matlab-mode', turn off `mlint-minor-mode'."
   (when (eq major-mode 'matlab-mode)
     (mlint-minor-mode -1)
     (matlab-scan-disable)
@@ -1305,8 +1302,8 @@ Variables:
   `fill-column'                 Column used in auto-fill.
   `matlab-indent-function-body' If non-nil, indents body of MATLAB functions.
   `matlab-functions-have-end'   If non-nil, MATLAB functions terminate with end.
-  `matlab-fill-code'            Non-nil, auto-fill code in auto-fill-mode.
-  `matlab-fill-strings'         Non-nil, auto-fill strings in auto-fill-mode.
+  `matlab-fill-code'            Non-nil, auto-fill code in `auto-fill-mode'.
+  `matlab-fill-strings'         Non-nil, auto-fill strings in `auto-fill-mode'.
   `matlab-verify-on-save-flag'  Non-nil, enable code checks on save.
   `matlab-vers-on-startup'      If t, show version on start-up.
   `matlab-handle-simulink'      If t, enable simulink keyword highlighting.
@@ -1327,6 +1324,10 @@ All Key Bindings:
   ;; and font-lock for comments/strings.
   (matlab-syntax-setup)
   (matlab-scan-setup)
+  (when (not noninteractive)
+    ;; "matlab %% sections" and has some cost, thus don't activate in batch mode.
+    ;; TODO: investigate if a hook be better?
+    (matlab-sections-mode-enable))
 
   ;; Indentation setup.
   (setq indent-tabs-mode nil)
@@ -1355,7 +1356,7 @@ All Key Bindings:
   (make-local-variable 'normal-auto-fill-function)
   (setq normal-auto-fill-function 'matlab-auto-fill)
   (make-local-variable 'fill-column)
-  (setq fill-column matlab-fill-column)
+  (setq fill-column fill-column)
   (make-local-variable 'fill-paragraph-function)
   (setq fill-paragraph-function 'matlab-fill-paragraph)
   (make-local-variable 'fill-prefix)
@@ -1453,13 +1454,13 @@ All Key Bindings:
 (defvar gud-matlab-debug-active nil)
 (declare-function matlab-shell-gud-minor-mode "matlab-shell-gud")
 
-(defun matlab-toggle-read-only (&optional arg interactive)
+(defun matlab-toggle-read-only (&optional arg)
   "Toggle read-only bit in MATLAB mode.
 This looks to see if we are currently debugging, and if so re-enable
 our debugging feature.
-Optional argument ARG specifies if the read-only mode should be set.
-INTERACTIVE is ignored."
+Optional argument ARG specifies if the read-only mode should be set."
   (interactive "P")
+  (ignore arg)
   (if (and (featurep 'matlab-shell-gud)
            gud-matlab-debug-active)
       ;; The debugging is active, just re-enable debugging read-only-mode
@@ -1546,7 +1547,7 @@ This assumes that expressions do not cross \"function\" at the left margin."
 (defun matlab-forward-sexp-fcn (&optional arg)
   "Function used as `forward-sexp-function' for MATLAB mode.
 Adapt to use `matlab-forward-sexp' or `matlab-backward-sexp'
-depending on value of 'arg'."
+depending on value of ARG."
   ;; Move forward on positive arg.
   (while (> arg 0)
     (matlab-forward-sexp)
@@ -1557,13 +1558,10 @@ depending on value of 'arg'."
     (setq arg (1+ arg)))
   )
 
-
-(defun matlab-forward-sexp (&optional autostart parentblock)
+(defun matlab-forward-sexp (&optional autostart)
   "Go forward one balanced set of MATLAB expressions.
 If AUTOSTART is non-nil, assume we are already inside a block, and navigate
-forward until we exit that block.
-PARENTBLOCK is used when recursing to validate block starts as being in
-a valid context."
+forward until we exit that block."
   (let (p keyword)  ;; go to here if no error.
     (save-excursion ;; Don't move if there is an error
       ;; skip over preceding whitespace
@@ -1637,7 +1635,8 @@ Assume point is on a defun, and if so, skip to the end."
 
 
 (defun matlab-end-of-defun (&optional arg)
-  "Go to the end of the current function."
+  "Go to the end of the current function.
+ARG specifies how far."
   (interactive "p")
   (unless arg (setq arg 1))
   (let ((ans nil))
@@ -1676,27 +1675,8 @@ Accounts for nested functions."
 (defun matlab-add-log-current-defun ()
   "Return a text string representing the current block.
 Tries to return the current defun.  If not, look for a
-cell block with a name."
-  (or (matlab-current-defun) (matlab-current-cell)))
-
-(defun matlab-current-cell ()
-  "Return the name of the current cell.
-The name is any text after the %% and any whitespace."
-  (save-excursion
-    (forward-page -1)
-    (let ((lvl1 (matlab-compute-line-context 1))
-          start)
-      (when (and (matlab-line-comment-p lvl1)
-                 (eq (matlab-line-comment-style lvl1) 'cell-start))
-        ;; We are in a cell start, get the content
-        (goto-char (matlab-line-point lvl1))
-        (skip-chars-forward "% \t.,*" (point-at-eol))
-        (setq start (point))
-        (end-of-line 1)
-        (skip-chars-backward " \t*" start)
-        (buffer-substring-no-properties start (point))
-        ))
-    ))
+code section block with a name."
+  (or (matlab-current-defun) (matlab-sections-what-section)))
 
 (defun matlab-current-defun ()
   "Return the name of the current function."
@@ -1708,7 +1688,7 @@ The name is any text after the %% and any whitespace."
 (defun matlab-beginning-of-command ()
   "Go to the beginning of an M command.
 Travels across continuations."
-  (interactive)
+  (interactive "P")
   (matlab-scan-beginning-of-command))
 
 (defun matlab-end-of-command ()
@@ -1769,7 +1749,7 @@ A negative number means there were more ends than starts.
     (beginning-of-line)
     (cond ((looking-at "\\s-*\\([a-zA-Z]\\w+\\)[^=][^=]")
            (match-string 1))
-          ((and (re-search-forward "=" (matlab-point-at-eol) t)
+          ((and (re-search-forward "=" (line-end-position) t)
                 (looking-at "\\s-*\\([a-zA-Z]\\w+\\)\\s-*[^=]"))
            (match-string 1))
           (t nil))))
@@ -1791,8 +1771,11 @@ If there isn't one, then return nil, point otherwise."
 (defun matlab-indent-region (start end &optional column noprogress)
   "Indent the region between START And END for MATLAB mode.
 Unlike `indent-region-line-by-line', this function captures
-parsing state and re-uses that state along the way."
-  (interactive "r")
+parsing state and re-uses that state along the way.
+Optional argument COLUMN boundary of the filling (ignored).
+NOPROGRESS, if t, does not display indenting progress."
+  (interactive)
+  (ignore column)
   (save-excursion
     (setq end (copy-marker end))
     (goto-char start)
@@ -1824,7 +1807,7 @@ parsing state and re-uses that state along the way."
     (matlab--indent-line lvl2)))
 
 (defvar matlab--change-indentation-override #'matlab--change-indentation
-  "Tests to override this to validate indent-region.")
+  "Tests to override this to validate `indent-region'.")
 
 (defun matlab--indent-line (lvl2)
   "Indent the current line according to MATLAB mode.
@@ -1856,7 +1839,9 @@ This function exists so the test harness can override it."
     (/= 0 diff)))
 
 (defun matlab--calc-indent (&optional lvl2 debug-sym)
-  "Return the appropriate indentation for this line as an integer."
+  "Return the appropriate indentation for this line as an integer.
+LVL2 is line context level 2.
+DEBUG-SYM is for debugging."
   ;; In case it wasn't provided.
   (unless lvl2 (setq lvl2 (matlab-compute-line-context 2)))
   ;; The first step is to find the current indentation.
@@ -1873,7 +1858,8 @@ Uses the lvl2 context of the current line of code it scans backward from.
 This function scans backward over blank lines and comments to find a
 line of code.  It then scans that line and recommends either:
   - same indentation - if just boring old code.
-  - indent more - if has control block openings on it."
+  - indent more - if has control block openings on it.
+LVL2 is level 2."
   (cond
    ((save-excursion (beginning-of-line) (bobp))
     ;; Beginning of buffer - do no work, just return 0.
@@ -1904,8 +1890,8 @@ line of code.  It then scans that line and recommends either:
 
 
 (defun matlab--maybe-yes-or-no-p (prompt noninteractive-default)
-  "When in non-interactive mode run (yes-or-no-p prompt),
-otherwise return NONINTERACTIVE-DEFAULT"
+  "When in interactive mode run (yes-or-no-p PROMPT).
+When in `noninteractive mode', return NONINTERACTIVE-DEFAULT"
   (if noninteractive
       noninteractive-default
     (yes-or-no-p prompt)))
@@ -1914,10 +1900,11 @@ otherwise return NONINTERACTIVE-DEFAULT"
 (defun matlab-calculate-indentation (&optional lvl2)
   "Calculate out the indentation of the current line.
 Return a list of descriptions for this line.  Return format is:
- '(TYPE DEPTHNUMBER)
+ \\='(TYPE DEPTHNUMBER)
 where TYPE is one of (comment, code, function, blockstart, blockmid,
 blockendless, blockend) DEPTHNUMBER is how many characters to indent
-this line."
+this line.
+LVL2."
   (unless lvl2 (setq lvl2 (matlab-compute-line-context 2)))
 
   (let ((lvl1 (matlab-get-lvl1-from-lvl2 lvl2))
@@ -2049,7 +2036,6 @@ this line."
                          (matlab-scan-beginning-of-command)
                          (matlab-compute-line-context 1)))
              (ci-boc (matlab-line-indentation boc-lvl1))
-             (boc (matlab-line-point boc-lvl1))
 
              ;; Scratch vars for paren stuff
              (parencol (matlab-line-close-paren-inner-col lvl1))
@@ -2103,9 +2089,11 @@ this line."
 
            ;; CONTINUATION with PARENS, BRACKETS, etc
            (t
-            (let* ((mi (assoc parenchar matlab-maximum-indents))
-                   (max (if mi (if (listp (cdr mi)) (car (cdr mi)) (cdr mi)) nil))
-                   (ind (if mi (if (listp (cdr mi)) (cdr (cdr mi)) (cdr mi)) nil)))
+            (progn
+              ;; TODO - use following?
+              ;; (let* ((mi (assoc parenchar matlab-maximum-indents))
+              ;;        (max (if mi (if (listp (cdr mi)) (car (cdr mi)) (cdr mi)) nil))
+              ;;        (ind (if mi (if (listp (cdr mi)) (cdr (cdr mi)) (cdr mi)) nil)))
               (goto-char parenpt)
               (forward-char 1)
               (skip-chars-forward " \t")
@@ -2163,7 +2151,7 @@ this line."
                      (= boc boc2))
                  (save-excursion
                    (goto-char boc)
-                   (while (and (re-search-forward "=" (matlab-point-at-eol) t)
+                   (while (and (re-search-forward "=" (line-end-position) t)
                                (matlab-cursor-in-string-or-comment)))
                    (when (= (preceding-char) ?=)
                      (skip-chars-forward " \t")
@@ -2207,59 +2195,56 @@ this line."
 
 (defun matlab-next-line-indentation (lvl1)
   "Calculate the indentation for lines following this command line.
-See `matlab-calculate-indentation' for how the output of this fcn is used."
-  (let ((startpnt (matlab-with-context-line lvl1
-                    (point-at-eol)))
-        )
-    (save-excursion
-      (matlab-scan-beginning-of-command lvl1)
+See `matlab-calculate-indentation' for how the output of this fcn is used.
+LVL1."
+  (save-excursion
+    (matlab-scan-beginning-of-command lvl1)
 
-      (let* ((boc-lvl1 (matlab-compute-line-context 1))
-             (depthchange (matlab-line-count-block-change boc-lvl1 lvl1))
-             (end (matlab-line-end-p boc-lvl1))
-             )
+    (let* ((boc-lvl1 (matlab-compute-line-context 1))
+           (depthchange (matlab-line-count-block-change boc-lvl1 lvl1))
+           (end (matlab-line-end-p boc-lvl1)))
 
-        ;; When DEPTHCHANGE is negative, and END is false, or
-        ;; DEPTHCHANGE < -1, then the NEXT line should have an indent
-        ;; that matches the context at the beginning of the block of
-        ;; the last end.
-        ;;
-        ;; If we don't do this, and a block-start is not the FIRST item
-        ;; on a line, then there is no way for the following line to figure
-        ;; out where it should be.
-        (if (or (< depthchange -1) (and (= depthchange -1) end))
-            (let* ((CTXT (matlab-with-context-line boc-lvl1
-                           (matlab-line-end-of-code boc-lvl1)
-                           (matlab-re-search-keyword-backward
-                            (matlab-keyword-regex 'end) (point-at-bol) t)
-                           (matlab-scan-block-start-context))))
-              (matlab-line-indentation (nth 3 CTXT)))
+      ;; When DEPTHCHANGE is negative, and END is false, or
+      ;; DEPTHCHANGE < -1, then the NEXT line should have an indent
+      ;; that matches the context at the beginning of the block of
+      ;; the last end.
+      ;;
+      ;; If we don't do this, and a block-start is not the FIRST item
+      ;; on a line, then there is no way for the following line to figure
+      ;; out where it should be.
+      (if (or (< depthchange -1) (and (= depthchange -1) end))
+          (let* ((CTXT (matlab-with-context-line boc-lvl1
+                         (matlab-line-end-of-code boc-lvl1)
+                         (matlab-re-search-keyword-backward
+                          (matlab-keyword-regex 'end) (line-beginning-position) t)
+                         (matlab-scan-block-start-context))))
+            (matlab-line-indentation (nth 3 CTXT)))
 
-          ;; Indent recommendations not related to ENDS
+        ;; Indent recommendations not related to ENDS
 
-          ;; If we are NOT indenting our functions and we are on
-          ;; a declaration, then we should subtract 1 from the beginning count.
-          ;; This fairly simple change removes a big chunk of the old code.
-          (when (and (not (matlab-indent-function-body-p))
-                     (matlab-line-declaration-p boc-lvl1))
-            (setq depthchange (1- depthchange)))
+        ;; If we are NOT indenting our functions and we are on
+        ;; a declaration, then we should subtract 1 from the beginning count.
+        ;; This fairly simple change removes a big chunk of the old code.
+        (when (and (not (matlab-indent-function-body-p))
+                   (matlab-line-declaration-p boc-lvl1))
+          (setq depthchange (1- depthchange)))
 
-          ;; Remove 1 from the close count if there is an END on the beginning
-          ;; of this line, since in that case, the unindent has already happened.
-          (when end (setq depthchange (1+ depthchange)))
+        ;; Remove 1 from the close count if there is an END on the beginning
+        ;; of this line, since in that case, the unindent has already happened.
+        (when end (setq depthchange (1+ depthchange)))
 
-          ;; Calculate the suggested indentation.
-          (+ (current-indentation)
-             (* matlab-indent-level depthchange)
-             (* matlab-indent-level (if (matlab-line-block-middle-p boc-lvl1) 1 0))
-             (* (cdr matlab-case-indent-level) (if (matlab-line-block-case-p boc-lvl1) 1 0))
-             ))))))
+        ;; Calculate the suggested indentation.
+        (+ (current-indentation)
+           (* matlab-indent-level depthchange)
+           (* matlab-indent-level (if (matlab-line-block-middle-p boc-lvl1) 1 0))
+           (* (cdr matlab-case-indent-level) (if (matlab-line-block-case-p boc-lvl1) 1 0))
+           )))))
 
 (defun matlab-electric-indent-function (char)
   "Return t if `electric-indent-mode' should indent after CHAR is inserted.
-Return nil otherwise.
-This function recommends indenting after special keywords that typically cause indentation
-changes so the code fixes itself up."
+Returns nil otherwise.
+This function recommends indenting after special keywords that
+  typically cause indentation changes so the code fixes itself up."
   (cond ((eq char ?e)
          (let ((lvl1 (matlab-compute-line-context 1)))
            (or (matlab-line-block-middle-p lvl1)
@@ -2333,7 +2318,7 @@ Argument ARG specifies how many %s to insert."
            (if (> (current-column) comment-column) (delete-horizontal-space))
            (if (< (current-column) comment-column) (indent-to comment-column))
            ;; Now see if the current line is too long to fit.  Can we back indent?
-           (let ((eol-col (- (point-at-eol) (point-at-bol))))
+           (let ((eol-col (- (line-end-position) (line-beginning-position))))
              (when (> eol-col fill-column)
                (delete-horizontal-space)
                (indent-to (- comment-column (- eol-col fill-column)))))
@@ -2400,28 +2385,19 @@ Argument BEG and END indicate the region to uncomment."
 (defun matlab-set-comm-fill-prefix ()
   "Set the `fill-prefix' for the current (comment) line."
   (interactive)
-  (let ((ctxt (matlab-compute-line-context 1)))
-    (if (matlab-line-comment-p ctxt)
-	(setq fill-prefix
-	      (save-excursion
-		(beginning-of-line)
-		(let ((e (matlab-point-at-eol))
-		      (pf nil))
-		  (while (and (re-search-forward "%+[ \t]*\\($$$ \\|\\* \\)?" e t)
-			      (matlab-cursor-in-string)))
-		  (setq pf (match-string 0))
-		  (when (string-match "%\\s-*\\* " pf)
-		    (setq pf (concat "%" (make-string (1- (length pf)) ?  ))))
-		  (concat (make-string (- (current-column) (length pf)) ? )
-			  pf))))
-      ;; Not a comment line, but maybe a comment at end of a line?  If
-      ;; so make next comment line up with the end of line comment
-      ;; column the way aoto fill does.
-      (let ((cstart (matlab-line-end-comment-column ctxt)))
-	(if cstart
-	    (setq fill-prefix
-		  (concat (make-string cstart ? ) "% "))
-	  )) )))
+  (if (matlab-line-comment-p (matlab-compute-line-context 1))
+      (setq fill-prefix
+            (save-excursion
+              (beginning-of-line)
+              (let ((e (line-end-position))
+                    (pf nil))
+                (while (and (re-search-forward "%+[ \t]*\\($$$ \\|\\* \\)?" e t)
+                            (matlab-cursor-in-string)))
+                (setq pf (match-string 0))
+                (when (string-match "%\\s-*\\* " pf)
+                  (setq pf (concat "%" (make-string (1- (length pf)) ?  ))))
+                (concat (make-string (- (current-column) (length pf)) ? )
+                        pf))))))
 
 (defun matlab-set-comm-fill-prefix-post-code ()
   "Set the `fill-prefix' for the current post-code comment line."
@@ -2443,7 +2419,7 @@ not be broken.  This function will ONLY work on code."
     (if (matlab-line-ellipsis-p lvl1)
         nil
       (save-restriction
-        (narrow-to-region (matlab-point-at-bol) (matlab-point-at-eol))
+        (narrow-to-region (line-beginning-position) (line-end-position))
         ;; get ourselves onto the fill-column.
         (move-to-column fill-column)
         (let ((pos nil)
@@ -2451,7 +2427,7 @@ not be broken.  This function will ONLY work on code."
           (or
            ;; Next, if we have a trailing comment, use that.
            (progn (setq pos (or (matlab-line-comment-p lvl1)
-                                (matlab-point-at-bol)))
+                                (line-beginning-position)))
                   (goto-char pos)
                   (if (and (> (current-column) (- fill-column matlab-fill-fudge))
                            (< (current-column) (+ fill-column matlab-fill-fudge)))
@@ -2463,8 +2439,8 @@ not be broken.  This function will ONLY work on code."
                            (re-search-forward "[ \t]" nil t)))
                   (before (save-excursion
                             (re-search-backward "[ \t]" nil t)))
-                  (afterd (- (or after (matlab-point-at-eol)) (point)))
-                  (befored (- (point) (or before (matlab-point-at-bol)))))
+                  (afterd (- (or after (line-end-position)) (point)))
+                  (befored (- (point) (or before (line-beginning-position)))))
              ;; Here, if "before" is actually the beginning of our
              ;; indentation, then this is most obviously a bad place to
              ;; break our lines.
@@ -2573,7 +2549,7 @@ filling which will automatically insert `...' and the end of a line."
          ((or (matlab-line-comment-p lvl1)
               (and (save-excursion (move-to-column fill-column)
                                    (matlab-cursor-in-comment))
-                   (matlab-line-end-comment-column lvl1)))
+                   (matlab-line-comment-p lvl1)))
           ;; If the whole line is a comment, do this.
           (matlab-set-comm-fill-prefix) (do-auto-fill)
           (matlab-reset-fill-prefix))
@@ -2591,12 +2567,12 @@ filling which will automatically insert `...' and the end of a line."
                          (matlab-cursor-in-string)))
                   (progn
                     (delete-horizontal-space)
-                    (insert " " matlab-elipsis-string "\n")
+                    (insert " " matlab-ellipsis-string "\n")
                     (matlab-indent-line))
                 (if matlab-fill-strings-flag
                     (let ((pos (point))
                           (pos2 nil))
-                      (while (and (re-search-backward "'" (point-at-bol) t)
+                      (while (and (re-search-backward "'" (line-beginning-position) t)
                                   (progn (forward-char -1)
                                          (looking-at "''"))))
                       (setq pos2 (point))
@@ -2607,11 +2583,11 @@ filling which will automatically insert `...' and the end of a line."
                                               (looking-at "\\["))
                               (progn
                                 (beginning-of-line)
-                                (skip-chars-backward (concat " \t\n" matlab-elipsis-string))
+                                (skip-chars-backward (concat " \t\n" matlab-ellipsis-string))
                                 (if (> (point) (point-min))
                                     (progn
                                       (forward-char -1)
-                                      (looking-at (concat "'\\s-*" matlab-elipsis-string))))))
+                                      (looking-at (concat "'\\s-*" matlab-ellipsis-string))))))
                           (goto-char pos)
                         (goto-char pos2)
                         (forward-char 1)
@@ -2620,7 +2596,7 @@ filling which will automatically insert `...' and the end of a line."
                         (forward-char 1))
                                         ;(delete-horizontal-space)
                       (skip-chars-forward " \t")
-                      (insert "' " matlab-elipsis-string "\n")
+                      (insert "' " matlab-ellipsis-string "\n")
                       (matlab-indent-line)
                       (insert "'")
                       ;; Re scan forward for the end of the string. Add an end bracket
@@ -2683,11 +2659,34 @@ With optional argument, JUSTIFY the comment as well."
   (interactive)
   (if (not (matlab-comment-on-line))
       (error "No comment to fill"))
-  ;; Set the fill prefix
-  (matlab-set-comm-fill-prefix)
-  (fill-paragraph justify))
+  (beginning-of-line)
+  ;; First, find the beginning of this comment...
+  (while (and (looking-at matlab-cline-start-skip)
+              (not (bobp)))
+    (forward-line -1)
+    (beginning-of-line))
+  (if (not (looking-at matlab-cline-start-skip))
+      (forward-line 1))
+  ;; Now scan to the end of this comment so we have our outer bounds,
+  ;; and narrow to that region.
+  (save-restriction
+    (narrow-to-region (point)
+                      (save-excursion
+                        (while (and (looking-at matlab-cline-start-skip)
+                                    (not (save-excursion (end-of-line) (eobp))))
+                          (forward-line 1)
+                          (beginning-of-line))
+                        (if (not (looking-at matlab-cline-start-skip))
+                            (forward-line -1))
+                        (end-of-line)
+                        (point)))
+    ;; Find the fill prefix...
+    (matlab-comment-on-line)
+    (looking-at "%[ \t]*")
+    (let ((fill-prefix (concat (make-string (current-column) ? )
+                               (match-string 0))))
+      (fill-region (point-min) (point-max) justify))))
 
-  
 (defun matlab-justify-line ()
   "Delete space on end of line and justify."
   (interactive)
@@ -2701,88 +2700,78 @@ With optional argument, JUSTIFY the comment as well."
 Paragraphs are always assumed to be in a comment.
 ARG is passed to `fill-paragraph' and will justify the text."
   (interactive "P")
-
-  (let ((ctxt (matlab-compute-line-context 1)))
-  
-    ;;; comment Filling
-    (cond ((let (ecc (matlab-line-end-comment-column ctxt))
-             (and ecc (< ecc fill-column)
-                  (not (matlab-line-ellipsis-p ctxt))))
-           ;; We are in a comment, lets fill the paragraph with some
-           ;; nice regular expressions.
-           ;; Cell start/end markers of %% also separate paragraphs
-           (let ((paragraph-separate "%%\\|%[a-zA-Z]\\|%[ \t]*$\\|[ \t]*$")
-                 (paragraph-start "%[a-zA-Z]\\|%[ \t]*$\\|[ \t]*$\\|%\\s-*\\*")
-                 (paragraph-ignore-fill-prefix nil)
-                 (start (save-excursion (matlab-beginning-of-string-or-comment t)
-                                        (if (looking-at "%%")
-                                            (progn (end-of-line)
-                                                   (forward-char 1)))
-                                        (point-at-bol)))
-                 (end (save-excursion (matlab-end-of-string-or-comment t)
-                                      (point)))
-                 (fill-prefix nil))
-	     (save-excursion
-	       (goto-char start)
-	       (matlab-set-comm-fill-prefix))
-             (save-restriction
-               ;; Ben North fixed to handle comment at the end of
-               ;; a buffer.
-               (narrow-to-region start (min (point-max) (+ end 1)))
-               (fill-comment-paragraph arg))))
-
-          ;;; Command filling
-          ((and matlab-fill-code
-                (not (or (matlab-line-comment-p ctxt) (matlab-line-empty-p ctxt))))
-           ;; Ok, lets get the outer bounds of this command, then
-           ;; completely refill it using the smart line breaking code.
+  (cond ((or (matlab-line-comment-p (matlab-compute-line-context 1))
+             (and (matlab-cursor-in-comment)
+                  (not (matlab-line-ellipsis-p (matlab-compute-line-context 1)))))
+         ;; We are in a comment, lets fill the paragraph with some
+         ;; nice regular expressions.
+         ;; Code section start/end markers of %% also separate paragraphs
+         (let ((paragraph-separate "%%\\|%[a-zA-Z]\\|%[ \t]*$\\|[ \t]*$")
+               (paragraph-start "%[a-zA-Z]\\|%[ \t]*$\\|[ \t]*$\\|%\\s-*\\*")
+               (paragraph-ignore-fill-prefix nil)
+               (start (save-excursion (matlab-scan-beginning-of-command)
+                                      (if (looking-at "%%")
+                                          (progn (end-of-line)
+                                                 (forward-char 1)))
+                                      (line-beginning-position)))
+               (end (save-excursion (matlab-scan-end-of-command)))
+               (fill-prefix nil))
+           (matlab-set-comm-fill-prefix)
            (save-restriction
-             (narrow-to-region (save-excursion
-                                 (matlab-scan-beginning-of-command)
-                                 (beginning-of-line)
-                                 (point))
-                               (save-excursion
-                                 (matlab-scan-end-of-command)))
-             ;; Remove all line breaks
-             (goto-char (point-min))
-             (while (and (re-search-forward "$" nil t)
-                         (not (eobp)))
-               (delete-horizontal-space)
-               ;; Blow away continuation marks
-               (if (matlab-line-ellipsis-p (matlab-compute-line-context 1))
-                   (progn
-                     (goto-char (match-beginning 0))
-                     (forward-char 1)
-                     (delete-region (point) (matlab-point-at-eol))))
-               ;; Zap the CR
-               (if (not (eobp)) (delete-char 1))
-               ;; Clean up whitespace
-               (delete-horizontal-space)
-               ;; Clean up trailing comments
-               (if (and (looking-at "% *")
-                        (matlab-cursor-in-comment))
-                   (progn
-                     (delete-char 1)
-                     (delete-horizontal-space)))
-               (insert " "))
-             ;; Now fill till we are done
-             (goto-char (point-max))
-             (while (or (> (current-column) (+ fill-column matlab-fill-fudge))
-                        (> (current-column) matlab-fill-fudge-hard-maximum))
-               (if (= (point)
-                      (progn
-                        (matlab-auto-fill)
-                        (point)))
-                   (error "Fill algorithm failed!"))
-               (if arg (save-excursion
-                         (forward-line -1)
-                         (matlab-justify-line))))
+             ;; Ben North fixed to handle comment at the end of
+             ;; a buffer.
+             (narrow-to-region start (min (point-max) (+ end 1)))
+             (fill-paragraph arg))))
+        ((let ((lvl  (matlab-compute-line-context 1)))
+           (not (or (matlab-line-comment-p lvl) (matlab-line-empty-p lvl))))
+         ;; Ok, lets get the outer bounds of this command, then
+         ;; completely refill it using the smart line breaking code.
+         (save-restriction
+           (narrow-to-region (save-excursion
+                               (matlab-scan-beginning-of-command)
+                               (beginning-of-line)
+                               (point))
+                             (save-excursion
+                               (matlab-scan-end-of-command)))
+           ;; Remove all line breaks
+           (goto-char (point-min))
+           (while (and (re-search-forward "$" nil t)
+                       (not (eobp)))
+             (delete-horizontal-space)
+             ;; Blow away continuation marks
+             (if (matlab-line-ellipsis-p (matlab-compute-line-context 1))
+                 (progn
+                   (goto-char (match-beginning 0))
+                   (forward-char 1)
+                   (delete-region (point) (line-end-position))))
+             ;; Zap the CR
+             (if (not (eobp)) (delete-char 1))
+             ;; Clean up whitespace
+             (delete-horizontal-space)
+             ;; Clean up trailing comments
+             (if (and (looking-at "% *")
+                      (matlab-cursor-in-comment))
+                 (progn
+                   (delete-char 1)
+                   (delete-horizontal-space)))
+             (insert " "))
+           ;; Now fill till we are done
+           (goto-char (point-max))
+           (while (or (> (current-column) (+ fill-column matlab-fill-fudge))
+                      (> (current-column) matlab-fill-fudge-hard-maximum))
+             (if (= (point)
+                    (progn
+                      (matlab-auto-fill)
+                      (point)))
+                 (error "Fill algorithm failed!"))
              (if arg (save-excursion
                        (forward-line -1)
-                       (matlab-justify-line)))))
-        
-          (t
-           (message "Paragraph Fill not supported in this context.")))))
+                       (matlab-justify-line))))
+           (if arg (save-excursion
+                     (forward-line -1)
+                     (matlab-justify-line)))))
+        (t
+         (message "Paragraph Fill not supported in this context."))))
 
 
 ;;; Show Paren Mode support ==================================================
@@ -2819,7 +2808,7 @@ Returns a list: \(HERE-BEG HERE-END THERE-BEG THERE-END MISMATCH)"
           (cond ((and here-syntax (= (syntax-class here-syntax) 4)) ; open paren
                  (setq here-beg (point)
                        here-end (1+ (point)))
-                 (condition-case err
+                 (condition-case nil
                      (progn
                        (matlab-move-simple-sexp-internal 1)
                        (setq there-beg (- (point) 1)
@@ -2836,7 +2825,7 @@ Returns a list: \(HERE-BEG HERE-END THERE-BEG THERE-END MISMATCH)"
                 ((and here-prev-syntax (= (syntax-class here-prev-syntax) 5))
                  (setq here-beg (1- (point))
                        here-end (point))
-                 (condition-case err
+                 (condition-case nil
                      (progn
                        (matlab-move-simple-sexp-backward-internal 1)
                        (setq there-end (+ (point) 1)
@@ -2862,7 +2851,7 @@ Returns a list: \(HERE-BEG HERE-END THERE-BEG THERE-END MISMATCH)"
                    (when (matlab--valid-keyword-node startsym)
                      (goto-char (nth 2 startsym))
 
-                     (condition-case err
+                     (condition-case nil
                          (cond
                           ((eq (car startsym) 'decl)
                            ;; We are looking at a 'function' start.
@@ -2934,9 +2923,10 @@ Returns a list: \(HERE-BEG HERE-END THERE-BEG THERE-END MISMATCH)"
 
 ;;; Electric pair mode ============================================
 
+(declare-function electric-pair-default-inhibit "elec-pair")
 (defun matlab-electric-pair-inhibit-predicate (char)
-  "Return non-nil if `electric-pair-mode' should not pair this char."
-  (or (funcall 'electric-pair-default-inhibit char)
+  "Return non-nil if `electric-pair-mode' should not pair this CHAR."
+  (or (funcall #'electric-pair-default-inhibit char)
       (cond
        ((and (eq char ?')
              (progn (forward-char -1)
@@ -2998,15 +2988,17 @@ If optional FAST is non-nil, do not perform usually lengthy checks."
     ;; Loop over the options.
     (mapc (lambda (func) (funcall func fast))
           matlab-mode-verify-fix-functions))
-  (if (matlab-called-interactively-p)
-      (message "Done.")))
+  (when (called-interactively-p 'interactive)
+    (message "Done.")))
 
 ;;
 ;; Add more auto verify/fix functions here!
 ;;
 (defun matlab-mode-vf-guess-functions-have-end (&optional fast)
   "Look at the current buffer state and decide determine if functions have end.
-If this is already known, no action is taken."
+If this is already known, no action is taken.
+FAST is ignored."
+  (ignore fast)
   (let ((filetype (matlab-guess-script-type)))
 
     ;; Lets if the file if we were in still doesn't know what to do
@@ -3056,11 +3048,11 @@ If this is already known, no action is taken."
 (defun matlab-mode-vf-functionname (&optional fast)
   "Verify/Fix the function name of this file.
 Optional argument FAST is ignored."
+  (ignore fast)
   (matlab-navigation-syntax
     (goto-char (point-min))
     (matlab-find-code-line)
-    (let ((func nil)
-          (bn (file-name-sans-extension
+    (let ((bn (file-name-sans-extension
                (file-name-nondirectory (buffer-file-name))))
           (fcn (matlab-line-declaration-name)))
       (when (and fcn (eq (car fcn) 'function)
@@ -3075,11 +3067,11 @@ Optional argument FAST is ignored."
 (defun matlab-mode-vf-classname (&optional fast)
   "Verify/Fix the class name of this file.
 Optional argument FAST is ignored."
+  (ignore fast)
   (matlab-navigation-syntax
     (goto-char (point-min))
     (matlab-find-code-line)
-    (let ((class nil)
-          (bn (file-name-sans-extension
+    (let ((bn (file-name-sans-extension
                (file-name-nondirectory (buffer-file-name))))
           (class (matlab-line-declaration-name)))
       (when (and class (eq (car class) 'classdef)
@@ -3109,8 +3101,7 @@ not be needed.
 Optional argument FAST causes this check to be skipped.
 Optional argument ADDEND asks to add ends to functions, and is used
 by `matlab-mode-vf-add-ends'"
-  (let ((expr nil)
-        (scanstate nil)
+  (let ((scanstate nil)
         (exit nil)
         ;; lets avoid asking questions based on id of this file
         ;; and if ends are optional in the first place.
@@ -3187,15 +3178,15 @@ by `matlab-mode-vf-add-ends'"
 ;;  a section of the buffer for the user's approval.
 (defun matlab-mode-highlight-ask (begin end prompt)
   "Highlight from BEGIN to END while asking PROMPT as a yes-no question."
-  (let ((mo (matlab-make-overlay begin end (current-buffer)))
+  (let ((mo (make-overlay begin end (current-buffer)))
         (show-paren-mode nil) ;; this will highlight things we often ask about.  disable.
         (ans nil))
     (condition-case nil
         (progn
-          (matlab-overlay-put mo 'face 'matlab-region-face)
+          (overlay-put mo 'face 'matlab-region-face)
           (setq ans (y-or-n-p prompt))
-          (matlab-delete-overlay mo))
-      (quit (matlab-delete-overlay mo) (error "Quit")))
+          (delete-overlay mo))
+      (quit (delete-overlay mo) (error "Quit")))
     ans))
 
 ;;; Quiesce an M file to remove accidental display of ANS during a run.
@@ -3214,6 +3205,7 @@ $\\|%\\)"
 This has the effect of removing any extraneous output that may not be
 desired.  Optional argument FAST is not used."
   (interactive)
+  (ignore fast)
   (save-excursion
     (push-mark)
     (goto-char (point-min))
@@ -3245,7 +3237,6 @@ desired.  Optional argument FAST is not used."
            (lvl1 (matlab-get-lvl1-from-lvl2 lvl2))
            (lvl1msg (matlab-describe-line-indent-context lvl1 t))
            (indent nil)
-           (fullindent (matlab--calc-indent lvl2 'indent))
            (nexti (matlab-next-line-indentation lvl1))
            (defn (matlab-current-defun))
            )
@@ -3265,18 +3256,12 @@ desired.  Optional argument FAST is not used."
 
       (message "%s" msg))))
 
-
 (provide 'matlab)
-
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
-
 ;;; matlab.el ends here
 
 ;; LocalWords:  Wette mwette edu Ludlam eludlam defconst compat easymenu defcustom mfiles objc elec
 ;; LocalWords:  CASEINDENT COMMANDINDENT sexp sg Fns Alist symbolp defun mmode setq decl memq progn
-;; LocalWords:  elipsis vf functionname booleanp keymap torkel fboundp gud ebstop mlgud ebclear
+;; LocalWords:  vf functionname booleanp keymap torkel fboundp gud ebstop mlgud ebclear mw
 ;; LocalWords:  ebstatus mlg mlgud's subjob featurep defface commanddual cellbreak cellbreaks cdr
 ;; LocalWords:  animatedline rlim thetalim cartesian stackedplot bubblechart swarmchart wordcloud
 ;; LocalWords:  bubblecloud heatmap parallelplot fcontour anim polarplot polarscatter polarhistogram
@@ -3285,8 +3270,8 @@ desired.  Optional argument FAST is not used."
 ;; LocalWords:  eol tm newmdata Classdefs dem Imenu imenu boundp alist reindent unindent vers Sexp's
 ;; LocalWords:  Defuns fn minibuffer eobp autoend noerror returnme Unstarted parentblock defuns bobp
 ;; LocalWords:  noprogress minibufferp bolp eolp calc funcall ci sem prevcmd DEPTHNUMBER blockstart
-;; LocalWords:  blockmid blockendless blockend CTXT listp fc pc boc parencol parenchar parenpt
-;; LocalWords:  parenindent parenopt FUNCTIONs MAXs prev startpnt depthchange bc emacsen afterd
+;; LocalWords:  blockmid blockendless blockend CTXT listp fc pc boc parencol parenchar parenpt tmp
+;; LocalWords:  parenindent parenopt FUNCTIONs MAXs prev startpnt depthchange bc emacsen afterd md
 ;; LocalWords:  befored okpos startlst endlst ellipsify noreturn hs tc hc startsym endsym mapc func
-;; LocalWords:  filetype bn nondirectory scanstate sexp's nosemi msgpos fullindent nexti defn
-;; LocalWords:  classdef's
+;; LocalWords:  filetype bn nondirectory scanstate sexp's nosemi msgpos fullindent nexti defn sw
+;; LocalWords:  classdef's aref parens
