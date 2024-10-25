@@ -1,3 +1,8 @@
+2024-10-25 18:45  Uwe Brauer  <oub@mat.ucm.es>
+
+	* matlab.el (matlab-fill-paragraph-fill-fix): Add «best»
+	matlab-fill-paragraph from the fill-fix branch: commit 0f305501f26d
+
 2024-10-22 22:55  Nidish Narayanaa Balaji <nidbid@gmail.com>
 
 	* matlab-sections.el: Renamed matlab-cell.el to matlab-sections.el.
