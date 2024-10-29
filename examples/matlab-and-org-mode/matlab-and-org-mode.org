@@ -1,22 +1,22 @@
-# Copyright 2024 John Ciolfi
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Commentary:
-#
-# Use this as a template for creating org-files with MATLAB and other language code blocks.
-# The '#+COMMENT' lines configure org-mode.
+# | Copyright 2024 John Ciolfi
+# |
+# | This program is free software: you can redistribute it and/or modify
+# | it under the terms of the GNU General Public License as published by
+# | the Free Software Foundation, either version 3 of the License, or
+# | (at your option) any later version.
+# |
+# | This program is distributed in the hope that it will be useful,
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# | GNU General Public License for more details.
+# |
+# | You should have received a copy of the GNU General Public License
+# | along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# |
+# | Commentary:
+# |
+# | Use this as a template for creating org-files with MATLAB and other language code blocks.
+# | The '#+COMMENT' lines configure org-mode.
 
 #+startup: showall
 #+startup: inlineimages       //  C-c C-x C-v to toggle, C-c C-x C-M-v to redisplay
@@ -33,9 +33,8 @@
 #+latex_header: \advance\cftsubsecindent 0.5em\relax
 #+latex_header: \advance\cftsubsecnumwidth 0.5em\relax
 
-# Specifying "#+property: header-args+ :eval no-export" disables code block evaluation
-# prompting during export to HTML, PDF, etc.
-#
+# | Specifying "#+property: header-args+ :eval no-export" disables code block evaluation
+# | prompting during export to HTML, PDF, etc.
 #+property: header-args+ :eval no-export
 
 * Overview
