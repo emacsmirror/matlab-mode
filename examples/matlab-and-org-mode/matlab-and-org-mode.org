@@ -14,8 +14,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Commentary:
-#   Use this as a template for creating org-files with MATLAB and other language code blocks.
-#   The '#+COMMENT' lines configure org-mode.
+#
+# Use this as a template for creating org-files with MATLAB and other language code blocks.
+# The '#+COMMENT' lines configure org-mode.
 
 #+startup: showall
 #+startup: inlineimages       //  C-c C-x C-v to toggle, C-c C-x C-M-v to redisplay
@@ -32,8 +33,9 @@
 #+latex_header: \advance\cftsubsecindent 0.5em\relax
 #+latex_header: \advance\cftsubsecnumwidth 0.5em\relax
 
-#  Specifying "#+property: header-args+ :eval no-export" disables code block evaluation
-#  prompting during export to HTML, PDF, etc.
+# Specifying "#+property: header-args+ :eval no-export" disables code block evaluation
+# prompting during export to HTML, PDF, etc.
+#
 #+property: header-args+ :eval no-export
 
 * Overview
