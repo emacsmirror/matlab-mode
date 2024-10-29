@@ -1,20 +1,21 @@
-# Copyright (C) 2024  Eric Ludlam (and others)
-
+# Copyright 2024 John Ciolfi
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# // File: matlab-emacs-src/examples/matlab-and-org-mode/matlab-and-org-mode.org
-# // Abstract:
-# //   Use this as a template for creating org-files with MATLAB and other language code blocks
+#
+# Commentary:
+#   Use this as a template for creating org-files with MATLAB and other language code blocks.
+#   The '#+COMMENT' lines configure org-mode.
 
 #+startup: showall
 #+startup: inlineimages       //  C-c C-x C-v to toggle, C-c C-x C-M-v to redisplay
@@ -30,6 +31,10 @@
 #+latex_header: \advance\cftsecnumwidth 0.5em\relax
 #+latex_header: \advance\cftsubsecindent 0.5em\relax
 #+latex_header: \advance\cftsubsecnumwidth 0.5em\relax
+
+#  Specifying "#+property: header-args+ :eval no-export" disables code block evaluation
+#  prompting during export to HTML, PDF, etc.
+#+property: header-args+ :eval no-export
 
 * Overview
 
@@ -58,130 +63,137 @@ here's a MATLAB [[https://www.mathworks.com/help/matlab/enumeration-classes.html
   end
 #+end_src
 
-You can use org-mode babel to evaluate MATLAB code blocks. For example, if you type =C-c C-c= in the
-following code block, org-mode will evaluate the code in the =*MATLAB*= session and insert the value
+You can use org-mode babel to evaluate MATLAB code blocks. The evaluation is done by sending the
+MATLAB code to the ~*MATLAB*~ buffer created by ~M-x matlab-shell~. To do the evaluation, the
+~*MATLAB*~ must be waiting for input (showing the ">>" prompt). If you type =C-c C-c= in the
+following code block, org-mode will evaluate the code in the ~*MATLAB*~ buffer and insert the value
 of =ans= just below the code block.
 
+When the matlab code block header contains ":results verbatim", the value of the MATLAB ~ans~
+variable is processed using ~writematrix(ans, orgTmpFile, 'Delimiter', 'tab')~
+and then the contents of the /orgTmpFile/ is inserted under the "#+RESULTS:"
+
 #+begin_src matlab :exports both :results verbatim
-  a=1+3+5+7
-  ans=a
+  a = 2 + 3;
+  ans = magic(a);
 #+end_src
 
 #+RESULTS:
-: # Out[6]:
-
-
+| 17 | 24 |  1 |  8 | 15 |
+| 23 |  5 |  7 | 14 | 16 |
+|  4 |  6 | 13 | 20 | 22 |
+| 10 | 12 | 19 | 21 |  3 |
+| 11 | 18 | 25 |  2 |  9 |
 
 You can also use org-mode babel evaluate MATLAB code blocks to plot and insert figures back in to
-this file. For example:
+this file as well as the published (exported) html, LaTeX, pdf, odx (word), etc. file. To do this we
+use a matlab code block with ":results file graphics" header argument that instructs org to run the
+MATLAB code in the ~*MATLAB*~ buffer created by ~M-x matlab-shell~. which calls plot and the
+resulting figure is printed to the ':file NAME.png' header argument. The ':exports both' header
+argument says when exporting, keep the MATLAB code and also the figure when exporting.
 
-#+begin_src matlab :file sinewave.png :exports both :results file graphics
-  t=[0:.1:2*pi];
-  y=sin(t);
-  plot(t,y);
+For example,
+
+#+header: :file sinewave.png
+#+begin_src matlab :exports both :results file graphics
+  t = [0 : 0.1 : 2*pi];
+  y = sin(t);
+  plot(t, y);
+  set(gcf, 'PaperUnits', 'inches', 'PaperPosition', [0 0 4 3]) % Set the size to 4" x 3"
 #+end_src
 
 #+RESULTS:
 [[file:sinewave.png]]
-* Export to HTML, PDF, etc.
 
-You need the htmlize package to get coloring.
 
-For HTML export we set the "#+html_head_extra" properties above to configure CSS. We used ~M-x
-org-html-htmlize-generate-css~ to create ./css/styles-from-org.css and added our customizations in
-./css/styles.css.
 
-For PDF export we configured several "#+latex_header" properties above.
 
-After this setup, you can use the "Org -> Export/Publish" or ~C-c C-e~ to export to HTML, PDF, etc.
+You can also use LaTeX directly, for example:
 
-See the example *.html in this directory.
+  \begin{align}
+  y(t)       = & f_o(t,x_c,x_d,u,P) && - \text{ outputs } \\
+  \dot{x}_c(t) = & f_d(t,x_c,x_d,u,P) && - \text{ derivatives } \\
+  x_d(t+h)   = & f_u(t,x_c,x_d,u,P) && - \text{ update }
+  \end{align}
 
-* Setup
+* Setup and Export
 
-The following is known to work with Emacs 27 which includes org-mode 9.3. It is also know to work
-with Emacs 27 and org-mode 9.6.1.
+1. Enable MATLAB code block export.
 
-To use matlab-mode with org-mode, you need to configure org-mode for matlab-mode.  See [[file:../../README.org][README.org]] to
-install matlab-mode.
+   To enable exporting of org containing matlab code blocks, you need to
 
-We configure matlab-mode to use buffer name =*MATLAB*= and we alter org-mode to use this buffer by
-adding the following to your =~/.emacs=.
+    : M-x customize-variable RET org-babel-load-languages RET
 
-#+begin_src emacs-lisp
-  ;;-----------------------------------------------------------------------------------------;;
-  ;; org babel for matlab - make all matlab code blocks execute in the same *MATLAB* session ;;
-  ;;-----------------------------------------------------------------------------------------;;
+   and add matlab, then 'Save for future sessions' using the 'State' button.
 
-  ;; A better approach to setting org-babel-load-languages is to customize it:
-  ;;   M-x customize-variable RET org-babel-load-languages RET
-  ;; However, we are doing this here to illustrate how matlab interacts with org
-  (setq org-babel-load-languages '((emacs-lisp . t)
-                                   (matlab . t)))
+   If matlab has not been added to org-babel-load-languages, when you try to evaluate a matlab code
+   block, you will see
 
-  (setq org-babel-default-header-args:matlab '((:session . "*MATLAB*")))
+   : org-babel-execute-src-block: No org-babel-execute function for matlab!
 
-  (defun matlab-org-session-advice (orig-fun &rest args)
-    "Advice for org to reuse the *MATLAB* buffer"
-    ;; ob-octave.el leverages both org-babel-matlab-emacs-link-wrapper-method and
-    ;; org-babel-octave-wrapper-method when interacting with the *MATLAB* buffer.
-    ;; Here we fix a couple items such as adding cd default-directory:
-    (setq org-babel-matlab-emacs-link-wrapper-method
-          (concat "\
-      cd('" default-directory "');
-      %s
-      if ~exist('ans','var') ans=''; end
-      if ischar(ans), fid = fopen('%s', 'w'); fprintf(fid, '%%s\\n', ans); fclose(fid);
-      else, save -ascii %s ans
-      end
-      delete('%s')
-      "))
-    (setq org-babel-octave-wrapper-method
-          (concat "\
-      cd('" default-directory "');
-      %s
-      if ~exist('ans','var') ans=''; end
-      if ischar(ans) || isstring(ans), fid = fopen('%s', 'w'); fprintf(fid, '%%s\\n', ans); fclose(fid);
-      else, dlmwrite('%s', ans, '\\t')
-      end"))
-    (apply orig-fun args))
+2. Use these files as a template for your org files.
 
-  (defun matlab-org-fixup-print (orig-fun session body result-type &optional matlabp)
-    "Fixup figure print to make it work with MATLAB"
-    ;; org 9.3 correctly does:     print -dpng figure.png
-    ;; org 9.6.1 incorrectly does: print -dpng "figure.png"
-    ;; and thus 9.6.1 creates on disk a file name containing quotes which is incorrect, so this
-    ;; advice fixes that.
-    (setq body (replace-regexp-in-string "^\\(print -dpng \\)\"\\([^\"]+\\)\"" "\\1\\2"  body t))
-    (funcall orig-fun session body result-type matlabp))
+   #+begin_src bash
+     cd your-working-directory
+     cp /path/to/Emacs-MATLAB-Mode/examples/matlab-and-org-mode.org your-file.org
+     cp -r /path/to/Emacs-MATLAB-Mode/examples/css .      # If exporting to html
+   #+end_src
 
-  (defun org-export-dispatch-no-babel-advice (orig-fun &rest args)
-    "Instruct babel to not evaluate code blocks (and hence no
-  prompt) during export, e.g. conversion of org to say html."
-    (let* ((org-babel-default-header-args
-            (cons '(:eval . "never-export") org-babel-default-header-args))
-           (result (apply orig-fun args)))
-      result))
+   Notice that within the *.org file there are several ~#+<comments>~. These setup for LaTeX/PDF and HTML export.
 
-  (eval-after-load 'ox
-    '(progn
-       ;; Make C-c C-e `org-export-dispatch' work without prompting to evaluate code blocks
-       (advice-add 'org-export-dispatch :around #'org-export-dispatch-no-babel-advice)))
+3. Configure HTML export.
 
-  ;; org babel for matlab - make all matlab code blocks execute in the same *MATLAB* session
-  (eval-after-load "org"
-    '(progn
-       (advice-add 'org-babel-octave-evaluate-external-process :around #'matlab-org-session-advice)
-       (advice-add 'org-babel-octave-evaluate-session :around #'matlab-org-session-advice)
-       (advice-add 'org-babel-octave-evaluate :around #'matlab-org-fixup-print)))
-#+end_src
+   You need the htmlize package (https://melpa.org/#/htmlize) to get coloring for HTML export.  For
+   HTML export we set the "#+html_head_extra" properties in our org file to configure CSS.
 
-#+RESULTS:
+   HTML export uses
 
-To try this using "stock" emacs, place the above in org-matlab-setup.el and use:
+   - [[file:css/styles-from-org.css]]. This is generated by running
+     : M-x org-html-htmlize-generate-css
+     and you'll want to update this for your version of Emacs.
 
- : emacs -q -L /path/to/matlab-mode -l /path/to/matlab-autoload.el -l org-matlab-setup.el
+   - [[file:css/styles.css]]. This contains customizations which you can edit as desired.
 
-# LocalWords:  showall inlineimages latexpreview usepackage parskip tocloft cftsecnumwidth sinewave
-# LocalWords:  cftsubsecindent cftsubsecnumwidth setq defun isstring fixup matlabp dpng funcall
-# LocalWords:  progn htmlize
+4. Configure PDF export.
+
+   To get colored, better looking PDF, use the minted package. This
+   setup can go in your =~/.emacs=:
+
+    #+begin_src emacs-lisp
+      (defun setup-org-pdf ()
+	"Customize org PDF generation for color and more."
+	(if (not (boundp 'org-latex-src-block-backend))
+	    (message "Unable to configure org PDF export because it is too old.")
+	  (setq org-latex-src-block-backend 'minted
+		org-latex-packages-alist '(("cache=false" "minted"))
+		org-latex-minted-options '(("xleftmargin" "1em")
+					   ("breaklines" "true")
+					   ("fontsize" "\\small"))
+		org-latex-image-default-width ""
+		;; Default value of org-latex-pdf-process does not include -shell-escape which is needed for minted
+		;; Also improve latex log file error messages by adding -file-line-error
+		org-latex-pdf-process '("%latex -file-line-error -shell-escape -interaction nonstopmode -output-directory %o %f"
+					"%latex -file-line-error -shell-escape -interaction nonstopmode -output-directory %o %f"
+					"%latex -file-line-error -shell-escape -interaction nonstopmode -output-directory %o %f")
+		;; Keep *.log files to aid in debugging.
+		org-latex-logfiles-extensions (remove "log" org-latex-logfiles-extensions))
+
+	  ;; Color the hyper links, see
+	  ;; https://tex.stackexchange.com/questions/823/remove-ugly-borders-around-clickable-cross-references-and-hyperlinks
+	  (add-to-list 'org-latex-default-packages-alist
+		       '("colorlinks=true,linkcolor={red!50!black},citecolor={blue!50!black},urlcolor={blue!80!black}"
+			 "hyperref" nil))))
+
+      (eval-after-load "ox-latex"
+	'(setup-org-pdf))
+    #+end_src
+
+5. Export.
+
+   After this setup, you can use the "Org -> Export/Publish" or ~C-c C-e~ to export to HTML, PDF,
+   etc.
+
+# LocalWords:  showall inlineimages latexpreview usepackage parskip tocloft cftsecnumwidth defun
+# LocalWords:  cftsubsecindent cftsubsecnumwidth sinewave cp htmlize writematrix tmp odx boundp setq
+# LocalWords:  alist xleftmargin breaklines fontsize nonstopmode logfiles colorlinks linkcolor
+# LocalWords:  citecolor urlcolor hyperref

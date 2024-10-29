@@ -74,7 +74,10 @@ endif
 .PHONY: tests
 tests: .tests.tstamp
 
-.tests.tstamp: $(LOADDEFS) $(ELC)
+# Any file could be used by the tests
+ALL_FILES = $(wildcard */* */* */*/* */*/*/* */*/*/*/*)
+
+.tests.tstamp: $(LOADDEFS) $(ELC) $(ALL_FILES)
 	$(MAKE) -C tests
 	@touch $@
 
