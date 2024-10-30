@@ -1,6 +1,6 @@
-;;; matlab-complete.el --- Simple completion tool for matlab-mode
+;;; matlab-complete.el --- Simple completion tool for matlab-mode -*- lexical-binding: t -*-
 ;;
-;; Copyright (C) 2019, 2020 Eric Ludlam
+;; Copyright (C) 2019, 2024 Eric Ludlam
 ;;
 ;; Author: Eric Ludlam <zappo@gnu.org>
 ;;
@@ -52,10 +52,10 @@
   "*How the `matlab-complete-symbol' interfaces with the user.
 Valid values are:
 
-'increment - which means that new strings are tried with each
+\='increment - which means that new strings are tried with each
              successive call until all methods are exhausted.
              (Similar to `hippie-expand'.)
-'complete  - Which means that if there is no single completion, then
+\='complete  - Which means that if there is no single completion, then
              all possibilities are displayed in a completion buffer."
   :group 'matlab
   :type '(radio (const :tag "Incremental completion (hippie-expand)."
@@ -197,9 +197,9 @@ This list still needs lots of help.")
 
 (defun matlab-lattr-semantics (&optional prefix)
   "Return the semantics of the current position.
-Values are nil 'solo, 'value, and 'boolean.  Boolean is a subset of
+Values are nil \\='solo, \\='value, and \\='boolean.  Boolean is a subset of
 value.  nil means there is no semantic content (ie, string or comment.)
-If optional PREFIX, then return 'solo if that is the only thing on the
+If optional PREFIX, then return \\='solo if that is the only thing on the
 line."
   (cond
    ((or (matlab-line-empty-p (matlab-compute-line-context 1))
@@ -270,7 +270,7 @@ If the list is empty, then searches continue backwards through the code."
 	     (save-excursion
 	       (if (and (re-search-backward "^\\s-*function\\>" bounds t)
 			(re-search-forward "\\_<\\(\\w+\\)\\s-*("
-					   (matlab-point-at-eol) t))
+					   (line-end-position) t))
 		   (let ((lst nil) m e)
 		     (while (looking-at "\\(\\w+\\)\\s-*[,)]\\s-*")
 		       (setq m (match-string 1)
@@ -316,7 +316,7 @@ In NEXT is non-nil, than continue through the list of elements."
 		(while (re-search-forward "^\\s-*function\\>" nil t)
 		  (if (re-search-forward
 		       (concat "\\_<\\(" prefix "\\w+\\)\\s-*\\($\\|(\\)")
-		       (matlab-point-at-eol) t)
+		       (line-end-position) t)
 		      (setq lst (cons (match-string 1) lst))))
 		(nreverse lst)))
 	    (let ((lst nil)
@@ -434,7 +434,8 @@ The last type of semantic used while completing things.")
 
 ;;;###autoload
 (defun matlab-complete-symbol (&optional arg)
-  "Complete a partially typed symbol in a MATLAB mode buffer."
+  "Complete a partially typed symbol in a MATLAB mode buffer.
+Optional argument ARG is ignored."
   (interactive "P")
   (if (and (featurep 'matlab-shell) (matlab-shell-active-p) matlab-shell-ask-MATLAB-for-completions)
       ;; Use MATLAB shell if active and asking for completions is enabled.
@@ -445,8 +446,10 @@ The last type of semantic used while completing things.")
 
 (defun matlab-complete-symbol-with-shell (&optional arg)
   "Complete a partially typed symbol in a MATLAB mode buffer using `matlab-shell'.
-Use `completion-in-region' to support the completion behavior."
+Use `completion-in-region' to support the completion behavior.
+ARG is ignored."
   (interactive "P")
+  (ignore arg) ;; TODO - eliminate or use arg
   ;; Try to do completion with the shell
   (matlab-navigation-syntax
     (let* ((common-substr-start-pt nil)
@@ -465,7 +468,7 @@ Use `completion-in-region' to support the completion behavior."
   )
 
 (defun matlab--complete-compute-search-functions (semantics)
-  "Return the search functions for context specified by SEMATNICS."
+  "Return the search functions for context specified by SEMANTICS."
   (cond ((eq semantics 'solo)
 	 '(matlab-solo-completions
 	   matlab-find-user-functions
@@ -501,7 +504,7 @@ tried first.  If the line is blank, then flow control, or high level
 functions are tried first.
   The completion technique is controlled with `matlab-completion-technique'
 It defaults to incremental completion described above.  If a
-completion list is preferred, then change this to 'complete.  If you
+completion list is preferred, then change this to \\='complete.  If you
 just want a completion list once, then use the universal argument ARG
 to change it temporarily."
   (interactive "P")
@@ -575,11 +578,10 @@ to change it temporarily."
 
 
 (provide 'matlab-complete)
-
 ;;; matlab-complete.el ends here
 
-;; LocalWords:  el Ludlam zappo ish defcustom CLim XColor XDir XLabel
-;; LocalWords:  XAxis XScale YColor YDir YAxis YScale YTick ZColor ZDir ZGrid
+;; LocalWords:  el Ludlam zappo ish defcustom CLim XColor XDir XLabel fboundp nlst vardecl featurep
+;; LocalWords:  XAxis XScale YColor YDir YAxis YScale YTick ZColor ZDir ZGrid substr
 ;; LocalWords:  ZLabel ZScale ZTick Dithermap defun lst tl setq cdr defmacro
 ;; LocalWords:  nreverse eol progn foundlst expandto listp stringp sem lattr
 ;; LocalWords:  donext funcall allsyms mapcar

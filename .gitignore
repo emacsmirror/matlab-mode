@@ -7,7 +7,11 @@
 *.orig
 *.rej
 *.dat
+.sbtools
 
-# matlab-load.el is generated
+# Time stamp files created by the Makefile's
+*.tstamp
+
+# matlab-autoload.el (matlab-load.el was the old name) is generated
+matlab-autoload.el
 matlab-load.el
-parse
