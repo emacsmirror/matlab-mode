@@ -704,6 +704,19 @@ Expected: %s" line-in-block got-result expected-result)
 #+RESULTS:
 [[file:sinewave.png]]")
 
+      (mstest-org-execute-code-block "disp('The results are:')" "\
+The results are:
+
+a =
+
+     1     2
+     3     4
+
+b =
+
+     2     4
+     6     8")
+
       (kill-this-buffer)
       (cd current-dir)
       (delete-directory tmp-dir t))))

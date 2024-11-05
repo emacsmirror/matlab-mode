@@ -1,3 +1,23 @@
+2024-11-04 John Ciolfi <ciolfi@mathworks.com>
+	Fix a matlab org mode issues
+
+	1. If the matlab shell isn't running and an org-mode matlab code block is evaluated, org babel will
+	   start it using `matlab-shell', then it was sending the code to be evaluated to the shell without
+	   waiting for the shell to be ready. This was causing startup messages to appear in the result
+	   of the evaluation. Now, we wait for the shell to start and the results are as expected without
+	   the startup messages.
+
+	2. If the matlab shell is busy and you evaluate a matlab code block, you now get a message that
+	   it is busy.
+
+	3. Fix ":result output" matlab code blocks. Previously, these code blocks would contain both
+	   the input matlab code being evaluated and the results displayed in the MATLAB shell. Now
+	   the ":results output" matlab code blocks only contain the displayed results.
+
+	4. Fix ":results output latex" matlab code blocks. Fix is the same as (3).
+
+	5. Added tests for the output code blocks.
+
 2024-10-29 John Ciolfi <ciolfi@mathworks.com>
 	Improved org-mode integration. Now, org evaluation of matlab code blocks
 	works "out-of-the-box".

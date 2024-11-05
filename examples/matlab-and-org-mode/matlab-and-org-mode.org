@@ -1,4 +1,4 @@
-# | Copyright 2024 John Ciolfi
+# | Copyright 2023-2024 John Ciolfi
 # |
 # | This program is free software: you can redistribute it and/or modify
 # | it under the terms of the GNU General Public License as published by
@@ -43,36 +43,53 @@
 which contain MATLAB code and/or Simulink models along with the results of these.  The results of
 running MATLAB code or simulating Simulink models is placed into the org-mode file by org-mode using
 org babel. [[https://orgmode.org/worg/org-contrib/babel/][Org babel]] is org-mode's ability to execute source code within org-mode files and
-optionally insert the results back in to the org-mode file. You define source code in code blocks,
+optionally insert the results back into the org-mode file. You define source code in code blocks,
 e.g.
 
  : #+begin_src LANGUAGE <OPTIONS>
  :   <CODE>
  : #+end_src
 
-* Example
+See [[Setup and Export][Setup and Export]] below for instructions on how to setup org babel for matlab code blocks and how
+to use this example as a template.
+
+* matlab-code blocks
+
+** matlab code blocks are semantically colored
 
 With org-mode you can embed semantically colored code such as MATLAB within your document and
 semantically edit it using "Org -> Editing -> Edit Source Example" menu or =C-c '=. For example,
-here's a MATLAB [[https://www.mathworks.com/help/matlab/enumeration-classes.html][enumeration class]]:
 
 #+begin_src matlab
-  classdef WeekDays
-     enumeration
-         Monday, Tuesday, Wednesday, Thursday, Friday
-     end
+  x = [12, 64, 24];
+  plotType = 'pie3';
+
+  switch plotType
+    case 'bar'
+      bar(x)
+      title('Bar Graph')
+    case {'pie', 'pie3'}
+      pie3(x)
+      title('Pie Chart')
+    otherwise
+      warning('Unexpected plot type. No plot created.')
   end
 #+end_src
 
-You can use org-mode babel to evaluate MATLAB code blocks. The evaluation is done by sending the
-MATLAB code to the ~*MATLAB*~ buffer created by ~M-x matlab-shell~. To do the evaluation, the
-~*MATLAB*~ must be waiting for input (showing the ">>" prompt). If you type =C-c C-c= in the
-following code block, org-mode will evaluate the code in the ~*MATLAB*~ buffer and insert the value
-of =ans= just below the code block.
+** matlab code block evaluation with ~ans~ results
+
+You use org-mode babel to evaluate MATLAB code blocks. The evaluation is done by sending the MATLAB
+code to the ~*MATLAB*~ buffer created by ~M-x matlab-shell~. To do the evaluation, the ~*MATLAB*~
+shell must be waiting for input at the ">>" prompt. If you type =C-c C-c= in a matlab code block,
+org-mode will evaluate the code in the ~*MATLAB*~ shell buffer and insert the value of =ans= just
+below the code block. The ~*MATLAB*~ shell buffer is reused, thus one matlab code block evaluation
+can leave variables for another code block evaluation.
 
 When the matlab code block header contains ":results verbatim", the value of the MATLAB ~ans~
-variable is processed using ~writematrix(ans, orgTmpFile, 'Delimiter', 'tab')~
-and then the contents of the /orgTmpFile/ is inserted under the "#+RESULTS:"
+variable is saved using ~writematrix(ans, orgTmpFile, 'Delimiter', 'tab')~ and then the contents
+of the /orgTmpFile/ is inserted under the "#+RESULTS:". In this example code block, the ":exports
+both" header option says when exporting, keep the MATLAB code and also the results when exporting.
+If you want to see only the results, leave off the ":exports both" option.
 
 #+begin_src matlab :exports both :results verbatim
   a = 2 + 3;
@@ -86,14 +103,65 @@ and then the contents of the /orgTmpFile/ is inserted under the "#+RESULTS:"
 | 10 | 12 | 19 | 21 |  3 |
 | 11 | 18 | 25 |  2 |  9 |
 
-You can also use org-mode babel evaluate MATLAB code blocks to plot and insert figures back in to
-this file as well as the published (exported) html, LaTeX, pdf, odx (word), etc. file. To do this we
-use a matlab code block with ":results file graphics" header argument that instructs org to run the
-MATLAB code in the ~*MATLAB*~ buffer created by ~M-x matlab-shell~. which calls plot and the
-resulting figure is printed to the ':file NAME.png' header argument. The ':exports both' header
-argument says when exporting, keep the MATLAB code and also the figure when exporting.
+** matlab code block evaluation with ~output~ results
 
-For example,
+You can insert the results displayed by MATLAB by using the header option, ":results output":
+
+#+begin_src matlab :exports both :results output
+  disp('The results are:')
+  a = [1, 2; 3, 4]
+  b = a * 2
+#+end_src
+
+#+RESULTS:
+#+begin_example
+The results are:
+
+a =
+
+     1     2
+     3     4
+
+b =
+
+     2     4
+     6     8
+#+end_example
+
+** matlab code block evaluation with ~latex~ results
+
+With the [[https://www.mathworks.com/help/symbolic/][Symbolic Math Toolbox]], you can produce LaTeX using the header option ":results output latex":
+
+#+begin_src matlab :exports both :results output latex
+  m = [4*pi, 3*pi; 2*pi, pi];
+  result = latex(sym(m));
+  disp(result)
+#+end_src
+
+#+RESULTS:
+#+begin_export latex
+\left(\begin{array}{cc} 4\,\pi  & 3\,\pi \\ 2\,\pi  & \pi  \end{array}\right)
+#+end_export
+
+You can use LaTeX directly, for example:
+
+#+begin_export latex
+  \begin{align}
+  y(t)       = & f_o(t,x_c,x_d,u,P) && - \text{ outputs } \\
+  \dot{x}_c(t) = & f_d(t,x_c,x_d,u,P) && - \text{ derivatives } \\
+  x_d(t+h)   = & f_u(t,x_c,x_d,u,P) && - \text{ update }
+  \end{align}
+#+end_export
+
+** matlab code block evaluation with ~figure~ results
+
+You can use org-mode babel evaluate MATLAB code blocks to plot and insert figures back into this
+file as well as the published (exported) html, LaTeX, pdf, odx (word), etc. file. To do this we use
+a matlab code block with ":results file graphics" header option. After evaluating the code
+block, org babel will print the current figure, [[https://www.mathworks.com/help/matlab/ref/gcf.html][gcf]], using "print -dpng FILE.png" where the name
+of FILE.png comes from the ":file FILE.png" header option. In this example, we place the
+":file FILE.png" header option on a separate line prior to the matlab code block to aid
+in clarity.
 
 #+header: :file sinewave.png
 #+begin_src matlab :exports both :results file graphics
@@ -105,17 +173,6 @@ For example,
 
 #+RESULTS:
 [[file:sinewave.png]]
-
-
-
-
-You can also use LaTeX directly, for example:
-
-  \begin{align}
-  y(t)       = & f_o(t,x_c,x_d,u,P) && - \text{ outputs } \\
-  \dot{x}_c(t) = & f_d(t,x_c,x_d,u,P) && - \text{ derivatives } \\
-  x_d(t+h)   = & f_u(t,x_c,x_d,u,P) && - \text{ update }
-  \end{align}
 
 * Setup and Export
 
@@ -144,7 +201,7 @@ You can also use LaTeX directly, for example:
 
 3. Configure HTML export.
 
-   You need the htmlize package (https://melpa.org/#/htmlize) to get coloring for HTML export.  For
+   You need the htmlize package (1https://melpa.org/#/htmlize) to get coloring for HTML export.  For
    HTML export we set the "#+html_head_extra" properties in our org file to configure CSS.
 
    HTML export uses
@@ -196,5 +253,5 @@ You can also use LaTeX directly, for example:
 
 # LocalWords:  showall inlineimages latexpreview usepackage parskip tocloft cftsecnumwidth defun
 # LocalWords:  cftsubsecindent cftsubsecnumwidth sinewave cp htmlize writematrix tmp odx boundp setq
-# LocalWords:  alist xleftmargin breaklines fontsize nonstopmode logfiles colorlinks linkcolor
+# LocalWords:  alist xleftmargin breaklines fontsize nonstopmode logfiles colorlinks linkcolor dpng
 # LocalWords:  citecolor urlcolor hyperref
