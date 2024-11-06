@@ -1,8 +1,8 @@
-;;; matlab-ccount.el --- character count minor mode
+;;; matlab-ccount.el --- character count minor mode -*- lexical-binding: t -*-
 ;;
-;; Copyright (C) 2021 
+;; Copyright 2021-2024 Eric Ludlam
 ;;
-;; Author:  Eric Ludalm
+;; Author:  Eric Ludlam
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -28,14 +28,14 @@
 
 ;;; Code:
 (easy-mmode-define-minor-mode matlab-character-count-minor-mode
-  "Toggle character count minor-mode.
+                              "Toggle character count minor-mode.
 When active, this mode shows the # of characters in this buffer.
 MATLAB Character counter ignores comments and indentation spaces."
-  nil
-  (:eval (format " %d" (matlab-count-characters)))
-  nil ; empty mode-map
-  nil ; empty body
-  )
+                              :init-value nil
+                              :lighter (:eval (format " %d" (matlab-count-characters)))
+                              :keymap nil ; empty mode-map
+                              nil ; empty body
+                              )
 
 ;;; Character Counting
 ;;
@@ -46,52 +46,52 @@ and trailing semi-colons so long as there are no chars after the ;"
   (save-excursion
     (goto-char (point-min))
     (let ((all (- (point-max) 1))
-	  (comments 0)
-	  (indents 0)
-	  (trail-semi 0)
-	  (last-land -1)
-	  )
+          (comments 0)
+          (indents 0)
+          (trail-semi 0)
+          (last-land -1))
       ;; The contest starts with a fresh figure every time.  Our
       ;; script needs to reset any figure we're going to use, so skip that up front.
       (while (looking-at "\\(clf\\|figure\\|reset(gcf)\\|clear\\);?")
-	(goto-char (match-end 0))
-	(skip-chars-forward "\n\t "))
+        (goto-char (match-end 0))
+        (skip-chars-forward "\n\t "))
       (setq all (- all (point) -1))
-      
+
       ;; Scan for bum syntax across the rest of the system
       (while (and (not (eobp)) (re-search-forward "\\s<\\|;?\\s-*$" nil t)
-		  (not (= last-land (point))))
-	(goto-char (match-beginning 0))
-	(setq last-land (point))
-	(cond
-	 ((looking-at ";?$")
-	  (setq indents (+ indents (- (match-end 0) (match-beginning 0))))
-	  (goto-char (match-end 0))
-	  (when (not (eobp))
-	    (setq indents (- indents (- (point)
-					(progn
-					  ;; Also skip leading indent on next line
-					  (skip-chars-forward "\n\t ")
-					  (point)))))
-	    )
-	  )
-	 ((and (looking-at "\\s-+") (beginning-of-line))
-	  (setq indents (+ indents (- (match-end 0) (match-beginning 0))))
-	  (goto-char (match-end 0))
-	  )
-	 ((looking-at "\\s<")
-	  (setq comments (- comments (- (point)
-					(progn
-					  (forward-comment 100000)
-					  (point))))))
-	 (t
-	  ;; Some stuff like . triggers big regex, but isn't in the above.
-	  ;; Skip over whatever it is.
-	  (goto-char (match-end 0)))
-	 ))
+                  (not (= last-land (point))))
+        (goto-char (match-beginning 0))
+        (setq last-land (point))
+        (cond
+         ((looking-at ";?$")
+          (setq indents (+ indents (- (match-end 0) (match-beginning 0))))
+          (goto-char (match-end 0))
+          (when (not (eobp))
+            (setq indents (- indents (- (point)
+                                        (progn
+                                          ;; Also skip leading indent on next line
+                                          (skip-chars-forward "\n\t ")
+                                          (point)))))
+            )
+          )
+         ((and (looking-at "\\s-+") (beginning-of-line))
+          (setq indents (+ indents (- (match-end 0) (match-beginning 0))))
+          (goto-char (match-end 0))
+          )
+         ((looking-at "\\s<")
+          (setq comments (- comments (- (point)
+                                        (progn
+                                          (forward-comment 100000)
+                                          (point))))))
+         (t
+          ;; Some stuff like . triggers big regex, but isn't in the above.
+          ;; Skip over whatever it is.
+          (goto-char (match-end 0)))
+         ))
       (- all comments indents trail-semi)
       )))
 
 (provide 'matlab-ccount)
-
 ;;; matlab-ccount.el ends here
+
+;; LocalWords:  Ludlam EOL mmode keymap defun setq eobp progn

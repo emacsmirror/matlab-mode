@@ -2719,13 +2719,13 @@ ARG is passed to `fill-paragraph' and will justify the text."
                                       (if (looking-at "%%")
                                           (progn (end-of-line)
                                                  (forward-char 1)))
-                                      (point-at-bol)))
+                                      (line-beginning-position)))
                (end (save-excursion (matlab-end-of-string-or-comment t)
                                     (point)))
                (fill-prefix nil))
-	   (save-excursion
-	     (goto-char start)
-	     (matlab-set-comm-fill-prefix))
+           (save-excursion
+             (goto-char start)
+             (matlab-set-comm-fill-prefix))
            (save-restriction
              ;; Ben North fixed to handle comment at the end of
              ;; a buffer.
@@ -2754,7 +2754,7 @@ ARG is passed to `fill-paragraph' and will justify the text."
                  (progn
                    (goto-char (match-beginning 0))
                    (forward-char 1)
-                   (delete-region (point) (matlab-point-at-eol))))
+                   (delete-region (point) (line-end-position))))
              ;; Zap the CR
              (if (not (eobp)) (delete-char 1))
              ;; Clean up whitespace
@@ -2781,7 +2781,7 @@ ARG is passed to `fill-paragraph' and will justify the text."
            (if arg (save-excursion
                      (forward-line -1)
                      (matlab-justify-line)))))
-        
+
         (t
          (message "Paragraph Fill not supported in this context."))))
 
