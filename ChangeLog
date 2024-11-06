@@ -1,5 +1,25 @@
-2024-10-25 18:45  Uwe Brauer  <oub@mat.ucm.es>
+2024-10-29 John Ciolfi <ciolfi@mathworks.com>
+	Improved org-mode integration. Now, org evaluation of matlab code blocks
+	works "out-of-the-box".
 
+	In addition, the new intergation fixes issues where evaluation of
+	verbatim matlab code blocks was using dlmwrite which is an
+	obsolete MATLAB functions. The example has been updated to also
+	illustrate how to scale images and get colored PDF's.
+
+	When upgrading, check your ~/.emacs for
+	  - (defun matlab-org-session-advice ...)
+	  - (defun matlab-org-fixup-print ...)
+	  - (defun org-export-dispatch-no-babel-advice ...)
+	  - (eval-after-load 'ox ...)
+	  - (eval-after-load "org" ...)
+	and remove these.
+
+	This commit also tests the evaluation of matlab verbatim and
+	graphics code blocks.  I validated Emacs 27, 28, and 29 work with
+	MATLAB R2024a and R2024b on Linux Debian 12.
+
+2024-10-25 18:45  Uwe Brauer  <oub@mat.ucm.es>
 	* matlab.el (matlab-fill-paragraph-fill-fix): Add «best»
 	matlab-fill-paragraph from the fill-fix branch: commit 0f305501f26d
 

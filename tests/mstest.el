@@ -34,6 +34,7 @@
 (defvar mst-testfile-path) ;; quiet compiler
 
 (require 'comint)
+(require 'org)
 
 (require 'matlab)
 (require 'matlab-shell)
@@ -59,6 +60,8 @@
   (mstest-completion)
   (mstest-error-parse)
   (mstest-debugger)
+
+  (mstest-org)
   )
 
 ;;; Startup Tests
@@ -619,7 +622,91 @@ set in the same order as specified."
 
       )))
 
+(defun mstest-org-next-code-block-results (action)
+  "Perform ACTION on the next #+RESULTS area of an Org code block.
+ACTION can be 'delete or 'get."
+  (save-excursion
+    (let ((results-begin (save-excursion
+                           (re-search-forward "^#\\+RESULTS:")
+                           (beginning-of-line)
+                           (point)))
+          (results-end (save-excursion
+                         (re-search-forward "^#\\+RESULTS:\\(?:\n.+\\)+")
+                         (point))))
+      (cond
+       ((eq action 'delete)
+        (delete-region results-begin results-end))
+       ((eq action 'get)
+        (buffer-substring-no-properties results-begin results-end))
+       (t
+        (error "Assert - invalid action"))))))
 
+(defun mstest-org-execute-code-block (line-in-block expected-result)
+  "Execute the code block identified by LINE-IN-BLOCK.
+Compare the result of execution with the EXPECTED-RESULT."
+
+  (message "--> mstest-org: executing code block containing: %s" line-in-block)
+
+  ;; Place point in the matlab code block that tests
+  ;; For example, suppose line-in-block is "ans = magic(a);". We'll place the point
+  ;; at the end of that line in this block:
+  ;;   #+begin_src matlab :exports both :results verbatim
+  ;;     a = 2 + 3;
+  ;;     ans = magic(a);
+  ;;   #+end_src
+  (when (not (re-search-forward (concat "^[ \t]*" (regexp-quote line-in-block)) nil t))
+    (user-error "Failed to find line \"%s\" in %s" line-in-block (buffer-name)))
+
+  ;; Delete the current #+RESULTS.
+  (mstest-org-next-code-block-results 'delete)
+  (set-buffer-modified-p nil) ;; prevent the file from being accidently saved when debugging
+
+  ;; Execute and update #RESULTS.
+  (org-babel-execute-src-block)
+  (set-buffer-modified-p nil) ;; prevent the file from being accidently saved when debugging
+
+  (let ((got-result (mstest-org-next-code-block-results 'get)))
+    (when (not (string= got-result expected-result))
+      (mstest-savestate)
+      (message "--> mstest-org: failed to execute \"%s\" code block.
+Got     : %s
+Expected: %s" line-in-block got-result expected-result)
+      (user-error "--> mstest-org FAILED")))
+
+  (message "--> mstest-org: PASSED execution for code block containing: %s" line-in-block))
+
+(defun mstest-org ()
+  "Validate matlab code blocks in org work."
+  (message "--> mstest-org: entry")
+  (let ((tmp-dir (make-temp-file "mstest-org" t))
+        (current-dir default-directory))
+    (copy-file "../examples/matlab-and-org-mode/matlab-and-org-mode.org"
+               (concat tmp-dir "/matlab-and-org-mode.org"))
+
+    (cd tmp-dir)
+    (with-current-buffer (find-file "matlab-and-org-mode.org")
+
+      (goto-char (point-min)) ;; handle case of file already in a buffer before we do the find-file
+
+      ;; Enable MATLAB code block execution without prompting
+      (customize-set-variable 'org-confirm-babel-evaluate nil)
+      (customize-set-variable 'org-babel-load-languages '((matlab . t)))
+
+      (mstest-org-execute-code-block "ans = magic(a);" "\
+#+RESULTS:
+| 17 | 24 |  1 |  8 | 15 |
+| 23 |  5 |  7 | 14 | 16 |
+|  4 |  6 | 13 | 20 | 22 |
+| 10 | 12 | 19 | 21 |  3 |
+| 11 | 18 | 25 |  2 |  9 |")
+
+      (mstest-org-execute-code-block "plot(t, y);" "\
+#+RESULTS:
+[[file:sinewave.png]]")
+
+      (kill-this-buffer)
+      (cd current-dir)
+      (delete-directory tmp-dir t))))
 
 ;;; UTILITIES
 

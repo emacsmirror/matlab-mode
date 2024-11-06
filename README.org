@@ -16,7 +16,17 @@
 
    - matlab-shell uses company-mode for completions.
 
-3. tlc-mode for editing *.tlc files. The Target Language Compiler (TLC) part of Simulink® Coder™.
+3. MATLAB and [[http://orgmode.org]] for creation of scientific papers, thesis's, etc.
+
+   Code plus text is combined together in *.org files. The code in, code blocks, can be executed and
+   the results placed in the *.org file. This is know as literate programming. Org mode supports
+   combining multiple *.org files into one final document, thus enabling larger scientific papers,
+   thesis's, etc.
+
+   See [[file:examples/matlab-and-org-mode]] to get started. In this directory, you will see an example
+   [[file:examples/matlab-and-org-mode/matlab-and-org-mode.pdf][PDF]] generated from an [[file:examples/matlab-and-org-mode/matlab-and-org-mode.org][org]] file.
+
+4. tlc-mode for editing *.tlc files. The Target Language Compiler (TLC) part of Simulink® Coder™.
 
 * Installation
 

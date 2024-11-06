@@ -51,9 +51,10 @@
 ;;; Code:
 
 (require 'matlab-compat)
-(require 'matlab-syntax)
+(require 'matlab-org)
 (require 'matlab-scan)
 (require 'matlab-sections)
+(require 'matlab-syntax)
 
 (require 'derived)
 (require 'easymenu)
