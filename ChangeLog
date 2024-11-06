@@ -1,3 +1,7 @@
+2024-11-06 John Ciolfi <ciolfi@mathworks.com>
+	* matlab-ccount.el: display how many code characters in MATLAB *.m files.
+	This was created by Eric Ludlam.
+
 2024-10-29 John Ciolfi <ciolfi@mathworks.com>
 	Improved org-mode integration. Now, org evaluation of matlab code blocks
 	works "out-of-the-box".
