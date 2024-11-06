@@ -84,7 +84,16 @@ clear orgTmpFile;
       ;; the output. Therefore, leverage the "%-<org-eval>" to remove the unnecessary lines.
       (setq results (replace-regexp-in-string "^[^\n]*%-<org-eval>-\n" "" results))
       ;; Remove unnecessary starting blank line
-      (setq results (replace-regexp-in-string "\\`[[:space:]\r\n]+" "" results)))
+      (setq results (replace-regexp-in-string "\\`[[:space:]\r\n]+" "" results))
+      ;; Org 9.5.5 shipped with Emacs 28 adds to the end of results the following, so remove it
+      ;;   'org_babel_eoe'
+      ;;
+      ;;   ans =
+      ;;
+      ;;       'org_babel_eoe'
+      (setq results (replace-regexp-in-string
+                     "^\\(?:'org_babel_eoe'\n+\\)?ans =[ \t\n]+'org_babel_eoe'"
+                     "" results)))
 
     ;; The `org-babel-octave-evaluate' results
     results))
@@ -105,6 +114,9 @@ PARAMS MATLABP."
   ;; in foo.org to contain the MATLAB startup messages.
   ;; Therefore, we wait for the *MATLAB* buffer to become ready.
   (when matlabp
+    (when (not (featurep 'matlab-shell))
+      ;; make `matlab-shell-busy-checker' available
+      (require 'matlab-shell))
     (matlab-shell-busy-checker 'error-if-busy))
   (let ((session-buffer (funcall orig-fun session params matlabp)))
     (when matlabp
@@ -112,21 +124,15 @@ PARAMS MATLABP."
       (matlab-shell-busy-checker 'wait-for-prompt))
     session-buffer))
 
-(defun matlab--org-ob-octave-setup ()
-  "Setup for MATLAB code block export."
-  (advice-add 'org-babel-octave-evaluate :around #'matlab--org-evaluate-advice)
-  (advice-add 'org-babel-octave-initiate-session :around #'matlab--org-initiate-session-advice))
-
 (defun matlab--org-setup ()
   "Setup org mode to enable matlab code block evaluation."
 
   ;; Tell org babel to use the "*MATLAB*" buffer created by `matlab-shell` for code evaluation.
   (setq org-babel-default-header-args:matlab '((:session . "*MATLAB*")))
 
-  (if (featurep 'ob-octave)
-      (matlab--org-ob-octave-setup)
-    (eval-after-load "ob-octave"
-      '(advice-add 'org-babel-octave-evaluate :around #'matlab--org-evaluate-advice))))
+  ;; Setup for matlab code block export
+  (advice-add 'org-babel-octave-evaluate :around #'matlab--org-evaluate-advice)
+  (advice-add 'org-babel-octave-initiate-session :around #'matlab--org-initiate-session-advice))
 
 ;;-------;;
 ;; Setup ;;

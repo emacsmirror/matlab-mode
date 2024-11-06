@@ -626,13 +626,22 @@ set in the same order as specified."
   "Perform ACTION on the next #+RESULTS area of an Org code block.
 ACTION can be 'delete or 'get."
   (save-excursion
-    (let ((results-begin (save-excursion
-                           (re-search-forward "^#\\+RESULTS:")
-                           (beginning-of-line)
-                           (point)))
-          (results-end (save-excursion
-                         (re-search-forward "^#\\+RESULTS:\\(?:\n.+\\)+")
-                         (point))))
+    (let* ((results-begin (save-excursion
+                            (re-search-forward "^#\\+RESULTS:")
+                            (beginning-of-line)
+                            (point)))
+           (results-end (save-excursion
+                          (goto-char results-begin)
+                          (forward-line)
+                          (cond
+                           ((looking-at "^#\\+begin_example")
+                            (re-search-forward "^#\\+end_example")
+                            (point))
+                           (t
+                            (goto-char results-begin)
+                            ;; all blank lines after #+RESULTS:
+                            (re-search-forward "^#\\+RESULTS:\\(?:\n.+\\)+")
+                            (point))))))
       (cond
        ((eq action 'delete)
         (delete-region results-begin results-end))
@@ -643,7 +652,9 @@ ACTION can be 'delete or 'get."
 
 (defun mstest-org-execute-code-block (line-in-block expected-result)
   "Execute the code block identified by LINE-IN-BLOCK.
-Compare the result of execution with the EXPECTED-RESULT."
+Compare the result of execution with the EXPECTED-RESULT
+EXPECTED-RESULT can be a string or it can be a list of strings.
+When it is a list, only one needs to match."
 
   (message "--> mstest-org: executing code block containing: %s" line-in-block)
 
@@ -654,6 +665,7 @@ Compare the result of execution with the EXPECTED-RESULT."
   ;;     a = 2 + 3;
   ;;     ans = magic(a);
   ;;   #+end_src
+  (goto-char (point-min)) ;; order of tests doesn't matter
   (when (not (re-search-forward (concat "^[ \t]*" (regexp-quote line-in-block)) nil t))
     (user-error "Failed to find line \"%s\" in %s" line-in-block (buffer-name)))
 
@@ -666,12 +678,26 @@ Compare the result of execution with the EXPECTED-RESULT."
   (set-buffer-modified-p nil) ;; prevent the file from being accidently saved when debugging
 
   (let ((got-result (mstest-org-next-code-block-results 'get)))
-    (when (not (string= got-result expected-result))
-      (mstest-savestate)
-      (message "--> mstest-org: failed to execute \"%s\" code block.
-Got     : %s
-Expected: %s" line-in-block got-result expected-result)
-      (user-error "--> mstest-org FAILED")))
+    (let ((expected-alternatives (if (listp expected-result)
+                                     expected-result
+                                   (list expected-result)))
+          got-expected)
+      (cl-loop named e-loop for expected in expected-alternatives do
+               (when (string= got-result expected)
+                 (setq got-expected t)
+                 (cl-return-from e-loop)))
+      (when (not got-expected)
+        (mstest-savestate)
+        (let ((msg (format (concat "--> mstest-org: failed to execute \"%s\" code block.\n"
+                                   "--Got--\n"
+                                   "%s\n")
+                           line-in-block got-result))
+              (e-prefix "--Expected--"))
+          (cl-loop for expected in expected-alternatives do
+                   (setq msg (concat msg (format "%s\n%s\n" e-prefix expected)))
+                   (setq e-prefix "--Or--"))
+          (message "%s" msg))
+        (user-error "--> mstest-org FAILED"))))
 
   (message "--> mstest-org: PASSED execution for code block containing: %s" line-in-block))
 
@@ -686,8 +712,6 @@ Expected: %s" line-in-block got-result expected-result)
     (cd tmp-dir)
     (with-current-buffer (find-file "matlab-and-org-mode.org")
 
-      (goto-char (point-min)) ;; handle case of file already in a buffer before we do the find-file
-
       ;; Enable MATLAB code block execution without prompting
       (customize-set-variable 'org-confirm-babel-evaluate nil)
       (customize-set-variable 'org-babel-load-languages '((matlab . t)))
@@ -700,11 +724,24 @@ Expected: %s" line-in-block got-result expected-result)
 | 10 | 12 | 19 | 21 |  3 |
 | 11 | 18 | 25 |  2 |  9 |")
 
-      (mstest-org-execute-code-block "plot(t, y);" "\
+      (mstest-org-execute-code-block "disp('The results are:')"
+                                     (list
+                                      ;; org 9.5.5 yields the following
+                                      (replace-regexp-in-string "^:$" ": " "\
 #+RESULTS:
-[[file:sinewave.png]]")
-
-      (mstest-org-execute-code-block "disp('The results are:')" "\
+: The results are:
+: a =
+:
+:      1     2
+:      3     4
+: b =
+:
+:      2     4
+:      6     8")
+                                      ;; org Org 9.6.30 yeids the following
+                                        "\
+#+RESULTS:
+#+begin_example
 The results are:
 
 a =
@@ -715,7 +752,12 @@ a =
 b =
 
      2     4
-     6     8")
+     6     8
+#+end_example"))
+
+      (mstest-org-execute-code-block "plot(t, y);" "\
+#+RESULTS:
+[[file:sinewave.png]]")
 
       (kill-this-buffer)
       (cd current-dir)
