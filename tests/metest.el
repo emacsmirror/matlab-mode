@@ -63,7 +63,8 @@
   (metest-log-report (metest-log-write))
 
   (matlab-scan-stats-print)
-  )
+
+  (metest-fill-paragraph))
 
 (defun metest-run (test)
   "Run and time TEST."
@@ -505,6 +506,31 @@ INDENT is expected indent level."
           (setq cnt (1+ cnt))))
 
       (list cnt "lines with " fntcnt "fonts tested"))))
+
+(defun metest-fill-paragraph ()
+  "Fill paragraph comments in ./fill-paragraph/*.m and compare with *.m.expected.txt."
+  (message "--> start metest-fill-paragraph")
+  (let ((m-files (directory-files "fill-paragraph" t "\\.m$")))
+    (dolist (m-file m-files)
+      (save-excursion
+        (find-file m-file)
+        (while (re-search-forward "%" nil t)
+          (fill-paragraph))
+        (let* ((got-result (buffer-substring-no-properties (point-min) (point-max)))
+               (m-file-expected (concat m-file ".expected.txt"))
+               (expected-result (with-temp-buffer
+                                  (insert-file-contents m-file-expected)
+                                  (buffer-substring-no-properties (point-min) (point-max)))))
+          (set-buffer-modified-p nil)
+          (kill-this-buffer)
+          (when (not (string= got-result expected-result))
+            (let ((got-result-file (concat m-file-expected "~")))
+              (with-temp-file got-result-file got-result) ;; save got-result-file
+              (user-error (concat "%s after fill-paragraph on comments doesn't match %s; "
+                                  "see the result we got in %s"
+                                  m-file m-file-expected got-result-file)
+                          )))))))
+  (message "--> metest-fill-paragraph SUCCESS"))
 
 ;;; UTILS
 ;;

@@ -1,0 +1,13 @@
+#+startup: showall
+
+To add a test, create file.m in this directory, and file.m.expected.txt.
+
+The metest-fill-paragraph function in mstest.el will run M-q within each comment in and verify
+that the results match file.m.expected.txt.
+
+Note, when creating file.m.expected.txt, run Emacs without an customizations:
+
+  #+begin_src bash
+    M=/path/to/Emacs-MATLAB-mode
+    env MATLABPATH=  emacs -Q -L $M -l $M/matlab-autoload.el
+  #+end_src
