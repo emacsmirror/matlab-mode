@@ -1923,7 +1923,7 @@ return nil."
                      (matlab-shell-class-mref-to-file mref t)))
     ;; Copied from old code, not sure what it matches.
     (lambda (mref) (when (string-match ">" mref)
-                     (concat (substring fileref 0 (match-beginning 0)) ".m")))
+                     (concat (substring mref 0 (match-beginning 0)) ".m")))
     ;; Ask matlab where it came from.  Keep last b/c expensive, or won't
     ;; work if ML is busy.
     (lambda (mref) (car (matlab-shell-mref-which-fcn mref)))
