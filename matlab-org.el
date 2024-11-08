@@ -127,12 +127,19 @@ PARAMS MATLABP."
 (defun matlab--org-setup ()
   "Setup org mode to enable matlab code block evaluation."
 
-  ;; Tell org babel to use the "*MATLAB*" buffer created by `matlab-shell` for code evaluation.
-  (setq org-babel-default-header-args:matlab '((:session . "*MATLAB*")))
+  ;; See if we have newer org which works with MATLAB.  We can tell if we have a
+  ;; newer org version if ob-octave contains `org-babel-matlab-wrapper-method'.  If we
+  ;; have an older org version, then we advise org to make it work with MATLAB.
+  (require 'ob-octave)
+  (when (not (boundp 'org-babel-matlab-wrapper-method))
+    ;; We have an older version of org mode and need to fix the MATLAB support
 
-  ;; Setup for matlab code block export
-  (advice-add 'org-babel-octave-evaluate :around #'matlab--org-evaluate-advice)
-  (advice-add 'org-babel-octave-initiate-session :around #'matlab--org-initiate-session-advice))
+    ;; Tell org babel to use the "*MATLAB*" buffer created by `matlab-shell` for code evaluation.
+    (setq org-babel-default-header-args:matlab '((:session . "*MATLAB*")))
+
+    ;; Setup for matlab code block export
+    (advice-add 'org-babel-octave-evaluate :around #'matlab--org-evaluate-advice)
+    (advice-add 'org-babel-octave-initiate-session :around #'matlab--org-initiate-session-advice)))
 
 ;;-------;;
 ;; Setup ;;
@@ -146,5 +153,5 @@ PARAMS MATLABP."
 (provide 'matlab-org)
 ;;; matlab-org.el ends here
 
-;; LocalWords:  gmail defun setq isstring progn fixup matlabp dpng gfx funcall Tmp writematrix
-;; LocalWords:  mapcar mapconcat featurep
+;; LocalWords:  gmail defun setq isstring progn fixup matlabp dpng gfx funcall Tmp writematrix eoe
+;; LocalWords:  mapcar mapconcat featurep boundp
