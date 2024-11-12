@@ -1,3 +1,4 @@
+% -*- mode: matlab; fill-column: 100 -*-
 function [teuler,yeuler,ev]=fill_prob2(f,intv,y0,N,TOL,nmax) % Se implementa la función correspondiente a 
                                                                   % la iteración simple+dato inicial
                                                                   % el valor del paso anterior,
@@ -10,9 +11,7 @@ function [teuler,yeuler,ev]=fill_prob2(f,intv,y0,N,TOL,nmax) % Se implementa la 
     tk = a;
     yk = y0;
     
-    ev = 0;                                                       % el número de evaluaciones al
-                                                                  % inicio es cero, pues no ha
-                                                                  % habido ninguna iteración
+    ev = 0;                                                       % el número de evaluaciones al es cero, pues no ha ninguna iteración
     
     faux = @(t, y, f, h, z) [y + h*f(t, z)];                      % se define la función auxiliar para la iteración simple
     

@@ -1,3 +1,14 @@
+2024-11-11 John Ciolfi <john.ciolfi.32@gmail.com>
+	* matlab.el: fixed matlab-fill-paragraph.
+          - Now M-q (fill-paragraph) calls matlab-fill-paragaraph will fill comments
+            and leave code untouched.
+	  - Removed non-standard and buggy
+	     matlab-fill-comment-line
+	     matlab-fill-region
+	     matlab-join-comment-lines
+	* tests/metests.el - Added metest-fill-paragraph
+	* tests/fill-paragraph/* files used by metest-fill-paragraph
+
 2024-11-06 John Ciolfi <ciolfi@mathworks.com>
 	* matlab-ccount.el: display how many code characters in MATLAB *.m files.
 	This was created by Eric Ludlam.
