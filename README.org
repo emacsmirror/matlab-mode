@@ -31,7 +31,7 @@
    - See [[file:examples/matlab-and-org-mode][./examples/matlab-and-org-mode/]] to get started. This directory contains a [[file:examples/matlab-and-org-mode/matlab-and-org-mode.pdf][PDF]] generated from
      [[file:examples/matlab-and-org-mode/matlab-and-org-mode.org][./examples/matlab-and-org-mode/matlab-and-org-mode.org]].
 
-4. tlc-mode for editing ~*.tlc~ files. The Target Language Compiler (TLC) part of Simulink® Coder™.
+4. tlc-mode for editing ~*.tlc~ files. The Target Language Compiler (TLC) is part of Simulink® Coder™.
 
 * Installation
 
