@@ -63,4 +63,19 @@ haven't gotten to yet!
 
 *Again, thanks for contributing, and we look forward to your issues and pull requests!*
 
-# LocalWords:  showall md LF flycheck Sure's
+* Maintainers
+
+Maintainers (those with write access) can either use branches, forks, or commit directly
+to the primary ~default~ branch.
+
+1. Branches. For work that involves contributions from multiple people, branches are preferred.
+
+2. Forks. Forks should be used where you are the primary coder and you would like another maintainer
+   to look at your changes. When ready you create a pull request and the other maintainer will put
+   your changes on the ~default~ branch.
+
+3. Direct commits. For simple stuff, maintainers can directly submit to the ~default~ branch.
+
+[[oub@mat.ucm.es][Uwe Brauer]] is the primary maintainer and tries to look at all significant changes.
+
+# LocalWords:  showall md LF flycheck Sure's oub ucm Uwe Brauer
