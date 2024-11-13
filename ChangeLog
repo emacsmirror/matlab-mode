@@ -1,3 +1,9 @@
+2024-11-13 17:24  Uwe Brauer  <oub@mat.ucm.es>
+
+	* CONTRIBUTING.org (Maintainers): Change: Forks should--> Forks
+	could. Moreover Uwe Brauer prefers direct commits or the creation
+	of branches. Also recommend for forks, to create a new, branch.
+
 2024-11-07 17:39  Uwe Brauer  <oub@mat.ucm.es>
 
 	* matlab.el (matlab-mode-version): Increase to 6.1 to indicate
