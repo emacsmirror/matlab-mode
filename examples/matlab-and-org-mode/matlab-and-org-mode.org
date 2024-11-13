@@ -40,27 +40,25 @@
 * Overview
 
 [[https://orgmode.org/][Org-mode]] and [[https://sourceforge.net/projects/matlab-emacs/][matlab-mode]] provide an efficient and effective system for creating scientific documents
-which contain MATLAB code and/or Simulink models along with the results of these.  The results of
-running MATLAB code or simulating Simulink models is placed into the org-mode file by org-mode using
-org babel. [[https://orgmode.org/worg/org-contrib/babel/][Org babel]] is org-mode's ability to execute source code within org-mode files and
-optionally insert the results back into the org-mode file. You define source code in code blocks,
-e.g.
+which contain MATLAB code and results intermixed with natural language descriptions. You use [[https://orgmode.org/worg/org-contrib/babel/][org
+babel]] to execute source code within org-mode files and insert the results back into the org-mode
+file. You place source code in code blocks:
 
- : #+begin_src LANGUAGE <OPTIONS>
+ : #+begin_src LANGUAGE <HEADER_OPTIONS>
  :   <CODE>
  : #+end_src
 
-See [[Setup and Export][Setup and Export]] below for instructions on how to setup org babel for matlab code blocks and how
-to use this example as a template.
+If you type =C-c C-c= in a matlab code block, org-mode will evaluate the code in the ~*MATLAB*~
+matlab-shell buffer and insert the results into the org file, below the code block. See [[Setup and Export][Setup and
+Export]] below for instructions on how to setup org babel for matlab code blocks and how to use this
+example as a template.
 
 * matlab-code blocks
-
-** matlab code blocks are semantically colored
 
 With org-mode you can embed semantically colored code such as MATLAB within your document and
 semantically edit it using "Org -> Editing -> Edit Source Example" menu or =C-c '=. For example,
 
-#+begin_src matlab
+#+begin_src matlab :results none
   x = [12, 64, 24];
   plotType = 'pie3';
 
@@ -76,36 +74,11 @@ semantically edit it using "Org -> Editing -> Edit Source Example" menu or =C-c 
   end
 #+end_src
 
-** matlab code block evaluation with ~ans~ results
-
-You use org-mode babel to evaluate MATLAB code blocks. The evaluation is done by sending the MATLAB
-code to the ~*MATLAB*~ buffer created by ~M-x matlab-shell~. To do the evaluation, the ~*MATLAB*~
-shell must be waiting for input at the ">>" prompt. If you type =C-c C-c= in a matlab code block,
-org-mode will evaluate the code in the ~*MATLAB*~ shell buffer and insert the value of =ans= just
-below the code block. The ~*MATLAB*~ shell buffer is reused, thus one matlab code block evaluation
-can leave variables for another code block evaluation.
-
-When the matlab code block header contains ":results verbatim", the value of the MATLAB ~ans~
-variable is saved using ~writematrix(ans, orgTmpFile, 'Delimiter', 'tab')~ and then the contents
-of the /orgTmpFile/ is inserted under the "#+RESULTS:". In this example code block, the ":exports
-both" header option says when exporting, keep the MATLAB code and also the results when exporting.
-If you want to see only the results, leave off the ":exports both" option.
-
-#+begin_src matlab :exports both :results verbatim
-  a = 2 + 3;
-  ans = magic(a);
-#+end_src
-
-#+RESULTS:
-| 17 | 24 |  1 |  8 | 15 |
-| 23 |  5 |  7 | 14 | 16 |
-|  4 |  6 | 13 | 20 | 22 |
-| 10 | 12 | 19 | 21 |  3 |
-| 11 | 18 | 25 |  2 |  9 |
-
 ** matlab code block evaluation with ~output~ results
 
-You can insert the results displayed by MATLAB by using the header option, ":results output":
+The ":results output" matlab code block header option instructs org to insert the MATLAB command
+window output. The ":exports both" header option says, keep the MATLAB code and also the results
+when exporting.  If you want to see only the results, leave off the ":exports both" option.
 
 #+begin_src matlab :exports both :results output
   disp('The results are:')
@@ -128,6 +101,64 @@ b =
      6     8
 #+end_example
 
+** org matlab code block evaluation reuses the ~*MATLAB*~ shell buffer
+
+MATLAB code block evaluation reuses the ~*MATLAB*~ buffer created by ~M-x matlab-shell~.  The
+MATLAB workspace state is maintained between evaluations.  To avoid reuse of state, you can
+clear the MATLAB workspace.  You can see the history of the evaluations in the ~*MATLAB*~ buffer.
+For example, evaluation of the following in order illustrates how state is maintained between
+the code blocks.
+
+1. First code block
+
+   #+begin_src matlab :exports both :results output
+     a = 123
+   #+end_src
+
+   #+RESULTS:
+   : a =
+   : 
+   :    123
+
+2. Second code block uses the variable ~a~ created by the first code block.
+
+   #+begin_src matlab :exports both :results output
+     b = a + 1000
+   #+end_src
+
+   #+RESULTS:
+   : b =
+   : 
+   :         1123
+
+3. Third code block clears the workspace and references 'b' which is known:
+
+   #+begin_src matlab :exports both :results output
+     clear
+     c = b * 2
+   #+end_src
+
+   #+RESULTS:
+   : Unrecognized function or variable 'b'.
+
+** matlab code block evaluation with ~verbatim~ results
+
+When the matlab code block header contains ":results verbatim", the value of the MATLAB ~ans~
+variable is saved using ~writematrix(ans, orgTmpFile, 'Delimiter', 'tab')~ and then the contents of
+the /orgTmpFile/ is inserted under the "#+RESULTS:".
+
+#+begin_src matlab :exports both :results verbatim
+  a = 2 + 3;
+  ans = magic(a);
+#+end_src
+
+#+RESULTS:
+| 17 | 24 |  1 |  8 | 15 |
+| 23 |  5 |  7 | 14 | 16 |
+|  4 |  6 | 13 | 20 | 22 |
+| 10 | 12 | 19 | 21 |  3 |
+| 11 | 18 | 25 |  2 |  9 |
+
 ** matlab code block evaluation with ~latex~ results
 
 With the [[https://www.mathworks.com/help/symbolic/][Symbolic Math Toolbox]], you can produce LaTeX using the header option ":results output latex":
@@ -146,11 +177,11 @@ With the [[https://www.mathworks.com/help/symbolic/][Symbolic Math Toolbox]], yo
 You can use LaTeX directly, for example:
 
 #+begin_export latex
-  \begin{align}
-  y(t)       = & f_o(t,x_c,x_d,u,P) && - \text{ outputs } \\
-  \dot{x}_c(t) = & f_d(t,x_c,x_d,u,P) && - \text{ derivatives } \\
-  x_d(t+h)   = & f_u(t,x_c,x_d,u,P) && - \text{ update }
-  \end{align}
+\begin{align}
+y(t)       = & f_o(t,x_c,x_d,u,P) && - \text{ outputs } \\
+\dot{x}_c(t) = & f_d(t,x_c,x_d,u,P) && - \text{ derivatives } \\
+x_d(t+h)   = & f_u(t,x_c,x_d,u,P) && - \text{ update }
+\end{align}
 #+end_export
 
 ** matlab code block evaluation with ~figure~ results
@@ -236,7 +267,7 @@ in clarity.
 		;; Keep *.log files to aid in debugging.
 		org-latex-logfiles-extensions (remove "log" org-latex-logfiles-extensions))
 
-	  ;; Color the hyper links, see
+	  ;; Color the hyperlinks, see
 	  ;; https://tex.stackexchange.com/questions/823/remove-ugly-borders-around-clickable-cross-references-and-hyperlinks
 	  (add-to-list 'org-latex-default-packages-alist
 		       '("colorlinks=true,linkcolor={red!50!black},citecolor={blue!50!black},urlcolor={blue!80!black}"

@@ -94,7 +94,7 @@
           (sit-for 1)))
 
       ;; During boot, we need to scrape the version number and release so we can load the
-      ;; history file.  Make sure that happend.
+      ;; history file.  Make sure that happened.
       (if matlab-shell-running-matlab-version
           (message "VERSION SCRAPE: Successfully found MATLAB Version %s"
                    matlab-shell-running-matlab-version)
@@ -445,7 +445,7 @@ If LINE is negative then do not test the line number."
       )))
 
 (defun mstest-debugger-breakpointlist (expectedbreakpoints)
-  "Run ebstatus and check breakpoit buffer appeared with EXPECTEDBREAKPOINTS."
+  "Run ebstatus and check breakpoint buffer appeared with EXPECTEDBREAKPOINTS."
 
   (message "DEBUG: Running ebstatus and checking for breakpoints buffer.")
 
@@ -513,7 +513,7 @@ a function."
                 (progn
                   (mstest-savestate)
                   (message "Command produced output : [%s]" txt)
-                  (user-error "DEBUG: Expected ML dugger to produce a line number.  It did not"))
+                  (user-error "DEBUG: Expected ML debugger to produce a line number.  It did not"))
               (let ((dbln (string-to-number (match-string 1 txt))))
                 (when (not (= dbln line))
                   (message "DEBUG: Expected %s line %d, ended up at %s %d"
@@ -613,7 +613,7 @@ set in the same order as specified."
       ;; Trim the string, but only if there is more to do.
       (when inputs
         (unless (string-match "^\\s-*$" txt)
-          (message "DEBUG: Expected multiple breakpoint sets, but found no separator before exptected sets: %S" inputs)
+          (message "DEBUG: Expected multiple breakpoint sets, but found no separator before expected sets: %S" inputs)
           (mstest-savestate)
           (user-error "DEBUG test failed"))
 
@@ -627,20 +627,20 @@ set in the same order as specified."
 ACTION can be 'delete or 'get."
   (save-excursion
     (let* ((results-begin (save-excursion
-                            (re-search-forward "^#\\+RESULTS:")
+                            (re-search-forward "^[ \t]*#\\+RESULTS:")
                             (beginning-of-line)
                             (point)))
            (results-end (save-excursion
                           (goto-char results-begin)
                           (forward-line)
                           (cond
-                           ((looking-at "^#\\+begin_example")
-                            (re-search-forward "^#\\+end_example")
+                           ((looking-at "^[ \t]*#\\+begin_example")
+                            (re-search-forward "^[ \t]*#\\+end_example")
                             (point))
                            (t
                             (goto-char results-begin)
-                            ;; all blank lines after #+RESULTS:
-                            (re-search-forward "^#\\+RESULTS:\\(?:\n.+\\)+")
+                            ;; all non-blank lines after #+RESULTS:
+                            (re-search-forward "^[ \t]*#\\+RESULTS:\\(?:\n.+\\)+")
                             (point))))))
       (cond
        ((eq action 'delete)
@@ -656,8 +656,6 @@ Compare the result of execution with the EXPECTED-RESULT
 EXPECTED-RESULT can be a string or it can be a list of strings.
 When it is a list, only one needs to match."
 
-  (message "--> mstest-org: executing code block containing: %s" line-in-block)
-
   ;; Place point in the matlab code block that tests
   ;; For example, suppose line-in-block is "ans = magic(a);". We'll place the point
   ;; at the end of that line in this block:
@@ -668,6 +666,9 @@ When it is a list, only one needs to match."
   (goto-char (point-min)) ;; order of tests doesn't matter
   (when (not (re-search-forward (concat "^[ \t]*" (regexp-quote line-in-block)) nil t))
     (user-error "Failed to find line \"%s\" in %s" line-in-block (buffer-name)))
+
+  (message "--> mstest-org: executing code block containing: \"%s\" on line %d" line-in-block
+           (line-number-at-pos))
 
   ;; Delete the current #+RESULTS.
   (mstest-org-next-code-block-results 'delete)
@@ -716,6 +717,22 @@ When it is a list, only one needs to match."
       (customize-set-variable 'org-confirm-babel-evaluate nil)
       (customize-set-variable 'org-babel-load-languages '((matlab . t)))
 
+      (mstest-org-execute-code-block "a = 123" (concat "\
+   #+RESULTS:
+   : a =
+   : " "
+   :    123"))
+
+      (mstest-org-execute-code-block "b = a + 1000" (concat "\
+   #+RESULTS:
+   : b =
+   : " "
+   :         1123"))
+
+      (mstest-org-execute-code-block "c = b * 2" "\
+   #+RESULTS:
+   : Unrecognized function or variable 'b'.")
+
       (mstest-org-execute-code-block "ans = magic(a);" "\
 #+RESULTS:
 | 17 | 24 |  1 |  8 | 15 |
@@ -738,8 +755,8 @@ When it is a list, only one needs to match."
 :
 :      2     4
 :      6     8")
-                                      ;; org Org 9.6.30 yeids the following
-                                        "\
+                                      ;; org Org 9.6.30 yields the following
+                                      "\
 #+RESULTS:
 #+begin_example
 The results are:
@@ -847,7 +864,7 @@ Searches for the text between the last prompt, and the previous prompt."
               ;; The command was inserted.  Skip it.
               (end-of-line)
               (forward-char 1))
-          ;; Any output text was deleted.  Don't move the curosr
+          ;; Any output text was deleted.  Don't move the cursor
           ;; so we can grab the output.
           nil)
         (setq startpt (point))
@@ -860,10 +877,19 @@ Searches for the text between the last prompt, and the previous prompt."
     (let* ((td (if (fboundp 'temporary-file-directory)
                    (temporary-file-directory)
                  temporary-file-directory))
-           (fn (expand-file-name "MATLABSHELL-BUFFER-CONTENST.txt" td)))
+           (fn (expand-file-name "MATLABSHELL-BUFFER-CONTENTS.txt" td)))
       (write-region (point-min) (point-max) fn)
       (message "Content of *MATLAB* buffer saved in %s" fn))))
 
 (provide 'mstest)
 
 ;;; mstest.el ends here
+
+;; LocalWords:  Ludlam zappo lf mst testfile comint defun TESTDEBUG setq pty msb savestate tbxdir
+;; LocalWords:  emacsdocomplete CLO cdr emacscd emacsinit emacsnetshell emacsrun emacsrunregion
+;; LocalWords:  emacstipstring cnt testeeval stringp cmderr eltest utils testme throwerr throwprop
+;; LocalWords:  syntaxerr bfn bfnd nondirectory mlgud dbtester localfunc breakpointlist navto
+;; LocalWords:  stacklist TMP expectedstack ebstack ebstatus dolist bol eol expectedbreakpoints
+;; LocalWords:  fileexp lineexp skipchecktxt fname progn dbln gud MSDB fileexplst lineexplst
+;; LocalWords:  functionp commandp txtend listp tmp sinewave ctxt funcall mtest starttime totaltime
+;; LocalWords:  cco ctxte endpt fboundp fn MATLABSHELL
