@@ -56,9 +56,9 @@ BODY RESULT-TYPE MATLABP."
 
   ;; ----
   ;; 2) For "#+begin_src matlab :results verbatim" blocks, fix how we collect the results from the
-  ;;    MATLAB "ans" variable.
-  (setq org-babel-octave-wrapper-method
-        (concat "\
+  ;;    MATLAB "ans" variable by locally correcting org-babel-octave-wrapper-method.
+  (let ((org-babel-octave-wrapper-method
+         (concat "\
 cd('" default-directory "');
 %s
 if ~exist('ans', 'var') ans=''; end; \
@@ -66,37 +66,39 @@ orgTmpFile = '%s'; \
 writematrix(ans, [orgTmpFile, '.txt'], 'Delimiter', 'tab'); \
 movefile([orgTmpFile, '.txt'], orgTmpFile); \
 clear orgTmpFile;
-"))
+")))
 
-  ;; ----
-  ;; 3) For "#+begin_src matlab :exports both :results output" results, fix the results
-  ;;    - Add "%-<org-eval>-" comment to end of each line to the body code to be evaluated.
-  ;;    - Strip the "%-<org-eval>-" line from the results.
-  ;;
-  (when (eq result-type 'output)
-    (setq body (replace-regexp-in-string "\n" " %-<org-eval>-\n" body))
-    (when (not (string-match "\n\\'" body))
-      (setq body (concat body " %-<org-eval>-"))))
-
-  (let ((results (funcall orig-fun session body result-type matlabp)))
+    ;; ----
+    ;; 3) For "#+begin_src matlab :exports both :results output" results, fix the results
+    ;;    - Add "%-<org-eval>-" comment to end of each line to the body code to be evaluated.
+    ;;    - Strip the "%-<org-eval>-" line from the results.
+    ;;
     (when (eq result-type 'output)
-      ;; When we send multi-line input to `matlab-shell', we'll see the "body" code lines echoed in
-      ;; the output. Therefore, leverage the "%-<org-eval>" to remove the unnecessary lines.
-      (setq results (replace-regexp-in-string "^[^\n]*%-<org-eval>-\n" "" results))
-      ;; Remove unnecessary starting blank line
-      (setq results (replace-regexp-in-string "\\`[[:space:]\r\n]+" "" results))
-      ;; Org 9.5.5 shipped with Emacs 28 adds to the end of results the following, so remove it
-      ;;   'org_babel_eoe'
-      ;;
-      ;;   ans =
-      ;;
-      ;;       'org_babel_eoe'
-      (setq results (replace-regexp-in-string
-                     "^\\(?:'org_babel_eoe'\n+\\)?ans =[ \t\n]+'org_babel_eoe'"
-                     "" results)))
+      (setq body (replace-regexp-in-string "\n" " %-<org-eval>-\n" body))
+      (when (not (string-match "\n\\'" body))
+        (setq body (concat body " %-<org-eval>-"))))
 
-    ;; The `org-babel-octave-evaluate' results
-    results))
+    (let ((results (funcall orig-fun session body result-type matlabp)))
+      (when (eq result-type 'output)
+        ;; When we send multi-line input to `matlab-shell', we'll see the "body" code lines echoed in
+        ;; the output. Therefore, leverage the "%-<org-eval>" to remove the unnecessary lines.
+        (setq results (replace-regexp-in-string "^[^\n]*%-<org-eval>-\n" "" results))
+        ;; Remove unnecessary starting blank line
+        (setq results (replace-regexp-in-string "\\`[[:space:]\r\n]+" "" results))
+        ;; matlab-shell wraps errors in <ERRORTXT> and </ERRORTXT> so remove those
+        (setq results (replace-regexp-in-string "</?ERRORTXT>[\r\n]?" "" results))
+        ;; Org 9.5.5 shipped with Emacs 28 adds to the end of results the following, so remove it
+        ;;   'org_babel_eoe'
+        ;;
+        ;;   ans =
+        ;;
+        ;;       'org_babel_eoe'
+        (setq results (replace-regexp-in-string
+                       "^\\(?:'org_babel_eoe'\n+\\)?ans =[ \t\n]+'org_babel_eoe'"
+                       "" results)))
+
+      ;; The `org-babel-octave-evaluate' results
+      results)))
 
 (declare-function matlab-shell-busy-checker "ext:matlab-mode")
 
