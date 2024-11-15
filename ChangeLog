@@ -1,3 +1,14 @@
+2024-11-11 John Ciolfi <john.ciolfi.32@gmail.com>
+	* matlab.el: fixed matlab-fill-paragraph.
+          - Now M-q (fill-paragraph) calls matlab-fill-paragaraph will fill comments
+            and leave code untouched.
+	  - Removed non-standard and buggy
+	     matlab-fill-comment-line
+	     matlab-fill-region
+	     matlab-join-comment-lines
+	* tests/metests.el - Added metest-fill-paragraph
+	* tests/fill-paragraph/* files used by metest-fill-paragraph
+
 2024-11-13 17:24  Uwe Brauer  <oub@mat.ucm.es>
 
 	* CONTRIBUTING.org (Maintainers): Change: Forks should--> Forks
@@ -30,6 +41,7 @@
 	5. Added tests for the output code blocks.
 
 
+
 2024-11-06 John Ciolfi <ciolfi@mathworks.com>
 	* matlab-ccount.el: display how many code characters in MATLAB *.m files.
 	This was created by Eric Ludlam.
@@ -54,6 +66,10 @@
 	This commit also tests the evaluation of matlab verbatim and
 	graphics code blocks.  I validated Emacs 27, 28, and 29 work with
 	MATLAB R2024a and R2024b on Linux Debian 12.
+
+2024-10-25 18:45  Uwe Brauer  <oub@mat.ucm.es>
+	* matlab.el (matlab-fill-paragraph-fill-fix): Add «best»
+	matlab-fill-paragraph from the fill-fix branch: commit 0f305501f26d
 
 2024-10-22 22:55  Nidish Narayanaa Balaji <nidbid@gmail.com>
 

@@ -1,4 +1,4 @@
-;;; metest.el --- Testing suite for MATLAB Emacs
+;;; metest.el --- Testing suite for MATLAB Emacs -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2019-2024 Eric Ludlam
 ;;
@@ -65,7 +65,8 @@
   (metest-log-report (metest-log-write))
 
   (matlab-scan-stats-print)
-  )
+
+  (metest-fill-paragraph))
 
 (defun metest-run (test)
   "Run and time TEST."
@@ -104,8 +105,7 @@
 (defun metest-end-detect-test (F)
   "Run test F to make sure we correctly detect the state of managing 'end'."
   (let ((buf (metest-find-file F))
-        (ret nil)
-        (cnt 0))
+        (ret nil))
     (with-current-buffer buf
       (goto-char (point-min))
       ;;(message ">> Checking END detection in %S" (current-buffer))
@@ -149,6 +149,7 @@
       (goto-char (point-min))
 
       (let ((md (match-data)))
+        (ignore md) ;; see commented out code below
         ;; Force font lock to throw catchable errors.
         (font-lock-mode 1)
         (font-lock-flush (point-min) (point-max))
@@ -410,7 +411,7 @@ INDENT is expected indent level."
 (defun metest-complete-test (F)
   "Test the completion tools on F in matlab-complete.el."
   (let ((buf (metest-find-file F))
-        exp act
+        exp
         (cnt 0))
     (with-current-buffer buf
       (goto-char (point-min))
@@ -457,6 +458,7 @@ INDENT is expected indent level."
       (goto-char (point-min))
 
       (let ((md (match-data)))
+        (ignore md) ;; see commented out code below
         ;; Force font lock to throw catchable errors.
         (font-lock-mode 1)
         (font-lock-flush (point-min) (point-max))
@@ -508,6 +510,59 @@ INDENT is expected indent level."
 
       (list cnt "lines with " fntcnt "fonts tested"))))
 
+
+(defun metest-fill-paragraph (&optional m-file)
+  "Fill-paragraph on ./fill-paragraph/*.m and compare with *.m.expected.txt.
+For debugging, you can specify a M-FILE to test.
+For example: (metest-fill-paragraph \"fill-paragraph/FILE.m\"))"
+  (let ((m-files (if m-file
+                     `(,(file-truename m-file))
+                   (directory-files "fill-paragraph" t "\\.m$"))))
+    (dolist (m-file m-files)
+      (save-excursion
+        (message "--> start metest-fill-paragraph %s" m-file)
+        (find-file m-file)
+
+        ;; M-q after first character on each line, and also M-q after the "%" on each line if present
+        ;; Also M-q on empty lines
+        (while (not (eobp))
+          (if (re-search-forward "[^ \t\n\r]" (line-end-position) t)
+              ;; fill an point after first character on line
+              (progn
+                (fill-paragraph)
+                (set-buffer-modified-p nil)
+                ;; Also fill after the comment if there's one
+                (when (and (goto-char (line-beginning-position))
+                           (re-search-forward "[^ \t\n\r]" (line-end-position) t)
+                           (not (progn
+                                  (goto-char (1- (point)))
+                                  (looking-at "%")))
+                           (re-search-forward "%" (line-end-position) t))
+                  (fill-paragraph)))
+            ;; else fill on an empty line
+            (fill-paragraph)
+            (set-buffer-modified-p nil))
+          (forward-line))
+
+        ;; Get result, kill buffer, and compare result with expected result
+        (let* ((got-result (buffer-substring-no-properties (point-min) (point-max)))
+               (m-file-expected (concat m-file ".expected.txt"))
+               (expected-result (with-temp-buffer
+                                  (when (file-exists-p m-file-expected)
+                                    (insert-file-contents m-file-expected)
+                                    (buffer-substring-no-properties (point-min) (point-max))))))
+          (kill-this-buffer)
+          (when (not (string= got-result expected-result))
+            (let ((got-result-file (concat m-file-expected "~")))
+              (with-temp-file got-result-file (insert got-result)) ;; save got-result-file
+              (user-error (concat "Test: %s\n"
+                                  "after fill-paragraph on comments doesn't match\n"
+                                  "%s\n"
+                                  "See the result we got in\n"
+                                  "%s")
+                                  m-file m-file-expected got-result-file)))))))
+  (message "--> metest-fill-paragraph SUCCESS"))
+
 (defun metest-check-version ()
   "Validate matlab-mode version numbers are consistent."
   (let ((package-version (with-temp-buffer
@@ -519,6 +574,7 @@ INDENT is expected indent level."
     (when (not (string= package-version matlab-mode-version))
       (user-error "Version from matlab-mode.el \";; Version: %s\" != matlab-mode-version %s"
                   package-version matlab-mode-version))))
+
 
 ;;; UTILS
 ;;
