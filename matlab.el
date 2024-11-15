@@ -5,9 +5,8 @@
 ;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Created: 04 Jan 91
 ;; Keywords: MATLAB(R)
-;; Version:
 
-(defconst matlab-mode-version "6.0"
+(defconst matlab-mode-version "6.1"
   "Current version of MATLAB(R) mode.")
 
 ;;

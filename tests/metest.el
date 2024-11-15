@@ -60,6 +60,8 @@
   ;; Parsing and completion are high level tools
   (metest-run 'metest-complete-test)
 
+  (metest-check-version)
+
   (metest-log-report (metest-log-write))
 
   (matlab-scan-stats-print)
@@ -508,6 +510,7 @@ INDENT is expected indent level."
 
       (list cnt "lines with " fntcnt "fonts tested"))))
 
+
 (defun metest-fill-paragraph (&optional m-file)
   "Fill-paragraph on ./fill-paragraph/*.m and compare with *.m.expected.txt.
 For debugging, you can specify a M-FILE to test.
@@ -559,6 +562,19 @@ For example: (metest-fill-paragraph \"fill-paragraph/FILE.m\"))"
                                   "%s")
                                   m-file m-file-expected got-result-file)))))))
   (message "--> metest-fill-paragraph SUCCESS"))
+
+(defun metest-check-version ()
+  "Validate matlab-mode version numbers are consistent."
+  (let ((package-version (with-temp-buffer
+                           (insert-file-contents "../matlab-mode.el")
+                           (when (not (re-search-forward
+                                       "^;; Version: \\([0-9]+\\.[0-9]+\\)[ \t]*$" nil t))
+                             (user-error "Failed to find version in ../matlab-mode.el"))
+                           (match-string 1))))
+    (when (not (string= package-version matlab-mode-version))
+      (user-error "Version from matlab-mode.el \";; Version: %s\" != matlab-mode-version %s"
+                  package-version matlab-mode-version))))
+
 
 ;;; UTILS
 ;;
