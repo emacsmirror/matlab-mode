@@ -1,3 +1,9 @@
+2024-11-17 17:28  Uwe Brauer  <oub@mat.ucm.es>
+
+	* matlab-mode.el: Update to version 6.2
+
+	* matlab.el (matlab-mode-version): Update to version 6.2
+
 2024-11-11 John Ciolfi <john.ciolfi.32@gmail.com>
 	* matlab.el: fixed matlab-fill-paragraph.
           - Now M-q (fill-paragraph) calls matlab-fill-paragaraph will fill comments

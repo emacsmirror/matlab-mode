@@ -6,7 +6,7 @@
 ;; Created: 04 Jan 91
 ;; Keywords: MATLAB(R)
 
-(defconst matlab-mode-version "6.1"
+(defconst matlab-mode-version "6.2"
   "Current version of MATLAB(R) mode.")
 
 ;;
