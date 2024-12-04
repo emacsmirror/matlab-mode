@@ -1,6 +1,6 @@
 ;;; semantic-matlab.el --- Semantic details for MATLAB files -*- lexical-binding: t -*-
 
-;;; Copyright (C) 2004-2020 Eric M. Ludlam
+;; Copyright (C) 2024 Free Software Foundation, Inc.
 
 ;; Author: Eric M. Ludlam <eludlam@mathworks.com>
 

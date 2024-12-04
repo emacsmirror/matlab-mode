@@ -1,5 +1,7 @@
 ;;; mlgud.el --- parts of gud.el for matlab-shell -*- lexical-binding: t -*-
 
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; This contains parts of gud.el prefixed with matlab and modified to support `matlab-shell'. gud
 ;; does not support multiple debuggers. For matlab-shell, we'd need to be able to debug MATLAB in
 ;; `matlab-shell', while in another buffer uses `gud-gdb' or `gdb' from gud.el to debug C++ code.

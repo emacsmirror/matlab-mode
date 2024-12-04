@@ -1,5 +1,7 @@
 ;;; tlc --- Major mode for editing tlc files -*- lexical-binding: t -*-
-;;
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; Author: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Keywords: tlc
 ;; X-Abstract: Major mode for editing tlc files

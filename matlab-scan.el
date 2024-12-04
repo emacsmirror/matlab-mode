@@ -1,7 +1,7 @@
 ;;; matlab-scan.el --- Tools for contextually scanning a MATLAB buffer -*- lexical-binding: t -*-
-;;
-;; Copyright (C) 2024 Eric Ludlam
-;;
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; Author:  <eludlam@mathworks.com>
 ;;
 ;; This program is free software; you can redistribute it and/or

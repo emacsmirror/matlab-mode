@@ -1,7 +1,7 @@
 ;;; matlab-ccount.el --- character count minor mode -*- lexical-binding: t -*-
-;;
-;; Copyright 2021-2024 Eric Ludlam
-;;
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; Author:  Eric Ludlam
 ;;
 ;; This program is free software; you can redistribute it and/or

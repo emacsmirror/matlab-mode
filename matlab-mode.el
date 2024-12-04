@@ -1,17 +1,17 @@
 ;;; matlab-mode.el --- Major mode for MATLAB(R) dot-m files -*- lexical-binding: t -*-
 
-;; Copyright (C) 1997-2024 Eric M. Ludlam
-;; Copyright (C) 1991-1997 Matthew R. Wette
+;; Copyright (C) 2024 Free Software Foundation, Inc.
 
-;; Author: Matt Wette <mwette@alumni.caltech.edu>,
-;;         Eric M. Ludlam <eludlam@mathworks.com>
-;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>
-;; Created: 04 Jan 91
-;; Keywords: MATLAB(R)
-;; Package-Requires: ((emacs "27.2"))
 ;; Version: 6.2
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
+
+;; Author: Matt Wette <mwette@alumni.caltech.edu>,
+;;         Eric M. Ludlam <eludlam@mathworks.com>
+;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>, Uwe Brauer <oub@mat.ucm.es>
+;; Created: 04 Jan 91
+;; Keywords: MATLAB(R)
+;; Package-Requires: ((emacs "27.2"))
 
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
@@ -47,6 +47,9 @@
 ;; blocks of code from the buffer you are editing.
 
 ;;; Code:
+
+(defconst matlab-mode-version (package-get-version)
+  "Current version of MATLAB(R) mode.")
 
 (require 'matlab)
 

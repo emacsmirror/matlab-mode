@@ -1,7 +1,7 @@
 ;;; matlab-topic.el --- Help browsing via Emacs buffers -*- lexical-binding: t -*-
-;;
-;; Copyright (C) 2024 Eric Ludlam
-;;
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; Author: Eric Ludlam <zappo@gnu.org>
 ;;
 ;; This program is free software; you can redistribute it and/or

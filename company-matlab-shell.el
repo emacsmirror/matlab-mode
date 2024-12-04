@@ -1,7 +1,9 @@
 ;;; company-matlab-shell.el --- a matlab-shell-mode completion back-end for MATLAB -*- lexical-binding: t -*-
-;;
-;; Copyright (C) 2016,2017,2024 Eric Ludlam
-;; Copyright (C) 2009 David Engster
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
+;; Author: Eric Ludlam <zappo@gnu.org>
+;; David Engster  <dengste@eml.cc>
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License

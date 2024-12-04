@@ -1,5 +1,7 @@
 ;;; mlint.el --- run mlint in a MATLAB buffer -*- lexical-binding: t -*-
 
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; Author: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Created: June 25, 2002

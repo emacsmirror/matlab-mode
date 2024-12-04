@@ -1,5 +1,7 @@
 ;;; linemark.el --- Manage groups of lines with marks. -*- lexical-binding: t -*-
-;;
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; Author: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Created: Dec 1999

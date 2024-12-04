@@ -1,6 +1,8 @@
 ;;; matlab-sections.el --- Support for code sections in matlab mode -*- lexical-binding: t -*-
-;;
-;; Copyright (C) 2024 Nidish Narayanaa Balaji.
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
+
 ;; Author: Nidish Narayanaa Balaji <nidbid@gmail.com>
 ;; Created: 2024-05-14
 ;; Renamed: 2024-10-22

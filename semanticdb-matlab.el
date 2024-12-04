@@ -1,6 +1,6 @@
 ;;; semanticdb-matlab.el --- Semantic database extensions for MATLAB -*- lexical-binding: t -*-
 
-;;; Copyright (C) 2008, 2012, 2013, 2019 David Engster
+;; Copyright (C) 2024 Free Software Foundation, Inc.
 
 ;; Author: David Engster <dengste@eml.cc>
 ;; based heavily on semanticdb-skel.el (C) Eric Ludlam

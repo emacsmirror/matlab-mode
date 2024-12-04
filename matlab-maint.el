@@ -1,7 +1,7 @@
 ;;; matlab-maint.el --- matlab mode maintainer utilities -*- lexical-binding: t -*-
-;;
-;; Copyright (C) 2024 Eric Ludlam
-;;
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; Author: Eric Ludlam <eludlam@emacsvm>
 ;;
 ;; This program is free software; you can redistribute it and/or

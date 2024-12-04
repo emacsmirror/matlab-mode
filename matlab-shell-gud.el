@@ -1,8 +1,8 @@
 ;;; matlab-shell-gud.el --- GUD support in matlab-shell. -*- lexical-binding: t -*-
-;;
-;; Copyright (C) 2024 Eric Ludlam
-;;
-;; Author: Eric Ludlam <eludlam@emacsvm>
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
+;; Author: Eric Ludlam <eludlam@mathworks.com>
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as

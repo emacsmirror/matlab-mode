@@ -1,7 +1,7 @@
 ;;; matlab-syntax.el --- Manage MATLAB syntax tables and buffer parsing -*- lexical-binding: t -*-
-;;
-;; Copyright (C) 2024 Eric Ludlam
-;;
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
 ;; Author:  <eludlam@mathworks.com>
 ;;
 ;; This program is free software; you can redistribute it and/or
