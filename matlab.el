@@ -13,6 +13,8 @@
 ;; Keywords: MATLAB(R)
 ;; Package-Requires: ((emacs "27.2"))
 
+(defconst matlab-mode-version "6.2"
+  "Current version of MATLAB(R) mode.")
 
 
 

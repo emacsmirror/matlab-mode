@@ -1,3 +1,8 @@
+2024-12-07 09:03  Uwe Brauer  <oub@mat.ucm.es>
+
+	* matlab.el (matlab-mode-version): add this defconst back for the
+	moment, till we have discussed alternatives.
+
 2024-11-17 17:28  Uwe Brauer  <oub@mat.ucm.es>
 
 	* matlab-mode.el: Update to version 6.2
