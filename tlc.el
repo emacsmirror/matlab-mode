@@ -9,12 +9,9 @@
 (defvar tlc-version "1.3"
   "The current version of TLC mode.")
 
-;;
-;; Copyright 1997-2024 Eric Ludlam
-;;
 ;; This program is derived from free software; you can redistribute it
 ;; and/or modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 2, or
+;; as published by the Free Software Foundation; either version 3, or
 ;; (at your option) any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful,
