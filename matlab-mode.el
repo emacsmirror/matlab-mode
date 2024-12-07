@@ -48,8 +48,6 @@
 
 ;;; Code:
 
-(defconst matlab-mode-version (package-get-version)
-  "Current version of MATLAB(R) mode.")
 
 (require 'matlab)
 

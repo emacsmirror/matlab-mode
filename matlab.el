@@ -13,8 +13,6 @@
 ;; Keywords: MATLAB(R)
 ;; Package-Requires: ((emacs "27.2"))
 
-(defconst matlab-mode-version "6.2"
-  "Current version of MATLAB(R) mode.")
 
 
 
@@ -586,6 +584,7 @@ point, but it will be restored for them."
      :active (matlab-any-shell-active-p) ]
     ["Run Code Section" matlab-shell-run-code-section
      :active (matlab-any-shell-active-p) ]
+    ["Version" matlab-show-version t]
     "----"
     ["Locate MATLAB function" matlab-shell-locate-fcn
      :active (matlab-shell-active-p)
@@ -1468,6 +1467,10 @@ Optional argument ARG specifies if the read-only mode should be set."
 
 ;;; Utilities =================================================================
 
+(defun matlab-show-version ()
+  "Show the version number in the minibuffer."
+  (interactive)
+  (message "matlab-mode, version %s" matlab-mode-version))
 
 (defun matlab-find-code-line ()
   "Walk forwards until we are on a line of code return t on success.

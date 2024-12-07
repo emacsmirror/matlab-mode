@@ -1,12 +1,3 @@
-2024-12-06 10:50  Uwe Brauer  <oub@mat.ucm.es>
-
-	* matlab.el (matlab-mode-version): add defconst for matlab-mode version
-
-2024-12-06 10:46  Uwe Brauer  <oub@mat.ucm.es>
-
-	* matlab.el: Delete (defun matlab-show-version () and the relevant
-	menu entry.
-
 2024-11-17 17:28  Uwe Brauer  <oub@mat.ucm.es>
 
 	* matlab-mode.el: Update to version 6.2
