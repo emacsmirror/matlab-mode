@@ -466,11 +466,10 @@ Each function gets no arguments, and returns nothing.  They can move
 point, but it will be restored for them."
   :group 'matlab
   :type '(repeat (choice :tag "Function: "
-                         '(matlab-mode-vf-functionname
-                           matlab-mode-vf-classname
-                           matlab-mode-vf-add-ends
-                           matlab-mode-vf-quiesce-buffer
-                           ))))
+                         (matlab-mode-vf-functionname
+                          matlab-mode-vf-classname
+                          matlab-mode-vf-add-ends
+                          matlab-mode-vf-quiesce-buffer))))
 
 (defcustom matlab-block-verify-max-buffer-size 50000
   "*Largest buffer size allowed for block verification during save."
@@ -1779,23 +1778,21 @@ NOPROGRESS, if t, does not display indenting progress."
     (let ((pr (when (and (not (minibufferp)) (not noprogress))
                 (make-progress-reporter "MATLAB Indenting region..." (point) end)))
           (lvl2 nil)
-          (lvl1 nil)
-          )
+          (lvl1 nil))
       (while (< (point) end)
         (unless (and (bolp) (eolp))
           ;; This is where we indent each line
           (setq lvl1 (matlab-compute-line-context 1)
                 lvl2 (matlab-compute-line-context 2 lvl1)) ;; lvl2))
-          (when (matlab--indent-line lvl2)
-            ;; If the indent changed something, refresh this
-            ;; context obj.
-            ;;(matlab-refresh-line-context-lvl2 lvl2)
-            ))
+          ;; TODO investigate return value of (matlab--indent-line lvl2). Should we have:
+          ;;   (when (matlab--indent-line lvl2)
+          ;;      ;; If the indent changed something, refresh this context obj.
+          ;;      (matlab-refresh-line-context-lvl2 lvl2))
+          (matlab--indent-line lvl2))
         (forward-line 1)
         (and pr (progress-reporter-update pr (point))))
       (and pr (progress-reporter-done pr))
       (move-marker end nil))))
-
 
 (defun matlab-indent-line ()
   "Indent a line in `matlab-mode'."

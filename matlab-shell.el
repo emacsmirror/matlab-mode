@@ -68,7 +68,7 @@
   "*Command line parameters run with `matlab-shell-command'.
 Command switches are a list of strings.  Each entry is one switch."
   :group 'matlab-shell
-  :type '(list :tag "Switch: "))
+  :type '(choice (repeat :tag "Switches, one per entry" string)))
 
 (defface matlab-shell-error-face
   (list
@@ -94,14 +94,14 @@ Command switches are a list of strings.  Each entry is one switch."
 A %s is replaced with the MATLAB version release number, such as R12.
 This file is read to initialize the comint input ring."
   :group 'matlab-shell
-  :type 'filename)
+  :type 'file)
 
 (defcustom matlab-shell-history-ignore "^%\\|%%$\\|emacs.set"
   "Regular expression matching items from history to ignore.
 This expression should ignore comments (between sessions) and any command
 that ends in 2 or more %%, added to automatic commands."
   :group 'matlab-shell
-  :type 'filename)
+  :type 'regexp)
 
 (defcustom matlab-shell-autostart-netshell nil
   "Use the netshell side-channel for communicating with MATLAB."

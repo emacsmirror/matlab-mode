@@ -23,19 +23,25 @@
 ;; code characters are in your script.
 ;; https://www.mathworks.com/matlabcentral/contests.html
 ;;
+;; To use:
+;;   (require 'matlab-ccount)
+;;
+;;   M-x matlab-character-count-minor-mode
+;;
 ;; Based on contest rules, comments, newlines, and spaces at EOL don't
 ;; count toward character counts.
 
 ;;; Code:
-(easy-mmode-define-minor-mode matlab-character-count-minor-mode
-                              "Toggle character count minor-mode.
+
+(define-minor-mode matlab-character-count-minor-mode
+  "Toggle character count minor-mode.
 When active, this mode shows the # of characters in this buffer.
 MATLAB Character counter ignores comments and indentation spaces."
-                              :init-value nil
-                              :lighter (:eval (format " %d" (matlab-count-characters)))
-                              :keymap nil ; empty mode-map
-                              nil ; empty body
-                              )
+  :init-value nil
+  :lighter (:eval (format " %d" (matlab-count-characters)))
+  :keymap nil ; empty mode-map
+  nil ; empty body
+  )
 
 ;;; Character Counting
 ;;
