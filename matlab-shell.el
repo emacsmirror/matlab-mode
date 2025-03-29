@@ -1,7 +1,7 @@
 ;;; matlab-shell.el --- Run MATLAB in an inferior process -*- lexical-binding: t -*-
-;;
-;; Copyright 2019-2024 Eric Ludlam
-;;
+
+;; Copyright (C) 2019-2025 Free Software Foundation, Inc.
+
 ;; Author: Eric Ludlam <zappo@gnu.org>
 ;;
 ;; This program is free software; you can redistribute it and/or
