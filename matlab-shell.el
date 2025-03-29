@@ -1,7 +1,7 @@
 ;;; matlab-shell.el --- Run MATLAB in an inferior process -*- lexical-binding: t -*-
-
-;; Copyright (C) 2024 Free Software Foundation, Inc.
-
+;;
+;; Copyright 2019-2024 Eric Ludlam
+;;
 ;; Author: Eric Ludlam <zappo@gnu.org>
 ;;
 ;; This program is free software; you can redistribute it and/or
@@ -1169,49 +1169,80 @@ STR is a command substring to complete."
          (cmd-text-to-replace "")
          (completions nil))
     (with-current-buffer msbn
-      (if (not (matlab-on-prompt-p))
-          (error "MATLAB shell must be non-busy to do that"))
+      (when (not (matlab-on-prompt-p))
+        (user-error "MATLAB shell must be non-busy to do that"))
+
       (setq output (matlab-shell-collect-command-output cmd))
-      (if (not (string-match "emacs_completions_output =" output))
-          (error "Internal error, '%s' returned unexpected output, %s" cmd output))
-      (setq output (substring output (match-end 0)))
-      (when (string-match "^'\\([^']+\\)' --> '\\([^']*\\)'" output)
-        ;; 'CMD_TEXT_TO_REPLACE' --> 'REPLACEMENT_TEXT'
-        ;;     'OPTION1'
-        ;;     'OPTION2'
-        ;;     ...
-        ;; Note, the CMD_TEXT_TO_REPLACE line is only present when there needs
-        ;; to be replacement, e.g. imagine a command that takes glob patterns
-        ;;   >> mycmd foo*ba<TAB>
-        ;;   'foo*-bar' --> 'foo-and-bar'
-        ;;     '-or-goo'
-        ;;     '-or-too'
-        ;; which completes to either 'foo-and-bar-or-goo' OR 'foo-and-bar-or-too'.
-        ;; If there is only one completion that needs replacement, don't have options:
-        ;;   >> mycmd foo*ba*-too<TAB>
-        ;;   'foo*ba*-too' --> 'foo-and-bar-or-too'
-        ;; The replacement line is not present when the completion just appends to the
-        ;; command str, e.g.
-        ;;   >> mycmd foo-and-bar<TAB>
-        ;;       '-or-goo'
-        ;;       '-or-too'
-        (setq cmd-text-to-replace (match-string 1 output))
-        (setq replacement-text (match-string 2 output))
-        (setq output (substring output (match-end 0))))
-      ;; Parse the output string.
-      (while (string-match "'" output)
-        ;; Hack off the preceding quote
+
+      (cond
+       ;; Case: R2025a and later
+       ((string-match "^\s*Completions-Lisp:[[:space:]]*\\('(\\(?:.\\|\n\\)+)\\)[[:space:]]*$"
+                      output)
+        ;; Completions that can be provided to `display-completion-list'
+        (let ((completions-str (match-string 1 output)))
+          (setq completions (eval (car (read-from-string completions-str))))))
+
+
+       ;; Case: R2024b or have "CMD -complete ARGS" results
+       ((string-match "^\s*emacs_completions_output =" output)
         (setq output (substring output (match-end 0)))
-        (string-match "'" output)
-        ;; we are making a completion list, so that is a list of lists.
-        (setq completions (cons (list (substring output 0 (match-beginning 0)))
-                                completions)
-              output (substring output (match-end 0))))
-      ;; Return them
+
+        (when (string-match "^'\\([^']+\\)' --> '\\([^']*\\)'" output)
+          ;; "CMD -complete ARGS" results:
+          ;;    STR is of form "CMD ARGS" where CMD is a *.m file and it contains the string
+          ;;    "SUPPORTS_DASH_COMPLETE", in this case emacsdocomplete will run "CMD -complete ARGS"
+          ;;    providing replacements.
+          ;;
+          ;; 'CMD_TEXT_TO_REPLACE' --> 'REPLACEMENT_TEXT'
+          ;;     'OPTION1'
+          ;;     'OPTION2'
+          ;;     ...
+          ;; Note, the CMD_TEXT_TO_REPLACE line is only present when there needs
+          ;; to be replacement, e.g. imagine a command that takes glob patterns
+          ;;   >> mycmd foo*ba<TAB>
+          ;;   'foo*-bar' --> 'foo-and-bar'
+          ;;     '-or-goo'
+          ;;     '-or-too'
+          ;; which completes to either 'foo-and-bar-or-goo' OR 'foo-and-bar-or-too'.
+          ;; If there is only one completion that needs replacement, don't have options:
+          ;;   >> mycmd foo*ba*-too<TAB>
+          ;;   'foo*ba*-too' --> 'foo-and-bar-or-too'
+          ;; The replacement line is not present when the completion just appends to the
+          ;; command str, e.g.
+          ;;   >> mycmd foo-and-bar<TAB>
+          ;;       '-or-goo'
+          ;;       '-or-too'
+          (setq cmd-text-to-replace (match-string 1 output))
+          (setq replacement-text (match-string 2 output))
+          ;; Strip the 'CMD_TEXT_TO_REPLACE' --> 'REPLACEMENT_TEXT' from output
+          (setq output (substring output (match-end 0))))
+
+        ;; Parse the output string of form:
+        ;;   emacs_completions_output =
+        ;;     java.lang.String[]:
+        ;;        'item1'
+        ;;        'item2'
+        ;;        ...
+        ;;        'itemN'
+        (while (string-match "'" output)
+          ;; Remove test before the starting quote
+          (setq output (substring output (match-end 0)))
+          (string-match "'" output)
+          ;; we are making a completion list, so that is a list of lists.
+          (setq completions (cons (list (substring output 0 (match-beginning 0)))
+                                  completions)
+                output (substring output (match-end 0))))
+
+        (setq completions (nreverse completions)))
+
+       ;; Case: failure
+       (t
+        (error "Internal error, '%s' returned unexpected output, %s" cmd output)))
+
+      ;; Result
       (list (cons 'cmd-text-to-replace cmd-text-to-replace)
             (cons 'replacement-text replacement-text)
-            (cons 'completions (nreverse completions)))
-      )))
+            (cons 'completions completions)))))
 
 (defun matlab-shell-get-completion-limit-pos (last-cmd completions)
   "Return the starting location of the common substring for completion.
@@ -2496,7 +2527,7 @@ Argument FNAME specifies if we should echo the region to the command line."
 
 ;; LocalWords:  Ludlam zappo compat comint mlgud gud defcustom nodesktop defface netshell tmp aref
 ;; LocalWords:  emacsclient commandline emacsrunregion errorscanning cco defconst defun setq Keymaps
-;; LocalWords:  keymap subjob kbd emacscd featurep fboundp EDU msbn pc Thx Chappaz windowid tcp
+;; LocalWords:  keymap subjob kbd emacscd featurep fboundp EDU msbn pc Thx Chappaz windowid tcp lang
 ;; LocalWords:  postoutput capturetext EMACSCAP captext STARTCAP progn eol dbhot erroexamples cdr
 ;; LocalWords:  ENDPT dolist overlaystack mref deref errortext ERRORTXT shellerror Emacsen iq nt
 ;; LocalWords:  auth mlfile emacsinit initcmd nsa ecc ecca clientcmd EMAACSCAP buffname showbuff
