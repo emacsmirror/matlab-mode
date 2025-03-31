@@ -1920,7 +1920,7 @@ return nil."
     (lambda (mref) (when (string-match "\\.\\(p\\)\\'" mref)
                      (replace-match "m" nil t mref 1)))
     ;; Function name, no extension.
-    (lambda (mref) (unless (string-match "\\.m\\'" mref)) (concat mref ".m"))
+    (lambda (mref) (unless (string-match "\\.m\\'" mref) (concat mref ".m")))
     ;; Methods in a class
     (lambda (mref) (when (string-match "\\." mref)
                      (matlab-shell-class-mref-to-file mref)))
