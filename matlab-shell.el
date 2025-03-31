@@ -260,7 +260,7 @@ mode.")
   "Return the MATLABROOT for the `matlab-shell-command'."
   (let ((path (file-name-directory matlab-shell-command)))
     ;; if we don't have a path, find the MATLAB executable on our path.
-    (when (not path)
+    (unless path
       (setq path  (matlab-find-executable-directory matlab-shell-command)))
     (when path
       ;; When we find the path, we need to massage it to identify where
@@ -491,7 +491,7 @@ Try C-h f matlab-shell RET"))
   (switch-to-buffer (concat "*" matlab-shell-buffer-name "*"))
 
   ;; If the shell isn't active yet, start it.
-  (when (not (matlab-shell-active-p))
+  (unless (matlab-shell-active-p)
 
     ;; Clean up crufty state
     (kill-all-local-variables)
@@ -933,7 +933,7 @@ STR is provided by COMINT but is unused."
   "Compute how to call emacsclient so MATLAB will connect to this Emacs.
 Handles case of multiple Emacsen from different users running on the same
 system."
-  (when (not (server-running-p))
+  (unless (server-running-p)
     ;; We need an Emacs server for ">> edit foo.m" which leverages to
     ;; emacsclient to open the file in the current Emacs session. Be
     ;; safe and start a server with a unique name. This ensures that
@@ -942,7 +942,7 @@ system."
     (setq server-name (format "server-%d" (emacs-pid)))
     (message "matlab-shell: starting server with name %s" server-name)
     (server-start)
-    (when (not (server-running-p))
+    (unless (server-running-p)
       (user-error "Unable to start server with name %s" server-name)))
   (let ((iq (if (eq system-type 'windows-nt)
                 ;; Probably on Windows, probably in "Program Files" -
@@ -1150,7 +1150,7 @@ STR is a command substring to complete."
          (cmd-text-to-replace "")
          (completions nil))
     (with-current-buffer msbn
-      (when (not (matlab-on-prompt-p))
+      (unless (matlab-on-prompt-p)
         (user-error "MATLAB shell must be non-busy to do that"))
 
       (setq output (matlab-shell-collect-command-output cmd))
@@ -1446,7 +1446,7 @@ This should work in version before `completion-in-region' was available."
          (common-substr-end-pt   (cdr (assoc 'common-substr-end-pt completion-info)))
          (did-completion         (cdr (assoc 'did-completion completion-info))))
 
-    (when (not did-completion)
+    (unless did-completion
       ;; Whack the old command 'substring' that is starting part of the
       ;; completions so we can insert it back later
       (delete-region common-substr-start-pt common-substr-end-pt)
@@ -1720,7 +1720,7 @@ past that."
 
      ((eq action 'wait-for-prompt)
 
-      (when (not msbn)
+      (unless msbn
         (error "The MATLAB shell buffer does not exist"))
 
       ;; Note, this function is leveraged by org-mode babel matlab code block evaluation.  In this
@@ -1903,7 +1903,7 @@ Optional FCN-P indicates specifies to force treating as a function."
   "Try to run `which' on REF to find actual file location.
 If the MATLAB shell isn't ready to run a which command, skip and
 return nil."
-  (when (not matlab-shell-in-process-filter)
+  (unless matlab-shell-in-process-filter
     (save-excursion
       (let* ((msbn (matlab-shell-buffer-barf-not-running)))
         (set-buffer msbn)
@@ -1920,7 +1920,7 @@ return nil."
     (lambda (mref) (when (string-match "\\.\\(p\\)\\'" mref)
                      (replace-match "m" nil t mref 1)))
     ;; Function name, no extension.
-    (lambda (mref) (when (not (string-match "\\.m\\'" mref)) (concat mref ".m")))
+    (lambda (mref) (unless (string-match "\\.m\\'" mref)) (concat mref ".m"))
     ;; Methods in a class
     (lambda (mref) (when (string-match "\\." mref)
                      (matlab-shell-class-mref-to-file mref)))
@@ -1962,7 +1962,7 @@ something Emacs can load."
   "Find file EF in other window and to go line EL and 1-basec column EC.
 If DEBUG is non-nil, then setup GUD debugging features."
   (let ((ef-converted (matlab-shell-mref-to-filename ef)))
-    (when (not ef-converted)
+    (unless ef-converted
       (error "Failed to translate %s into a filename" ef))
     (find-file-other-window ef-converted)
     (goto-char (point-min))
@@ -2002,7 +2002,7 @@ To reference old errors, put the cursor just after the error text."
         (save-excursion
           (end-of-line) ;; In case we are before the line number 1998/06/05 16:54sk
           (let ((err (matlab-shell-scan-for-error (point-min))))
-            (when (not err) (error "No errors found!"))
+            (unless err (error "No errors found!"))
             (let ((ef (nth 2 err))
                   (el (nth 3 err))
                   (ec (or (nth 4 err) "0")))
@@ -2098,7 +2098,7 @@ Value is set to COMMAND."
   (interactive (list (read-string "sCommand: "
                                   (file-name-sans-extension
                                    (file-name-nondirectory (buffer-file-name))))))
-  (when (not (eq major-mode 'matlab-mode))
+  (unless (eq major-mode 'matlab-mode)
     (error "Cannot set save-and-go command for buffer in %s" major-mode))
 
   (add-dir-local-variable 'matlab-mode 'matlab-shell-save-and-go-command
@@ -2203,7 +2203,7 @@ Similar to  `comint-send-input'."
         ;; change current directory? - only w/ matlab-shell active.
         (if (and change-cd (get-buffer msbn))
             (progn
-              (when (not (string= dir default-directory))
+              (unless (string= dir default-directory)
                 (matlab-shell-send-command (concat "emacscd(['" dir "'])")))
 
               (let ((cmd (concat fn-name " " param)))
@@ -2351,7 +2351,7 @@ When NOSHOW is non-nil, suppress output by adding ; to commands."
       (goto-char (point-min))
       ;; Delete all the comments
       (while (search-forward "%" nil t)
-        (when (not (matlab-cursor-in-string))
+        (unless (matlab-cursor-in-string)
           (delete-region (1- (point)) (line-end-position))))
       (setq str (buffer-substring-no-properties (point-min) (point-max))))
 
@@ -2430,8 +2430,7 @@ Return the name of the temporary file."
          (buff (find-file-noselect (concat newf ".m")))
          (intro "%% Automatically created temporary file created to run-region")
          ;; These variables are for script / fcn tracking
-         (functions (matlab-semantic-get-local-functions-for-script (current-buffer)))
-         )
+         (functions (matlab-semantic-get-local-functions-for-script (current-buffer))))
 
     ;; TODO : if the directory in which the current buffer is in is READ ONLY
     ;; we should write our tmp buffer to /tmp instead.
@@ -2443,7 +2442,7 @@ Return the name of the temporary file."
       ;; Clean up old extracted regions.
       (when (looking-at intro) (delete-region (point-min) (point-max)))
       ;; Don't stomp on old code.
-      (when (not (= (point-min) (point-max)))
+      (unless (= (point-min) (point-max))
         (error "Region extract to tmp file: Temp file not empty!"))
 
       (insert intro "\n\n" bss "\n%%\n")
@@ -2459,8 +2458,7 @@ Return the name of the temporary file."
               (goto-char (point-max))
               (insert "% Copy of " (semantic-tag-name F) "\n\n")
               (insert ft)
-              (insert "\n%%\n"))))
-        )
+              (insert "\n%%\n")))))
 
       ;; Save buffer, and setup ability to run this new script.
       (save-buffer)
