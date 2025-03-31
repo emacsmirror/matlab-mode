@@ -55,19 +55,16 @@
 ;;
 ;; Shell Startup
 (defcustom matlab-shell-mode-hook nil
-  "*List of functions to call on entry to MATLAB shell mode."
-  :group 'matlab-shell
+  "List of functions to call on entry to MATLAB shell mode."
   :type 'hook)
 
 (defcustom matlab-shell-command "matlab"
-  "*The name of the command to be run which will start the MATLAB process."
-  :group 'matlab-shell
+  "The name of the command to be run which will start the MATLAB process."
   :type 'string)
 
 (defcustom matlab-shell-command-switches '("-nodesktop")
-  "*Command line parameters run with `matlab-shell-command'.
+  "Command line parameters run with `matlab-shell-command'.
 Command switches are a list of strings.  Each entry is one switch."
-  :group 'matlab-shell
   :type '(choice (repeat :tag "Switches, one per entry" string)))
 
 (defface matlab-shell-error-face
@@ -76,47 +73,40 @@ Command switches are a list of strings.  Each entry is one switch."
          (list :background 'unspecified
                :foreground "red1"
                :bold t)))
-  "*Face to use when errors occur in MATLAB shell."
-  :group 'matlab-shell)
+  "Face to use when errors occur in MATLAB shell.")
 
 (defcustom matlab-custom-startup-command nil
   "Custom MATLAB command to be run at startup."
-  :group 'matlab-shell
   :type 'string)
 
 (defcustom matlab-shell-echoes t
-  "*If `matlab-shell-command' echoes input."
-  :group 'matlab-shell
+  "If `matlab-shell-command' echoes input."
   :type 'boolean)
 
 (defcustom matlab-shell-history-file "~/.matlab/%s/history.m"
-  "*Location of the history file.
+  "Location of the history file.
 A %s is replaced with the MATLAB version release number, such as R12.
 This file is read to initialize the comint input ring."
-  :group 'matlab-shell
   :type 'file)
 
 (defcustom matlab-shell-history-ignore "^%\\|%%$\\|emacs.set"
   "Regular expression matching items from history to ignore.
 This expression should ignore comments (between sessions) and any command
 that ends in 2 or more %%, added to automatic commands."
-  :group 'matlab-shell
   :type 'regexp)
 
 (defcustom matlab-shell-autostart-netshell nil
   "Use the netshell side-channel for communicating with MATLAB."
-  :group 'matlab-shell
   :type 'boolean)
 
 ;;
 ;; Edit from MATLAB
 (defcustom matlab-shell-emacsclient-command
   (matlab-find-emacsclient)
-  "*The command to use as an external editor for MATLAB.
+  "The command to use as an external editor for MATLAB.
 Using emacsclient allows the currently running Emacs to also be the
 external editor for MATLAB.  Setting this to the empty string
 will disable use emacsclient as the external editor."
-  :group 'matlab-shell
   :type 'integer)
 
 ;;
@@ -136,7 +126,6 @@ auto           - guess which to use
                  extract and run that region.  Customize
                  `matlab-shell-emacsrunregion' to specify what ML
                  function to use for this."
-  :group 'matlab-shell
   :type '(choice (const :tag "Auto" auto)
                  (const :tag "Extract Line" matlab-shell-region->commandline)
                  (const :tag "Extract Script" matlab-shell-region->script)
@@ -146,14 +135,12 @@ auto           - guess which to use
   "The MATLAB command to use for running a region.
 This command is used when `matlab-shell-run-region-function' is set
 to auto, or `matlab-shell-region->internal'"
-  :group 'matlab-shell
   :type 'string)
 
 ;;
 ;; Features in an active shell
 (defcustom matlab-shell-input-ring-size 32
-  "*Number of history elements to keep."
-  :group 'matlab-shell
+  "Number of history elements to keep."
   :type 'integer)
 
 ;;
@@ -161,15 +148,13 @@ to auto, or `matlab-shell-region->internal'"
 (defcustom matlab-shell-ask-MATLAB-for-completions t
   "When Non-nil, ask MATLAB for a completion list.
 When nil, complete against file names."
-  :group 'matlab-shell
   :type 'boolean)
 
 (defcustom matlab-shell-tab-use-company t
-  "*Use `company' (complete anything) for TAB completions in `matlab-shell'.
+  "Use `company' (complete anything) for TAB completions in `matlab-shell'.
 Only effective when  when `company' is installed.  Note, when you type to
 narrow completions, you may find the responses slow and if so,
 you can try turning this off."
-  :group 'matlab-shell
   :type 'boolean)
 
 (defvar matlab-shell-tab-company-available (if (locate-library "company") t nil)
@@ -293,35 +278,36 @@ mode.")
     (set-keymap-parent km comint-mode-map)
 
     ;; We can jump to errors, so take over this keybinding.
-    (substitute-key-definition 'next-error 'matlab-shell-last-error
+    ;; FIXME: Shoulw we set `next-error-function' instead?
+    ;;        https://github.com/mathworks/Emacs-MATLAB-Mode/issues/23
+    (substitute-key-definition #'next-error #'matlab-shell-last-error
                                km global-map)
 
     ;; Interrupt
-    (define-key km [(control c) (control c)] 'matlab-shell-interrupt-subjob)
+    (define-key km [(control c) (control c)] #'matlab-shell-interrupt-subjob)
 
     ;; Help system
     (define-key km [(control h) (control m)] matlab-help-map)
 
     ;; Completion
-    (define-key km (kbd "TAB") 'matlab-shell-tab)
-    (define-key km "\C-i" 'matlab-shell-tab)
-    (define-key km (kbd "<C-tab>") 'matlab-shell-c-tab)
+    (define-key km (kbd "TAB") #'matlab-shell-tab)
+    (define-key km (kbd "<C-tab>") #'matlab-shell-c-tab)
 
     ;; Command history
-    (define-key km [(control up)] 'comint-previous-matching-input-from-input)
-    (define-key km [(control down)] 'comint-next-matching-input-from-input)
-    (define-key km [up] 'matlab-shell-previous-matching-input-from-input)
-    (define-key km [down] 'matlab-shell-next-matching-input-from-input)
+    (define-key km [(control up)] #'comint-previous-matching-input-from-input)
+    (define-key km [(control down)] #'comint-next-matching-input-from-input)
+    (define-key km [up] #'matlab-shell-previous-matching-input-from-input)
+    (define-key km [down] #'matlab-shell-next-matching-input-from-input)
 
     ;; Editing
-    (define-key km [(control return)] 'comint-kill-input)
-    (define-key km [(backspace)] 'matlab-shell-delete-backwards-no-prompt)
+    (define-key km [(control return)] #'comint-kill-input)
+    (define-key km [(backspace)] #'matlab-shell-delete-backwards-no-prompt)
 
     ;; Files
-    (define-key km "\C-c." 'matlab-shell-locate-fcn)
+    (define-key km "\C-c." #'matlab-shell-locate-fcn)
 
     ;; matlab-shell actions
-    (define-key km "\C-c/" 'matlab-shell-sync-buffer-directory)
+    (define-key km "\C-c/" #'matlab-shell-sync-buffer-directory)
 
     km)
 
@@ -362,7 +348,8 @@ These will differ when MATLAB code changes directory without notifying Emacs."]
 ;;
 ;; The Emacs major mode for interacting with the matlab shell process.
 
-(defvar matlab-shell-last-error-anchor) ;; Quiet compiler warning
+(defvar-local matlab-shell-last-error-anchor nil
+  "Last point where an error anchor was set.")
 
 (defun matlab-shell-mode ()
   "Run MATLAB as a subprocess in an Emacs buffer.
@@ -521,9 +508,9 @@ Try C-h f matlab-shell RET"))
 
     ;; Init our filter and sentinel
     (set-process-filter (get-buffer-process (current-buffer))
-                        'matlab-shell-wrapper-filter)
+                        #'matlab-shell-wrapper-filter)
     (set-process-sentinel (get-buffer-process (current-buffer))
-                          'matlab-shell-wrapper-sentinel)
+                          #'matlab-shell-wrapper-sentinel)
 
     ;; XEmacs has problems w/ this variable.  Set it here.
     (set-marker comint-last-output-start (point-max))
@@ -538,21 +525,19 @@ Try C-h f matlab-shell RET"))
     (add-hook 'matlab-shell-prompt-appears-hook #'matlab-shell-first-prompt-fcn)
 
     ;; Track current directories when user types cd
-    (add-hook 'comint-input-filter-functions 'shell-directory-tracker nil t) ;; patch Eli Merriam
+    (add-hook 'comint-input-filter-functions #'shell-directory-tracker nil t) ;; patch Eli Merriam
 
     ;; Add a version scraping logo identification filter.
-    (add-hook 'comint-output-filter-functions 'matlab-shell-version-scrape nil t)
+    (add-hook 'comint-output-filter-functions #'matlab-shell-version-scrape nil t)
 
     ;; Add pseudo html-renderer
-    (add-hook 'comint-output-filter-functions 'matlab-shell-render-html-anchor nil t)
+    (add-hook 'comint-output-filter-functions #'matlab-shell-render-html-anchor nil t)
     ;; Scroll to bottom after running code-section/region
-    (add-hook 'comint-output-filter-functions 'comint-postoutput-scroll-to-bottom nil t)
+    (add-hook 'comint-output-filter-functions #'comint-postoutput-scroll-to-bottom nil t)
 
     ;; Add error renderer to prompt hook so the prompt is available for resolving names.
-    (make-local-variable 'matlab-shell-last-error-anchor)
-    (setq matlab-shell-last-error-anchor nil)
-    (add-hook 'matlab-shell-prompt-appears-hook 'matlab-shell-render-errors-as-anchor nil t)
-    (add-hook 'matlab-shell-prompt-appears-hook 'matlab-shell-colorize-errors nil t)
+    (add-hook 'matlab-shell-prompt-appears-hook #'matlab-shell-render-errors-as-anchor nil t)
+    (add-hook 'matlab-shell-prompt-appears-hook #'matlab-shell-colorize-errors nil t)
 
     ;; Comint and GUD both try to set the mode.  Now reset it to
     ;; matlab mode.
@@ -705,7 +690,7 @@ Argument STR is the string to examine for version information."
   (when matlab-shell-running-matlab-version
     ;; Remove the scrape from our list of things to do.  We are done getting the version.
     (remove-hook 'comint-output-filter-functions
-                 'matlab-shell-version-scrape t)
+                 #'matlab-shell-version-scrape t)
 
     (message "Detected MATLAB %s (%s)  -- Loading history file" matlab-shell-running-matlab-release
              matlab-shell-running-matlab-version)
@@ -728,11 +713,11 @@ Argument STR is the string to examine for version information."
 
 (defvar matlab-shell-html-map
   (let ((km (make-sparse-keymap)))
-    (if (string-match "XEmacs" emacs-version)
-        (define-key km [button2] 'matlab-shell-html-click)
-      (define-key km [mouse-2] 'matlab-shell-html-click)
-      (define-key km [mouse-1] 'matlab-shell-html-click))
-    (define-key km [return] 'matlab-shell-html-go)
+    (if (featurep 'xemacs)
+        (define-key km [button2] #'matlab-shell-html-click)
+      (define-key km [mouse-2] #'matlab-shell-html-click)
+      (define-key km [mouse-1] #'matlab-shell-html-click))
+    (define-key km (kbd "RET") #'matlab-shell-html-go)
     km)
   "Keymap used on overlays that represent errors.")
 
@@ -841,8 +826,6 @@ Returns a list of the form:
         )
       ans)))
 
-(defvar matlab-shell-last-error-anchor nil
-  "Last point where an error anchor was set.")
 (defvar matlab-shell-last-anchor-as-frame nil
   ;; NOTE: this isn't being used yet.
   "The last error anchor saved, represented as a debugger frame.")
@@ -896,9 +879,7 @@ Input STR is provided by comint but is unused."
 
       ;; Once we've found something, don't scan it again.
       (when overlaystack
-        (setq matlab-shell-last-error-anchor (save-excursion
-                                               (goto-char newest-anchor)
-                                               (point-marker)))))))
+        (setq matlab-shell-last-error-anchor (copy-marker newest-anchor))))))
 
 (defvar matlab-shell-errortext-start-text "<ERRORTXT>\n"
   "Text used as a signal for errors.")
@@ -1003,7 +984,7 @@ Sends commands to the MATLAB shell to initialize the MATLAB process."
              (ecc (matlab-shell--get-emacsclient-command))
              (ecca (if ecc (format "emacs.set('clientcmd', '%s');" ecc) ""))
              (args (list nsa ecca))
-             (cmd (format "run('%s');%s" initcmd (apply 'concat args))))
+             (cmd (format "run('%s');%s" initcmd (apply #'concat args))))
         (matlab-shell-send-command (string-replace (expand-file-name "~/") "~/" cmd))
         )
 
@@ -1072,7 +1053,7 @@ and then processes it."
           (let ((evalforms (read text)))
             ;; Evaluate some forms
             (condition-case nil
-                (eval evalforms)
+                (eval evalforms t)
               (error (message "Failed to evaluate forms from MATLAB: \"%S\"" evalforms))))
 
         ;; Generate the buffer and contents
@@ -1180,7 +1161,7 @@ STR is a command substring to complete."
                       output)
         ;; Completions that can be provided to `display-completion-list'
         (let ((completions-str (match-string 1 output)))
-          (setq completions (eval (car (read-from-string completions-str))))))
+          (setq completions (eval (car (read-from-string completions-str)) t))))
 
 
        ;; Case: R2024b or have "CMD -complete ARGS" results
@@ -1478,8 +1459,7 @@ This should work in version before `completion-in-region' was available."
             ;; kill completions buffer if still visible
             (matlab-shell-tab-hide-completions))
         ;; else handle multiple completions
-        (let ((try nil))
-          (setq try (try-completion common-substr completions))
+        (let ((try (try-completion common-substr completions)))
           ;; Insert in a good completion.
           (cond ((or (eq try nil) (eq try t)
                      (and (stringp try)
@@ -1487,7 +1467,7 @@ This should work in version before `completion-in-region' was available."
                  (insert common-substr)
                  (let ((cbuff (get-buffer-create "*Completions*")))
                    (with-output-to-temp-buffer cbuff
-                     (matlab-display-completion-list (mapcar 'car completions)
+                     (matlab-display-completion-list (mapcar #'car completions)
                                                      common-substr))
                    (display-buffer
                     cbuff
@@ -1595,22 +1575,19 @@ Has a preference for looking backward when not directly on a symbol.
 Snatched and hacked from dired-x.el"
   (let ((word-chars "a-zA-Z0-9_")
         (bol (line-beginning-position))
-        (eol (line-end-position))
-        start)
+        (eol (line-end-position)))
     (save-excursion
       ;; First see if just past a word.
       (if (looking-at (concat "[" word-chars "]"))
           nil
-        (skip-chars-backward (concat "^" word-chars "{}()\[\]") bol)
+        (skip-chars-backward (concat "^" word-chars "{}()[]") bol)
         (if (not (bobp)) (backward-char 1)))
       (if (numberp (string-match (concat "[" word-chars "]")
                                  (char-to-string (following-char))))
-          (progn
-            (skip-chars-backward word-chars bol)
-            (setq start (point))
-            (skip-chars-forward word-chars eol))
-        (setq start (point)))           ; If not found, return empty string
-      (buffer-substring start (point)))))
+          (buffer-substring (progn (skip-chars-backward word-chars bol) (point))
+                            (progn (skip-chars-forward word-chars eol) (point)))
+        ;; else not found, return empty string
+        ""))))
 
 (defun matlab-read-line-at-point ()
   "Get the line under point, if command line."
@@ -1824,9 +1801,7 @@ indication that it ran."
 
             ;; Get result of command into str
             (goto-char pos)
-            (setq str (buffer-substring-no-properties (save-excursion
-                                                        (goto-char output-start-char)
-                                                        (point))
+            (setq str (buffer-substring-no-properties output-start-char
                                                       (save-excursion
                                                         (goto-char (point-max))
                                                         (beginning-of-line)
@@ -1938,14 +1913,14 @@ return nil."
           nil)))))
 
 (defvar matlab-shell-mref-converters
-  '(
+  (list
     ;; Does it work as is?
     (lambda (mref) mref)
     ;; p files
-    (lambda (mref) (when (string-match "\\.\\(p\\)$" mref)
+    (lambda (mref) (when (string-match "\\.\\(p\\)\\'" mref)
                      (replace-match "m" nil t mref 1)))
     ;; Function name, no extension.
-    (lambda (mref) (when (not (string-match "\\.m$" mref)) (concat mref ".m")))
+    (lambda (mref) (when (not (string-match "\\.m\\'" mref)) (concat mref ".m")))
     ;; Methods in a class
     (lambda (mref) (when (string-match "\\." mref)
                      (matlab-shell-class-mref-to-file mref)))
