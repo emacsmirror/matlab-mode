@@ -33,8 +33,30 @@ function emacsdocomplete(substring)
 
     if verNum >= 25 % R2025a and later
 
-        % Completions TBD
+        cmd = ['builtin(''_programmingAidsTest'', '''', ''', ...
+               substring, ''', ', num2str(length(substring)), ', [])'];
+        json = evalin('base', cmd);
+        completionInfo = jsondecode(json);
         disp(['Completions-Lisp:', newline, '''(']);
+        if strcmp(completionInfo.widgetType, 'completion')
+            useCellIndex = iscell(completionInfo.widgetData.choices);
+            nChoices = length(completionInfo.widgetData.choices);
+            for idx = 1 : nChoices
+                if useCellIndex
+                    entry = completionInfo.widgetData.choices{idx};
+                else
+                    entry = completionInfo.widgetData.choices(idx);
+                end
+                if isfield(entry, 'purpose')
+                    purpose = [entry.purpose, ' '];
+                else
+                    purpose = '';
+                end
+                desc = [purpose, '(' entry.matchType, ')'];
+                desc = regexprep(desc,'"', '\\"');
+                disp(['  ("', entry.completion, '" . "', desc, '")']);
+            end
+        end
         disp(')');
 
     else % R2024b and earlier
