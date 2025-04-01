@@ -76,7 +76,8 @@
          (strlen (apply 'max (mapcar 'length files))))
     (message ">> Starting %s loop on %S" name files)
     (dolist (F files)
-      (princ (format (concat "<< %s %-" (number-to-string strlen) "s ") name F) 'external-debugging-output)
+      (princ (format (concat "<< %s %-" (number-to-string strlen) "s ") name F)
+             'external-debugging-output)
       (let ((old debug-on-error)
             (out (progn (setq debug-on-error nil)
                         (metest-timeit test F))))
@@ -98,12 +99,20 @@
             0)
      ))
 
-(defvar met-end-detect-files '("empty.m" "stringtest.m" "mfuncnoend.m" "mfuncnoendblock.m" "mfuncends.m" "mclass.m" "mfuncspacey.m" "mfuncnoendindent.m" "mfuncnofuncindent.m")
+(defvar met-end-detect-files '("empty.m"
+                               "stringtest.m"
+                               "mfuncnoend.m"
+                               "mfuncnoendblock.m"
+                               "mfuncends.m"
+                               "mclass.m"
+                               "mfuncspacey.m"
+                               "mfuncnoendindent.m"
+                               "mfuncnofuncindent.m")
   "List of files for running end detection tests on.")
 
 (defvar metest-end-detect-test (cons "END detection" met-end-detect-files))
 (defun metest-end-detect-test (F)
-  "Run test F to make sure we correctly detect the state of managing 'end'."
+  "Run test F to make sure we correctly detect the state of managing \"end\"."
   (let ((buf (metest-find-file F))
         (ret nil))
     (with-current-buffer buf
@@ -127,7 +136,8 @@
               (metest-error "Script indent detection failure: Expected %s but found %s"
                             indent-expect indent-actual))
 
-            (setq ret (list "script[" st-actual "]  end[" end-actual "]  indent-p[" indent-actual "]"))
+            (setq ret (list "script[" st-actual "]  end[" end-actual
+                            "]  indent-p[" indent-actual "]"))
             ;;(message "<< Script type and end detection passed: %s, %s" st-actual end-actual)
             )
         ;; No expected values found in the file.
@@ -162,7 +172,8 @@
         ;;(unless (equal md (match-data))
         ;;  (metest-error "Font Locking transmuted the match data"))
         (when (not (get-text-property 2 'fontified))
-          (metest-error "Font Lock Failure: can't run test because font lock failed to fontify region"))
+          (metest-error "Font Lock Failure: can't run test because font lock failed to \
+fontify region"))
         )
 
 
@@ -263,7 +274,7 @@
           (skip-chars-backward " %")  ; skip comment part
           (let* ((num (string-to-number (match-string 1))))
             (save-restriction
-              (narrow-to-region (point-at-bol) (point))
+              (narrow-to-region (line-beginning-position) (point))
               (metest-condition-case-error-msg
                (matlab-move-simple-sexp-internal (- num)))
               (skip-chars-backward " \t;.=%")
@@ -271,7 +282,7 @@
                   (save-restriction
                     (widen)
                     (metest-error "Backward Sexp miscount tried %d, point %d, min %d"
-                                  num (point) (point-at-bol))))
+                                  num (point) (line-beginning-position))))
               (skip-chars-forward " \t;.=%")
               (matlab-move-simple-sexp-internal num)
               (skip-chars-forward " \t\n;.=%")
@@ -279,7 +290,7 @@
                   (save-restriction
                     (widen)
                     (metest-error "Forward Sexp miscount tried %d, point %d, dest %d"
-                                  num (point) (point-at-eol)))))
+                                  num (point) (line-end-position)))))
             ))
         (end-of-line)
         (setq cnt (1+ cnt))))
@@ -321,7 +332,14 @@
     (list cnt "test")))
 
 
-(defvar met-indents-files '("indents.m" "continuations.m" "mclass.m" "blocks.m" "mfuncends.m" "mfuncnoendblock.m" "mclass_cont.m" "mfuncnofuncindent.m")
+(defvar met-indents-files '("indents.m"
+                            "continuations.m"
+                            "mclass.m"
+                            "blocks.m"
+                            "mfuncends.m"
+                            "mfuncnoendblock.m"
+                            "mclass_cont.m"
+                            "mfuncnofuncindent.m")
   "List of files for running syntactic indentation tests.")
 
 (defun metest-indents-randomize-files ()
@@ -363,7 +381,7 @@ INDENT is expected indent level."
   (save-excursion
     (beginning-of-line)
 
-    (when (re-search-forward "!!\\([0-9]+\\)" (point-at-eol) t)
+    (when (re-search-forward "!!\\([0-9]+\\)" (line-end-position) t)
       (let ((num (string-to-number (match-string 1))))
         (setq metest-indent-counts (1+ metest-indent-counts))
         (when (not (eq num indent))
@@ -471,18 +489,19 @@ INDENT is expected indent level."
         ;;(unless (equal md (match-data))
         ;;  (metest-error "Font Locking transmuted the match data"))
         (when (not (get-text-property 2 'fontified))
-          (metest-error "Font Lock Failure: can't run test because font lock failed to fontify region"))
+          (metest-error "Font Lock Failure: can't run test because font lock failed to \
+fontify region"))
         )
 
       ;; Lines that start with %^ comments are FL keyword test features.
       ;; Find the line, then look for every ^ and find it's column and match
       ;; to previous line's column.
       (while (re-search-forward "^\\s-*%\\(?: \\$\\$\\$\\)?\\^" nil t)
-        (let ((next (point-at-eol))
-              (prevstart (save-excursion (forward-line -1) (point-at-bol)))
+        (let ((next (line-end-position))
+              (prevstart (save-excursion (forward-line -1) (line-beginning-position)))
               )
-          (while (re-search-forward "\\^\\(\\w\\w\\)\\>" (point-at-eol) t)
-            (let* ((col (- (match-beginning 0) (point-at-bol)))
+          (while (re-search-forward "\\^\\(\\w\\w\\)\\>" (line-end-position) t)
+            (let* ((col (- (match-beginning 0) (line-beginning-position)))
                    (fk  (match-string-no-properties 1))
                    (pt (+ prevstart col))
                    (fnt (get-text-property pt 'face))
@@ -510,7 +529,6 @@ INDENT is expected indent level."
 
       (list cnt "lines with " fntcnt "fonts tested"))))
 
-
 (defun metest-fill-paragraph (&optional m-file)
   "Fill-paragraph on ./fill-paragraph/*.m and compare with *.m.expected.txt.
 For debugging, you can specify a M-FILE to test.
@@ -523,25 +541,34 @@ For example: (metest-fill-paragraph \"fill-paragraph/FILE.m\"))"
         (message "--> start metest-fill-paragraph %s" m-file)
         (find-file m-file)
 
-        ;; M-q after first character on each line, and also M-q after the "%" on each line if present
-        ;; Also M-q on empty lines
+        ;; M-q after first character on each line, and also M-q after the "%" on each line if
+        ;; present. Also run M-q on empty lines.
         (while (not (eobp))
-          (if (re-search-forward "[^ \t\n\r]" (line-end-position) t)
-              ;; fill an point after first character on line
-              (progn
-                (fill-paragraph)
-                (set-buffer-modified-p nil)
-                ;; Also fill after the comment if there's one
-                (when (and (goto-char (line-beginning-position))
-                           (re-search-forward "[^ \t\n\r]" (line-end-position) t)
-                           (not (progn
-                                  (goto-char (1- (point)))
-                                  (looking-at "%")))
-                           (re-search-forward "%" (line-end-position) t))
-                  (fill-paragraph)))
-            ;; else fill on an empty line
+          (cond
+           ;; Case: on a comment line
+           ((and (not (nth 4 (syntax-ppss)))  ;; not in comment
+                 (not (nth 3 (syntax-ppss)))  ;; not in a string
+                 (looking-at "^[ \t]*%"))
+            (fill-paragraph))
+
+           ;; Case: fill line and comments at end of line
+           ((re-search-forward "[^ \t\n\r]" (line-end-position) t)
+            ;; Fill at point after first character on line
             (fill-paragraph)
-            (set-buffer-modified-p nil))
+            (set-buffer-modified-p nil)
+            ;; Also fill after the comment if there's one
+            (when (and (goto-char (line-beginning-position))
+                       (re-search-forward "[^ \t\n\r]" (line-end-position) t)
+                       (not (progn
+                              (goto-char (1- (point)))
+                              (looking-at "%")))
+                       (re-search-forward "%" (line-end-position) t))
+              (fill-paragraph)))
+
+           ;; Else: fill on an empty line
+           (t
+            (fill-paragraph)
+            (set-buffer-modified-p nil)))
           (forward-line))
 
         ;; Get result, kill buffer, and compare result with expected result
@@ -600,13 +627,16 @@ Do error checking to provide easier debugging."
     (save-excursion
       (forward-line (- prelines))
       (while (> prelines 0)
-        (message "|%s" (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
+        (message "|%s" (buffer-substring-no-properties (line-beginning-position)
+                                                       (line-end-position)))
         (forward-line 1)
         (setq prelines (1- prelines)))
-      (message ">%s" (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
+      (message ">%s" (buffer-substring-no-properties (line-beginning-position)
+                                                     (line-end-position)))
       (forward-line 1)
       (while (and (> metest-error-context-lines prelines) (not (eobp)))
-        (message "|%s" (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
+        (message "|%s" (buffer-substring-no-properties (line-beginning-position)
+                                                       (line-end-position)))
         (forward-line 1)
         (setq prelines (1+ prelines))))
     (message "---^^ buffer snip ^^---")
@@ -649,7 +679,9 @@ Do error checking to provide easier debugging."
       ;; Go back and find our baseline and return it.
       (goto-char (point-min))
       (forward-line 1)
-      (read (concat "(" (buffer-substring-no-properties (point-at-bol) (point-at-eol)) ")"))
+      (read (concat "(" (buffer-substring-no-properties (line-beginning-position)
+                                                        (line-end-position))
+                    ")"))
       )))
 
 (defun metest-log-report (baseline)

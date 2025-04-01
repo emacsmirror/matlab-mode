@@ -1,6 +1,6 @@
 ;;; matlab.el --- major mode for MATLAB(R) dot-m files -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024 Free Software Foundation, Inc.
+;; Copyright (C) 1991-2025 Free Software Foundation, Inc.
 
 ;; Version: 6.3
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
@@ -938,11 +938,11 @@ color support."
     (let* ((flb font-lock-beg)
            (fle font-lock-end)
            (tmp (matlab--scan-block-backward-up (window-start)))
-           (blockmatch (when (not tmp) (matlab--mk-keyword-node))))
+           (blockmatch (unless tmp (matlab--mk-keyword-node))))
       (when (and (member (nth 1 blockmatch) '("properties" "events" "arguments"))
                  (matlab--valid-keyword-node blockmatch))
         (setq font-lock-beg (min font-lock-beg (line-beginning-position)))
-        (when (not (matlab--scan-next-keyword 'all (window-end)))
+        (unless (matlab--scan-next-keyword 'all (window-end))
           (setq font-lock-end (max font-lock-end (line-end-position)))))
 
       (if (and (eq font-lock-beg flb)
@@ -1320,7 +1320,7 @@ All Key Bindings:
   ;; and font-lock for comments/strings.
   (matlab-syntax-setup)
   (matlab-scan-setup)
-  (when (not noninteractive)
+  (unless noninteractive
     ;; "matlab %% sections" and has some cost, thus don't activate in batch mode.
     ;; TODO: investigate if a hook be better?
     (matlab-sections-mode-enable))
@@ -1639,7 +1639,7 @@ ARG specifies how far."
     (while (> arg 0)
       (matlab-end-of-string-or-comment t)
       (skip-syntax-forward " ")
-      (when (not (eq (matlab-on-keyword-p) 'decl))
+      (unless (eq (matlab-on-keyword-p) 'decl)
         (matlab--scan-block-backward-up-until 'decl))
       (skip-syntax-forward " ")
       (setq ans
@@ -2631,10 +2631,28 @@ filling which will automatically insert `...' and the end of a line."
 Paragraphs are always assumed to be in a comment.
 JUSTIFY is passed to `fill-comment-paragraph'."
   (interactive "P")
-  (when (nth 4 (syntax-ppss)) ;; In comment?
+
+  ;; If not in a comment and cursor is before the comment, move there and fill.
+  ;; Consider line containing space before a comment and point is in column 1:
+  ;;         % comment
+  ;;    ^
+  ;;    point at column 1
+  ;; In this case, move into the comment.
+  (unless (or (nth 4 (syntax-ppss))  ;; not in comment
+              (nth 3 (syntax-ppss))) ;; not in a string
+    (let (pt)
+      (save-excursion
+        (when (looking-at "^[ \t]*%")
+          (goto-char (match-end 0))
+          (when (nth 4 (syntax-ppss)) ;; in comment?
+            (setq pt (point)))))
+      (when pt
+        (goto-char pt))))
+
+  (when (nth 4 (syntax-ppss)) ;; In comment? If so fill.
     (fill-comment-paragraph justify))
   t)
-    
+
 
 
 ;;; Show Paren Mode support ==================================================
@@ -2951,7 +2969,7 @@ Optional argument FAST is ignored."
 Optional argument FAST skips this test in fast mode."
   ;; We used to do extra checking here, but now we do
   ;; checking in the verifier
-  (when (not fast)
+  (unless fast
     (matlab-mode-vf-block-matches-forward nil t)
     ))
 
@@ -3124,7 +3142,7 @@ desired.  Optional argument FAST is not used."
 
 ;; LocalWords:  Wette mwette edu Ludlam eludlam defconst compat easymenu defcustom mfiles objc elec
 ;; LocalWords:  CASEINDENT COMMANDINDENT sexp sg Fns Alist symbolp defun mmode setq decl memq progn
-;; LocalWords:  vf functionname booleanp keymap torkel fboundp gud ebstop mlgud ebclear mw
+;; LocalWords:  vf functionname booleanp keymap torkel fboundp gud ebstop mlgud ebclear mw SPDX Uwe
 ;; LocalWords:  ebstatus mlg mlgud's subjob featurep defface commanddual cellbreak cellbreaks cdr
 ;; LocalWords:  animatedline rlim thetalim cartesian stackedplot bubblechart swarmchart wordcloud
 ;; LocalWords:  bubblecloud heatmap parallelplot fcontour anim polarplot polarscatter polarhistogram
@@ -3137,4 +3155,4 @@ desired.  Optional argument FAST is not used."
 ;; LocalWords:  parenindent parenopt FUNCTIONs MAXs prev startpnt depthchange bc emacsen afterd md
 ;; LocalWords:  befored okpos startlst endlst ellipsify noreturn hs tc hc startsym endsym mapc func
 ;; LocalWords:  filetype bn nondirectory scanstate sexp's nosemi msgpos fullindent nexti defn sw
-;; LocalWords:  classdef's aref parens
+;; LocalWords:  classdef's aref parens Brauer oub ucm docstring ppss
