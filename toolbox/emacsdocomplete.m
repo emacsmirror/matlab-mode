@@ -27,63 +27,71 @@ function emacsdocomplete(substring)
 
     persistent verNum;
     if isempty(verNum)
-        v = ver('MATLAB'); %#ok<*VERMATLAB>
+        v      = ver('MATLAB'); %#ok<*VERMATLAB>
         verNum = str2double(v.Version);
     end
 
+    qStr = strrep(substring, '''', '''''');
+    lStr = num2str(length(substring));
+
     if verNum >= 25 % R2025a and later
 
-        cmd = ['builtin(''_programmingAidsTest'', '''', ''', ...
-               substring, ''', ', num2str(length(substring)), ', [])'];
-        json = evalin('base', cmd);
-        completionInfo = jsondecode(json);
+        cmd   = ['builtin(''_programmingAidsTest'', '''', ''', qStr, ''', ', lStr, ', [])'];
+        cInfo = jsondecode(evalin('base', cmd)); % use base workspace for variable completions
+        cMap  = dictionary('', true);
+
         disp(['Completions-Lisp:', newline, '''(']);
-        if strcmp(completionInfo.widgetType, 'completion')
-            useCellIndex = iscell(completionInfo.widgetData.choices);
-            nChoices = length(completionInfo.widgetData.choices);
-            for idx = 1 : nChoices
-                if useCellIndex
-                    entry = completionInfo.widgetData.choices{idx};
-                else
-                    entry = completionInfo.widgetData.choices(idx);
+        if isfield(cInfo, "signatures")
+            sigs  = cInfo.signatures;
+            cSigs = iscell(sigs);
+            for i = 1 : length(sigs)
+                if cSigs, args = sigs{i}.inputArguments; else, args = sigs(i).inputArguments; end
+                cArgs = iscell(args);
+                for j = 1 : length(args)
+                    if cArgs, arg = args{j}; else, arg = args(j); end
+                    if isfield(arg, 'widgetData') && isfield(arg.widgetData, 'choices')
+                        DispCompletionChoices(arg.widgetData.choices);
+                    end
                 end
-                if isfield(entry, 'purpose')
-                    purpose = [entry.purpose, ' '];
-                else
-                    purpose = '';
-                end
-                desc = [purpose, '(' entry.matchType, ')'];
-                desc = regexprep(desc,'"', '\\"');
-                disp(['  ("', entry.completion, '" . "', desc, '")']);
             end
+        elseif isfield(cInfo, 'widgetData') && isfield(cInfo.widgetData, 'choices')
+            DispCompletionChoices(cInfo.widgetData.choices);
         end
         disp(')');
 
     else % R2024b and earlier
 
         if verNum < 8.4
-            % Pre R2014b: partial_string
-            extracmd = '';
+            extracmd = ''; % Pre R2014b: partial_string
         else
-            % Post R2014b: partial_string, caret, num
-            extracmd = [ ', ' num2str(length(substring)) ',0' ];
+            extracmd = [', ', lStr, ', 0']; % Post R2014b: partial_string, caret, num
         end
-
-        substringQuoted = strrep(substring, '''', '''''');
-
-        command = ...
-            ['matlabMCRprocess_emacs = com.mathworks.jmi.MatlabMCR;' ...
-             'emacs_completions_output = matlabMCRprocess_emacs.mtFindAllTabCompletions(''' ...
-             substringQuoted '''' extracmd '),' ...
-             'clear(''matlabMCRprocess_emacs'',''emacs_completions_output'');'];
-
-        % Completion engine needs to run in the base workspace to know what the variables you have
-        % to work with are.
-        evalin('base', command);
+        cmd = ['matlabMCRprocess_emacs = com.mathworks.jmi.MatlabMCR;' ...
+               'emacs_completions_output = matlabMCRprocess_emacs.mtFindAllTabCompletions(''' ...
+               qStr '''' extracmd '),' ...
+               'clear(''matlabMCRprocess_emacs'',''emacs_completions_output'');'];
+        evalin('base', cmd); % run in base to get completions on base workspace variables
 
     end
 
-end
+    function DispCompletionChoices(choices)
+        nChoices = length(choices);
+        cChoices = iscell(choices);
+        for choiceIdx = 1 : nChoices
+            if cChoices, entry = choices{choiceIdx}; else, entry = choices(choiceIdx); end
+            if ~cMap.isKey(entry.completion)
+                cMap(entry.completion) = true;
+                if isfield(entry, 'purpose'), info = [entry.purpose, ' ']; else, info = ''; end
+                desc = [info, '(' entry.matchType, ')'];
+                desc = regexprep(desc, '"', '\\"');
+                comp = regexprep(entry.completion, '"', '\\"');
+                disp(['  ("', comp, '" . "', desc, '")']);
+            end
+        end
+    end
+
+end % emacsdocomplete
+
 
 
 function done = UseDashComplete(substring)
@@ -107,10 +115,13 @@ function done = UseDashComplete(substring)
 %
 % See details in `matlab-shell-completion-list'.
 %
+% TODO: remove and use function signatures.
+%       https://www.mathworks.com/help/mps/restfuljson/matlab-function-signatures-in-json.html
+%
 
     persistent completeSw; % if completeSw(cmd), then supports -complete
     if isempty(completeSw)
-        completeSw=containers.Map();
+        completeSw = containers.Map(); % use containers.Map instead of dictionary for old releases
     end
 
     done = false;
@@ -124,13 +135,13 @@ function done = UseDashComplete(substring)
         else
             supportsDashComplete = false; % assume
             f = which(cmd);
-            if regexp(f,'\.m$')
+            if regexp(f, '\.m$')
                 fid=fopen(f, 'r');
                 if fid ~= -1
                     while true
                         l = fgetl(fid);
                         if ~ischar(l), break, end
-                        if regexp(l,'SUPPORTS_DASH_COMPLETE')
+                        if regexp(l, 'SUPPORTS_DASH_COMPLETE')
                             supportsDashComplete = true;
                             break
                         end
@@ -145,11 +156,15 @@ function done = UseDashComplete(substring)
             % For /path/to/cmd.ext we have /path/to/cmd.complete which
             % signals that we can get the completions by calling
             %    CMD -complete ARGS
-            completeCmd = regexprep(substring,'^(\w+)','$1 -complete');
+            completeCmd = regexprep(substring, '^(\w+)', '$1 -complete');
             disp('emacs_completions_output =');
-            evalin('base',completeCmd);
+            evalin('base', completeCmd);
             done = true;
         end
     end
 
 end
+
+% [EOF] toolbox/emacsdocomplete.m
+
+% LocalWords:  ciolfi ludlam zappo gmail Rprocess Sw
