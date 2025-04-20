@@ -8,13 +8,13 @@
 To isolate problems, it's often good to run stock Emacs with matlab-mode:
 
   #+begin_src bash
-    # In /path/to/Emacs-MATLAB-mode
+    # In /path/to/Emacs-MATLAB-Mode
     make clean
     make lisp    # Build only. If you want to build and run tests remove the lisp target
 
     # From anywhere
     echo "% empty" > startup.m
-    M=/path/to/Emacs-MATLAB-mode
+    M=/path/to/Emacs-MATLAB-Mode
     env MATLABPATH=  emacs -Q -L $M -l $M/matlab-autoload.el
 
     # If you want to run a specific version of MATLAB, /matlab-install/bin/matlab:
@@ -29,7 +29,7 @@ variable. This ensures you are running MATLAB with an unaltered environment. Pro
 matlab-shell can occur when either MATLABPATH or startup.m is altering the behavior of
 MATLAB. Therefore, if you see problems, try running with an unaltered environment.
 
-If you open *.m you will be using the matlab-mode from /path/to/Emacs-MATLAB-mode.
+If you open *.m you will be using the matlab-mode from /path/to/Emacs-MATLAB-Mode.
 
 To run MATLAB in Emacs:
 

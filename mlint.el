@@ -1,6 +1,6 @@
 ;;; mlint.el --- run mlint in a MATLAB buffer -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024 Free Software Foundation, Inc.
+;; Copyright (C) 2002-2025 Free Software Foundation, Inc.
 
 ;; Author: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>
@@ -129,23 +129,24 @@ This value can be automatically set by \\=`mlint-programs\\='.")
 (defun mlint-reset-program ()
   "Reset `mlint-program'."
   (setq mlint-program
-        (let* ((root (matlab-mode-determine-matlabroot))
-               (bin (expand-file-name "bin" root))
-               (mlp mlint-programs)
-               (ans nil))
-          (while (and mlp (not ans))
-            (cond ((null (car mlp))
-                   nil)
-                  ((file-executable-p (car mlp))
-                   (setq ans (car mlp)))
-                  ((executable-find (car mlp))
-                   (setq ans (executable-find (car mlp))))
-                  ;; Use the matlabroot found by matlab-shell
-                  ((file-executable-p (expand-file-name (car mlp) bin))
-                   (setq ans (expand-file-name (car mlp) bin)))
-                  (t nil))
-            (setq mlp (cdr mlp)))
-          ans)))
+        (let ((root (matlab-mode-determine-matlabroot)))
+          (when root
+            (let ((bin (expand-file-name "bin" root))
+                  (mlp mlint-programs)
+                  (ans nil))
+              (while (and mlp (not ans))
+                (cond ((null (car mlp))
+                       nil)
+                      ((file-executable-p (car mlp))
+                       (setq ans (car mlp)))
+                      ((executable-find (car mlp))
+                       (setq ans (executable-find (car mlp))))
+                      ;; Use the matlabroot found by matlab-shell
+                      ((file-executable-p (expand-file-name (car mlp) bin))
+                       (setq ans (expand-file-name (car mlp) bin)))
+                      (t nil))
+                (setq mlp (cdr mlp)))
+              ans)))))
 
 (defcustom mlint-programs (list
                            "mlint"

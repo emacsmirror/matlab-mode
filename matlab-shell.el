@@ -58,8 +58,22 @@
   "List of functions to call on entry to MATLAB shell mode."
   :type 'hook)
 
+(defvar matlab-shell--default-command
+  '((gnu/linux  . "/usr/local/MATLAB/R*/bin/matlab")
+    (darwin     . "/Applications/MATLAB_R*.app/bin/matlab")
+    (windows-nt . "C:/Program Files/MATLAB/R*/bin/matlab.exe"))
+  "Standard MATLAB command installation locations, SYSTEM => GLOB.")
+
 (defcustom matlab-shell-command "matlab"
-  "The name of the command to be run which will start the MATLAB process."
+  "The MATLAB command executable used to start MATLAB.
+This can be:
+ - the name of the MATLAB command (e.g. \"matlab\") which is
+   found on the system PATH.
+ - an absolute path to the matlab executable.  For example,
+   \"/<path-to-MATLAB-install-dir>/bin/matlab\"
+If matlab-shell-command is set to \"matlab\" and \"matlab\" is not
+on the system PATH, `matlab-shell' will look for the matlab
+command executable in the default MATLAB installation locations."
   :type 'string)
 
 (defcustom matlab-shell-command-switches '("-nodesktop")
@@ -253,22 +267,101 @@ mode.")
           matlab-really-gaudy-font-lock-keywords)
   "Keyword symbol used for really gaudy font-lock for MATLAB shell.")
 
-;;; ROOT
+(defun matlab-shell--matlab-not-found (no-help-window &optional default-loc)
+  "Signal error, MATLAB command not on system PATH or in optional DEFAULT-LOC.
+If NO-HELP-WINDOW is t, do not show the help window"
+  (let ((msg (format "Unable to locate \"%s\" on the system PATH%s"
+                     matlab-shell-command
+                     (if default-loc
+                         (format " or in the default installation location, %s"
+                                 default-loc)
+                       ""))))
+    (when (not no-help-window)
+      (let ((help-buf-name "*matlab-shell-help*"))
+        (with-current-buffer (get-buffer-create help-buf-name)
+          (with-help-window help-buf-name
+            (insert msg "
+
+To fix, you update your system PATH to include
+  \"/<path-to-MATLAB-install>/bin\"
+To verify matlab is on your path, run \"matlab -h\" in a terminal.
+
+Alternatively, you can provide the full path to the
+MATLAB command executable by customizing option
+`matlab-shell-command'\n")))))
+
+    (user-error "%s" msg)))
+
+(cl-defun matlab-shell--abs-matlab-exe (&optional no-error)
+  "Absolute path to the MATLAB command executable.
+When `matlab-shell-command' is an absolute path, then this will
+be resolved to its true name.  Otherwise, `matlab-shell-command'
+is found using `executable-find'.  If `matlab-shell-command' is
+\"matlab\" and not the system PATH, this will return the latest
+MATLAB installed command found using
+`matlab-shell--default-command'.
+
+If NO-ERROR is t, and matlab command is not found, nil is return,
+otherwise an error is signaled."
+  (condition-case err
+      (let (abs-matlab-exe)
+        (cond
+
+         ;;Case: the path to the matlab executable was provided, validate it exists and
+         ;;      return the true path.
+         ((file-name-absolute-p matlab-shell-command)
+          (when (not (file-exists-p matlab-shell-command))
+            (user-error "Invalid setting for `matlab-shell-command', %s does not exist"
+                        matlab-shell-command))
+          (when (not (file-executable-p matlab-shell-command))
+            (user-error "Invalid setting for `matlab-shell-command', %s is not executable"
+                        matlab-shell-command))
+          (setq abs-matlab-exe (file-truename matlab-shell-command)))
+
+         ;; Case: set to a relative path
+         ;;
+         ((when (file-name-directory matlab-shell-command)
+            (user-error "Relative paths are not supported for `matlab-shell-command', %s"
+                        matlab-shell-command)))
+
+         ;; Case: "matlab" (or something similar), locate it on the executable path
+         ;;       else locate in standard install locations.
+         (t
+          (setq abs-matlab-exe (executable-find matlab-shell-command))
+          (when (not abs-matlab-exe)
+            (if (string= matlab-shell-command "matlab")
+                ;; Get latest matlab command exe from the default installation location.
+                (let* ((default-loc (cdr (assoc system-type matlab-shell--default-command)))
+                       (default-matlab (when default-loc
+                                         (car (last (sort
+                                                     (file-expand-wildcards default-loc)
+                                                     #'string<))))))
+                  (when (not default-matlab)
+                    (matlab-shell--matlab-not-found no-error default-loc))
+                  (when (not (file-executable-p default-matlab))
+                    (user-error "%s is not executable" default-matlab))
+                  (setq abs-matlab-exe default-matlab))
+              ;; else unable to locate it
+              (matlab-shell--matlab-not-found no-error)))))
+
+        ;; Return existing absolute path to the MATLAB command executable
+        abs-matlab-exe)
+    (error (when (not no-error) (error "%s" (error-message-string err))))))
+
+;;; ROOT: matlabroot
 ;;
 ;;;###autoload
 (defun matlab-mode-determine-matlabroot ()
-  "Return the MATLABROOT for the `matlab-shell-command'."
-  (let ((path (file-name-directory matlab-shell-command)))
-    ;; if we don't have a path, find the MATLAB executable on our path.
-    (unless path
-      (setq path  (matlab-find-executable-directory matlab-shell-command)))
-    (when path
-      ;; When we find the path, we need to massage it to identify where
-      ;; the M files are that we need for our completion lists.
-      (if (string-match "/bin/?$" path)
-          (setq path (substring path 0 (match-beginning 0)))))
-    path))
-
+  "Return the MATLABROOT for the `matlab-shell-command'.
+The MATLABROOT does not have a trailing slash.
+Returns nil if unable to determine the MATLABROOT."
+  ;; strip "/bin/matlab" from /path/to/matlabroot/bin/matlab
+  (let ((abs-matlab-exe (matlab-shell--abs-matlab-exe 'no-error)))
+    (when abs-matlab-exe
+      (let ((bin-dir (directory-file-name (file-name-directory abs-matlab-exe))))
+        ;; matlabroot no slash
+        (directory-file-name (file-name-directory bin-dir))))))
+    
 
 ;;; Keymaps & Menus
 ;;
@@ -278,7 +371,7 @@ mode.")
     (set-keymap-parent km comint-mode-map)
 
     ;; We can jump to errors, so take over this keybinding.
-    ;; FIXME: Shoulw we set `next-error-function' instead?
+    ;; FIXME: Should we set `next-error-function' instead?
     ;;        https://github.com/mathworks/Emacs-MATLAB-Mode/issues/23
     (substitute-key-definition #'next-error #'matlab-shell-last-error
                                km global-map)
@@ -499,8 +592,10 @@ Try C-h f matlab-shell RET"))
     ;; Thx David Chappaz for reminding me about this patch.
     (let* ((windowid (frame-parameter (selected-frame) 'outer-window-id))
            (newvar (concat "WINDOWID=" windowid))
-           (process-environment (cons newvar process-environment)))
-      (apply #'make-comint matlab-shell-buffer-name matlab-shell-command
+           (process-environment (cons newvar process-environment))
+           (abs-matlab-exe (matlab-shell--abs-matlab-exe)))
+      (message "Running: %s" abs-matlab-exe)
+      (apply #'make-comint matlab-shell-buffer-name abs-matlab-exe
              nil matlab-shell-command-switches))
 
     ;; Enable GUD
@@ -2502,11 +2597,11 @@ Argument FNAME specifies if we should echo the region to the command line."
 ;; LocalWords:  emacsclient commandline emacsrunregion errorscanning cco defconst defun setq Keymaps
 ;; LocalWords:  keymap subjob kbd emacscd featurep fboundp EDU msbn pc Thx Chappaz windowid tcp lang
 ;; LocalWords:  postoutput capturetext EMACSCAP captext STARTCAP progn eol dbhot erroexamples cdr
-;; LocalWords:  ENDPT dolist overlaystack mref deref errortext ERRORTXT shellerror Emacsen iq nt
+;; LocalWords:  ENDPT dolist overlaystack mref deref errortext ERRORTXT shellerror Emacsen iq nt buf
 ;; LocalWords:  auth mlfile emacsinit initcmd nsa ecc ecca clientcmd EMAACSCAP buffname showbuff
 ;; LocalWords:  evalforms Histed pmark memq promptend numchars integerp emacsdocomplete mycmd ba
 ;; LocalWords:  nreverse emacsdocompletion byteswap stringp cbuff mapcar bw FCN's alist substr usr
 ;; LocalWords:  BUILTINFLAG dired bol bobp numberp princ minibuffer fn matlabregex lastcmd notimeout
 ;; LocalWords:  stacktop eltest testme localfcn LF fileref funcall ef ec basec sk nondirectory utils
 ;; LocalWords:  ignoredups boundp edir sexp Fixup mapc emacsrun noshow cnt ellipsis newf bss noselect
-;; LocalWords:  fname mlx
+;; LocalWords:  fname mlx xemacs linux darwin truename
