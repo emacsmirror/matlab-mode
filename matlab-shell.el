@@ -308,7 +308,7 @@ otherwise an error is signaled."
         (cond
 
          ;;Case: the path to the matlab executable was provided, validate it exists and
-         ;;      return the true path.
+         ;;      return it.
          ((file-name-absolute-p matlab-shell-command)
           (when (not (file-exists-p matlab-shell-command))
             (user-error "Invalid setting for `matlab-shell-command', %s does not exist"
@@ -316,7 +316,10 @@ otherwise an error is signaled."
           (when (not (file-executable-p matlab-shell-command))
             (user-error "Invalid setting for `matlab-shell-command', %s is not executable"
                         matlab-shell-command))
-          (setq abs-matlab-exe (file-truename matlab-shell-command)))
+          ;; Use the path provided. Consider the case where a launcher script is provided and the
+          ;; launcher script is symlink'd. In this case, we shouldn't resolve the symlinks, i.e.
+          ;; using file-truename would break this case.
+          (setq abs-matlab-exe matlab-shell-command))
 
          ;; Case: set to a relative path
          ;;
