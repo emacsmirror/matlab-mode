@@ -282,7 +282,7 @@ If NO-HELP-WINDOW is t, do not show the help window"
           (with-help-window help-buf-name
             (insert msg "
 
-To fix, you update your system PATH to include
+To fix, update your system PATH to include
   \"/<path-to-MATLAB-install>/bin\"
 To verify matlab is on your path, run \"matlab -h\" in a terminal.
 
