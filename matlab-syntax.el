@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2024 Free Software Foundation, Inc.
 
-;; Author:  <eludlam@mathworks.com>
+;; Author:  <eludlam@mathworks.com>, <john.ciolfi.32@gmail.com>
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -20,7 +20,7 @@
 ;;; Commentary:
 ;;
 ;; Manage syntax handling for `matlab-mode'.
-;; Matlab's syntax for comments and strings can't be handled by a standard
+;; MATLAB's syntax for comments and strings can't be handled by a standard
 ;; Emacs syntax table.  This code handles the syntax table, and special
 ;; scanning needed to augment a buffer's syntax for all our special cases.
 ;;
@@ -28,8 +28,10 @@
 ;; block scanning, and the line.
 
 (require 'matlab-compat)
+(require 'matlab-sections)
 
 ;;; Code:
+
 (defvar matlab-syntax-support-command-dual t
   "Non-nil means to support command dual for indenting and syntax highlight.
 Does not work well in classes with properties with datatypes.")
@@ -58,7 +60,7 @@ Does not work well in classes with properties with datatypes.")
     ;;   Unterminated Char V: ' text
     (modify-syntax-entry ?'  "\"" st)
     (modify-syntax-entry ?\" "\"" st)
-    
+
     ;; Words and Symbols:
     (modify-syntax-entry ?_  "_" st)
 
@@ -83,7 +85,7 @@ Does not work well in classes with properties with datatypes.")
     (modify-syntax-entry ?\]  ")[" st)
     ;;(modify-syntax-entry ?{  "(}" st) - Handled as part of comments
     ;;(modify-syntax-entry ?}  "){" st)
-    
+
     st)
   "MATLAB syntax table.")
 
@@ -178,7 +180,7 @@ and `matlab--scan-line-for-unterminated-string' for specific details."
 	    (end-of-line)
 	    (matlab--put-char-category (point) 'matlab--command-dual-syntax)
 	    ))
-	
+
 	;; Multiple ellipsis can be on a line.  Find them all
 	(beginning-of-line)
 	(while (matlab--scan-line-for-ellipsis)
@@ -324,10 +326,17 @@ Called when comments found in `matlab--scan-line-for-unterminated-string'."
 	    (t
 	     'font-lock-string-face))
 
-    ;; Not a string, must be a comment.  Check to see if it is a
-    ;; cellbreak comment.
-    (cond ((and (< (nth 8 pps) (point-max))
-		(= (char-after (1+ (nth 8 pps))) ?\%))
+    ;; Not a string, must be a comment. Pick type of comment face to use.
+    (cond ((and (boundp 'matlab-sections-minor-mode) matlab-sections-minor-mode
+                (< (nth 8 pps) (point-max))
+                (= (char-after (1+ (nth 8 pps))) ?\%) ;; looking-at "%%"?
+                ;; Now see if we have a valid section start comment
+                (save-excursion
+                  (save-restriction
+                    (widen)
+                    (goto-char (nth 8 pps))
+                    (beginning-of-line)
+                    (looking-at matlab-sections-section-break-regexp))))
 	   'matlab-sections-section-break-face)
 	  ((and (< (nth 8 pps) (point-max))
 		(= (char-after (1+ (nth 8 pps))) ?\#))
@@ -369,7 +378,7 @@ Safe to use in `matlab-mode-hook'."
   (setq paragraph-separate paragraph-start)
   (make-local-variable 'paragraph-ignore-fill-prefix)
   (setq paragraph-ignore-fill-prefix t)
-  
+
   ;; Font lock
   (make-local-variable 'font-lock-syntactic-face-function)
   (setq font-lock-syntactic-face-function 'matlab--font-lock-syntactic-face)
@@ -430,7 +439,7 @@ bounds of the string or comment the cursor is in"
 			   'comment
 			 'ellipsis))
 		      (t nil)))
-	  
+
 	  ;; compute the bounds
 	  (when (and syntax bounds-sym)
 	    (if (memq syntax '(charvector string))
@@ -452,7 +461,7 @@ Optional ALL-COMMENTS if t, move to first."
     (prog1
 	(when (nth 8 pps)
 	  (goto-char (nth 8 pps))
-	  
+
 	  t)
       (when all-comments
 	(prog1
@@ -583,4 +592,4 @@ If COUNT is negative, travel backward."
 
 ;; LocalWords:  Ludlam eludlam compat booleanp propertize varname defmacro oldsyntax progn edebug
 ;; LocalWords:  ppss sexp pps defun eobp mcm blockcomment EOL defconst commanddual cds bolp eol
-;; LocalWords:  cellbreak setq defsubst charvector memq sexps posn parens
+;; LocalWords:  cellbreak setq defsubst charvector memq sexps posn parens boundp gmail

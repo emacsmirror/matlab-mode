@@ -109,7 +109,7 @@ Applies when no other methods are found."
 
 (defcustom matlab-cont-requires-ellipsis t
   "*Specify if ellipses are required at the end of a line for continuation.
-Future versions of Matlab may not require ellipses ... , so a heuristic
+Future versions of MATLAB may not require ellipses ... , so a heuristic
 determining if there is to be continuation is used instead."
   :group 'matlab
   :type 'integer)
@@ -119,13 +119,13 @@ determining if there is to be continuation is used instead."
 This can be an integer, which is the distance to indent the CASE and
 OTHERWISE commands, and how far to indent commands appearing in CASE
 and OTHERWISE blocks.  It can also be a cons cell which is of form
-  (CASEINDENT . COMMANDINDENT)
-where CASEINDENT is the indentation of the CASE and OTHERWISE
-statements, and COMMANDINDENT is the indentation of commands appearing
+  (CASE-INDENT . COMMAND-INDENT)
+where CASE-INDENT is the indentation of the CASE and OTHERWISE
+statements, and COMMAND-INDENT is the indentation of commands appearing
 after the CASE or OTHERWISE command.
 
 Note: Currently a bug exists if:
-  CASEINDENT+COMMANDINDENT != `matlab-indent-level'
+  CASE-INDENT + COMMAND-INDENT != `matlab-indent-level'
 so if you customize these variables, follow the above rule, and you
 should be ok."
   :group 'matlab
@@ -222,11 +222,11 @@ If the value is \\='guess, then we guess if a file has end when
                          " function...")))
   :keymap: nil ; empty mode-map
   ;; body of matlab-functions-have-end-minor-mode
-  (let ((type (matlab-guess-script-type)))
+  (let ((mfile-type (matlab-guess-mfile-type)))
     (if matlab-functions-have-end-minor-mode
-        (if (eq type 'empty)
+        (if (eq mfile-type 'empty)
             (setq matlab-functions-have-end 'guess)
-          (setq matlab-functions-have-end type))
+          (setq matlab-functions-have-end mfile-type))
       (setq matlab-functions-have-end nil)
       )
     ;; Depending on the kind of end, lets set other variables.
@@ -244,17 +244,17 @@ If the value is \\='guess, then we guess if a file has end when
            ))
     ))
 
-(defvar matlab-last-script-type-guess nil
+(defvar matlab-last-mfile-type-guess nil
   "The last time we guessed the script type, what was it?")
 (defun matlab-last-guess-decl-p ()
   "Return non-nil if our last guess at a script type was function or class."
-  (memq matlab-last-script-type-guess '(function class)))
+  (memq matlab-last-mfile-type-guess '(function class)))
 
-(defun matlab-guess-script-type ()
-  "Guess the type of script this `matlab-mode' file is.
+(defun matlab-guess-mfile-type ()
+  "Guess the type `matlab-mode' file is.
 Returns one of \\='empty, \\='script, \\='function, \\='class."
   (setq
-   matlab-last-script-type-guess
+   matlab-last-mfile-type-guess
    (cond
     ((not buffer-file-name)
      ;; Consider the case of exporting an org-mode '#+begin_src matlab' code block.  In this case
@@ -284,42 +284,41 @@ Returns one of \\='empty, \\='script, \\='function, \\='class."
                 ;; No function or class - just a script.
                 'script))))))))
 
-(defun matlab-do-functions-have-end-p (&optional no-navigate)
+(defun matlab-do-functions-have-end-p (mfile-type &optional no-navigate)
   "Do functions have end statements based on buffer content?
 Look at the contents of the current buffer and decide if functions
 have end.  If the current value of `matlab-functions-have-end' is
 \\='guess, look @ the buffer.  If the value is t, then return that.
+MFILE-TYPE is from `matlab-guess-mfile-type'.
 Specify NO-NAVIGATE to avoid searching."
   (if (eq matlab-functions-have-end 'guess)
       ;; Lets guess what we think the answer is.
-      (let ((type (matlab-guess-script-type)))
-        (cond ((eq type 'empty)
-               'guess) ;; Keep guessing until we get some code.
-              ((eq type 'script)
-               'script) ;; modern scripts can have functions, and they are required to have an end.
-              ((eq type 'class)
-               'class)  ;; classes always have ends.
-              (no-navigate
-               ;; Functions, but don't navigate ... stay in guess mode.
-               'guess)
-              (t
-               ;; functions but do navigate - we need to see if there is an end.
-               (save-excursion
-                 (goto-char (point-min))
-                 (matlab-find-code-line)
-                 (let ((matlab-functions-have-end t)) ;; pretend we have ends
-                   (back-to-indentation)
-                   (if (eq (matlab-on-keyword-p) 'decl)
-                       ;; If block scanning returns state, then that means
-                       ;; there is a missing end, so value is nil.
-                       ;; If it returns empty, then there is a matching end.
-                       (if (matlab--scan-block-forward)
-                           nil
-                         t)
-                     ;; Not on a decl, therefore just say nil, since block scanning would fail.
-                     nil)
-                   ))))
-        )
+      (cond ((eq mfile-type 'empty)
+             'guess) ;; Keep guessing until we get some code.
+            ((eq mfile-type 'script)
+             'script) ;; modern scripts can have functions, and they are required to have an end.
+            ((eq mfile-type 'class)
+             'class)  ;; classes always have ends.
+            (no-navigate
+             ;; Functions, but don't navigate ... stay in guess mode.
+             'guess)
+            (t
+             ;; functions but do navigate - we need to see if there is an end.
+             (save-excursion
+               (goto-char (point-min))
+               (matlab-find-code-line)
+               (let ((matlab-functions-have-end t)) ;; pretend we have ends
+                 (back-to-indentation)
+                 (if (eq (matlab-on-keyword-p) 'decl)
+                     ;; If block scanning returns state, then that means
+                     ;; there is a missing end, so value is nil.
+                     ;; If it returns empty, then there is a matching end.
+                     (if (matlab--scan-block-forward)
+                         nil
+                       t)
+                   ;; Not on a decl, therefore just say nil, since block scanning would fail.
+                   nil)
+                 ))))
     ;; Else, just return the default.
     matlab-functions-have-end))
 
@@ -342,48 +341,48 @@ See `matlab-indent-function-body' variable."
     ;; Else, just return the variable.
     matlab-indent-function-body))
 
-(defun matlab-guess-function-indentation ()
+(defun matlab-guess-function-indentation (mfile-type)
   "Look at the current buffer and determine if functions are indented.
-Setup various variables based on what we find."
-  (let ((st (matlab-guess-script-type))
-        )
-    (cond
-     ((not (eq st 'function))
-      ;; Anything not a function should follow the mathworks standard.
-      (setq matlab-indent-function-body 'MathWorks-Standard)
-      )
+Setup various variables based on what we find.
+MFILE-TYPE is from `matlab-guess-mfile-type'."
 
-     ;; If we are guessing, keep guessing (vaguely true)
-     ((eq (matlab-do-functions-have-end-p t) 'guess)
-      (setq matlab-indent-function-body 'guess))
+  (cond
+   ((not (eq mfile-type 'function))
+    ;; Anything not a function should follow the mathworks standard.
+    (setq matlab-indent-function-body 'MathWorks-Standard)
+    )
 
-     ;; Here it is a function, and there are no ends.
-     (t
-      ;; Functions in guess mode we need to find the function decl
-      ;; and then look at the first code line and see if it is indented
-      ;; to guess what to do.
-      (save-excursion
-        (goto-char (point-min))
-        (matlab-find-code-line)
-        ;; We are likely on the fcn line.  Scan to end of it.
-        (matlab-scan-end-of-command)
-        ;; Now find next code line after comments
-        (matlab-find-code-line)
-        ;; If it is indented, then we too will indent.
-        (setq matlab-indent-function-body
-              (if (> (current-indentation) 0)
-                  (if (matlab-do-functions-have-end-p t)
-                      ;; if it indented and we have ends, that is std.
-                      'MathWorks-Standard
-                    ;; no ends but indented, not the standard.
-                    t)
-                (if (matlab-do-functions-have-end-p t)
-                    ;; have ends, not indented, force nil.
-                    nil
-                  ;; no ends and not indented, mw standard
-                  'MathWorks-Standard)))
-        )))
-    ))
+   ;; If we are guessing, keep guessing (vaguely true)
+   ((eq (matlab-do-functions-have-end-p mfile-type t) 'guess)
+    (setq matlab-indent-function-body 'guess))
+
+   ;; Here it is a function, and there are no ends.
+   (t
+    ;; Functions in guess mode we need to find the function decl
+    ;; and then look at the first code line and see if it is indented
+    ;; to guess what to do.
+    (save-excursion
+      (goto-char (point-min))
+      (matlab-find-code-line)
+      ;; We are likely on the fcn line.  Scan to end of it.
+      (matlab-scan-end-of-command)
+      ;; Now find next code line after comments
+      (matlab-find-code-line)
+      ;; If it is indented, then we too will indent.
+      (setq matlab-indent-function-body
+            (if (> (current-indentation) 0)
+                (if (matlab-do-functions-have-end-p mfile-type t)
+                    ;; if it indented and we have ends, that is std.
+                    'MathWorks-Standard
+                  ;; no ends but indented, not the standard.
+                  t)
+              (if (matlab-do-functions-have-end-p mfile-type t)
+                  ;; have ends, not indented, force nil.
+                  nil
+                ;; no ends and not indented, mw standard
+                'MathWorks-Standard)))
+      )))
+  )
 
 (defcustom matlab-fill-fudge 10
   "Number of characters around `fill-column' we can fudge filling.
@@ -525,7 +524,6 @@ point, but it will be restored for them."
     km)
   "The help key map for `matlab-mode' and `matlab-shell-mode'.")
 
-;; mode map
 (defvar matlab-mode-map
   (let ((km (make-sparse-keymap)))
     ;; Navigation Commands
@@ -565,12 +563,6 @@ point, but it will be restored for them."
     km)
   "The keymap used in `matlab-mode'.")
 
-;;; TODO - this menu was all about when emacs didn't always have windows (e18 ?)
-;;  turn this into a regular menu definition.
-(defvar matlab-mode-menu-keymap nil
-  "Keymap used in MATLAB mode to provide a menu.")
-
-;; make a menu keymap
 (easy-menu-define matlab-mode-menu matlab-mode-map "MATLAB menu."
   '("MATLAB"
     ["Start MATLAB" matlab-shell
@@ -603,6 +595,37 @@ point, but it will be restored for them."
      ["Fill Comment" fill-paragraph]
      ["Comment Region" matlab-comment-region t]
      ["Uncomment Region" matlab-uncomment-region t])
+    ("Code Sections"
+     ["Run section" matlab-sections-run-section
+      :active matlab-sections-minor-mode
+      :help "Run the current \"%% section\" in `matlab-shell'."]
+     ["Run prior sections" matlab-sections-run-prior-sections
+      :active matlab-sections-minor-mode
+      :help "Run all \"%% sections\" prior to the current section in `matlab-shell'"]
+     ["Move to beginning" matlab-sections-beginning-of-section
+      :active matlab-sections-minor-mode
+      :help "Move `point' to the beginning of the current \"%% section\""]
+     ["Move to end" matlab-sections-end-of-section
+      :active matlab-sections-minor-mode
+      :help "Move `point' to the end of the current \"%% section\""]
+     ["Backward section" matlab-sections-backward-section
+      :active matlab-sections-minor-mode
+      :help "Move point backward to the prior \"%% section\""]
+     ["Forward section" matlab-sections-forward-section
+      :active matlab-sections-minor-mode
+      :help "Move point forward to the next \"%% section\""]
+     ["Mark/select section" matlab-sections-mark-section
+      :active matlab-sections-minor-mode
+      :help "Select the current code selection region by placing the
+mark at the beginning of the \"%% section\" and point at the end of the section"]
+     ["Move section up" matlab-sections-move-section-up
+      :active matlab-sections-minor-mode
+      :help "Move the current \"%% section\" up."]
+     ["Move section down" matlab-sections-move-section-down
+      :active matlab-sections-minor-mode
+      :help "Move the current \"%% section\" down."]
+     "--"
+     ["Sections help" matlab-sections-help])
     ("Debug"
      ["Edit File (toggle read-only)" matlab-shell-gud-mode-edit
       :help "Exit MATLAB debug minor mode to edit without exiting MATLAB's K>> prompt."
@@ -760,12 +783,12 @@ Ignored comments are lines that start with '% $$$'  or '%^'.")
 (defface matlab-pragma-face
   '((t :inherit font-lock-comment-face
        :bold t))
-  "*Face to use for cellbreak %% lines.") ;; TODO: Wrong docstring?
+  "*Face to use for pragma %# lines.")
 
 (defface matlab-math-face
   '((t :inherit font-lock-constant-face
        :slant italic))
-  "*Face to use for cellbreak %% lines.") ;; TODO: Wrong docstring?
+  "*Face to use for math functions.")
 
 ;;; Font Lock MLINT data highlighting
 
@@ -1112,7 +1135,7 @@ This matcher will handle a range of variable features."
 
 (defconst matlab-file-class-font-lock-keywords
   (list
-   ;; Classdefs keyword and the class name
+   ;; Classdef keyword and the class name
    (list (concat "^\\s-*\\(classdef\\)\\_>"
                  matlab-class-attributes-list-re
                  "\\s-*\\(?3:\\sw+\\)")
@@ -1282,14 +1305,14 @@ Convenient template insertion commands:
  \\[tempo-template-matlab-switch] - Insert a SWITCH END statement.
  \\[matlab-insert-next-case] - Insert the next CASE condition in a SWITCH.
  \\[matlab-insert-end-block] - Insert a matched END statement.  With \
-optional ARG, reindent.
+optional ARG, re-indent.
  \\[matlab-stringify-region] - Convert plain text in region to a string \
 with correctly quoted chars.
 
 Variables:
   `matlab-indent-level'         Level to indent blocks.
   `matlab-continuation-indent-level' Level to indent after ... continuation
-  `matlab-case-indent-level'            Level to unindent case statements.
+  `matlab-case-indent-level'            Level to un-indent case statements.
   `matlab-indent-past-arg1-functions'
                                 Regexp of functions to indent past the first
                                   argument on continuation lines.
@@ -1320,10 +1343,6 @@ All Key Bindings:
   ;; and font-lock for comments/strings.
   (matlab-syntax-setup)
   (matlab-scan-setup)
-  (unless noninteractive
-    ;; "matlab %% sections" and has some cost, thus don't activate in batch mode.
-    ;; TODO: investigate if a hook be better?
-    (matlab-sections-mode-enable))
 
   ;; Indentation setup.
   (setq indent-tabs-mode nil)
@@ -1363,7 +1382,7 @@ All Key Bindings:
   ;; the function in `write-file' and have the change be saved.
   ;; It also lets us fix mistakes before a `save-and-go'.
   (make-local-variable 'write-contents-functions)
-  (add-hook 'write-contents-functions 'matlab-mode-verify-fix-file-fn)
+  (add-hook 'write-contents-functions 'matlab-mode--write-file-callback)
 
   ;; give each file it's own parameter history
   (make-local-variable 'matlab-shell-save-and-go-history)
@@ -1394,31 +1413,29 @@ All Key Bindings:
   (make-local-variable 'electric-pair-pairs)
   (setq electric-pair-pairs '((39 . 39)))
 
-  ;; If first function is terminated with an end statement, then functions have
-  ;; ends.
-  (if (matlab-do-functions-have-end-p)
-      ;; minor mode now treat's 'guess' as true when passing in 1.
-      (matlab-functions-have-end-minor-mode 1)
-    (matlab-functions-have-end-minor-mode -1))
+  (let ((mfile-type (matlab-guess-mfile-type)))
 
-  ;; When matlab-indent-function-body is set to 'MathWorks-Standard,
-  ;;    - we indent all functions that terminate with an end statement
-  ;;    - old style functions (those without end statements) are not
-  ;;      indented.
-  ;; It is desired that all code be terminate with an end statement.
-  ;;
-  ;; When matlab-indent-function-body is set to 'guess,
-  ;;    - look at the first line of code and if indented, keep indentation
-  ;;      otherwise use MathWorks-Standard
-  ;;
-  (cond
-   ((eq matlab-indent-function-body 'MathWorks-Standard)
-    )
+    ;; If first function is terminated with an end statement, then functions have ends.
+    (if (matlab-do-functions-have-end-p mfile-type)
+        ;; minor mode now treat's 'guess' as true when passing in 1.
+        (matlab-functions-have-end-minor-mode 1)
+      (matlab-functions-have-end-minor-mode -1))
 
-   ((eq matlab-indent-function-body 'guess)
-    (matlab-guess-function-indentation)
+    ;; When matlab-indent-function-body is set to 'MathWorks-Standard,
+    ;;    - we indent all functions that terminate with an end statement
+    ;;    - old style functions (those without end statements) are not
+    ;;      indented.
+    ;; It is desired that all functions be terminate with an end statement.
+    ;;
+    ;; When matlab-indent-function-body is set to 'guess,
+    ;;    - look at the first line of code and if indented, keep indentation
+    ;;      otherwise use MathWorks-Standard
+    ;;
+    (when (eq matlab-indent-function-body 'guess)
+      (matlab-guess-function-indentation mfile-type))
+
+    (matlab-sections-auto-enable-on-mfile-type-fcn mfile-type)
     )
-   )
 
   ;; When leaving matlab-mode, turn off mlint
   (add-hook 'change-major-mode-hook #'matlab-mode-leave)
@@ -2053,7 +2070,7 @@ LVL2."
         (save-excursion
           (cond
            ((and
-             ;; CONTINUATION with FUNCTIONs that indent past arg1
+             ;; CONTINUATION with FUNCTION's that indent past arg1
              (eq indent-type 'function-call-cont)
              ;; This checks for our special set of functions.
              (save-excursion
@@ -2109,7 +2126,7 @@ LVL2."
                 ;; current column is location on original line where
                 ;; first bit of text is, so line up with that.
                 (setq tmp (current-column))
-                ;; TODO - this disables indentation MAXs
+                ;; TODO - this disables indentation MAX
                 ;;        if we really want to be rid of this
                 ;;        we can dump a bunch of logic above too.
                 ;; apply the maximum limits.
@@ -2224,7 +2241,7 @@ LVL1."
           (setq depthchange (1- depthchange)))
 
         ;; Remove 1 from the close count if there is an END on the beginning
-        ;; of this line, since in that case, the unindent has already happened.
+        ;; of this line, since in that case, the un-indent has already happened.
         (when end (setq depthchange (1+ depthchange)))
 
         ;; Calculate the suggested indentation.
@@ -2849,25 +2866,28 @@ Returns a list: \(HERE-BEG HERE-END THERE-BEG THERE-END MISMATCH)"
 
 ;;; Verify / Auto-fix ============================================
 
-(defun matlab-mode-verify-fix-file-fn ()
-  "Verify the current buffer from `write-contents-hooks'."
-  (if matlab-verify-on-save-flag
-      (matlab-mode-verify-fix-file (> (point-max)
-                                      matlab-block-verify-max-buffer-size)))
-  ;; Always return nil.
+(defun matlab-mode--write-file-callback ()
+  "Called from `write-contents-functions'.
+When `matlab-verify-on-save-flag' is true, run `matlab-mode-verify-fix-file'.
+Enable/disable `matlab-sections-minor-mode' based on file content."
+  (let ((mfile-type (matlab-guess-mfile-type)))
+    (when matlab-verify-on-save-flag
+      (matlab-mode-verify-fix-file mfile-type))
+    (matlab-sections-auto-enable-on-mfile-type-fcn mfile-type))
+  ;; write-contents-functions expect the callback to return nil for normal save.
   nil)
 
-(defun matlab-mode-verify-fix-file (&optional fast)
+(defun matlab-mode-verify-fix-file (&optional mfile-type)
   "Verify the current buffer satisfies all M things that might be useful.
 We will merely loop across a list of verifiers/fixers in
 `matlab-mode-verify-fix-functions'.
-If optional FAST is non-nil, do not perform usually lengthy checks."
+Optional MFILE-TYPE is the result of `matlab-guess-mfile-type'."
   (interactive)
   (save-excursion
     ;; Always re-validate if functions have end.
-    (matlab-mode-vf-guess-functions-have-end fast)
+    (matlab-mode-vf-guess-functions-have-end mfile-type)
     ;; Loop over the options.
-    (mapc (lambda (func) (funcall func fast))
+    (mapc (lambda (func) (funcall func))
           matlab-mode-verify-fix-functions))
   (when (called-interactively-p 'interactive)
     (message "Done.")))
@@ -2875,61 +2895,59 @@ If optional FAST is non-nil, do not perform usually lengthy checks."
 ;;
 ;; Add more auto verify/fix functions here!
 ;;
-(defun matlab-mode-vf-guess-functions-have-end (&optional fast)
+(defun matlab-mode-vf-guess-functions-have-end (&optional mfile-type)
   "Look at the current buffer state and decide determine if functions have end.
 If this is already known, no action is taken.
-FAST is ignored."
-  (ignore fast)
-  (let ((filetype (matlab-guess-script-type)))
+Optional MFILE-TYPE is the result of `matlab-guess-mfile-type'."
+  (when (not mfile-type)
+    (setq mfile-type (matlab-guess-mfile-type)))
 
-    ;; Lets if the file if we were in still doesn't know what to do
-    ;; a bout ends, and re-assert what we should do.
-    (cond
-     ;; If the file is empty of code (from before, or just now)
-     ;; then optimize out this step.
-     ((eq filetype 'empty)
-      ;; If user deleted content, go back into guess mode.
-      (setq matlab-functions-have-end 'guess)
-      (matlab-functions-have-end-minor-mode 1)
-      )
+  ;; Lets if the file if we were in still doesn't know what to do
+  ;; a bout ends, and re-assert what we should do.
 
-     ;; If there is just bad syntax somewhere, skip it with a notice.
-     ((save-excursion (goto-char (point-max)) (matlab-in-list-p))
-      (setq matlab-functions-have-end 'guess)
-      (matlab-functions-have-end-minor-mode 1)
-      (message "Unterminated list - skipping block check"))
+  (cond
+   ;; If the file is empty of code (from before, or just now)
+   ;; then optimize out this step.
+   ((eq mfile-type 'empty)
+    ;; If user deleted content, go back into guess mode.
+    (setq matlab-functions-have-end 'guess)
+    (matlab-functions-have-end-minor-mode 1)
+    )
 
-     ;; If we are in guess mode, but user added content, we can
-     ;; not have a fresh new guess.
-     ((eq matlab-functions-have-end 'guess)
-      (let ((guess (matlab-do-functions-have-end-p 'no-navigate)))
-        (if guess (matlab-functions-have-end-minor-mode 1)
-          (matlab-functions-have-end-minor-mode -1)))
-      )
+   ;; If there is just bad syntax somewhere, skip it with a notice.
+   ((save-excursion (goto-char (point-max)) (matlab-in-list-p))
+    (setq matlab-functions-have-end 'guess)
+    (matlab-functions-have-end-minor-mode 1)
+    (message "Unterminated list - skipping block check"))
 
-     ;; If we are in no-end mode, BUT the filetype is wrong, say something.
-     ((and (not matlab-functions-have-end) (or (eq filetype 'script) (eq filetype 'class)))
-      (message "Type of file detected no longer matches `matlab-functions-have-end' of nil, assume t.")
-      (matlab-functions-have-end-minor-mode 1)
-      (sit-for 1)
-      )
+   ;; If we are in guess mode, but user added content, we can
+   ;; not have a fresh new guess.
+   ((eq matlab-functions-have-end 'guess)
+    (let ((guess (matlab-do-functions-have-end-p mfile-type 'no-navigate)))
+      (if guess (matlab-functions-have-end-minor-mode 1)
+        (matlab-functions-have-end-minor-mode -1)))
+    )
 
-     ;; If functions have end but the style changes, re-up the lighter on the minor mode.
-     ;; note, we can ignore that 'empty == 'guess b/c handled earlier.
-     ((and matlab-functions-have-end (not (eq matlab-functions-have-end filetype)))
-      (matlab-functions-have-end-minor-mode 1))
+   ;; If we are in no-end mode, BUT the mfile-type is wrong, say something.
+   ((and (not matlab-functions-have-end) (or (eq mfile-type 'script) (eq mfile-type 'class)))
+    (message "Type of file detected no longer matches `matlab-functions-have-end' of nil, assume t.")
+    (matlab-functions-have-end-minor-mode 1)
+    (sit-for 1)
+    )
 
-     ;; If the variable was specified and file is not empty, then do nothing.
-     ;; TODO - maybe we should force to t for scripts and classes?
+   ;; If functions have end but the style changes, re-up the lighter on the minor mode.
+   ;; note, we can ignore that 'empty == 'guess b/c handled earlier.
+   ((and matlab-functions-have-end (not (eq matlab-functions-have-end mfile-type)))
+    (matlab-functions-have-end-minor-mode 1))
 
-     ) ;; end cond
+   ;; If the variable was specified and file is not empty, then do nothing.
+   ;; TODO - maybe we should force to t for scripts and classes?
 
-    ))
+   ) ;; end cond
+  )
 
-(defun matlab-mode-vf-functionname (&optional fast)
-  "Verify/Fix the function name of this file.
-Optional argument FAST is ignored."
-  (ignore fast)
+(defun matlab-mode-vf-functionname ()
+  "Verify/Fix the function name of this file."
   (matlab-navigation-syntax
     (goto-char (point-min))
     (matlab-find-code-line)
@@ -2945,10 +2963,8 @@ Optional argument FAST is ignored."
           (delete-region (nth 2 fcn) (nth 3 fcn))
           (insert bn))))))
 
-(defun matlab-mode-vf-classname (&optional fast)
-  "Verify/Fix the class name of this file.
-Optional argument FAST is ignored."
-  (ignore fast)
+(defun matlab-mode-vf-classname ()
+  "Verify/Fix the class name of this file."
   (matlab-navigation-syntax
     (goto-char (point-min))
     (matlab-find-code-line)
@@ -2964,14 +2980,11 @@ Optional argument FAST is ignored."
           (delete-region (nth 2 class) (nth 3 class))
           (insert bn))))))
 
-(defun matlab-mode-vf-add-ends (&optional fast)
-  "Verify/Fix adding ENDS to functions.
-Optional argument FAST skips this test in fast mode."
+(defun matlab-mode-vf-add-ends ()
+  "Verify/Fix adding ENDS to functions."
   ;; We used to do extra checking here, but now we do
   ;; checking in the verifier
-  (unless fast
-    (matlab-mode-vf-block-matches-forward nil t)
-    ))
+  (matlab-mode-vf-block-matches-forward nil t))
 
 (defun matlab-mode-vf-block-matches-forward (&optional fast addend)
   "Verify/Fix unterminated (or un-ended) blocks.
@@ -2986,12 +2999,12 @@ by `matlab-mode-vf-add-ends'"
         (exit nil)
         ;; lets avoid asking questions based on id of this file
         ;; and if ends are optional in the first place.
-        (filetype (matlab-guess-script-type))
+        (mfile-type (matlab-guess-mfile-type))
         )
 
     ;; Before checking syntax, lets re-look at the file if we were in
     ;; guess mode and re-assert what we should do.
-    (when (or (eq filetype 'empty)
+    (when (or (eq mfile-type 'empty)
               (save-excursion (goto-char (point-max)) (matlab-in-list-p)))
       ;; In a bad state - go fast.
       (setq fast t))
@@ -3022,7 +3035,7 @@ by `matlab-mode-vf-add-ends'"
                       (matlab-mode-vf-add-end-to-this-block)
                     ;; Else, mark this buffer as not needing ends,
                     ;; but ONLY if a function buffer
-                    (when (eq filetype 'function)
+                    (when (eq mfile-type 'function)
                       (if (matlab-mode-highlight-ask
                            s e
                            "Should functions have end in this file?")
@@ -3081,19 +3094,19 @@ switch\\|otherwise\\|case\\|break\\|if\\|else\\|end\\|return\\|disp\\|\
 $\\|%\\)"
   "Regular expression used to detect if a semicolon is needed at the end of a line.")
 
-(defun matlab-mode-vf-quiesce-buffer (&optional fast)
+(defun matlab-mode-vf-quiesce-buffer ()
   "Find all commands that do not end in ;, and add one.
 This has the effect of removing any extraneous output that may not be
-desired.  Optional argument FAST is not used."
+desired."
   (interactive)
-  (ignore fast)
   (save-excursion
     (push-mark)
     (goto-char (point-min))
     (let ((msgpos 0) (dir .2))
       (while (not (save-excursion (end-of-line) (eobp)))
         (message (aref [ "Scanning o...." "Scanning .o..." "Scanning ..o.."
-                         "Scanning ...o." "Scanning ....o" ] (floor msgpos)))
+                         "Scanning ...o." "Scanning ....o" ]
+                       (floor msgpos)))
         (setq msgpos (+ msgpos dir))
         (if (or (> msgpos 5) (< msgpos 0)) (setq dir (- dir)
                                                  msgpos (+ (* 2 dir) msgpos)))
@@ -3104,7 +3117,6 @@ desired.  Optional argument FAST is not used."
           (insert ";"))
         (forward-line 1))))
   (message "Scanning .... done"))
-
 
 
 ;;; matlab-mode debugging =====================================================
@@ -3140,19 +3152,19 @@ desired.  Optional argument FAST is not used."
 (provide 'matlab)
 ;;; matlab.el ends here
 
-;; LocalWords:  Wette mwette edu Ludlam eludlam defconst compat easymenu defcustom mfiles objc elec
-;; LocalWords:  CASEINDENT COMMANDINDENT sexp sg Fns Alist symbolp defun mmode setq decl memq progn
-;; LocalWords:  vf functionname booleanp keymap torkel fboundp gud ebstop mlgud ebclear mw SPDX Uwe
-;; LocalWords:  ebstatus mlg mlgud's subjob featurep defface commanddual cellbreak cellbreaks cdr
-;; LocalWords:  animatedline rlim thetalim cartesian stackedplot bubblechart swarmchart wordcloud
-;; LocalWords:  bubblecloud heatmap parallelplot fcontour anim polarplot polarscatter polarhistogram
-;; LocalWords:  polarbubblechart goeplot geoscatter geobubble geodensity fimplicit fsurf tiledlayout
-;; LocalWords:  nexttile uicontext mld flintmax keywordlist mapconcat vardecl flb fle blockmatch bol
-;; LocalWords:  eol tm newmdata Classdefs dem Imenu imenu boundp alist reindent unindent vers Sexp's
-;; LocalWords:  Defuns fn minibuffer eobp autoend noerror returnme Unstarted parentblock defuns bobp
-;; LocalWords:  noprogress minibufferp bolp eolp calc funcall ci sem prevcmd DEPTHNUMBER blockstart
-;; LocalWords:  blockmid blockendless blockend CTXT listp fc pc boc parencol parenchar parenpt tmp
-;; LocalWords:  parenindent parenopt FUNCTIONs MAXs prev startpnt depthchange bc emacsen afterd md
-;; LocalWords:  befored okpos startlst endlst ellipsify noreturn hs tc hc startsym endsym mapc func
-;; LocalWords:  filetype bn nondirectory scanstate sexp's nosemi msgpos fullindent nexti defn sw
-;; LocalWords:  classdef's aref parens Brauer oub ucm docstring ppss
+;; LocalWords:  SPDX Wette mwette edu Ludlam eludlam Uwe Brauer oub ucm defconst compat easymenu dem
+;; LocalWords:  elec defcustom mfiles objc sexp sg Fns Alist symbolp defun mfile
+;; LocalWords:  keymap setq decl memq classdef's progn mw vf functionname booleanp torkel fboundp
+;; LocalWords:  gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob featurep defface commanddual
+;; LocalWords:  docstring cdr animatedline rlim thetalim cartesian stackedplot bubblechart
+;; LocalWords:  swarmchart wordcloud bubblecloud heatmap parallelplot fcontour anim polarplot Imenu
+;; LocalWords:  polarscatter polarhistogram polarbubblechart goeplot geoscatter geobubble geodensity
+;; LocalWords:  fimplicit fsurf tiledlayout nexttile uicontext mld flintmax keywordlist mapconcat
+;; LocalWords:  vardecl flb fle tmp blockmatch md tm newmdata repeat:md sw imenu boundp aref alist
+;; LocalWords:  vers Sexp's Defuns parens minibuffer eobp autoend noerror returnme Unstarted defuns
+;; LocalWords:  bobp noprogress minibufferp bolp eolp calc funcall ci sem prevcmd DEPTHNUMBER prev
+;; LocalWords:  blockstart blockmid blockendless blockend CTXT listp fc pc boc parencol parenchar
+;; LocalWords:  parenpt parenindent parenopt FUNCTION's EOL depthchange bc eol fn emacsen afterd
+;; LocalWords:  befored okpos startlst endlst ellipsify ppss noreturn hs tc hc startsym endsym mapc
+;; LocalWords:  func bn nondirectory scanstate sexp's nosemi msgpos nexti defn
+

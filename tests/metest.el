@@ -122,8 +122,8 @@
           (let ((st-expect (intern (match-string-no-properties 1)))
                 (end-expect (intern (match-string-no-properties 2)))
                 (indent-expect (intern (match-string-no-properties 3)))
-                (st-actual (matlab-guess-script-type))
-                (end-actual (matlab-do-functions-have-end-p))
+                (st-actual (matlab-guess-mfile-type))
+                (end-actual (matlab-do-functions-have-end-p (matlab-guess-mfile-type)))
                 (indent-actual (matlab-indent-function-body-p))
                 )
             (unless (eq st-actual st-expect)
@@ -612,7 +612,11 @@ Do error checking to provide easier debugging."
   (let ((F (expand-file-name file met-testfile-path)))
     (unless (file-exists-p F)
       (error "Test file %s does not exist in %s" file met-testfile-path))
-    (find-file-noselect F)))
+    (let ((buf (find-file-noselect F)))
+      (when (string= file "stringtest.m")
+        (with-current-buffer buf
+          (matlab-sections-minor-mode 1)))
+      buf)))
 
 (defvar metest-error-context-lines 4)
 (defun metest-error (&rest args)

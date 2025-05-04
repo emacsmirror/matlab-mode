@@ -1,3 +1,22 @@
+%% MATLAB code sections menu and keybindings
+%
+% Try:
+%
+% 1. Run (requires M-x matlab-shell, Unix only)
+%      MATLAB -> Code Sections -> Run section
+%      MATLAB -> Code Sections -> Run prior sections
+% 2. Navigation
+%      MATLAB -> Code Sections -> Backward section
+%      MATLAB -> Code Sections -> Forward section
+%      MATLAB -> Code Sections -> Move to beginning
+%      MATLAB -> Code Sections -> Move to end
+% 3. Move section content
+%      MATLAB -> Code Sections -> Mark/select section
+%      MATLAB -> Code Sections -> Move section up
+%      MATLAB -> Code Sections -> Move section down
+% 4. Super "Windows" key bindings can be enabled or disabled, see
+%      MATLAB -> Code Sections -> Help
+
 %% Preamble
 clc
 clear all
@@ -41,22 +60,3 @@ plot(eig(randn(N,N))/sqrt(N), '.'); hold on
 plot(cos((0:100)*2*pi/100), sin((0:100)*2*pi/100), '-');
 axis equal; grid on
 set(gca, 'FontSize', fsz)
-
-%% Things to try out:
-% 1. Move point to the beginning of the buffer and try out the
-%    function `matlab-sections-forward-section'.
-%    This should take you to the next section (while highlighting). Do
-%    it a couple more times to navigate.
-% 2. Try out `matlab-sections-move-section-down' and this action will be reversed.
-% 3. Go to the third section and try the function
-%    `matlab-sections-move-section-up'.
-%    This should move the contents of this section to occur before the
-%    previous section.   
-% 4. Then try out the function `matlab-sections-backward-section'.
-% 5. Next (ensure you have matlab-shell running) try out the
-%    function `matlab-sections-shell-run-section' to run the contents of
-%    the section in the shell.
-%    I rewrote this based on the matlab-sections environ to be
-%    consistent although `matlab-shell-run-section` does something
-%    similar.  
-

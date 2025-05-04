@@ -40,6 +40,9 @@
 (require 'matlab-shell)
 (require 'matlab-topic)
 
+(add-to-list 'load-path ".")
+(require 'mstest-sections)
+
 ;;; Code:
 (defun mstest-run-all-tests ()
   "Run all the test cases in this test file."
@@ -57,6 +60,7 @@
 
   (mstest-start)
   (mstest-capture)
+  (mstest-sections)
   (mstest-completion)
   (mstest-error-parse)
   (mstest-debugger)
@@ -147,7 +151,9 @@
           (mstest-savestate)
           (message "Expected: [%S]" exp)
           (message "Found: [%S]" txt)
-          (user-error "'WHICH TEST: ls' failed"))))))
+          (user-error "'WHICH TEST: ls' failed")))
+
+      (goto-char (point-max)))))
 
 ;;; Command Sending Tests
 (defun mstest-completion ()
