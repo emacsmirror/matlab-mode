@@ -152,6 +152,10 @@ In this case, add the following hook to your config:
 Ensure that this is included after matlab-mode as well as your syntax
 highlighter are initialized in your config.
 
+** Mailing list?
+
+https://sourceforge.net/projects/matlab-emacs/
+
 * History
 
 matlab-mode has a history dating back many years. Older contributions can be found in
