@@ -12,13 +12,13 @@
    - Edit MATLAB code with syntax highlighting and smart indentation.
    - Lint MATLAB code with fix-it's using the MATLAB Code Analyzer.
 
-2. *~M-x matlab-shell~* for running and debugging MATLAB within Emacs (Unix-only).
+2. *M-x matlab-shell* for running and debugging MATLAB within Emacs (Unix-only).
 
    - matlab-shell uses company-mode for completions.
 
-3. *Code sections* support. MATLAB script code files often contain many commands and lines
-   of text.  You typically focus your efforts on a single part of your code at a time, working with
-   the code and related text in sections.  You demarcate sections using /"%% description"/ comments.
+3. *Code sections* support. MATLAB script code files often contain many commands and lines of text.
+   You typically focus your efforts on a single part of your code at a time, working with the code
+   and related text in sections.  You demarcate sections using /"%% description"/ header comments.
 
    - After visiting a MATLAB script, you have the *"MATLAB -> Code Sections"* menu and key
      bindings which lets you can navigate, run, and move code sections.
