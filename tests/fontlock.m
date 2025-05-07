@@ -151,7 +151,7 @@ end
 
 function helptest()
 % HELPTEXT has fancy fonts in it.
-%^  ^cn
+%^  ^co
         
 end
 

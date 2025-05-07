@@ -888,8 +888,7 @@ Customizing this variable is only useful if `regexp-opt' is available."
 (defcustom matlab-debug-list '("dbstop" "dbclear" "dbcont" "dbdown" "dbmex"
                                "dbstack" "dbstatus" "dbstep" "dbtype" "dbup"
                                "dbquit")
-  "List of debug commands used in highlighting.
-Customizing this variable is only useful if `regexp-opt' is available."
+  "List of debug commands used in highlighting."
   :group 'matlab
   :type '(repeat (string :tag "Debug Keyword: ")))
 
@@ -912,12 +911,9 @@ Customizing this variable is only useful if `regexp-opt' is available."
   :type '(repeat (string :tag "Debug Keyword: ")))
 
 (defun matlab-font-lock-regexp-opt (keywordlist)
-  "Create a font-lock usable KEYWORDLIST matching regular expression.
-Uses `regex-opt' if available.  Otherwise creates a dumb expression."
+  "Create a font-lock usable KEYWORDLIST matching regular expression."
   (concat "\\_<\\("
-          (if (fboundp 'regexp-opt)
-              (regexp-opt keywordlist)
-            (mapconcat (lambda (s) s) keywordlist "\\|"))
+          (regexp-opt keywordlist)
           "\\)\\_>"))
 
 ;;; Font lock keyword handlers
@@ -1182,18 +1178,6 @@ This matcher will handle a range of variable features."
       1 font-lock-builtin-face)
     ;; highlight transpose
     '("[]A-Za-z0-9_\"})']\\('+\\)" 1 font-lock-builtin-face)
-    ;; How about references in the HELP text.
-    (list (concat "^" matlab-comment-line-s "\\s-*"
-                  "\\(\\([A-Z]+\\s-*=\\s-+\\|\\[[^]]+]\\s-*=\\s-+\\|\\)"
-                  "\\([A-Z][0-9A-Z]+\\)\\(([^)\n]+)\\| \\)\\)")
-          '(1 font-lock-constant-face prepend))
-    (list (concat "^" matlab-comment-line-s "\\s-*"
-                  "See also\\s-+")
-          '("\\([A-Z][A-Z0-9]+\\)\\([,.]\\| and\\|$\\) *" nil  nil
-            (1 font-lock-constant-face prepend)))
-    (list (concat "^" matlab-comment-line-s "\\s-*"
-                  "\\(\\$" "Revision" "[^\n$]+\\$\\)")
-          '(1 font-lock-constant-face prepend))
     ;; Debugging Keywords
     (list (matlab-font-lock-regexp-opt matlab-debug-list)
           '(0 'bold))
