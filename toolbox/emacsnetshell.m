@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,8 +12,9 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function nso = emacsnetshell(cmd, data)
-% Create a connection to an EMACS editor server.
+% EMACSNETSHELL - Create a connection to an EMACS editor server.
 %
 % emacsnetshell('init') - Initialize the connection with Emacs.
 %    emacs will send commands to MATLAB with additional connectivity

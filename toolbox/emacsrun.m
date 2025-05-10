@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,12 +12,15 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function emacsrun(mfile, varargin)
-% Run code from MFILE.
+% EMACSRUN - Run code from MFILE.
+%
 % Assumes MFILE was recently edited, and proactively clears that function.
 %
 % Command sent by Emacs for save-and-go functionality
 
+    mfile = emacsstripremote(mfile)
     % Now figure out if shortFileName is on the path.
     [ fullFilePath, shortFileName ] = fileparts(mfile);
     onpath = ~isempty(which(shortFileName));

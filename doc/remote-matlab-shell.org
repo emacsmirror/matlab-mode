@@ -1,0 +1,64 @@
+# File: doc/remote-matlab-shell.org
+#
+#+startup: showall
+#+options: toc:nil
+#
+# Copyright 2016-2025 Free Software Foundation, Inc.
+
+* Remote M-x matlab-shell
+
+You can use Emacs TRAMP to run matlab-shell on a remote system.
+
+1. First verify you can connect to the remote system in a terminal
+
+   For example, we can use ssh to connect:
+
+   #+begin_src bash
+     ssh user@system pwd
+   #+end_src
+
+   You should configure your ssh keys to avoid prompting, which will make things smoother with
+   Emacs.
+
+2. In Emacs visit a remote location.
+
+   A typical method is to use File menu to visit a file or ~C-x C-f~
+
+   #+begin_example
+     C-x C-f
+     Find File: /ssh:USER@SYSTEM:~
+   #+end_example
+
+   will open dired-mode to the USER home (~) directory on the remote SYSTEM.
+
+3. Run matlab-shell
+
+   With the current buffer as a remote location, e.g. dired-mode buffer of a remote location, run:
+
+   #+begin_example
+     M-x matlab-shell
+   #+end_example
+
+   matlab-shell will copy files to the remote system and place them in =~/.emacs-matlab-shell/=. These are
+   needed for matlab-shell to work correctly on the remote system.
+
+   If you get a message that Emacs couldn't find matlab on the remote system, you need to tell Emacs
+   where matlab is located and there are several ways to do this, see
+   [[https://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-programs.html][How TRAMP finds and uses programs on remote host]]. For example, suppose your remote system is Linux and you are
+   using the Bash shell. You can setup your remote =/ssh:USER@HOST:~/.profile= to place the location of MATLAB on
+   your PATH:
+
+   #+begin_src bash
+     # ~/.profile
+     PATH=/usr/local/MATLAB/Ryyyyab/bin/$PATH     # Replace Ryyyyab with the MATLAB release you are using
+     export PATH
+   #+end_src
+
+   After that you can add to your local =~/.emacs=,
+
+   #+begin_src emacs-lisp
+     (eval-after-load
+         '(add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+   #+end_src
+
+# LocalWords:  showall dired usr Ryyyyab

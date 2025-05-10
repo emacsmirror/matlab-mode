@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,26 +12,29 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function opentoline(file, line, column)
-%OPENTOLINE Open to specified line in function file in Emacs.
+% OPENTOLINE Open to specified line in function file in Emacs.
+%
 %   This is a hack to override the built-in opentoline program in MATLAB.
 %
 %   Remove this M file from your path to get the old behavior.
 
+    file = emacsstripremote(file)
     editor = system_dependent('getpref', 'EditorOtherEditor');
     editor = editor(2:end);
-    
+
     if nargin==3
         linecol = sprintf('+%d:%d',line,column);
     else
         linecol = sprintf('+%d',line);
     end
-    
+
     f = which(file);
     if ~isempty(f)
         file=f;
-    end    
-    
+    end
+
     if ispc
         % On Windows, we need to wrap the editor command in double quotes
         % in case it contains spaces
@@ -42,3 +45,5 @@ function opentoline(file, line, column)
         system([editor ' "' linecol '" "' file '" &']);
     end
 end
+
+% LocalWords:  linecol

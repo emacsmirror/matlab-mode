@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,11 +12,12 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function emacstipstring(expr)
-% Take EXPR, and convert into a tooltip friendly string.
+% EMACSSTRIPSTRING - Take EXPR, and convert into a tooltip friendly string.
+%
 % This utility is mean to be used by emacs to create text to display
 % whie debugging code.
-    
+
     disp(expr)
 end
-

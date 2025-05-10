@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,23 +12,30 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function set(varargin)
-% Setup an Emacs option based on Name/Value pairs.
+% emacs.set: setup an Emacs option based on Name/Value pairs.
+%
 % Valid options include:
 %
 %  netshell - Initialize a netshell connection.
 %  clientcmd - What to use for `edit' client command
+%  followstack - Used by Emacs Server
+%  remoteLocation - Use by remote matlab-shell, see doc/remote-matlab-shell.org
 
     P = inputParser;
     addParameter(P, 'netshell', 0, @isnumeric)
     addParameter(P, 'clientcmd', "", @ischar)
     addParameter(P, 'followstack', -1, @isnumeric)
+    addParameter(P, 'remoteLocation', "", @ischar)
 
     parse(P, varargin{:});
 
     clientcommand = P.Results.clientcmd;
     netshellport = P.Results.netshell;
     followstack = P.Results.followstack;
+
+    setenv('EMACS_MATLAB_SHELL_REMOTE', P.Results.remoteLocation);
 
     %% Client Command
     if ~isempty(clientcommand)

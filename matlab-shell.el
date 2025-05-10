@@ -330,22 +330,29 @@ otherwise an error is signaled."
          ;; Case: "matlab" (or something similar), locate it on the executable path
          ;;       else locate in standard install locations.
          (t
-          (setq abs-matlab-exe (executable-find matlab-shell-command))
-          (when (not abs-matlab-exe)
-            (if (string= matlab-shell-command "matlab")
-                ;; Get latest matlab command exe from the default installation location.
-                (let* ((default-loc (cdr (assoc system-type matlab-shell--default-command)))
-                       (default-matlab (when default-loc
-                                         (car (last (sort
-                                                     (file-expand-wildcards default-loc)
-                                                     #'string<))))))
-                  (when (not default-matlab)
-                    (matlab-shell--matlab-not-found no-error default-loc))
-                  (when (not (file-executable-p default-matlab))
-                    (user-error "%s is not executable" default-matlab))
-                  (setq abs-matlab-exe default-matlab))
-              ;; else unable to locate it
-              (matlab-shell--matlab-not-found no-error)))))
+          (let ((remote (file-remote-p default-directory)))
+            (if remote
+                (if (setq abs-matlab-exe (executable-find matlab-shell-command t))
+                    (setq abs-matlab-exe (concat remote abs-matlab-exe))
+                  (user-error "Unable to locate matlab executable on %s
+See https://github.com/mathworks/Emacs-MATLAB-Mode/doc/remote-matlab-emacs.org for tips" remote))
+            ;; else look local
+            (setq abs-matlab-exe (executable-find matlab-shell-command))
+            (when (not abs-matlab-exe)
+              (if (string= matlab-shell-command "matlab")
+                  ;; Get latest matlab command exe from the default installation location.
+                  (let* ((default-loc (cdr (assoc system-type matlab-shell--default-command)))
+                         (default-matlab (when default-loc
+                                           (car (last (sort
+                                                       (file-expand-wildcards default-loc)
+                                                       #'string<))))))
+                    (when (not default-matlab)
+                      (matlab-shell--matlab-not-found no-error default-loc))
+                    (when (not (file-executable-p default-matlab))
+                      (user-error "%s is not executable" default-matlab))
+                    (setq abs-matlab-exe default-matlab))
+                ;; else unable to locate it
+                (matlab-shell--matlab-not-found no-error)))))))
 
         ;; Return existing absolute path to the MATLAB command executable
         abs-matlab-exe)
@@ -596,9 +603,12 @@ Try C-h f matlab-shell RET"))
     (let* ((windowid (frame-parameter (selected-frame) 'outer-window-id))
            (newvar (concat "WINDOWID=" windowid))
            (process-environment (cons newvar process-environment))
-           (abs-matlab-exe (matlab-shell--abs-matlab-exe)))
+           (abs-matlab-exe (matlab-shell--abs-matlab-exe))
+           (matlab-exe (if (file-remote-p abs-matlab-exe)
+                           matlab-shell-command
+                         abs-matlab-exe)))
       (message "Running: %s" abs-matlab-exe)
-      (apply #'make-comint matlab-shell-buffer-name abs-matlab-exe
+      (apply #'make-comint matlab-shell-buffer-name matlab-exe
              nil matlab-shell-command-switches))
 
     ;; Enable GUD
@@ -1065,29 +1075,101 @@ system."
     (and mlfile (file-exists-p dir)))
   "Add the `matlab-shell' MATLAB toolbox to the MATLAB path on startup.")
 
+(defun matlab--shell-toolbox-and-bin-sha1 (matlab-dir &optional recursive-call)
+  "Compute the SHA1 of the Emacs MATLAB-DIR toolbox and bin directories.
+RECURSIVE-CALL should be nil when called from top-level."
+  (let (sha1-all)
+    (when (not (directory-name-p matlab-dir))
+      (error "Directory, %s, does not end in a /" matlab-dir))
+    (when (not (file-directory-p matlab-dir))
+      (error "Directory, %s, does not exist" matlab-dir))
+    (setq matlab-dir (file-truename matlab-dir))
+    (let ((dirs (if recursive-call
+                    (list matlab-dir)
+                 (list (concat matlab-dir "toolbox/")
+                       (concat matlab-dir "bin/")))))
+      (dolist (dir dirs)
+        (when (not (file-directory-p dir))
+          (error "Directory, %s, does not exist" dir))
+        (dolist (file-name (sort (directory-files dir) #'string<))
+          (when (and (not (string-match "~$" file-name))
+                     (not (string-match "^\\(?:#\\|\\.\\)" file-name)))
+            ;; Not a: backup~, #backup, ".", ".., or .hidden file.
+            (let ((abs-file (concat dir file-name)))
+              (if (file-directory-p abs-file)
+                  (setq sha1-all
+                        (concat sha1-all
+                                (matlab--shell-toolbox-and-bin-sha1 (concat abs-file "/") t)))
+                ;; Plain file to add to sha1-all.
+                (with-temp-buffer
+                  (insert-file-contents-literally abs-file)
+                  (setq sha1-all (concat sha1-all (secure-hash 'sha1 (current-buffer)))))))))))
+    (when (not recursive-call)
+      ;; sha1-all contains a long list of the individual hash's, reduce to one hash.
+      (when (not sha1-all)
+        (error "Directory, %s, contains no plain files" matlab-dir))
+      (setq sha1-all (secure-hash 'sha1 sha1-all)))
+    sha1-all))
 
-(defun matlab-shell-first-prompt-fcn ()
+(defun matlab--shell-remote-toolbox-dir (local-toolbox-dir)
+  "Return matlab-emacs toolbox directory path on the remote system.
+This will be a copy the LOCAL-TOOLBOX-DIR toolbox and ../bin directories
+to the remote system.  This will copy files to the remote system if the
+remote directory is missing or out of date.  Returns:
+~/.emacs-matlab-mode/toolbox/"
+  (let* ((matlab-dir (file-name-as-directory
+                      (file-name-directory (directory-file-name local-toolbox-dir))))
+         (sha1 (matlab--shell-toolbox-and-bin-sha1 matlab-dir))
+         (local-dir-on-remote "~/.emacs-matlab-mode/")
+         (remote (if (file-remote-p default-directory) (file-remote-p default-directory)
+                   (error "%s is not remote" default-directory)))
+         (remote-dir (concat remote local-dir-on-remote))
+         (remote-sha1-file (concat remote-dir ".sha1.txt")))
+    (when (or (not (file-exists-p remote-sha1-file))
+              (not (string= sha1 (with-temp-buffer
+                                   (insert-file-contents-literally remote-sha1-file)
+                                   (buffer-substring (point-min) (point-max))))))
+      (delete-directory remote-dir t)
+      (copy-directory local-toolbox-dir remote-dir t t)
+      (copy-directory (concat local-toolbox-dir "../bin/") remote-dir t t)
+      ;; Save SHA1. This is used to avoid future copies when remote is up to date.
+      (write-region sha1 nil remote-sha1-file))
+    ;; result
+    (concat local-dir-on-remote "toolbox/")))
+
+(cl-defun matlab-shell-first-prompt-fcn ()
   "Hook run when the first prompt is seen.
 Sends commands to the MATLAB shell to initialize the MATLAB process."
   ;; Don't do this again
   (remove-hook 'matlab-shell-prompt-appears-hook #'matlab-shell-first-prompt-fcn)
 
-  ;; Init this session of MATLAB.
-  (if matlab-shell-use-emacs-toolbox
-      ;; Use our local toolbox directory.
-      (let* ((path (expand-file-name "toolbox" (file-name-directory
-                                                (locate-library "matlab"))))
-             (initcmd (expand-file-name "emacsinit" path))
-             (nsa (if matlab-shell-autostart-netshell "emacs.set('netshell', true);" ""))
-             (ecc (matlab-shell--get-emacsclient-command))
-             (ecca (if ecc (format "emacs.set('clientcmd', '%s');" ecc) ""))
-             (args (list nsa ecca))
-             (cmd (format "run('%s');%s" initcmd (apply #'concat args))))
-        (matlab-shell-send-command (string-replace (expand-file-name "~/") "~/" cmd))
-        )
-
+  (when (not matlab-shell-use-emacs-toolbox)
     ;; Setup is misconfigured - we need emacsinit because it tells us how to debug
     (error "Unable to initialize matlab, emacsinit.m and other files missing"))
+
+  ;; Run emacsinit.m which sets up the MATLAB environment to include the matlab-mode
+  ;; "toolbox".  This is used for items like debugging, e.g. ebstop.m.
+  ;; Also setup emacsclient such that ">> edit file" works.
+  (let* ((local-toolbox-dir (expand-file-name "toolbox/"
+                                              (file-name-directory (locate-library "matlab"))))
+         (toolbox-dir (if (file-remote-p default-directory)
+                          ;; Case: Remote matlab-shell via tramp
+                          (matlab--shell-remote-toolbox-dir local-toolbox-dir)
+                        local-toolbox-dir))
+         (emacs-init (concat toolbox-dir "emacsinit"))
+         (e-client-command (matlab-shell--get-emacsclient-command))
+         (remote-location (file-remote-p default-directory))
+         (e-set-args (replace-regexp-in-string
+                      "^, " "" ;; strip leading ", "
+                      (concat (when matlab-shell-autostart-netshell ", 'netshell', true")
+                              (when e-client-command (format ", 'clientcmd', '%s'"
+                                                             e-client-command))
+                              (when remote-location (format ", 'remoteLocation', '%s'"
+                                                            remote-location)))))
+         (cmd (format "run('%s');%s" emacs-init (if e-set-args
+                                                    (format " emacs.set(%s);" e-set-args)
+                                                  ""))))
+    (matlab-shell-send-command (string-replace (expand-file-name "~/") "~/" cmd)))
 
   ;; Init any user commands
   (if matlab-custom-startup-command
@@ -2039,21 +2121,26 @@ a file name, or nil if no conversion done.")
 ;; (matlab-shell-mref-to-filename "eltest.utils.testme>localfcn")
 
 (defun matlab-shell-mref-to-filename (fileref)
-  "Convert the MATLAB file reference FILEREF into an actual file name.
+  "Convert MATLAB file reference FILEREF into an file Emacs can load.
 MATLAB can refer to functions on the path by a short name, or by a .p
 extension, and a host of different ways.  Convert this reference into
-something Emacs can load."
+something Emacs can load.  If matlab-shell is running remote via tramp,
+returned file will be prefixed with the remote location."
   (interactive "sFileref: ")
   (with-current-buffer (matlab-shell-active-p)
-    (let ((C matlab-shell-mref-converters)
-          (ans nil))
+    (let ((remote-location (file-remote-p default-directory))
+          (C matlab-shell-mref-converters)
+          ans)
       (while (and C (not ans))
         (let ((tmp (funcall (car C) fileref)))
-          (when (and tmp (file-exists-p tmp))
-            (setq ans tmp))
-          )
+          (when tmp
+            (when (and remote-location (not (file-remote-p tmp)))
+              (setq tmp (concat remote-location tmp)))
+            (when (file-exists-p tmp)
+              (setq ans tmp))))
         (setq C (cdr C)))
-      (when (called-interactively-p 'any) (message "Found: %S" ans))
+      (when (called-interactively-p 'any)
+        (message "Found: %S" ans))
       ans)))
 
 (defun matlab-find-other-window-file-line-column (ef el ec &optional debug)
@@ -2601,10 +2688,10 @@ Argument FNAME specifies if we should echo the region to the command line."
 ;; LocalWords:  keymap subjob kbd emacscd featurep fboundp EDU msbn pc Thx Chappaz windowid tcp lang
 ;; LocalWords:  postoutput capturetext EMACSCAP captext STARTCAP progn eol dbhot erroexamples cdr
 ;; LocalWords:  ENDPT dolist overlaystack mref deref errortext ERRORTXT shellerror Emacsen iq nt buf
-;; LocalWords:  auth mlfile emacsinit initcmd nsa ecc ecca clientcmd EMAACSCAP buffname showbuff
+;; LocalWords:  auth mlfile EMAACSCAP buffname showbuff symlink'd emacsinit sha dirs ebstop
 ;; LocalWords:  evalforms Histed pmark memq promptend numchars integerp emacsdocomplete mycmd ba
 ;; LocalWords:  nreverse emacsdocompletion byteswap stringp cbuff mapcar bw FCN's alist substr usr
 ;; LocalWords:  BUILTINFLAG dired bol bobp numberp princ minibuffer fn matlabregex lastcmd notimeout
 ;; LocalWords:  stacktop eltest testme localfcn LF fileref funcall ef ec basec sk nondirectory utils
 ;; LocalWords:  ignoredups boundp edir sexp Fixup mapc emacsrun noshow cnt ellipsis newf bss noselect
-;; LocalWords:  fname mlx xemacs linux darwin truename
+;; LocalWords:  fname mlx xemacs linux darwin truename clientcmd

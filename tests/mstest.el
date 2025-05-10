@@ -174,7 +174,15 @@
                  (mstest-savestate)
                  (user-error "%S" ERR))))
              (CL (cdr (nth 2 CLO)))
-             (EXP '("emacs" "emacscd" "emacsdocomplete" "emacsinit" "emacsnetshell" "emacsrun" "emacsrunregion" "emacstipstring"))
+             (EXP '("emacs"
+                    "emacscd"
+                    "emacsdocomplete"
+                    "emacsinit"
+                    "emacsnetshell"
+                    "emacsrun"
+                    "emacsrunregion"
+                    "emacsstripremote"
+                    "emacstipstring"))
              (cnt 1))
         (while (and CL EXP)
           (when (not (string= (car EXP) (car (car CL))))

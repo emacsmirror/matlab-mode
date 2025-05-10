@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,18 +12,23 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-function ebstack(FRAMEIDX)
-% Emacs version of dbstack.  Updates Emacs for where we are in the stack.
-    
-    [ST, I] = dbstack('-completenames');
-    
-   % Send emacs our updated stack
-   es = getappdata(groot, 'EmacsStack');
 
-   if nargin == 1
-       I = FRAMEIDX;
-   end
-       
-   es.updateEmacs(ST, I);
+function ebstack(FRAMEIDX)
+% EBSTACK - Emacs version of dbstack.
+%
+% Updates Emacs for where we are in the stack.
+
+    [ST, I] = dbstack('-completenames');
+
+    % Send emacs our updated stack
+    es = getappdata(groot, 'EmacsStack');
+
+    if nargin == 1
+        I = FRAMEIDX;
+    end
+
+    es.updateEmacs(ST, I);
 
 end
+
+% LocalWords:  completenames

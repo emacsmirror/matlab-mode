@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,8 +12,10 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function [out, docTopic] = help(varargin)
-% Provide help, augmented so Emacs picks it up to display in a special buffer.
+% HELP- Provide help, augmented so Emacs picks it up to display in a special buffer.
+%
 % See the help for the built-in help command by asking for "help help" in
 % MATLAB, which will redirect to the correct location.
 
@@ -92,3 +94,5 @@ function [out, docTopic] = help(varargin)
         [out, docTopic] = help(args{:});
     end
 end
+
+% LocalWords:  completenames EMACSCAP

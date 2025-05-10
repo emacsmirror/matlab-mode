@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,6 +12,7 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 classdef Stack < handle
 % Class STACK - Manage Emacs' stack state.
 
@@ -150,10 +151,15 @@ function str=stackFrames(ST)
 end
 
 function nf = fixFile(filename)
-% Fix FILENAME so it has no escape chars, that way we can send to Emacs.
-   
-    nf = regexprep(filename,"\", "/");
-    
+% FIXFILE - Cleanup file for Emacs
+%
+% Prefix FILENAME with the TRAMP remote location if matlab-shell is running remotely. This is needed
+% to enable debugging, e.g. ebstack, etc.
+%
+% Replace Windows path separators with POSIX separators such that they do not look like escape
+% characters, that way we can send to Emacs.
+
+    nf = [getenv('EMACS_MATLAB_SHELL_REMOTE'), regexprep(filename, "\", "/")];
 end
 
 function thesame = stackEqual(stack1, stack2)
@@ -173,3 +179,5 @@ function thesame = stackEqual(stack1, stack2)
    end
    
 end
+
+% LocalWords:  Netshell ebstack dbhotlink progn mlg EMACSCAP newstack newframe gud FIXFILE

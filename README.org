@@ -1,7 +1,7 @@
 #+startup: showall
 #+options: toc:nil
 
-# Copyright 2024 Free Software Foundation, Inc.
+# Copyright 2016-2025 Free Software Foundation, Inc.
 
 * Emacs MATLAB-mode
 
@@ -14,7 +14,11 @@
 
 2. *M-x matlab-shell* for running and debugging MATLAB within Emacs (Unix-only).
 
+   - MATLAB command window errors are hyper-linked and files open in Emacs
+   - Debugging support is available from the MATLAB menu.
    - matlab-shell uses company-mode for completions.
+   - You can use Emacs TRAMP and =M-x matlab-shell= to run remote MATLAB within your local Emacs
+     session, see [[file:doc/remote-matlab-shell.org][doc/remote-matlab-shell.org]].
 
 3. *Code sections* support. MATLAB script code files often contain many commands and lines of text.
    You typically focus your efforts on a single part of your code at a time, working with the code

@@ -1,4 +1,4 @@
-% Copyright (C) 2024  Eric Ludlam (and others)
+% Copyright 2019-2025 Free Software Foundation, Inc.
 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -12,17 +12,15 @@
 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function emacsrunregion(file, startchar, endchar)
-% Run code from FILE between STARTCHAR and ENDCHAR.
+% EMACSRUNREGION - Run code from FILE between STARTCHAR and ENDCHAR.
+%
 % Command sent by Emacs for run code sections and run-region functionality.
 
-    % Filter out emacs tramp file path prefix
-    trampMatch = regexp(file, {'/*:',':/'});
-    if (~isempty(trampMatch{1}))
-        file = file((trampMatch{2}+1):end);
-    end
+    file = emacsstripremote(file);
 
-    if ~exist(file,'file')
+    if ~exist(file, 'file')
         error('You must save your region into a file accessible by MATLAB process.');
     end
 
