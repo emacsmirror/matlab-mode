@@ -27,6 +27,9 @@
 
 (defun mstest-sections-header ()
   "Exercise the regexp that identifies the \"%% section\" header."
+
+  (message "TEST: running (mstest-sections-header)")
+
   (let ((header-comments
          '("%% description of header" ;; typical section header
            "%%"   ;; section header without a description
@@ -50,15 +53,15 @@
     (dolist (non-header-comment non-header-comments)
       (when (string-match matlab-sections-section-break-regexp non-header-comment)
         (user-error "Matched \"%s\" as a section header comment when it should have failed to match"
-                    non-header-comment)))))
+                    non-header-comment))))
+
+  (message "PASSED: (mstest-single-sections-header)"))
 
 (defun mstest-sections ()
-  "Test \"%% section\" support."
+  "Test \"%% code section\" support."
 
   (message "TEST: running (mstest-sections)")
 
-  (mstest-sections-header)
-  
   (save-excursion
     (let ((sections-buf (find-file "sections.m")))
 
@@ -209,7 +212,35 @@ sectionOneB =
 
   (message "PASSED: (mstest-sections)"))
 
+(defun mstest-sections-single ()
+  "Test \"%% code section\" support on a script with one section."
+
+  (message "TEST: running (mstest-sections-single)")
+
+  (save-excursion
+    (let ((sections-single-buf (find-file "sections_single.m")))
+      (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-guess-mfile-type) t)
+
+      (font-lock-mode 1)
+      (font-lock-flush (point-min) (point-max))
+      (font-lock-ensure (point-min) (point-max))
+      (font-lock-fontify-region (point-min) (point-max))
+
+      (goto-char (point-min))
+      (let ((test-point-desc "matlab-sections-single test case heading face")
+            (got (face-at-point))
+            (expected 'matlab-sections-highlight-face))
+        (when (not (eq got expected))
+          (user-error "Unexpected result for %s. Got '%s' expected '%s'"
+                      test-point-desc got expected))
+        (message "PASS: %s" test-point-desc))
+
+      (kill-buffer sections-single-buf)))
+
+  (message "PASSED: (mstest-sections-single)"))
+
+
 (provide 'mstest-sections)
 ;;; mstest-sections.el ends here
 
-;; LocalWords:  gmail defun buf
+;; LocalWords:  gmail defun buf dolist

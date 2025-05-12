@@ -60,7 +60,9 @@
 
   (mstest-start)
   (mstest-capture)
+  (mstest-sections-header)
   (mstest-sections)
+  (mstest-sections-single)
   (mstest-completion)
   (mstest-error-parse)
   (mstest-debugger)
@@ -906,4 +908,4 @@ Searches for the text between the last prompt, and the previous prompt."
 ;; LocalWords:  stacklist TMP expectedstack ebstack ebstatus dolist bol eol expectedbreakpoints
 ;; LocalWords:  fileexp lineexp skipchecktxt fname progn dbln gud MSDB fileexplst lineexplst
 ;; LocalWords:  functionp commandp txtend listp tmp sinewave ctxt funcall mtest starttime totaltime
-;; LocalWords:  cco ctxte endpt fboundp fn MATLABSHELL
+;; LocalWords:  cco ctxte endpt fboundp fn MATLABSHELL emacsstripremote
