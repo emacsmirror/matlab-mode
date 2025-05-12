@@ -32,6 +32,17 @@
 
 ;;; Code:
 
+(defface matlab-comment-heading-face
+  '((t :inherit font-lock-comment-face
+       :overline t
+       :bold t))
+  "Face for \"%% code section\" headings when NOT in matlab-sections-minor-mode.
+
+Using \"%% code section\" heading in non-script files, for example,
+function's, classdef's, etc.  is useful to demarcate concepts and this face
+is used for that purpose."
+  :group 'matlab-sections)
+
 (defvar matlab-syntax-support-command-dual t
   "Non-nil means to support command dual for indenting and syntax highlight.
 Does not work well in classes with properties with datatypes.")
@@ -327,17 +338,18 @@ Called when comments found in `matlab--scan-line-for-unterminated-string'."
 	     'font-lock-string-face))
 
     ;; Not a string, must be a comment. Pick type of comment face to use.
-    (cond ((and (boundp 'matlab-sections-minor-mode) matlab-sections-minor-mode
-                (< (nth 8 pps) (point-max))
-                (= (char-after (1+ (nth 8 pps))) ?\%) ;; looking-at "%%"?
-                ;; Now see if we have a valid section start comment
-                (save-excursion
-                  (save-restriction
-                    (widen)
-                    (goto-char (nth 8 pps))
-                    (beginning-of-line)
-                    (looking-at matlab-sections-section-break-regexp))))
-	   'matlab-sections-section-break-face)
+    (cond ((and (< (nth 8 pps) (point-max))
+                (= (char-after (1+ (nth 8 pps))) ?\%)) ;; looking-at "%%"?
+           ;; Now see if we have a valid section start comment
+           (if (and (boundp 'matlab-sections-minor-mode) matlab-sections-minor-mode
+                    (save-excursion
+                      (save-restriction
+                        (widen)
+                        (goto-char (nth 8 pps))
+                        (beginning-of-line)
+                        (looking-at matlab-sections-section-break-regexp))))
+               'matlab-sections-section-break-face
+             'matlab-comment-heading-face))
 	  ((and (< (nth 8 pps) (point-max))
 		(= (char-after (1+ (nth 8 pps))) ?\#))
 	   'matlab-pragma-face)
