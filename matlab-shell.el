@@ -1609,9 +1609,9 @@ installed, then use company to display completions in a popup window."
          (completion-info        (matlab-shell-get-completion-info))
          (completions            (cdr (assoc 'completions completion-info)))
          (common-substr-start-pt (cdr (assoc 'common-substr-start-pt completion-info)))
-         (common-substr-end-pt   (cdr (assoc 'common-substr-end-pt completion-info)))
-         )
-    (completion-in-region common-substr-start-pt common-substr-end-pt completions)))
+         (common-substr-end-pt   (cdr (assoc 'common-substr-end-pt completion-info))))
+    (when (and common-substr-start-pt common-substr-end-pt)
+      (completion-in-region common-substr-start-pt common-substr-end-pt completions))))
 
 (defun matlab-shell-do-completion ()
   "Perform completion using Emacs buffers.
