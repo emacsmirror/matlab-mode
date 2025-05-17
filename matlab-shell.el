@@ -1473,7 +1473,7 @@ No completions are provided anywhere else in the buffer."
         (let* ((completion-list (matlab-shell-completion-list last-cmd-quoted))
                (cmd-text-to-replace (cdr (assoc 'cmd-text-to-replace completion-list))))
           (setq completions (cdr (assoc 'completions completion-list)))
-          (when cmd-text-to-replace
+          (when (and cmd-text-to-replace (not (string= cmd-text-to-replace "")))
             ;; need to alter the command to replace replacement-text with the common substring
             (let ((replacement-text (cdr (assoc 'replacement-text completion-list)))
                   (last-cmd-start-len (- (length last-cmd) (length cmd-text-to-replace))))
@@ -1518,7 +1518,6 @@ No completions are provided anywhere else in the buffer."
             (cons 'common-substr-end-pt   common-substr-end-pt)
             (cons 'did-completion         did-completion)
             ))))
-
 
 (defun matlab-shell-c-tab ()
   "Send [TAB] to the currently running matlab process and retrieve completions."
@@ -1608,9 +1607,10 @@ installed, then use company to display completions in a popup window."
   (let* ((inhibit-field-text-motion t)
          (completion-info        (matlab-shell-get-completion-info))
          (completions            (cdr (assoc 'completions completion-info)))
+         (did-completion         (cdr (assoc 'did-completion completion-info)))
          (common-substr-start-pt (cdr (assoc 'common-substr-start-pt completion-info)))
          (common-substr-end-pt   (cdr (assoc 'common-substr-end-pt completion-info))))
-    (when (and common-substr-start-pt common-substr-end-pt)
+    (when (and (not did-completion) common-substr-start-pt common-substr-end-pt)
       (completion-in-region common-substr-start-pt common-substr-end-pt completions))))
 
 (defun matlab-shell-do-completion ()
