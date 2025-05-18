@@ -1417,7 +1417,10 @@ is the common starting substring of each completion in completions."
              (chomp-num-chars nil))
         (while (> i 0)
           (let ((part (substring completion 0 i)))
-            (if (string-suffix-p part last-cmd)
+            ;; Do case insensitive comparison on the substring suffix.  Consider
+            ;;    set_param(bdroot, 'simulationc<TAB>
+            ;; which gives completions == '(("SimulationCommand"))
+            (if (string-suffix-p part last-cmd t)
                 (progn
                   (setq chomp-num-chars i)
                   (setq i 0))
@@ -1504,11 +1507,32 @@ No completions are provided anywhere else in the buffer."
         (re-search-forward comint-prompt-regexp)
         (setq common-substr-start-pt (+ (point) limit-pos))
         (setq common-substr-end-pt (line-end-position))
-        (if (and (eq (length completions) 1)
-                 (string-equal (buffer-substring-no-properties
-                                common-substr-start-pt common-substr-end-pt)
-                               (car (car completions))))
-            (setq completions nil))) ;; force display of "No completions"
+
+        ;; Some MATLAB completions are case insensitive. Consider:
+        ;;    set_param(bdroot, 'simulationc<TAB>
+        ;; We'll get completions == '(("SimulationCommand")) and the common-substr
+        ;; ignoring case will be "simulationc" whereas the common substring in completions
+        ;; is "SimulationC". In this case replace "simulationc" with "SimulationC" for the
+        ;; completion engine and after TAB completion completes, we'll see
+        ;;    set_param(bdroot, 'SimulationCommand
+        (when (and (< common-substr-start-pt common-substr-end-pt)
+                   (> (length completions) 0))
+          (let* ((common-substr-len (- common-substr-end-pt common-substr-start-pt))
+                 (c-common-substr (substring (caar completions) 0 common-substr-len)))
+
+            (when (and (not (string-equal c-common-substr common-substr))
+                       ;; compare-strings case insensitive
+                       (eq t (compare-strings c-common-substr 0 nil common-substr 0 nil t)))
+              (save-excursion
+                (delete-region common-substr-start-pt common-substr-end-pt)
+                (goto-char common-substr-start-pt)
+                (insert c-common-substr)))))
+
+        ;; If completion is same as what we have, then it's not a completion
+        (when (and (eq (length completions) 1)
+                   (string-equal common-substr (car (car completions))))
+          (setq completions nil)) ;; force display of "No completions"
+        )
       ;; Result
       (list (cons 'last-cmd               last-cmd)
             (cons 'common-substr          common-substr)
@@ -2694,4 +2718,4 @@ Argument FNAME specifies if we should echo the region to the command line."
 ;; LocalWords:  BUILTINFLAG dired bol bobp numberp princ minibuffer fn matlabregex lastcmd notimeout
 ;; LocalWords:  stacktop eltest testme localfcn LF fileref funcall ef ec basec sk nondirectory utils
 ;; LocalWords:  ignoredups boundp edir sexp Fixup mapc emacsrun noshow cnt ellipsis newf bss noselect
-;; LocalWords:  fname mlx xemacs linux darwin truename clientcmd
+;; LocalWords:  fname mlx xemacs linux darwin truename clientcmd simulationc caar

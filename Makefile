@@ -107,7 +107,7 @@ clean:
 #
 # This requires that you define EMACS27, etc. in the environment or specify them when invoking make.
 
-SUPPORTED_EMACS_VERSIONS = 27 28 29
+SUPPORTED_EMACS_VERSIONS = 27 28 29 30
 
 define CHECK_EMACS_VER
   ifeq ($$(shell which $(EMACS${1})),)

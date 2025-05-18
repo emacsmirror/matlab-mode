@@ -41,6 +41,7 @@
 (require 'matlab-topic)
 
 (add-to-list 'load-path ".")
+(require 'mstest-completions)
 (require 'mstest-sections)
 
 ;;; Code:
@@ -158,44 +159,6 @@
       (goto-char (point-max)))))
 
 ;;; Command Sending Tests
-(defun mstest-completion ()
-  "Test emacsdocomplete and verifies result."
-  (let ((msb (matlab-shell-active-p)))
-    (when (not msb)
-      (user-error "Test, mstest-completion, must run after mstest-start"))
-
-    (with-current-buffer msb
-      (goto-char (point-max))
-
-      ;; TEST completion fcn
-      (message "COMPLETION TEST: emacs")
-      (let* ((CLO
-              (condition-case ERR
-                  (matlab-shell-completion-list "emacs")
-                (error
-                 (mstest-savestate)
-                 (user-error "%S" ERR))))
-             (CL (cdr (nth 2 CLO)))
-             (EXP '("emacs"
-                    "emacscd"
-                    "emacsdocomplete"
-                    "emacsinit"
-                    "emacsnetshell"
-                    "emacsrun"
-                    "emacsrunregion"
-                    "emacsstripremote"
-                    "emacstipstring"))
-             (cnt 1))
-        (while (and CL EXP)
-          (when (not (string= (car EXP) (car (car CL))))
-            (user-error "Expected %S /= %S TS for %d completion"
-                        (car EXP) (car (car CL)) cnt))
-          (setq cnt (1+ cnt)
-                CL (cdr CL)
-                EXP (cdr EXP))))
-      (message "PASS")
-
-      )))
 
 (defvar mstest-EVAL-TEST)
 
@@ -452,7 +415,7 @@ If LINE is negative then do not test the line number."
           (mstest-savestate)
           (message "DEBUG: txt = %S" txt)
           (user-error "DEBUG: Stack buffer did not contain stack frame for %S, found [%s]"
-                      SK (buffer-substring (point-at-bol) (point-at-eol))))
+                      SK (buffer-substring (line-beginning-position) (line-end-position))))
         (forward-line 1)
         (setq cnt (1+ cnt)))
 
@@ -479,7 +442,7 @@ If LINE is negative then do not test the line number."
           (mstest-savestate)
           (message "DEBUG: txt=%S" txt)
           (user-error "DEBUG: Breakpoints buffer did not contain breakpoint for %S, found [%s]"
-                      BP (buffer-substring (point-at-bol) (point-at-eol))))
+                      BP (buffer-substring (line-beginning-position) (line-end-position))))
         (forward-line 1)
         (setq cnt (1+ cnt)))
 
@@ -640,7 +603,7 @@ set in the same order as specified."
 
 (defun mstest-org-next-code-block-results (action)
   "Perform ACTION on the next #+RESULTS area of an Org code block.
-ACTION can be 'delete or 'get."
+ACTION can be \\='delete or \\='get."
   (save-excursion
     (let* ((results-begin (save-excursion
                             (re-search-forward "^[ \t]*#\\+RESULTS:")
