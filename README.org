@@ -57,9 +57,10 @@
 
 Installing via [[https://melpa.org][MELPA]] is recommended because MELPA will contain the latest validated release.
 
-Add to your =~/.emacs=:
+Add to your =~/.emacs=
 
 #+begin_src emacs-lisp
+  (require 'package)
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 #+end_src
 
