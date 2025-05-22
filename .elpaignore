@@ -15,3 +15,5 @@ Makefile
 examples
 matlab-maint.el
 tests
+doc
+contributing
