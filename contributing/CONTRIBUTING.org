@@ -45,7 +45,7 @@ haven't gotten to yet!
   revise your pull request based on our feedback.  Once everyone is satisfied, we'll merge your
   pull request into the repository.
 
-* Guidelines
+* Code Guidelines
 
 1. Emacs LISP code
 
@@ -64,6 +64,18 @@ haven't gotten to yet!
    - [[https://blogs.mathworks.com/loren][Loren Sure's blog]] has [[https://blogs.mathworks.com/loren/category/best-practice/][great advice on improving your MATLAB code.]]
    - Examples should be written as [[https://www.mathworks.com/help/matlab/matlab_prog/what-is-a-live-script-or-function.html][live scripts]] and then [[https://www.mathworks.com/help/matlab/matlab_prog/share-live-scripts.html][exported as HTML]].
    - We adhere to the [[https://commonmark.org/][CommonMark]] specification where it does not conflict with GitHub rendering.
+
+* Commit Guidelines
+
+1. The commit message should clearly and concisely explain the changes made in a commit. It
+   typically consists of a brief subject line, a blank line, and a more detailed body. The subject
+   line should be a summary of the change, using the imperative mood and not ending with a
+   period. The body should elaborate on the why and what of the change. If the change is related to
+   an issue provide a link to that issue.
+
+2. Enhancements and bug fixes should have a high-level summary entry in NEWS.org.
+
+3. Changes should include tests.
 
 *Again, thanks for contributing, and we look forward to your issues and pull requests!*
 
