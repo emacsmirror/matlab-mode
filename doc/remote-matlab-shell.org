@@ -1,8 +1,8 @@
 # File: doc/remote-matlab-shell.org
-#
+
 #+startup: showall
 #+options: toc:nil
-#
+
 # Copyright 2016-2025 Free Software Foundation, Inc.
 
 * Remote M-x matlab-shell
