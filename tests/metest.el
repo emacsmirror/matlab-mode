@@ -31,7 +31,7 @@
 
 (defvar met-testfile-path) ; quiet compiler
 
-(require 'matlab)
+(require 'matlab-mode)
 (require 'mlint)
 (require 'matlab-complete)
 
@@ -605,9 +605,9 @@ For example: (metest-fill-paragraph \"fill-paragraph/FILE.m\"))"
                                        "^;; Version: \\([0-9]+\\.[0-9]+\\)[ \t]*$" nil t))
                              (user-error "Failed to find version in ../matlab-mode.el"))
                            (match-string 1))))
-    (when (not (string= package-version matlab-mode-version))
-      (user-error "Version from matlab-mode.el \";; Version: %s\" != matlab-mode-version %s"
-                  package-version matlab-mode-version))))
+    (when (not (string= package-version matlab-version))
+      (user-error "Version from matlab-mode.el \";; Version: %s\" != matlab-version %s"
+                  package-version matlab-version))))
 
 
 ;;; UTILS

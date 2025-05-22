@@ -526,10 +526,8 @@ in a popup buffer.
     (set (make-local-variable 'company-idle-delay) nil)
     (company-mode))
 
-  ;; Hooks, etc
-  (run-hooks 'matlab-shell-mode-hook)
-  (matlab-show-version)
-  )
+  ;; Hooks
+  (run-hooks 'matlab-shell-mode-hook))
 
 
 ;;; NETSHELL integration

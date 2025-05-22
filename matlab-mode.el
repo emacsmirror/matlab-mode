@@ -8,7 +8,7 @@
 
 ;; Author: Matt Wette <mwette@alumni.caltech.edu>,
 ;;         Eric M. Ludlam <eludlam@mathworks.com>
-;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>, Uwe Brauer <oub@mat.ucm.es>
+;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>, Uwe Brauer <oub@mat.ucm.es>, John Ciolfi <john.ciolfi.32@gmail.com>
 ;; Created: 04 Jan 91
 ;; Keywords: MATLAB(R)
 ;; Package-Requires: ((emacs "27.2"))
@@ -48,6 +48,8 @@
 
 ;;; Code:
 
+(defconst matlab-version "6.3"
+  "Version of Emacs MATLAB Mode.")
 
 (require 'matlab)
 
