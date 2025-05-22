@@ -987,27 +987,51 @@ color support."
   "Clear the end limit for anchored matchers."
   (setq ml-fl-anchor-limit nil))
 
+(defun matlab--move-to-next-language-element ()
+  "Move point over comments and whitespace to next language element.
+If point is on a language element, e.g. a variable name, no movement
+occurs."
+  (let ((start-point (1- (point))))
+    (while (< start-point (point))
+      (setq start-point (point))
+      (forward-comment 1))))
+
 (defun matlab-font-lock-anchor-variable-match (limit)
   "After finding a keyword like PROPERTIES or ARGUMENTS, match vars.
 LIMIT is the search limit.
 This matcher will handle a range of variable features."
-  (ignore limit)
+  ;; limit seems to always match ml-fl-anchor-limit, but take min to be sure
+  (setq limit (min limit ml-fl-anchor-limit))
   (when (member (nth 1 matlab-fl-anchor-keyword)
                 '("properties" "events" "arguments"))
-    (let* ((match (re-search-forward "\\(?:^\\|[,;]\\)\\s-+\\(\\(?:\\w+\\|\\.\\)+\\)\\_>" ml-fl-anchor-limit t))
-           ;; Save this match so we can do a 2nd anchored search for a data type.
-           (md1 (list (match-beginning 1) (match-end 1)))
-           (tm (looking-at
-                "\\(\\(?:\\s-*([^\n\)]+)\\s-*\\|\\s-+\\)?\\(?:\\w+\\(?:\\.\\w+\\)*\\)?\\)\\s-*\\($\\|[;%{=]\\)"))
-           (tm1 (if tm (list (match-beginning 1) (match-end 1))
-                  ;; The below is a cheat to not highlight anything but
-                  ;; still supply the match data for this optional piece.
-                  (list (nth 1 md1) (nth 1 md1))))
-           (newmdata (append md1 md1 tm1)))
-      (when match
-        (goto-char (line-end-position))
-        (set-match-data newmdata)
-        t))))
+    (let ((start-point (point)))
+
+      ;; Skip over comments so that our regex matchers below do not find items in them.
+      (matlab--move-to-next-language-element)
+
+      (when (< (point) limit)
+        (let ((match (progn
+                       ;; When we skip over comments, we need to move back to the start of the line
+                       ;; to ensure our "^" in the regex matches when needed.
+                       (goto-char (max start-point (line-beginning-position)))
+                       (re-search-forward "\\(?:^\\|[,;]\\)\\s-*\\(\\(?:\\w+\\|\\.\\)+\\)\\_>"
+                                          limit t))))
+          (when match
+            (let* (
+                   ;; Save this match so we can do a 2nd anchored search for a data type.
+                   (md1 (list (match-beginning 1) (match-end 1)))
+                   (tm (looking-at
+                        "\\(\\(?:\\s-*([^\n)]+)\\s-*\\|\\s-+\\)?\\(?:\\w+\\(?:\\.\\w+\\)*\\)?\\)\\s-*\\($\\|[;%{=]\\)"))
+                   (tm1 (if tm
+                            (list (match-beginning 1) (match-end 1))
+                          ;; The below is a cheat to not highlight anything but
+                          ;; still supply the match data for this optional piece.
+                          (list (nth 1 md1) (nth 1 md1))))
+                   (newmdata (append md1 md1 tm1)))
+              (goto-char (line-end-position))
+              (set-match-data newmdata)
+              ;; return t which tells font-lock we matched
+              t)))))))
 
 ;;; Font Lock keyword handling
 ;;
@@ -3151,4 +3175,3 @@ desired."
 ;; LocalWords:  parenpt parenindent parenopt FUNCTION's EOL depthchange bc eol fn emacsen afterd
 ;; LocalWords:  befored okpos startlst endlst ellipsify ppss noreturn hs tc hc startsym endsym mapc
 ;; LocalWords:  func bn nondirectory scanstate sexp's nosemi msgpos nexti defn
-

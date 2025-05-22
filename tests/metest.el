@@ -35,6 +35,9 @@
 (require 'mlint)
 (require 'matlab-complete)
 
+(add-to-list 'load-path ".")
+(require 'metest-font-lock-test2)
+
 (defun metest-all-syntax-tests ()
   "Run all the syntax test cases in this file."
   (setq debug-on-error t)
@@ -48,6 +51,7 @@
 
   (metest-run 'metest-comment-string-syntax-test)
   (metest-run 'metest-fontlock-test)
+  (metest-run 'metest-font-lock-test2)
   (metest-run 'metest-sexp-counting-test)
   (metest-run 'metest-sexp-traversal-test)
 
