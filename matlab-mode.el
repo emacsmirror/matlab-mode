@@ -48,7 +48,7 @@
 
 ;;; Code:
 
-(defconst matlab-version "6.3"
+(defconst matlab-version (package-get-version)
   "Version of Emacs MATLAB Mode.")
 
 (require 'matlab)
