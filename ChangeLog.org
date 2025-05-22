@@ -1,0 +1,96 @@
+#+startup: showall
+#+options: toc:nil
+
+# Copyright 2025 Free Software Foundation, Inc.
+
+* Next release
+
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+1. Improved Emacs tramp remote *M-x matlab-shell*. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/64e1805d36a362111ac3518a4fd7428c60483079][64e1805]].
+
+   Prior to this commit, matlab-shell running through Emacs tramp partially.  This commit enables
+   remote matlab-shell and enables remote debugging, hyperlinks, etc.  See [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/remote-matlab-shell.org][remote-matlab-shell.org]]
+   documentation.
+
+2. Remove font-lock-constant-face from help comments. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/1d935b364dd90449a9dfa9a8743e275359096289][1d935b3]].
+
+   A general guideline for help comments is to capitalize functions such as PLOT as references and
+   matlab-mode used to make these a font-lock-constant-face inside of comments. However, often capital items are
+   not references and make comments look bad, so removed these. Likewise, there were other uses of
+   font-lock-constant-face that look odd, so removed these.
+   
+3. Revamped MATLAB code sections script support issues. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e75ebf5a88b02833d700bcf9ee4419c5888caf12][e75ebf5]].
+
+   - MATLAB code sections is now a minor mode, *matlab-sections-minor-mode* which is automatically
+     enabled when in a MATLAB script. A MATLAB script contains one or more MATLAB commands or
+     function calls.
+
+   - When visiting a MATLAB *.m script, you now have *MATLAB -> Code Sections* menu which includes
+     all command and there's a help entry explaining how to use the code sections capabilities.
+
+   - The default key bindings for MATLAB code section functions are now ~C-c C-<KEY>~ and ~C-c
+     M-<KEY>~, which means code sections key bindings work on system without the super (aka Windows)
+     key.  Super key bindings can be added by customizing matlab-sections-use-super-key.
+
+     : C-c C-SPC        matlab-sections-mark-section
+
+     : C-c C-<up>       matlab-sections-backward-section
+     : C-c C-<down>     matlab-sections-forward-section
+     : C-c C-<left>     matlab-sections-beginning-of-section
+     : C-c C-<right>    matlab-sections-end-of-section
+
+     : C-c M-<up>       matlab-sections-move-section-up
+     : C-c M-<down>     matlab-sections-move-section-down
+
+     : C-c C-<return>   matlab-sections-run-section
+     : C-c M-<return>   matlab-sections-run-prior-sections
+ 
+   - Improved performance in detecting MATLAB *.m file type, which gives a small speedup to
+     matlab-mode.
+
+   - MATLAB code sections are now identified by header comments of form "%% description" and no
+     longer get confused with "%%%%%" comment blocks.
+
+   - Fixed [[https://github.com/mathworks/Emacs-MATLAB-Mode/issues/14][issue #14]] and many other fixes.
+
+   - Added tests, [[https://github.com/mathworks/Emacs-MATLAB-Mode/issues/8][issue 8]].
+
+4. Enhanced *M-x matlab-shell* to search for MATLAB in standard installation locations if it is not
+   on the path. If we are unable to find MATLAB, we now generate an error explaining how to setup
+   your system to make matlab-shell work. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/9773232626919a6319e3ac36bc7e0cdd99c46585][9773232]].
+
+5. Improved fill-paragraph to work when point is before a comment. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/8686c85cf376f90549d3aaf8478ed381f22282aa][8686c85]].
+
+6. Add TAB completion in matlab-shell for MATLAB R2025a. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e92fe818acd71c4bead7bdf837e791b5aa456d11][e92fe81]] and several followup
+   commits.
+
+7. Fixed Emacs 30 lisp compiler warnings. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/89b585e6d935fd36176791caa66d4dad0405407b][89b585e]].
+
+* Release 6.3
+
+This is the first [[https://elpa.gnu.org/packages//matlab-mode.html][ELPA matlab-mode]] release (commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/tree/935137844e16551a5369f928d2591556be7fb9c2][9351378]]).  This release provides:
+
+1. *matlab-mode*  for editing *.m MATLAB files
+
+2. *M-x matlab-shell* for running and debugging MATLAB within Emacs (Unix-only)
+
+3. *M-x matlab-netsell* for interacting with a separate MATLAB from Emacs on Microsoft Windows.
+
+4. *Code sections* for working with MATLAB script code files.
+
+5. *Org-mode* support for creating scientific papers using MATLAB and org babel.
+
+6. *tlc-mode* for editing ~*.tlc~ files
+
+* Older releasess
+
+matlab-mode was created in 1991.  Change history from 2005 till now
+can be found in https://github.com/mathworks/Emacs-MATLAB-Mode.
+
+The prior location for matlab-mode was [[https://sourceforge.net/projects/matlab-emacs/][https://sourceforge.net/projects/matlab-emacs/]].  Locations
+prior to sourceforge no longer exist.
+
+See older history [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/2ff6f96294353f3f17757a2522a64c427929ff01/ChangeLog][ChangeLog]], [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/528a4fc79426adc7cf9a484d231dec7defd9c5f4/ChangeLog.old1][ChangeLog.old1]], [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/528a4fc79426adc7cf9a484d231dec7defd9c5f4/ChangeLog.old2][ChangeLog.old2]], and [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/b7e170ee37a23b6852e461772de1c4e986bb6833/NEWS.org][NEWS.org]].

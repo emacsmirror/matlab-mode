@@ -161,9 +161,8 @@ highlighter are initialized in your config.
 
 https://sourceforge.net/projects/matlab-emacs/
 
-* History
+* Releases
 
-matlab-mode has a history dating back many years. Older contributions can be found in
-[[https://sourceforge.net/projects/matlab-emacs/][https://sourceforge.net/projects/matlab-emacs/]].
+See [[ChangeLog.org][ChangeLog.org]]
 
 # LocalWords:  showall nodesktop melpa emacsclient matlabsection
