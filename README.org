@@ -56,20 +56,20 @@
 
 * Installation
 
-** Install via MELPA
+** Install via ELPA or MELPA
 
-Installing via [[https://melpa.org][MELPA]] is recommended because MELPA will contain the latest validated release.
-
-Add to your =~/.emacs=
+Install via [[https://elpa.gnu.org/][ELPA]] or [[https://melpa.org][MELPA]]. MELPA contains the latest. To install from MELPA, add to your =~/.emacs=
 
 #+begin_src emacs-lisp
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 #+end_src
 
-then run
+To install from either ELPA or MELPA
 
-: M-x RET package-list-packages RET
+: M-x RET list-packages RET
+
+and click on matlab-mode to install.
 
 ** Install from this repository
 
@@ -80,6 +80,7 @@ Build:
 
   # Build lisp and run tests (requires MATLAB executable):
   make
+
   # Alternatively, build lisp and run tests using a specific MATLAB executable:
   make MATLAB_EXE=/path/to/matlab
 
@@ -166,6 +167,6 @@ https://sourceforge.net/projects/matlab-emacs/
 
 * Releases
 
-See [[ChangeLog.org][ChangeLog.org]]
+See [[file:NEWS.org][NEWS.org]]
 
 # LocalWords:  showall nodesktop melpa emacsclient matlabsection
