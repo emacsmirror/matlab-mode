@@ -9,20 +9,23 @@
 :ORDERED:  t
 :END:
 
-1. Improved Emacs tramp remote *M-x matlab-shell*. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/64e1805d36a362111ac3518a4fd7428c60483079][64e1805]].
+1. *[[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]]*, matlabls, for code navigation, code completion, go to definition,
+   find references, and more. See [[file:doc/matlab-language-server-lsp-mode.org][doc/matlab-language-server-lsp-mode.org]].
+
+2. Improved Emacs tramp remote *M-x matlab-shell*. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/64e1805d36a362111ac3518a4fd7428c60483079][64e1805]].
 
    Prior to this commit, matlab-shell running through Emacs tramp partially.  This commit enables
    remote matlab-shell and enables remote debugging, hyperlinks, etc.  See [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/remote-matlab-shell.org][remote-matlab-shell.org]]
    documentation.
 
-2. Remove font-lock-constant-face from help comments. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/1d935b364dd90449a9dfa9a8743e275359096289][1d935b3]].
+3. Remove font-lock-constant-face from help comments. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/1d935b364dd90449a9dfa9a8743e275359096289][1d935b3]].
 
    A general guideline for help comments is to capitalize functions such as PLOT as references and
    matlab-mode used to make these a font-lock-constant-face inside of comments. However, often capital items are
    not references and make comments look bad, so removed these. Likewise, there were other uses of
    font-lock-constant-face that look odd, so removed these.
    
-3. Revamped MATLAB code sections script support issues. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e75ebf5a88b02833d700bcf9ee4419c5888caf12][e75ebf5]].
+4. Revamped MATLAB code sections script support issues. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e75ebf5a88b02833d700bcf9ee4419c5888caf12][e75ebf5]].
 
    - MATLAB code sections is now a minor mode, *matlab-sections-minor-mode* which is automatically
      enabled when in a MATLAB script. A MATLAB script contains one or more MATLAB commands or
@@ -58,16 +61,16 @@
 
    - Added tests, [[https://github.com/mathworks/Emacs-MATLAB-Mode/issues/8][issue 8]].
 
-4. Enhanced *M-x matlab-shell* to search for MATLAB in standard installation locations if it is not
+5. Enhanced *M-x matlab-shell* to search for MATLAB in standard installation locations if it is not
    on the path. If we are unable to find MATLAB, we now generate an error explaining how to setup
    your system to make matlab-shell work. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/9773232626919a6319e3ac36bc7e0cdd99c46585][9773232]].
 
-5. Improved fill-paragraph to work when point is before a comment. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/8686c85cf376f90549d3aaf8478ed381f22282aa][8686c85]].
+6. Improved fill-paragraph to work when point is before a comment. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/8686c85cf376f90549d3aaf8478ed381f22282aa][8686c85]].
 
-6. Add TAB completion in matlab-shell for MATLAB R2025a. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e92fe818acd71c4bead7bdf837e791b5aa456d11][e92fe81]] and several followup
+7. Add TAB completion in matlab-shell for MATLAB R2025a. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e92fe818acd71c4bead7bdf837e791b5aa456d11][e92fe81]] and several followup
    commits.
 
-7. Fixed Emacs 30 lisp compiler warnings. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/89b585e6d935fd36176791caa66d4dad0405407b][89b585e]].
+8. Fixed Emacs 30 lisp compiler warnings. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/89b585e6d935fd36176791caa66d4dad0405407b][89b585e]].
 
 * Release 6.3
 
