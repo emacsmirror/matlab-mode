@@ -118,9 +118,11 @@ Does not work well in classes with properties with datatypes.")
 		    (cons 'progn forms))
 	      '(set-syntax-table oldsyntax))))
 
-(add-hook 'edebug-setup-hook
-	  (lambda ()
-	    (def-edebug-spec matlab-navigation-syntax def-body)))
+;; Using Emacs 30.1 and edebug-defun on matlab-calculate-indentation causes an error about
+;; def-body when the following exists. Thus, commenting this out for now.
+;;   (add-hook 'edebug-setup-hook
+;;             (lambda ()
+;;               (def-edebug-spec matlab-navigation-syntax def-body)))
 
 ;;; Buffer Scanning for Syntax Table Augmentation
 ;;
