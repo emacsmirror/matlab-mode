@@ -1,6 +1,6 @@
 ;;; matlab-syntax.el --- Manage MATLAB syntax tables and buffer parsing -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024 Free Software Foundation, Inc.
+;; Copyright (C) 2024-2025 Free Software Foundation, Inc.
 
 ;; Author:  <eludlam@mathworks.com>, <john.ciolfi.32@gmail.com>
 ;;
@@ -43,10 +43,9 @@ function's, classdef's, etc.  is useful to demarcate concepts and this face
 is used for that purpose."
   :group 'matlab-sections)
 
-(defvar matlab-syntax-support-command-dual t
+(defvar-local matlab-syntax-support-command-dual t
   "Non-nil means to support command dual for indenting and syntax highlight.
 Does not work well in classes with properties with datatypes.")
-(make-variable-buffer-local 'matlab-syntax-support-command-dual)
 (put 'matlab-syntax-support-command-dual 'safe-local-variable #'booleanp)
 
 
@@ -109,20 +108,10 @@ Does not work well in classes with properties with datatypes.")
 
 (defmacro matlab-navigation-syntax (&rest forms)
   "Set the current environment for syntax-navigation and execute FORMS."
-  (declare (indent 0))
-  (list 'let '((oldsyntax (syntax-table))
-	       (case-fold-search nil))
-	(list 'unwind-protect
-	      (list 'progn
-		    '(set-syntax-table matlab-navigation-syntax-table)
-		    (cons 'progn forms))
-	      '(set-syntax-table oldsyntax))))
-
-;; Using Emacs 30.1 and edebug-defun on matlab-calculate-indentation causes an error about
-;; def-body when the following exists. Thus, commenting this out for now.
-;;   (add-hook 'edebug-setup-hook
-;;             (lambda ()
-;;               (def-edebug-spec matlab-navigation-syntax def-body)))
+  (declare (indent 0) (debug t))
+  `(let ((case-fold-search nil))
+     (with-syntax-table matlab-navigation-syntax-table
+       ,@forms)))
 
 ;;; Buffer Scanning for Syntax Table Augmentation
 ;;
@@ -146,9 +135,8 @@ Does not work well in classes with properties with datatypes.")
 
 (defmacro matlab--syntax-symbol (symbol syntax doc)
   "Create a new SYMBOL with DOC used as a text property category with SYNTAX."
-  (declare (indent defun))
-  `(progn (defvar ,symbol ,syntax ,doc)
-	  (set ',symbol ,syntax) ;; So you can re-eval it.
+  (declare (indent defvar) (debug (sexp form sexp)) (doc-string 3))
+  `(progn (defconst ,symbol ,syntax ,doc)
 	  (put ',symbol 'syntax-table ,symbol)
 	  ))
 
@@ -373,29 +361,22 @@ Called when comments found in `matlab--scan-line-for-unterminated-string'."
   "Integrate our syntax handling into a running `matlab-mode' buffer.
 Safe to use in `matlab-mode-hook'."
   ;; Syntax Table support
+  ;; FIXME: The conventional name is `matlab-mode-syntax-table'!
   (set-syntax-table matlab-syntax-table)
-  (make-local-variable 'syntax-propertize-function)
-  (setq syntax-propertize-function 'matlab--syntax-propertize)
+  (setq-local syntax-propertize-function #'matlab--syntax-propertize)
   ;; Comment handlers
-  (make-local-variable 'comment-start)
-  (make-local-variable 'comment-end)
-  (make-local-variable 'comment-start-skip)
-  (make-local-variable 'page-delimiter)
-  (setq comment-start "%"
-	comment-end   ""
-        comment-start-skip "%\\s-+"
-	page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
+  (setq-local comment-start "%")
+  (setq-local comment-end   "")
+  (setq-local comment-start-skip "%\\s-+")
+  (setq-local page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
   ;; Other special regexps handling different kinds of syntax.
-  (make-local-variable 'paragraph-start)
-  (setq paragraph-start (concat "^$\\|" page-delimiter))
-  (make-local-variable 'paragraph-separate)
-  (setq paragraph-separate paragraph-start)
-  (make-local-variable 'paragraph-ignore-fill-prefix)
-  (setq paragraph-ignore-fill-prefix t)
+  (setq-local paragraph-start (concat "^$\\|" page-delimiter))
+  (setq-local paragraph-separate paragraph-start)
+  (setq-local paragraph-ignore-fill-prefix t)
 
   ;; Font lock
-  (make-local-variable 'font-lock-syntactic-face-function)
-  (setq font-lock-syntactic-face-function 'matlab--font-lock-syntactic-face)
+  (setq-local font-lock-syntactic-face-function
+              #'matlab--font-lock-syntactic-face)
   )
 
 ;;; Syntax Testing for Strings and Comments
@@ -604,6 +585,6 @@ If COUNT is negative, travel backward."
 
 ;;; matlab-syntax.el ends here
 
-;; LocalWords:  Ludlam eludlam compat booleanp propertize varname defmacro oldsyntax progn edebug
+;; LocalWords:  Ludlam eludlam compat booleanp propertize varname defmacro oldsyntax progn
 ;; LocalWords:  ppss sexp pps defun eobp mcm blockcomment EOL defconst commanddual cds bolp eol
 ;; LocalWords:  cellbreak setq defsubst charvector memq sexps posn parens boundp gmail
