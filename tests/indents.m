@@ -19,8 +19,8 @@ function indents(a,b,stuff,cmddual1fake,cmddual2fake)
 % of many lines
 % !!0
     
-% including a gap
-% !!0
+% including a gap - comment for following code
+% !!4
     
     arguments (Repeating) % !!4
         a (1,1) {mustBeNumeric}                                 % !!8
@@ -282,12 +282,17 @@ function B = continuations_and_block_comments
 % !!0
 % !!0
 % !!0
-    
 %{
   !!2  {  }
   !!2
 %}
     
+%{
+  blank line means this block comment is not part of help and is for following code
+  !!6  {  }
+  !!6
+%}
+
     arg1=1;
     
     %{

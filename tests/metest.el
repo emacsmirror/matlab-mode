@@ -37,6 +37,7 @@
 
 (add-to-list 'load-path ".")
 (require 'metest-font-lock-test2)
+(require 'metest-indent-test2)
 
 (defun metest-all-syntax-tests ()
   "Run all the syntax test cases in this file."
@@ -54,6 +55,8 @@
   (metest-run 'metest-font-lock-test2)
   (metest-run 'metest-sexp-counting-test)
   (metest-run 'metest-sexp-traversal-test)
+
+  (metest-run 'metest-indent-test2)
 
   ;; Randomize indentation first before indenting
   ;; to force the indenter to make changes and give

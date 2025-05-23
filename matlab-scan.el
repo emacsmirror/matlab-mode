@@ -1,8 +1,8 @@
 ;;; matlab-scan.el --- Tools for contextually scanning a MATLAB buffer -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024 Free Software Foundation, Inc.
+;; Copyright (C) 2021-2025 Free Software Foundation, Inc.
 
-;; Author:  <eludlam@mathworks.com>
+;; Author: eludlam@mathworks.com, john.ciolfi.32@gmail.com
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -773,36 +773,87 @@ If LVL2 is nil, compute it."
 ;;
 ;; Some utilities require some level of buffer scanning to get the answer.
 ;; Keep those separate so they can depend on the earlier decls.
+
+(defun matlab--scan-is-really-a-help-comment (start-pt declaration-pt)
+  "Is the comment at START-PT really a help comment?
+It is assumed the comment follows a declaration starting at
+DECLARATION-PT and there is no code between START-PT and the
+declaration.  The comment at START-PT is really a help comment for the
+declaration when where are no non-comment blank lines between START-PT
+and DECLARATION-PT.  Examples:
+
+    function a = foo
+    % help comment for function foo
+
+        % This code comment, e.g. describing the following code
+        a = 1;
+    end
+
+    function a = foo
+    % help comment for function foo
+
+    % copyright after help comment is not a code comment line
+
+        % not a help comment (code comment)
+        a = 1;
+    end"
+  (let (found-non-comment-blank-line)
+    (save-excursion
+      (goto-char start-pt)
+      (beginning-of-line)
+
+      (when (looking-at "^[[:blank:]]*%[[:blank:]]*copyright\\b")
+        (beginning-of-line)
+        (forward-line -1)
+        (while (looking-at "^[[:blank:]]*$")
+          (forward-line -1)))
+
+      (while (and (> (point) declaration-pt)
+                  (not found-non-comment-blank-line)
+                  (re-search-backward "^[[:blank:]]*$" declaration-pt t))
+        (if (nth 4 (syntax-ppss))
+            ;; blank line in a multi-line %{ ... %} comment
+            (forward-line -1)
+          (setq found-non-comment-blank-line t)))
+      ;; If we found a non-comment blank line, then this is not a help comment.
+      (not found-non-comment-blank-line))))
+
 (defun matlab-scan-comment-help-p (ctxt &optional pt)
   "Return declaration column if the current line is part of a help comment.
 Use the context CTXT as a lvl1 or lvl2 context to compute.
 Declarations are things like functions and classdefs.
-Indentation a help comment depends on the column of the declaration.
-Optional PT, if non-nil, means return the point instead of column"
-  (let ((lvl2 nil) (lvl1 nil))
+Indentation of a help comment depends on the column of the declaration.
+Optional PT, if non-nil, means return the declaration point instead of the
+indent column."
+  (let ((lvl2 nil)
+        (lvl1 nil)
+        (start-pt (point)))
     (if (symbolp (car ctxt))
-	(setq lvl1 ctxt)
+        (setq lvl1 ctxt)
       (setq lvl1 (matlab-get-lvl1-from-lvl2 ctxt)
-	    lvl2 ctxt))
-    
+            lvl2 ctxt))
+
     (when (matlab-line-comment-p lvl1)
       ;; Try to get from lvl2 context
       (let ((c-lvl1 (when lvl2 (matlab-previous-code-line lvl2)))
-	    (boc-lvl1 nil))
-	(save-excursion
-	  (unless c-lvl1
-	    ;; If not, compute it ourselves.
-	    (save-excursion
-	      (beginning-of-line)
-	      (forward-comment -100000)
-	      (setq c-lvl1 (matlab-compute-line-context 1))))
-	  ;; On previous line, move to beginning of that command.
-	  (matlab-scan-beginning-of-command c-lvl1 'code-only)
-	  (setq boc-lvl1 (matlab-compute-line-context 1))
-	  ;; On previous code line - was it a declaration?
-	  (when (matlab-line-declaration-p boc-lvl1)
-	    (matlab-with-context-line boc-lvl1
-	      (if pt (point) (current-indentation)))))))))
+            (boc-lvl1 nil))
+        (save-excursion
+          (unless c-lvl1
+            ;; If not, compute it ourselves.
+            (save-excursion
+              (beginning-of-line)
+              (forward-comment -100000)
+              (setq c-lvl1 (matlab-compute-line-context 1))))
+          ;; On previous line, move to beginning of that command.
+          (matlab-scan-beginning-of-command c-lvl1 'code-only)
+          (setq boc-lvl1 (matlab-compute-line-context 1))
+          ;; On previous code line - was it a declaration?
+          (when (and (matlab-line-declaration-p boc-lvl1)
+                     (matlab--scan-is-really-a-help-comment start-pt (point)))
+            (matlab-with-context-line boc-lvl1
+              (if pt
+                  (point) ;; declaration point
+                (current-indentation)))))))))
 
 (defun matlab-scan-previous-line-ellipsis-p ()
   "Return the position of the previous line's continuation if there is one.
