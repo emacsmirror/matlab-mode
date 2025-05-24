@@ -28,9 +28,27 @@
    - You can use Emacs TRAMP and =M-x matlab-shell= to run remote MATLAB within your local Emacs
      session, see [[file:doc/remote-matlab-shell.org][doc/remote-matlab-shell.org]].
 
-4. *Code sections* support. MATLAB script code files often contain many commands and lines of text.
-   You typically focus your efforts on a single part of your code at a time, working with the code
-   and related text in sections.  You demarcate sections using /"%% description"/ header comments.
+4. *M-x matlab-netshell* for running MATLAB code on Microsoft Windows within Emacs using an attached
+   MATLAB.
+
+   #+begin_example
+
+    +--------------- Emacs ----------------+         +------------  MATLAB  ------------+
+    |                                      |         |                                  |
+    | (1) M-x matlab-netshell-server-start |         | (2) connect to Emacs             |
+    |                                      |<=======>| >> addpath <matlab-mode>/toolbox |
+    | (3) Visit script *.m files and use   |         | >> emacsinit                     |
+    |     "MATLAB -> Code Sections" menu  	|         | >>                               |
+    |     or the key bindings              |         |				   |
+    +--------------------------------------+	  +----------------------------------+
+
+   #+end_example
+   
+5. *Code sections* support for MATLAB script files. Script files contain one or more commands, such
+   as variable assignements, function calls, etc.  Script files differ from declaration files such
+   as those declaring function's or classdef's.  You typically focus your efforts on a single part
+   of your code at a time, working with the code and related text in sections.  You demarcate
+   sections using /"%% description"/ header comments.
 
    - After visiting a MATLAB script, you have the *"MATLAB -> Code Sections"* menu and key
      bindings which lets you can navigate, run, and move code sections.
@@ -41,7 +59,7 @@
      super key bindings for code sections. After visiting a file.m, see menu *"MATLAB -> Code
      Sections -> Help"*.
 
-5. *Creation of scientific papers, theses, and documents* using MATLAB and [[http://orgmode.org]].
+6. *Creation of scientific papers, theses, and documents* using MATLAB and [[http://orgmode.org]].
 
    - Org enables [[https://en.wikipedia.org/wiki/Literate_programming][literate programming]] which directly supports reproducible research by allowing
      scientists and engineers to write code along with detailed explanations in natural language.
@@ -56,7 +74,7 @@
    - See [[file:examples/matlab-and-org-mode][./examples/matlab-and-org-mode/]] to get started. This directory contains a [[file:examples/matlab-and-org-mode/matlab-and-org-mode.pdf][PDF]] generated from
      [[file:examples/matlab-and-org-mode/matlab-and-org-mode.org][./examples/matlab-and-org-mode/matlab-and-org-mode.org]].
 
-6. *tlc-mode* for editing ~*.tlc~ files. The Target Language Compiler (TLC) is part of Simulink®
+7. *tlc-mode* for editing ~*.tlc~ files. The Target Language Compiler (TLC) is part of Simulink®
    Coder™.
 
 * Installation
