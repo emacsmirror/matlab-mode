@@ -18,9 +18,9 @@ MATLAB session using a local TCP connection:
  | (1) M-x matlab-netshell-server-start |         | (2) connect to Emacs             |
  |                                      |<=======>| >> addpath <matlab-mode>/toolbox |
  | (3) Visit script *.m files and use   |         | >> emacsinit                     |
- |     "MATLAB -> Code Sections" menu  	|         | >>                               |
- |     or the key bindings              |         |				   |
- +--------------------------------------+	  +----------------------------------+
+ |     "MATLAB -> Code Sections" menu   |         | >>                               |
+ |     or the key bindings              |         |                                  |
+ +--------------------------------------+         +----------------------------------+
 
 #+end_example
 
