@@ -1,0 +1,23 @@
+%implements "timestwo" "C"
+
+%% Function: BlockTypeSetup ==================================
+%%
+%function BlockTypeSetup(block, system) void
+    %% Add function prototype to model's header file
+    %<LibCacheFunctionPrototype...
+	("extern void mytimestwo(real_T* in,real_T* out,int_T els);")>
+    %% Add file that contains "myfile" to list of files to be compiled
+    %<LibAddToModelSources("myfile")>
+%endfunction
+
+%% Function: Outputs ==========================================
+%%
+%function Outputs(block, system) Output
+    /* %<Type> Block: %<Name> */
+    %assign outPtr = LibBlockOutputSignalAddr(0, "", "", 0)
+    %assign inPtr = LibBlockInputSignalAddr(0, "", "",0)
+    %assign numEls = LibBlockOutputSignalWidth(0)
+    /* Multiply input by two */
+    mytimestwo(%<inPtr>,%<outPtr>,%<numEls>);
+
+%endfunction

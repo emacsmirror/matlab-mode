@@ -39,6 +39,7 @@
 (require 'metest-font-lock-test2)
 (require 'metest-indent-test2)
 (require 'metest-imenu)
+(require 'metest-imenu-tlc)
 
 (defun metest-all-syntax-tests ()
   "Run all the syntax test cases in this file."
@@ -66,6 +67,7 @@
   (metest-run 'metest-indents-test)
 
   (metest-imenu)
+  (metest-imenu-tlc)
 
   ;; Parsing and completion are high level tools
   (metest-run 'metest-complete-test)

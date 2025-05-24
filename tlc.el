@@ -137,6 +137,10 @@
   :group 'tlc
   :type 'hook)
 
+(defvar tlc--imenu-generic-expression
+  '((nil "^[[:blank:]]*%function[[:blank:]]+\\([a-zA-Z0-9_]+\\)" 1))
+  "Regexp to find function names in *.tlc files for `imenu'.")
+
 (defvar tlc-syntax-table nil
   "Syntax table used in an TLC file.")
 
@@ -233,21 +237,19 @@
   (setq mode-name "TLC")
   (use-local-map tlc-mode-map)
   (set-syntax-table tlc-syntax-table)
-  (make-local-variable 'comment-start)
-  (make-local-variable 'comment-end)
-  (make-local-variable 'comment-start-skip)
-  (setq comment-start "%% "
-        comment-end   "")
-  (setq comment-start-skip "%%\\|/%")
-  (make-local-variable 'indent-line-function)
-  (setq indent-line-function 'tlc-indent)
-  (make-local-variable 'font-lock-defaults)
-  (setq font-lock-defaults '((tlc-font-lock-keywords)
+  (setq-local comment-start "%% ")
+  (setq-local comment-end   "")
+  (setq-local comment-start-skip "%%\\|/%")
+  (setq-local indent-line-function 'tlc-indent)
+  (setq-local font-lock-defaults '((tlc-font-lock-keywords)
                              nil ; do not do string/comment highlighting
                              nil ; keywords are case sensitive.
                              ;; This puts _ as a word constituent,
                              ;; simplifying our keywords significantly
                              ((?_ . "w"))))
+
+  (setq-local imenu-generic-expression tlc--imenu-generic-expression)
+
   (tlc-version)
   (save-excursion
     (goto-char (point-min))
