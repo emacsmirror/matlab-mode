@@ -1,0 +1,51 @@
+# File: doc/matlab-imenu.org
+
+#+startup: showall
+#+options: toc:nil
+
+# Copyright 2025 Free Software Foundation, Inc.
+
+matlab-mode provides [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][imenu]] support which lets you jump quickly to functions in the current ~*.m~
+file you are visiting.  Typing ~M-g i~ (or ~M-x imenu~) will prompt you in the mini-buffer:
+
+ : Index item:
+
+You can type TAB to complete MATLAB function names and after selecting one, the point
+is moved to that function. For example, given test1.m
+
+#+begin_src matlab
+  function test1
+      a = test2(2);
+      b = test3(a);
+      test4(b);
+  end
+
+  function out = test2(in)
+      out = in * 2;
+  end
+
+  function [out] = test3(in)
+      out = in * 3;
+  end
+
+  function test4(in)
+      disp(num2str(in))
+  end
+#+end_src
+
+Typing ~M-g i~ followed by a ~TAB~ at the prompt:
+
+ : Index item: <TAB>
+
+gives:
+
+#+begin_example
+  5 Possible completions:
+  *Rescan*
+  myFunc1
+  myFunc2
+  myFunc3
+  myFunc4
+#+end_example
+ 
+and you can select the one you'd like by clicking on it or by typing the name with tab completion.

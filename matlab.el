@@ -399,11 +399,19 @@ This overcomes situations where the `fill-column' plus the
   :group 'matlab
   :type 'integer)
 
+;; TODO - matlab-ellipsis-string shouldn't be a defcustom because it cannot be changed.
 (defcustom matlab-ellipsis-string "..."
   "Text used to perform continuation on code lines.
 This is used to generate and identify continuation lines."
   :group 'matlab
   :type 'string)
+
+(defvar matlab--ellipsis-to-eol-re
+  (concat "\\.\\.\\.[[:blank:]]*\\(?:%[^\r\n]*\\)?\r?\n")
+  "Regexp used to match either of the following including the newline
+  ...
+  ... % comment
+")
 
 (defcustom matlab-fill-code nil
   "*If true, `auto-fill-mode' causes code lines to be automatically continued."
@@ -1205,11 +1213,62 @@ This matcher will handle a range of variable features."
    )
   "Expressions to highlight in MATLAB mode.")
 
-;; Imenu support.
+
+;; -----------------
+;; | Imenu support |
+;; -----------------
+;; Example functions we match, f0, f1, f2, f3, f4, f5, F6, g4
+;;    function f0
+;;    function...
+;;        a = f1
+;;    function f2
+;;    function x = ...
+;;            f3
+;;    function [a, ...
+;;              b ] ...
+;;              = ...
+;;              f4(c)
+;;    function a = F6
+;;    function [ ...
+;;        a, ... % comment for a
+;;        b  ... % comment for b
+;;             ] ...
+;;             = ...
+;;             g4(c)
+;;
 (defvar matlab-imenu-generic-expression
-  '((nil "^\\s-*function\\>[ \t\n.]*\\(\\(\\[[^]]*\\]\\|\\sw+\\)[ \t\n.]*\
-< =[ \t\n.]*\\)?\\([a-zA-Z0-9_]+\\)" 3))
-  "Expressions which find function headings in MATLAB M files.")
+  ;; Using concat to increase indentation and improve readability
+  `(,(list nil (concat
+                "^[[:blank:]]*"
+                "function\\>"
+
+                ;; Optional return args, function ARGS = NAME. Capture the 'ARGS ='
+                (concat "\\(?:"
+
+                        ;; ARGS can span multiple lines
+                        (concat "\\(?:"
+                                ;; valid ARGS chars: "[" "]" variables "," space, tab
+                                "[]\\[a-zA-Z0-9_,[:blank:]]*"
+                                ;; Optional continue to next line "..." or "... % comment"
+                                "\\(?:" matlab--ellipsis-to-eol-re "\\)?"
+                                "\\)+")
+
+                        ;; ARGS must be preceeded by the assignment operator, "="
+                        "[[:blank:]]*="
+
+                        "\\)?")
+
+                ;; Optional space/tabs or '...' continuation
+                (concat "\\(?:"
+                        "[[:blank:]]*"
+                        "\\(?:" matlab--ellipsis-to-eol-re "\\)?"
+                        "\\)*")
+
+                "[\\.[:space:]\n\r]*"
+                "\\([a-zA-Z][a-zA-Z0-9_]+\\)" ;; function NAME
+                )
+           1))
+  "Regexp to find function names in *.m files for `imenu'.")
 
 
 ;;; MATLAB mode entry point ==================================================
