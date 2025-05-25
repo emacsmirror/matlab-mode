@@ -602,16 +602,18 @@ point, but it will be restored for them."
     ("Code Sections"
      ["Run section" matlab-sections-run-section
       :active matlab-sections-minor-mode
-      :help "Run the current \"%% section\" in `matlab-shell'."]
+      :help "Run the current \"%% section\" in
+matlab-shell (Unix) or matlab-netshell (Windows)"]
      ["Run prior sections" matlab-sections-run-prior-sections
       :active matlab-sections-minor-mode
-      :help "Run all \"%% sections\" prior to the current section in `matlab-shell'"]
+      :help "Run all \"%% sections\" prior to the current section in
+matlab-shell (Unix) or matlab-netshell (Windows)"]
      ["Move to beginning" matlab-sections-beginning-of-section
       :active matlab-sections-minor-mode
-      :help "Move `point' to the beginning of the current \"%% section\""]
+      :help "Move point to the beginning of the current \"%% section\""]
      ["Move to end" matlab-sections-end-of-section
       :active matlab-sections-minor-mode
-      :help "Move `point' to the end of the current \"%% section\""]
+      :help "Move point to the end of the current \"%% section\""]
      ["Backward section" matlab-sections-backward-section
       :active matlab-sections-minor-mode
       :help "Move point backward to the prior \"%% section\""]

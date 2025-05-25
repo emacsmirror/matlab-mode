@@ -1,0 +1,66 @@
+# File: doc/matlab-code-sections.org
+
+#+startup: showall
+#+options: toc:nil
+
+# Copyright 2025 Free Software Foundation, Inc.
+
+* MATLAB Code Sections in Script *.m Files
+
+MATLAB script files contain one or more commands, such as variable assignments, function calls, etc.
+Script files differ from declaration files such as those declaring function's or classdef's.  When
+working with script files, you typically focus your efforts on a single part of your code at a time,
+working with the code and related text in sections.  You demarcate sections using /"%% description"/
+header comments.
+
+An example of a script file is ~basic_script.m~:
+
+#+begin_src matlab
+  %% First section
+
+  a = 1;
+  b = 2;
+
+  %% Second section
+
+  c = a + b;
+  disp(['c = ', num2str(c)]);
+#+end_src
+
+When you visit a script.m file, you will have a *MATLAB -> Code Sections* menu.  Help from within
+Emacs is available from *"MATLAB -> Code Sections -> Help"* menu item.  You can use the menu or key
+bindings to modify or run your script.
+
+#+begin_example
+  C-c C-SPC        Mark/select section.
+
+  C-c C-<up>       Move point backward to the prior "% section"
+  C-c C-<down>     Move point forward to the next "% section"
+  C-c C-<left>     Move point to the beginning of the current "%% section"
+  C-c C-<right>    Move point to the end of the current "%% section"
+
+  C-c M-<up>       Move the current "%% section" up
+  C-c M-<down>     Move the current "%% section" down
+
+  C-c C-<return>   Run the current "%% section"
+  C-c M-<return>   Run all "%% sections" prior to the current section
+#+end_example
+
+Sections are run using the =*MATLAB*= shell buffer created using =M-x matlab-shell= on Unix and the
+attached MATLAB using the [[file:matlab-netshell-for-windows.org][matlab netshell on Windows]]. When a section is run, you will see in the
+MATLAB Command Window:
+
+#+begin_example
+  emacsrunregion('/path/to/your/script.m', startChar, endChar)
+
+  <text displayed by your script.m>
+#+end_example
+
+The sections are run asynchronously. After sending the emacsrunregion command to MATLAB, control is
+returned to Emacs.  In MATLAB, you'll see the ">>" prompt reappear when emacsrunregion is complete.
+
+** Customizations
+
+If you'd like to use super (aka Windows) key bindings instead of the above key bindings, you can
+
+ : M-x customize-variable RET matlab-sections-use-super-key RET

@@ -132,6 +132,25 @@ the command `matlab-sections-minor-mode' to turn matlab-sections mode on."
 
 ;; Function to obtain range of current code section
 
+(defun matlab-sections--get-heading (&optional range)
+  "Return the \"%% descrition\" heading or nil if not in a code section.
+RANGE is (START-PT . END-PT) of the section or nil.  If nil, we'll
+determine the RANGE."
+  (when (not range)
+    (setq range (matlab-sections-range-function)))
+  (save-excursion
+    (save-restriction
+      (widen)
+      (goto-char (car range))
+      (when (not (looking-at "^[[:blank:]]*%%[[:blank:]]*\\(.*\\)$"))
+        (error "Assert - failed to match section heading at point %S" (point)))
+      (let ((heading (string-trim (match-string-no-properties 1))))
+        (when (string= heading "")
+          (setq heading "Empty section heading"))
+        (setq heading (concat heading (format " (line %d)"
+                                              (line-number-at-pos)))))
+      )))
+
 (defun matlab-sections-range-function ()
   "Return range (START-PT . END-PT) of current MATLAB code section.
 nil is returned if there is no code section."
@@ -293,11 +312,14 @@ Return `point'."
   "Run the current \"%% section\" in `matlab-shell'."
   (interactive)
   (let ((rng (matlab-sections-range-function)))
-    (save-excursion
-      (save-restriction
-        (widen)
-        (save-window-excursion
-          (matlab-shell-run-region (car rng) (cdr rng)))))))
+    (if rng
+        (save-excursion
+          (save-restriction
+            (widen)
+            (save-window-excursion
+              (message "Running section: %s" (matlab-sections--get-heading rng))
+              (matlab-shell-run-region (car rng) (cdr rng)))))
+      (message "Not in a \"%% code section\""))))
 
 (define-obsolete-function-alias 'matlab-sections-run-till-point
   #'matlab-sections-run-prior-sections "6.3")
@@ -312,9 +334,14 @@ Does not run the section the point is in."
       (let ((current-section-start-point (matlab-sections-beginning-of-section)))
         (goto-char (point-min))
         (matlab-sections-beginning-of-section)
-        (when (< (point) current-section-start-point)
-          (save-window-excursion
-            (matlab-shell-run-region (point) current-section-start-point)))))))
+        (if (< (point) current-section-start-point)
+            (progn
+              (save-excursion
+                (goto-char current-section-start-point)
+                (message "Running sections prior to: %s" (matlab-sections--get-heading)))
+              (save-window-excursion
+                (matlab-shell-run-region (point) current-section-start-point)))
+          (message "No prior \"%% code sections\""))))))
 
 (declare-function matlab-mode "matlab.el")
 

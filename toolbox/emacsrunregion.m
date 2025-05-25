@@ -25,7 +25,7 @@ function emacsrunregion(file, startchar, endchar)
     end
 
     % Now figure out if shortFileName is on the path.
-    [ fullFilePath, shortFileName ] = fileparts(file);
+    [fullFilePath, shortFileName, extension] = fileparts(file);
     onpath = ~isempty(which(shortFileName));
 
     % If not on the path, temporarily switch to that directory so it and an files it references are
@@ -36,9 +36,31 @@ function emacsrunregion(file, startchar, endchar)
         cleanup = onCleanup(@()cd(oldpath));
     end
 
-    txt = fileread(file);
-    evalTxt = txt(startchar:min(endchar,length(txt)));
-    evalin('base',evalTxt);
+    fileContents = fileread(file);
+
+    endchar = min(endchar, length(fileContents));
+    evalTxt = fileContents(startchar:endchar);
+    evalin('base', evalTxt);
+
+    % See if startchar and endchar are on the first column of a lines and if so display that. Note,
+    % fileContents can contain POSIX newlines (LF) or be Windows CRFL (13, 10) line endings.
+    if (startchar == 1 || fileContents(startchar-1) == newline) && ...
+            regexp(fileContents(endchar), '[\r\n]', 'once')
+        startLineNum = length(strfind(fileContents(1:startchar), newline)) + 1;
+        endLineNum = length(strfind(fileContents(1:endchar), newline));
+        if fileContents(endchar) == 13 || endchar == length(fileContents)
+            % Looking at CR or end-of-file
+            endLineNum = endLineNum + 1;
+        end
+
+        regionInfo = sprintf('lines %d to %d', startLineNum, endLineNum);
+    else
+        regionInfo = sprintf('chars %d to %d', startchar, endchar);
+    end
+
+    % TODO - enable this display after updating tests to pass on Unix.
+    % fprintf(1, 'emacsrunregion: finished running %s%s %s\n', ...
+    %         shortFileName, extension, regionInfo);
 end
 
-% LocalWords:  Ludlam STARTCHAR ENDCHAR
+% LocalWords:  STARTCHAR ENDCHAR

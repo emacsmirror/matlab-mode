@@ -44,20 +44,12 @@
 
    #+end_example
    
-5. *Code sections* support for MATLAB script files. Script files contain one or more commands, such
-   as variable assignements, function calls, etc.  Script files differ from declaration files such
-   as those declaring function's or classdef's.  You typically focus your efforts on a single part
-   of your code at a time, working with the code and related text in sections.  You demarcate
-   sections using /"%% description"/ header comments.
+5. *Code sections* support for MATLAB script files. See [[file:doc/matlab-code-sections.org][doc/matlab-code-sections.org]].
 
-   - After visiting a MATLAB script, you have the *"MATLAB -> Code Sections"* menu and key
-     bindings which lets you can navigate, run, and move code sections.
+   - After visiting a MATLAB script, you have a *"MATLAB -> Code Sections"* menu and key bindings
+     which lets you navigate, run, and move code sections.
 
    - Try out code sections using: [[file:examples/matlab-sections/tryout_matlabsection.m][./examples/matlab-sections/tryout_matlabsection.m]].
-
-   - The default keybindings for code sections are ~C-c C-<KEY>~ and ~C-c M-<KEY>~. You can add
-     super key bindings for code sections. After visiting a file.m, see menu *"MATLAB -> Code
-     Sections -> Help"*.
 
 6. *Creation of scientific papers, theses, and documents* using MATLAB and [[http://orgmode.org]].
 
