@@ -32,6 +32,8 @@
                      (indent-tabs-mode . nil)
                      ;; Monitors are quite large and lisp code often has long variable / function
                      ;; names, so using a fill-column of 100 seems reasonable.
-                     (fill-column . 100))))
+                     (fill-column . 100)))
+ (org-mode . ((indent-tabs-mode . nil)
+	      (fill-column . 100))))
 
 ;; LocalWords:  flycheck listp

@@ -166,10 +166,10 @@ matlab-mode.
 In this case, add the following hook to your config:
 #+begin_src emacs-lisp
   (add-hook 'matlab-sections-mode-hook
-  	  (lambda () (interactive)
+            (lambda () (interactive)
               (font-lock-add-keywords
-  	     nil
-  	     `((,matlab-sections-section-break-regexp
+               nil
+               `((,matlab-sections-section-break-regexp
                   1 'matlab-sections-section-break-face prepend)))
               (font-lock-flush)))
 #+end_src
