@@ -59,6 +59,11 @@ MATLAB Command Window:
 The sections are run asynchronously. After sending the emacsrunregion command to MATLAB, control is
 returned to Emacs.  In MATLAB, you'll see the ">>" prompt reappear when emacsrunregion is complete.
 
+** Tryout MATLAB code section support
+
+You can use [[file:examples/matlab-sections/tryout_matlabsection.m][examples/matlab-sections/tryout_matlabsection.m]] to tryout MATLAB code section support
+in Emacs.
+
 ** Customizations
 
 If you'd like to use super (aka Windows) key bindings instead of the above key bindings, you can
