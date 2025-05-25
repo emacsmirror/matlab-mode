@@ -5,9 +5,7 @@
 
 * Next release
 
-:PROPERTIES:
-:ORDERED:  t
-:END:
+These are items that will appear in the next ELPA release. These items are available from MELPA.
 
 1. Added [[file:doc/matlab-netshell-for-windows.org][doc/matlab-netshell-for-windows.org]]. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/b0222ac2c067292b43fba91a60b39a262c6149d3][b0222ac]].
 
@@ -26,7 +24,7 @@
 
 2. Setup imenu for *.tlc files. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/7d0d26a0312cf3a7b0cb07ff982f1b5274f96424][7d0d26a]].
 
-3. Fix imenu for ~*.m~ files and add [[file:doc/matlab-imenu.org][doc/matlab-imenu.org]] on using it. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/a54d2061bd31c9cba32fc5e0e0ecf34b900e26d1][a54d206]].
+3. Fix imenu for ~*.m~ files and added [[file:doc/matlab-imenu.org][doc/matlab-imenu.org]] on using it. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/a54d2061bd31c9cba32fc5e0e0ecf34b900e26d1][a54d206]].
 
    Now typing ~M-g i~ (or ~M-x imenu~) when visiting a ~*.m~ file will let you quickly jump to
    function declarations.
@@ -58,8 +56,10 @@
    matlab-mode used to make these a font-lock-constant-face inside of comments. However, often capital items are
    not references and make comments look bad, so removed these. Likewise, there were other uses of
    font-lock-constant-face that look odd, so removed these.
-   
-8. Revamped MATLAB code sections script support issues. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e75ebf5a88b02833d700bcf9ee4419c5888caf12][e75ebf5]].
+
+8. Revamped MATLAB code sections script support issues. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e75ebf5a88b02833d700bcf9ee4419c5888caf12][e75ebf5]] and others.
+
+   - Added [[file:doc/matlab-code-sections.org][doc/matlab-code-sections.org]].
 
    - MATLAB code sections is now a minor mode, *matlab-sections-minor-mode* which is automatically
      enabled when in a MATLAB script. A MATLAB script contains one or more MATLAB commands or
@@ -85,7 +85,7 @@
 
      : C-c C-<return>   matlab-sections-run-section
      : C-c M-<return>   matlab-sections-run-prior-sections
- 
+
    - Improved performance in detecting MATLAB *.m file type, which gives a small speedup to
      matlab-mode.
 
