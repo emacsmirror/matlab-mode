@@ -7,7 +7,7 @@
 
 * Remote M-x matlab-shell
 
-You can use Emacs TRAMP to run matlab-shell on a remote system.
+You can use Emacs [[https://www.gnu.org/software/tramp/][TRAMP]] to run matlab-shell on a remote system.
 
 1. First verify you can connect to the remote system in a terminal
 

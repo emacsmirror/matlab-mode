@@ -5,7 +5,7 @@
 
 # Copyright 2025 Free Software Foundation, Inc.
 
-* MATLAB inside of Emacs on Unix (Linux or Mac)
+* Running MATLAB inside of Emacs on Unix (Linux or Mac)
 
 In Emacs,
 
@@ -19,3 +19,10 @@ matlab-shell to use a specific version of MATLAB run
 
 In the =*MATAB*= matlab-shell buffer, you can run MATLAB commands, debug MATLAB =*.m= files, and
 more. See the MATLAB menu for capabilities.
+
+At the MATLAB prompt, ">>", you can TAB complete commands.  matlab-shell uses company-mode for
+completions. For example:
+
+ : >> plot(a, b, 'Line<TAB>
+
+will complete =Line= to =LineWidth=.
