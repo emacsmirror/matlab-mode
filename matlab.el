@@ -408,10 +408,11 @@ This is used to generate and identify continuation lines."
 
 (defvar matlab--ellipsis-to-eol-re
   (concat "\\.\\.\\.[[:blank:]]*\\(?:%[^\r\n]*\\)?\r?\n")
-  "Regexp used to match either of the following including the newline
+  "Regexp used to match either of the following including the newline.
+For example, the end-of-lines:
   ...
   ... % comment
-")
+are matched.")
 
 (defcustom matlab-fill-code nil
   "*If true, `auto-fill-mode' causes code lines to be automatically continued."
@@ -1245,22 +1246,37 @@ This matcher will handle a range of variable features."
                 "function\\>"
 
                 ;; Optional return args, function ARGS = NAME. Capture the 'ARGS ='
+
+                ;; The following regexp is better for capturing 'ARGS ='.  The regexp allows for any
+                ;; characters in the "% comments", however with Emacs 30.1, running:
+                ;;    M-: (re-search-forward (cadar matlab-imenu-generic-expression) nil t)
+                ;; on this file with point at 0
+                ;;     function foo123567890123567890123567890123567890123567890(fh)
+                ;;     end
+                ;; gives us a hang. If you shorten the function name, Emacs won't hang.
+                ;;
+                ;; (concat "\\(?:"
+                ;;         ;; ARGS can span multiple lines
+                ;;         (concat "\\(?:"
+                ;;                 ;; valid ARGS chars: "[" "]" variables "," space, tab
+                ;;                 "[]\\[a-zA-Z0-9_,[:blank:]]*"
+                ;;                 ;; Optional continue to next line "..." or "... % comment"
+                ;;                 "\\(?:" matlab--ellipsis-to-eol-re "\\)?"
+                ;;                 "\\)+")
+                ;;         ;; ARGS must be preceeded by the assignment operator, "="
+                ;;         "[[:blank:]]*="
+                ;;        "\\)?")
+
+                ;; Capture 'ARGS = ' using a less accurate regexp that doesn't handle ellipsis
+                ;; due to performance problems with the above.
                 (concat "\\(?:"
-
-                        ;; ARGS can span multiple lines
-                        (concat "\\(?:"
-                                ;; valid ARGS chars: "[" "]" variables "," space, tab
-                                "[]\\[a-zA-Z0-9_,[:blank:]]*"
-                                ;; Optional continue to next line "..." or "... % comment"
-                                "\\(?:" matlab--ellipsis-to-eol-re "\\)?"
-                                "\\)+")
-
+                        ;; valid ARGS chars: "[" "]" variables "," space, tab
+                        "[]\\[a-zA-Z0-9_,[:blank:]]+"
                         ;; ARGS must be preceeded by the assignment operator, "="
-                        "[[:blank:]]*="
-
+                        "="
                         "\\)?")
 
-                ;; Optional space/tabs or '...' continuation
+                ;; Optional space/tabs, "...", or "... % comment" continuation
                 (concat "\\(?:"
                         "[[:blank:]]*"
                         "\\(?:" matlab--ellipsis-to-eol-re "\\)?"
