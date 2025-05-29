@@ -76,7 +76,7 @@ the reason for it being optional."
   :safe 'booleanp)
 
 (defcustom matlab-sections-section-break-regexp
-  (concat "^[[:blank:]]*" ;; Can have space or tabs prior to the "%%" characters
+  (concat "^[ \t]*" ;; Can have space or tabs prior to the "%%" characters
           "\\("
           "%%"            ;; Next must have two "%%" characters
           "\\(?:"         ;; Optionally followed by a description or blanks
@@ -142,7 +142,7 @@ determine the RANGE."
     (save-restriction
       (widen)
       (goto-char (car range))
-      (when (not (looking-at "^[[:blank:]]*%%[[:blank:]]*\\(.*\\)$"))
+      (when (not (looking-at "^[ \t]*%%[[:blank:]]*\\(.*\\)$"))
         (error "Assert - failed to match section heading at point %S" (point)))
       (let ((heading (string-trim (match-string-no-properties 1))))
         (when (string= heading "")
@@ -227,7 +227,7 @@ Optionally provide prefix argument ARG to move by that many sections."
           (when (not (eobp))
             (forward-line))
           (while (and (not (eobp))
-                      (looking-at "^[[:blank:]]*$"))
+                      (looking-at "^[ \t]*$"))
             (forward-line))
           (setq next-section-pt (point))))
       (when (not next-section-pt)
@@ -268,7 +268,7 @@ Return `point'."
       (progn
         (forward-line)
         (while (and (not (eobp))
-                    (looking-at "^[[:blank:]]*$"))
+                    (looking-at "^[ \t]*$"))
           (forward-line)))
     ;; else consider case where there's code before first section, if so go there
     (goto-char (point-min)))
@@ -287,7 +287,7 @@ Return `point'."
         (when (not (bobp))
           (forward-line -1))
         (while (and (not (bobp))
-                    (looking-at "^[[:blank:]]*$"))
+                    (looking-at "^[ \t]*$"))
           (forward-line -1))
         ;; move to the point where we'd start code
         (forward-line))

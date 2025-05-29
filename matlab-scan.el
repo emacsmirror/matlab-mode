@@ -802,15 +802,15 @@ and DECLARATION-PT.  Examples:
       (goto-char start-pt)
       (beginning-of-line)
 
-      (when (looking-at "^[[:blank:]]*%[[:blank:]]*copyright\\b")
+      (when (looking-at "^[ \t]*%[ \t]*copyright\\b")
         (beginning-of-line)
         (forward-line -1)
-        (while (looking-at "^[[:blank:]]*$")
+        (while (looking-at "^[ \t]*$")
           (forward-line -1)))
 
       (while (and (> (point) declaration-pt)
                   (not found-non-comment-blank-line)
-                  (re-search-backward "^[[:blank:]]*$" declaration-pt t))
+                  (re-search-backward "^[ \t]*$" declaration-pt t))
         (if (nth 4 (syntax-ppss))
             ;; blank line in a multi-line %{ ... %} comment
             (forward-line -1)

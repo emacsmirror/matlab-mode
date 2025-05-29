@@ -1,4 +1,4 @@
-;;; tlc --- Major mode for editing tlc files -*- lexical-binding: t -*-
+y;;; tlc --- Major mode for editing tlc files -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2024 Free Software Foundation, Inc.
 
@@ -138,7 +138,7 @@
   :type 'hook)
 
 (defvar tlc--imenu-generic-expression
-  '((nil "^[[:blank:]]*%function[[:blank:]]+\\([a-zA-Z0-9_]+\\)" 1))
+  '((nil "^[ \t]*%function[ \t]+\\([a-zA-Z0-9_]+\\)" 1))
   "Regexp to find function names in *.tlc files for `imenu'.")
 
 (defvar tlc-syntax-table nil
