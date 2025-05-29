@@ -55,31 +55,32 @@ For debugging, you can run with a specified M-FILE,
       (save-excursion
         (message "START: (metest-imenu \"%s\")" m-file)
 
-        (find-file m-file)
-        (goto-char (point-min))
+        (let ((m-file-buf (find-file m-file)))
+          (with-current-buffer m-file-buf
 
-        (let* ((imenu-re (cadar matlab-imenu-generic-expression))
-               (got "")
-               (expected-file (replace-regexp-in-string "\\.m$" "_expected.txt" m-file))
-               (got-file (concat expected-file "~"))
-               (expected (when (file-exists-p expected-file)
-                           (with-temp-buffer
-                             (insert-file-contents-literally expected-file)
-                             (buffer-string))))
-               (case-fold-search nil))
-          (while (re-search-forward imenu-re nil t)
-            (setq got (concat got (match-string 1) "\n")))
+            (let* ((index (matlab--imenu-index))
+                   (got (concat (string-join
+                                 (mapcar (lambda (el) (substring-no-properties (car el))) index)
+                                 "\n")
+                                "\n"))
+                   (expected-file (replace-regexp-in-string "\\.m$" "_expected.txt" m-file))
+                   (got-file (concat expected-file "~"))
+                   (expected (when (file-exists-p expected-file)
+                               (with-temp-buffer
+                                 (insert-file-contents-literally expected-file)
+                                 (buffer-string)))))
 
-          (when (not (string= got expected))
-            (let ((coding-system-for-write 'raw-text-unix))
-              (write-region got nil got-file))
-            (when (not expected)
-              (error "Baseline for %s does not exists.  See %s and if it looks good rename it to %s"
-                     m-file got-file expected-file))
-            (error "Baseline for %s does not match, got: %s, expected: %s"
-                   m-file got-file expected-file))
-          (kill-buffer)))
-      (message "PASS: (metest-imenu \"%s\")" m-file)))
+              (when (not (string= got expected))
+                (let ((coding-system-for-write 'raw-text-unix))
+                  (write-region got nil got-file))
+                (when (not expected)
+                  (error "Baseline for %s does not exist.
+See %s and if it looks good rename it to %s"
+                         m-file got-file expected-file))
+                (error "Baseline for %s does not match, got: %s, expected: %s"
+                       m-file got-file expected-file))))
+          (kill-buffer m-file-buf))
+        (message "PASS: (metest-imenu \"%s\")" m-file))))
   "success")
 
 (provide 'metest-imenu)

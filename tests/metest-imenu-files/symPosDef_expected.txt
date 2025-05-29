@@ -1,0 +1,3 @@
+symPosDef
+set.inputMatrix
+get.inputMatrix

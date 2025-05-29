@@ -5,8 +5,9 @@
 
 # Copyright 2025 Free Software Foundation, Inc.
 
-matlab-mode provides [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][imenu]] support which lets you jump quickly to functions in the current ~*.m~
-file you are visiting.  Typing ~M-g i~ (or ~M-x imenu~) will prompt you in the mini-buffer:
+matlab-mode and tlc-mode provides [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][imenu]] support which lets you jump quickly to functions in the
+current ~*.m~ file you are visiting.  Typing ~M-g i~ (or ~M-x imenu~) will prompt you in the
+mini-buffer:
 
  : Index item:
 
@@ -49,3 +50,16 @@ gives:
 #+end_example
  
 and you can select the one you'd like by clicking on it or by typing the name with tab completion.
+
+** Fcns Menu
+
+To add a "Fcns" menu to Emacs for MATLAB and/or TLC files.
+
+ : M-x customize-variable RET matlab-mode-hook RET
+ : M-x customize-variable RET tlc-mode-hook RET
+
+and add:
+
+#+begin_src emacs-lisp
+   (lambda () (imenu-add-to-menubar "Fcns"))
+#+end_src

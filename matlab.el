@@ -199,6 +199,47 @@ If the value is \\='guess, then we guess if a file has end when
 (make-variable-buffer-local 'matlab-functions-have-end)
 (put 'matlab-functions-have-end 'safe-local-variable #'symbolp)
 
+(defun matlab--imenu-index ()
+  "Return index for imenu.
+This will return alist of functions in the current *.m file:
+   \\='((\"function1\" . start-point1)
+     (\"function2\" . start-point2)
+This searches for `font-lock-function-name-face' font-lock property to
+locate the functions."
+
+  ;; Handle case of font-lock being out of date.
+  (font-lock-mode 1)
+  (font-lock-fontify-region (point-min) (point-max))
+
+  (goto-char (point-min))
+  (let (match
+	(index '())
+        last-end-pt)
+    (while (setq match (text-property-search-forward
+			'face 'font-lock-function-name-face
+			(lambda (value prop)
+			  (or (eq prop value)
+			      (and (listp prop)
+				   (member value prop))))))
+      (let* ((start-pt (prop-match-beginning match))
+	     (end-pt (prop-match-end match))
+	     (function-name (buffer-substring start-pt end-pt)))
+
+        (if (and last-end-pt
+                 (= last-end-pt start-pt))
+            ;; classdef get and set methods have multiple faces, so join (1) and (2):
+            ;;     function obj = set.inputMatrix(obj,val)
+            ;;                    ^---^----------
+            ;;                    (1) (2)
+            (let* ((last-el (car index))
+                   (last-function-name (car last-el))
+                   (last-start-pt (cdr last-el))
+                   (new-el (cons (concat last-function-name function-name) last-start-pt)))
+              (setcar index new-el))
+	  (push `(,function-name . ,start-pt) index))
+        (setq last-end-pt end-pt)))
+    (reverse index)))
+
 (defun matlab-toggle-functions-have-end ()
   "Toggle `matlab-functions-have-end-minor-mode'."
   (interactive)
@@ -405,14 +446,6 @@ This overcomes situations where the `fill-column' plus the
 This is used to generate and identify continuation lines."
   :group 'matlab
   :type 'string)
-
-(defvar matlab--ellipsis-to-eol-re
-  (concat "\\.\\.\\.[[:blank:]]*\\(?:%[^\r\n]*\\)?\r?\n")
-  "Regexp used to match either of the following including the newline.
-For example, the end-of-lines:
-  ...
-  ... % comment
-are matched.")
 
 (defcustom matlab-fill-code nil
   "*If true, `auto-fill-mode' causes code lines to be automatically continued."
@@ -1217,77 +1250,6 @@ This matcher will handle a range of variable features."
   "Expressions to highlight in MATLAB mode.")
 
 
-;; -----------------
-;; | Imenu support |
-;; -----------------
-;; Example functions we match, f0, f1, f2, f3, f4, f5, F6, g4
-;;    function f0
-;;    function...
-;;        a = f1
-;;    function f2
-;;    function x = ...
-;;            f3
-;;    function [a, ...
-;;              b ] ...
-;;              = ...
-;;              f4(c)
-;;    function a = F6
-;;    function [ ...
-;;        a, ... % comment for a
-;;        b  ... % comment for b
-;;             ] ...
-;;             = ...
-;;             g4(c)
-;;
-(defvar matlab-imenu-generic-expression
-  ;; Using concat to increase indentation and improve readability
-  `(,(list nil (concat
-                "^[[:blank:]]*"
-                "function\\>"
-
-                ;; Optional return args, function ARGS = NAME. Capture the 'ARGS ='
-
-                ;; The following regexp is better for capturing 'ARGS ='.  The regexp allows for any
-                ;; characters in the "% comments", however with Emacs 30.1, running:
-                ;;    M-: (re-search-forward (cadar matlab-imenu-generic-expression) nil t)
-                ;; on this file with point at 0
-                ;;     function foo123567890123567890123567890123567890123567890(fh)
-                ;;     end
-                ;; gives us a hang. If you shorten the function name, Emacs won't hang.
-                ;;
-                ;; (concat "\\(?:"
-                ;;         ;; ARGS can span multiple lines
-                ;;         (concat "\\(?:"
-                ;;                 ;; valid ARGS chars: "[" "]" variables "," space, tab
-                ;;                 "[]\\[a-zA-Z0-9_,[:blank:]]*"
-                ;;                 ;; Optional continue to next line "..." or "... % comment"
-                ;;                 "\\(?:" matlab--ellipsis-to-eol-re "\\)?"
-                ;;                 "\\)+")
-                ;;         ;; ARGS must be preceeded by the assignment operator, "="
-                ;;         "[[:blank:]]*="
-                ;;        "\\)?")
-
-                ;; Capture 'ARGS = ' using a less accurate regexp that doesn't handle ellipsis
-                ;; due to performance problems with the above.
-                (concat "\\(?:"
-                        ;; valid ARGS chars: "[" "]" variables "," space, tab
-                        "[]\\[a-zA-Z0-9_,[:blank:]]+"
-                        ;; ARGS must be preceeded by the assignment operator, "="
-                        "="
-                        "\\)?")
-
-                ;; Optional space/tabs, "...", or "... % comment" continuation
-                (concat "\\(?:"
-                        "[[:blank:]]*"
-                        "\\(?:" matlab--ellipsis-to-eol-re "\\)?"
-                        "\\)*")
-
-                "[\\.[:space:]\n\r]*"
-                "\\([a-zA-Z][a-zA-Z0-9_]+\\)" ;; function NAME
-                )
-           1))
-  "Regexp to find function names in *.m files for `imenu'.")
-
 
 ;;; MATLAB mode entry point ==================================================
 
@@ -1447,8 +1409,9 @@ All Key Bindings:
   (make-local-variable 'fill-paragraph-function)
   (setq fill-paragraph-function 'matlab-fill-paragraph)
   (make-local-variable 'fill-prefix)
-  (make-local-variable 'imenu-generic-expression)
-  (setq imenu-generic-expression matlab-imenu-generic-expression)
+
+  ;; Imenu
+  (setq-local imenu-create-index-function #'matlab--imenu-index)
 
   ;; Save hook for verifying src.  This lets us change the name of
   ;; the function in `write-file' and have the change be saved.
@@ -3224,7 +3187,7 @@ desired."
 ;; LocalWords:  keymap setq decl memq classdef's progn mw vf functionname booleanp torkel fboundp
 ;; LocalWords:  gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob featurep defface commanddual
 ;; LocalWords:  docstring cdr animatedline rlim thetalim cartesian stackedplot bubblechart
-;; LocalWords:  swarmchart wordcloud bubblecloud heatmap parallelplot fcontour anim polarplot Imenu
+;; LocalWords:  swarmchart wordcloud bubblecloud heatmap parallelplot fcontour anim polarplot
 ;; LocalWords:  polarscatter polarhistogram polarbubblechart goeplot geoscatter geobubble geodensity
 ;; LocalWords:  fimplicit fsurf tiledlayout nexttile uicontext mld flintmax keywordlist mapconcat
 ;; LocalWords:  vardecl flb fle tmp blockmatch md tm newmdata repeat:md sw imenu boundp aref alist
