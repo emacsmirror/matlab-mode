@@ -22,7 +22,7 @@ These are items that will appear in the next ELPA release. These items are avail
 
    #+end_example
 
-2. Setup imenu for *.tlc files. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/7d0d26a0312cf3a7b0cb07ff982f1b5274f96424][7d0d26a]].
+2. Setup imenu for *.tlc files. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/7d0d26a0312cf3a7b0cb07ff982f1b5274f96424][7d0d26a]] and [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e3e6952d57955764d48e9f9432247903672297dc][e3e6952]].
 
 3. Fix imenu for ~*.m~ files and added [[file:doc/matlab-imenu.org][doc/matlab-imenu.org]] on using it. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/a54d2061bd31c9cba32fc5e0e0ecf34b900e26d1][a54d206]].
 
