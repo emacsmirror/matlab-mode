@@ -209,7 +209,7 @@ locate the functions."
 
   ;; Handle case of font-lock being out of date.
   (font-lock-mode 1)
-  (font-lock-fontify-region (point-min) (point-max))
+  (font-lock-ensure (point-min) (point-max))
 
   (goto-char (point-min))
   (let (match
