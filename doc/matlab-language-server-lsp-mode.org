@@ -1,9 +1,29 @@
 # File: doc/remote-matlab-shell.org
 
-#+startup: showall
-#+options: toc:nil
+# | Copyright 2025 Free Software Foundation, Inc.
+# |
+# | This program is free software: you can redistribute it and/or modify
+# | it under the terms of the GNU General Public License as published by
+# | the Free Software Foundation, either version 3 of the License, or
+# | (at your option) any later version.
+# |
+# | This program is distributed in the hope that it will be useful,
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# | GNU General Public License for more details.
+# |
+# | You should have received a copy of the GNU General Public License
+# | along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# |
+# | Commentary:
+# |
+# | Use this as a template for creating org-files with MATLAB and other language code blocks.
+# | The '#+COMMENT' lines configure org-mode.
 
-# Copyright 2025 Free Software Foundation, Inc.
+
+#+startup: showall
+#+startup: inlineimages       //  C-c C-x C-v to toggle, C-c C-x C-M-v to redisplay
+#+options: toc:nil
 
 The [[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]], matlabls, is used for code navigation, code completion,
 go to definition, find references, and more. To use matlabls,
@@ -19,9 +39,11 @@ go to definition, find references, and more. To use matlabls,
 
    : M-x list-packages
 
-   and click on lsp-mode and install it.
+   and click on =lsp-mode= and install it.  You may also want to install
 
-   You may also want to install =company= for completions.
+   - =company= for completions.
+   - =lsp-ui= for improved visualization of information provided by lsp-mode. See
+     https://github.com/emacs-lsp/lsp-ui.
 
 2. Download and install the MATLAB language server
 
@@ -76,3 +98,35 @@ go to definition, find references, and more. To use matlabls,
    : M-.   Find the definition of the identifier at point (xref-find-definitions)
    : M-?   Find references to the identifier at point (xref-find-references)
    : M-,   Go back to the previous position in xref history (xref-go-back)
+
+* Windows Emacs with LSP
+
+The examples below were created on Windows 11 using Emacs 30.1.  The setup I used (May-29-2025):
+
+1. Install Emacs from [[https://www.gnu.org/software/emacs/download.html]]
+2. Install MSYS2 from [[https://www.msys2.org/]]
+3. Install gpg from https://www.gpg4win.org/. Note there is a version gpg.exe in MSYS2 that does
+   not work with the Emacs package manager. Therefore, install gpg4win and place that gpg on the
+   PATH before the gpg from MSYS2.
+4. Install the Emacs packages listed above.
+5. Install the MATLAB Lanugage Server as shown above.
+
+* Code Navigation - Jump to Definition and Back
+
+Below we are in =lspExample.m= and then type =M-.= to jump to the definition in =func3.m=. We then
+type =M-,= to jump back.
+
+[[file:matlab-language-server-lsp-mode-files/matlab-lsp-mode-jump-to-definition.gif]]
+
+
+* Viewing Issues Without the lsp-ui Package
+
+[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-flycheck.png]]
+
+* Viewing Issues With the lsp-ui Package
+
+[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-ui-sideline-mode.png]]
+
+* Navigation with lsp-ui-imenu
+
+[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-ui-imenu.png]]
