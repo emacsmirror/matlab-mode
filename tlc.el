@@ -1,4 +1,4 @@
-y;;; tlc --- Major mode for editing tlc files -*- lexical-binding: t -*-
+;;; tlc --- Major mode for editing tlc files -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2024 Free Software Foundation, Inc.
 
