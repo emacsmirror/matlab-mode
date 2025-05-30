@@ -29,7 +29,7 @@
 
 The [[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]], matlabls, is used for code navigation, code completion,
 go to definition, find references, and more. To use matlabls, see [[Installation][installation]] below.
-matlabls also works with [[Windows Emacs with LSP][Emacs on Windows]].
+matlabls also works with [[Windows-Emacs-LSP][Emacs on Windows]].
 
 matlabls is a separate special MATLAB process that Emacs communicates with. For example, when you
 ask Emacs to jump to the definition of a function via =M-.= or =M-x xref-find-definitions=, Emacs
@@ -67,7 +67,7 @@ type =M-,= to jump back.
 
 [[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-ui-imenu.png]]
 
-* Installation
+* Installation <<Installation>>
 
 1. Install lsp-mode from MELPA
 
@@ -140,7 +140,7 @@ type =M-,= to jump back.
    : M-?   Find references to the identifier at point (xref-find-references)
    : M-,   Go back to the previous position in xref history (xref-go-back)
 
-** Windows Emacs with LSP
+** Windows Emacs with LSP <<Windows-Emacs-LSP>>
 
 The examples below were created on Windows 11 using Emacs 30.1.  The setup I used (May-29-2025):
 
