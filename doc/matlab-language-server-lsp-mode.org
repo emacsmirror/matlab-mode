@@ -25,6 +25,8 @@
 #+startup: inlineimages       //  C-c C-x C-v to toggle, C-c C-x C-M-v to redisplay
 #+options: toc:nil
 
+#+title: MATLAB Language Server and Emacs
+
 The [[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]], matlabls, is used for code navigation, code completion,
 go to definition, find references, and more. To use matlabls, see [[Installation][installation]] below.
 It also works with Emacs on Windows as show below.
