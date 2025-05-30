@@ -26,7 +26,33 @@
 #+options: toc:nil
 
 The [[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]], matlabls, is used for code navigation, code completion,
-go to definition, find references, and more. To use matlabls,
+go to definition, find references, and more. To use matlabls, see [[Installation][installation]] below.
+It also works with Emacs on Windows as show below.
+
+* Code Navigation - Jump to Definition and Back
+
+Below we are in =lspExample.m= and then type =M-.= to jump to the definition in =func3.m=. We then
+type =M-,= to jump back.
+
+[[file:matlab-language-server-lsp-mode-files/matlab-lsp-mode-jump-to-definition.gif]]
+
+* Code Navigation - Find References
+
+[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-find-references.png]]
+
+* Viewing Issues Without the lsp-ui Package
+
+[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-flycheck.png]]
+
+* Viewing Issues With the lsp-ui Package
+
+[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-ui-sideline-mode.png]]
+
+* Navigation with lsp-ui-imenu
+
+[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-ui-imenu.png]]
+
+* Installation
 
 1. Install lsp-mode from MELPA
 
@@ -99,7 +125,7 @@ go to definition, find references, and more. To use matlabls,
    : M-?   Find references to the identifier at point (xref-find-references)
    : M-,   Go back to the previous position in xref history (xref-go-back)
 
-* Windows Emacs with LSP
+** Windows Emacs with LSP
 
 The examples below were created on Windows 11 using Emacs 30.1.  The setup I used (May-29-2025):
 
@@ -111,22 +137,3 @@ The examples below were created on Windows 11 using Emacs 30.1.  The setup I use
 4. Install the Emacs packages listed above.
 5. Install the MATLAB Lanugage Server as shown above.
 
-* Code Navigation - Jump to Definition and Back
-
-Below we are in =lspExample.m= and then type =M-.= to jump to the definition in =func3.m=. We then
-type =M-,= to jump back.
-
-[[file:matlab-language-server-lsp-mode-files/matlab-lsp-mode-jump-to-definition.gif]]
-
-
-* Viewing Issues Without the lsp-ui Package
-
-[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-flycheck.png]]
-
-* Viewing Issues With the lsp-ui Package
-
-[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-ui-sideline-mode.png]]
-
-* Navigation with lsp-ui-imenu
-
-[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-ui-imenu.png]]

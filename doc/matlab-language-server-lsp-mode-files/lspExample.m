@@ -1,7 +1,5 @@
 function out = lspExample(a, b)
 % LSPEXAMPLE - Language Server Protocol example
-%
-%
 
     f1 = func1(a);
     f2 = func2(b);
