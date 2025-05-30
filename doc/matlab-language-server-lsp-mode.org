@@ -28,8 +28,7 @@
 #+title: MATLAB Language Server and Emacs
 
 The [[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]], matlabls, is used for code navigation, code completion,
-go to definition, find references, and more. To use matlabls, see [[Installation][installation]] below.
-matlabls also works with [[Windows-Emacs-LSP][Emacs on Windows]].
+go to definition, find references, and more. To use matlabls, see the Installation section below.
 
 matlabls is a separate special MATLAB process that Emacs communicates with. For example, when you
 ask Emacs to jump to the definition of a function via =M-.= or =M-x xref-find-definitions=, Emacs
