@@ -29,7 +29,20 @@
 
 The [[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]], matlabls, is used for code navigation, code completion,
 go to definition, find references, and more. To use matlabls, see [[Installation][installation]] below.
-It also works with Emacs on Windows as show below.
+matlabls also works with [[Windows Emacs with LSP][Emacs on Windows]].
+
+matlabls is a separate special MATLAB process that Emacs communicates with. For example, when you
+ask Emacs to jump to the definition of a function via =M-.= or =M-x xref-find-definitions=, Emacs
+will ask the matlabls process where the function is located and use it's response to jump to the
+definition.
+
+#+begin_example
+  +-----------+            +------------+
+  |           |            |            |
+  |   Emacs   |<==========>|  matlabls  |
+  |           |            |            |
+  +-----------+            +------------+
+#+end_example
 
 * Code Navigation - Jump to Definition and Back
 
@@ -92,7 +105,7 @@ type =M-,= to jump back.
     #+end_src
 
     In Emacs:
-    
+
     : M-: (require 'lsp-matlab)
     : M-x customize-variable RET lsp-clients-matlab-server RET
 
@@ -138,4 +151,3 @@ The examples below were created on Windows 11 using Emacs 30.1.  The setup I use
    PATH before the gpg from MSYS2.
 4. Install the Emacs packages listed above.
 5. Install the MATLAB Lanugage Server as shown above.
-
