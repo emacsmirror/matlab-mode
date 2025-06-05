@@ -1424,7 +1424,7 @@ All Key Bindings:
 
   ;; Font lock support:
   (make-local-variable 'font-lock-defaults)
-  (setq font-lock-defaults '((matlab-file-font-lock-keywords
+  (setq font-lock-defaults '((matlab-file-basic-font-lock-keywords
                               matlab-file-gaudy-font-lock-keywords
                               matlab-file-really-gaudy-font-lock-keywords
                               )
