@@ -1,0 +1,74 @@
+# File: doc/matlab-mode-on-windows.org
+
+# Copyright 2016-2025 Free Software Foundation, Inc.
+
+#+startup: showall
+#+options: toc:nil
+
+#+title: MATLAB Mode on Windows
+
+To use Emacs on Windows with the matlab-mode package,
+
+1. Install Emacs 30.1 from https://www.gnu.org/software/emacs/
+
+2. Install MSYS2 from https://www.msys2.org/. MSYS2 provides utilities which are needed for Emacs
+   operations. Next install packages that Emacs will need. To search for packages, use =pacman -Ss NAME=.
+   These are needed by common Emacs operations:
+
+   : C:> bash
+   : $ pacman -S zip
+   : $ pacman -S unzip
+   : $ pacman -S man
+
+   [Optional] Install GCC which is needed for [[file:matlab-tree-sitter.org]] and perhaps other
+   items. Assuming you have an Intel 64-bit processor,
+
+   : C:> bash
+   : $ pacman -S gcc
+   : $ cc --version               # This should be gcc and 'cc' needed by tree-sitter
+
+3. Install gpg from https://www.gpg4win.org/. Note there is a version gpg.exe in MSYS2 that does not
+   work with the Emacs 30.1 package manager. Therefore, install gpg4win and place that gpg on the
+   PATH before the gpg from MSYS2.
+
+4. Create ~/.emacs containing:
+
+   #+begin_src emacs-lisp
+     (require 'package)
+     (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+
+     ;; Required by M-x grep-find
+     (setq find-program "C:/msys64/usr/bin/find.exe")
+   #+end_src
+
+5. Install https://github.com/mathworks/Emacs-MATLAB-Mode
+
+   + In Emacs, =M-x list-packages= and click on the https://melpa.org, melpa version matlab-mode to
+     install the latest.  the gnu version is the last major release found on
+     https://elpa.gnu.org/. Generally, the melpa version is better. See the NEWS.org on
+     https://github.com/mathworks/Emacs-MATLAB-Mode for the latest info.
+
+     : matlab-mode  VERSION  available  gnu
+     : matlab-mode  VERSION  available  melpa
+
+6. Install =company= for completions via =M-x list-packages= and clicking on =company= to
+   install. You may want to use the latest from MELPA, though either the GNU elpa version or MELPA
+   version should be fine.
+
+7. [Optional] Install flycheck, lsp-mode, and lsp-ui. Run =M-x list-packages=, search for them and
+   install them. Then install the MATLAB Lanugage Server, see
+   [[file:matlab-language-server-lsp-mode.org]].
+
+8. [Optional]. Use bash for =M-x shell=
+
+   + =M-x customize-variable RET shell-file-name RET= and set to ="C:/msys64/usr/bin/bash.exe"=
+
+   + Add to =~/.emacs=
+
+     #+begin_src emacs-lisp
+       ;; Prompt, PS1 setup for M-x shell
+       (setenv "PS1" "\\[\\e[32m\\]\\u@\\h \\[\\e[33m\\]\\w\\[\\e[0m\\]\\n\\$ ")
+     #+end_src
+
+9. [Optional] Install =magit= for Git by =M-x list-packages=, then clicking on =magit= from melpa
+   to install.
