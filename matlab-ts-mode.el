@@ -6,8 +6,7 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
 ;; Author: John Ciolfi <john.ciolfi.32@gmail.com>
-;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>, Uwe Brauer <oub@mat.ucm.es>, John Ciolfi <john.ciolfi.32@gmail.com>
-;; Created: Jun-6-2025
+;; Created: Jun-14-2025
 ;; Keywords: MATLAB(R)
 ;; Package-Requires: ((emacs "30.1"))
 
@@ -82,6 +81,8 @@
       "else"
       "elseif"
       "end"
+      "enumeration"
+      "events"
       "for"
       "function"
       "global"
@@ -172,7 +173,8 @@ START and END specify the region to be fontified."
    :language 'matlab
    :feature 'comment
    :override t
-   '(((comment) @matlab-ts-comment-heading-face (:match "^%%\\(?:[ \t].+\\)?$" @matlab-ts-comment-heading-face)))
+   '(((comment) @matlab-ts-comment-heading-face (:match "^%%\\(?:[ \t].+\\)?$"
+                                                        @matlab-ts-comment-heading-face)))
 
    ;; Doc help comments
    :language 'matlab
@@ -193,39 +195,29 @@ START and END specify the region to be fontified."
    :feature 'definition
    '((function_definition name: (identifier) @font-lock-function-name-face)
      (class_definition name: (identifier) @font-lock-function-name-face)
-     (superclasses (property_name (identifier)) @font-lock-function-name-face))
-
-   ;; Function input and output arguments - variables
-   :language 'matlab
-   :feature 'definition
-   '(
-     ;; The input arguments: function functionName(in1, in2, in3)
+     (superclasses (property_name (identifier)) @font-lock-function-name-face)
+     ;; Function inputs: functionName(in1, in2, in3)
      (function_arguments arguments:
                          (identifier)      @font-lock-variable-name-face
                          ("," (identifier) @font-lock-variable-name-face) :*)
-     ;; Single output arugment: function out = functionName(in1, in2)
+     ;; Function single output arugment: function out = functionName(in1, in2)
      (function_output (identifier) @font-lock-variable-name-face)
-     ;; Multiple ouptut arguments: function [out1, out2] = functionName(in1, in2)
+     ;; Function multiple ouptut arguments: function [out1, out2] = functionName(in1, in2)
      (function_output (multioutput_variable (identifier) @font-lock-variable-name-face))
-     ;; arguments block
-     (arguments_statement (property name:
-                                    (identifier) @font-lock-variable-name-face
-                                    (_) @font-lock-type-face))
-     (arguments_statement (property name:
-                                    (property_name) @font-lock-variable-name-face
-                                    (_) @font-lock-type-face)))
-
-   ;; classdef MyClass
-   ;;      properties (attributes)
-   ;;          Properties
-   ;;      end
-   :language 'matlab
-   :feature 'definition
-   '(
-     ;; Property block attributes
-     (attribute (identifier) @font-lock-type-face "=" (_) @font-lock-builtin-face)
-     (attribute (identifier) @font-lock-type-face)
-     (property name: (identifier) @font-lock-variable-name-face))
+     ;; Fields of: arguments ... end , properties ... end
+     (property (validation_functions (identifier) @font-lock-builtin-face))
+     (property name: (identifier) @font-lock-property-name-face
+               (identifier) @font-lock-type-face :?)
+     (property name: (property_name (identifier) @font-lock-property-name-face)
+               (identifier) @font-lock-type-face :?)
+     ;; (property name: (property_name (identifier) @font-lock-property-name-face))
+     ;; Enumeration's
+     (enum (identifier) @font-lock-property-name-face)
+     ;; events block in classdef
+     (events (identifier) @font-lock-property-name-face)
+     ;; attributes of properties, methods
+     (attribute (identifier) @font-lock-type-face "=" (identifier) @font-lock-builtin-face)
+     (attribute (identifier) @font-lock-type-face))
 
    ;; Strings
    :language 'matlab
@@ -287,7 +279,7 @@ START and END specify the region to be fontified."
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list
                 '((comment definition)
-                  (keyword string type variable)
+                  (keyword string type)
                   (number)
                   (bracket delimiter error)))
 

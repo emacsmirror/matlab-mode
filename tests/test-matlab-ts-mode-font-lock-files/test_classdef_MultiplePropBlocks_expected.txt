@@ -1,10 +1,10 @@
 c ccc ccccccccc ccc
 kkkkkkkk ffffffffffffffffff
-    kkkkkkkkkk bttttttttt d BBBBBBBD ttttttttt d BBBBBBBBBBBBBb
-        vvvvvvvvv
-        vvvvvvvvv
+    kkkkkkkkkk bttttttttt d BBBBBBBD ttttttttt d bDddddddddddbb
+        PPPPPPPPP
+        PPPPPPPPP
     kkk
     kkkkkkkkkk bttttttttb
-        vvvvvvvvv
+        PPPPPPPPP
     kkk
 kkk

@@ -40,8 +40,6 @@
 (require 'metest-imenu)
 (require 'metest-imenu-tlc)
 
-(require 'test-matlab-ts-mode-font-lock)
-
 (defun metest-all-syntax-tests ()
   "Run all the syntax test cases in this file."
   (setq debug-on-error t)
@@ -85,7 +83,9 @@
     (metest-fill-paragraph))
 
   ;; matlab-ts-mode tests
-  (metest-run 'test-matlab-ts-mode-font-lock))
+  (when (>= emacs-major-version 30)
+    (require 'test-matlab-ts-mode-font-lock)
+    (metest-run 'test-matlab-ts-mode-font-lock)))
 
 (defun metest-run (test)
   "Run and time TEST."

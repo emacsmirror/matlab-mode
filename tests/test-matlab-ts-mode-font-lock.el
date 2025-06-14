@@ -88,6 +88,7 @@ For debugging, you can run with a specified M-FILE,
                          ("s" . font-lock-string-face)
                          ("S" . matlab-ts-string-delimiter-face)
                          ("p" . matlab-ts-pragma-face)
+                         ("P" . font-lock-property-name-face)
                          ("t" . font-lock-type-face)
                          ("v" . font-lock-variable-name-face)
                          ("w" . font-lock-warning-face)

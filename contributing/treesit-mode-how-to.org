@@ -29,6 +29,175 @@
 This is a set of notes that I'm taking as I develop matlab-ts-mode.el with the goal of this
 becoming a guide for writting a tree-sitter mode for Emacs 30 or later.
 
+* Guide to building a tree-sitter mode
+
+** Syntax trees and queries
+
+If you are not familar with the concepts behind tree-sitter, see
+https://tree-sitter.github.io/tree-sitter. In particular, learn the notion of queries and try out
+queries in the playground section of the site on one of the languages supported by the site. A
+good understanding of the syntax tree and queires are required to implement a new tree-sitter
+major mode. You don't need to understand how to implement a lanugage parser if one already
+exists, otherwise you'll need to write a tree-sitter language parser.
+
+The tree-sitter parser produces a syntax tree:
+
+#+begin_example
+  +-------+     +-----------------------------+
+  |       |     |                             |
+  | Emacs |<===>| libtree-sitter-LANUGAGE.EXT |
+  |       |     |                             |
+  +-------+     +-----------------------------+
+#+end_example
+
+The libtree-sitter-LANUAGE.EXT shared library (EXT = .so on Linux, .dll on Windows, or .dylib on
+Mac) is used to create a syntax tree of LANUAGE:
+
+#+begin_example
+  LANUAGE program             Syntax Tree
+
+   c = a + b                      =
+                                /   \
+                               c     +
+                                   a   b
+#+end_example
+
+Each node in the syntax tree knows it start point and end point in the LANGUAGE program. The
+parser is fast and incrementally updates as you type. The memory required to represent the syntax
+tree is roughly 10 times the text size of the program being analyzed. However, the benefits of
+tree sitter are highly accuracte and fast syntax coloring (font-lock), indentation, code
+navigation via syntatic expressions, etc.
+
+** Documentation
+
+ - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
+ - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
+
+** libtree-sitter-LANGUAGE.EXT
+
+Place the tree-sitter language library in =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=
+(EXT=.so on Linux, .dll on Windows, .dylib on Mac). There are other locations that this can
+reside in, though =~/.emacs.d/tree-sitter/= is the default.
+
+- You can grab the LANGUAGE.EXT from https://github.com/emacs-tree-sitter/tree-sitter-langs/releases
+  and rename it to =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=.
+
+- You can build it using
+
+  : M-x treesit-install-language-grammar
+
+Next, create a basic LANGUAGE-ts-mode.el to validate your tree-sitter shared library is good.
+
+It is possible that =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT= was built incorrectly,
+so we create the following to validate it, replacing LANGUAGE with your language name.
+
+#+begin_src emacs-lisp
+  ;; Basic LANGUAGE-ts-mode.el
+
+  (require 'treesit)
+
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE"
+    "Major mode for editing LANGUAGE files with tree-sitter."
+
+    (when (treesit-ready-p 'LANGUAGE)
+      (treesit-parser-create 'LANGUAGE)
+      (treesit-major-mode-setup)))
+
+  (provide 'LANGUAGE-ts-mode)
+
+#+end_src
+
+Validate your LANGAUGE-ts-mode works. Create foo.txt containing valid LANGUAGE content, then open
+foo.txt in Emacs and run:
+
+: M-x LANGUAGE-ts-mode
+
+You should now be able to use:
+
+: M-x treesit-inspect-mode
+: M-x treesit-explore-mode
+
+** Setup font-lock
+
+Queries are needed to identify syntax tree nodes to fontify. See
+https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html
+
+You can use =M-x treesit-explore-mode= to see the nodes of the syntax tree.
+
+An example of a query that identifies comments (assuming =comment= is a valid node type), in a
+file that has =M-x LANGUAGE-ts-mode= active.
+
+: M-: (treesit-query-capture (treesit-buffer-root-node) '((comment) @comments))
+
+Suppose your lanugage contains the keyword "if", you can find all "if" keywords using:
+
+: M-: (treesit-query-capture (treesit-buffer-root-node) '("if" @keywords))
+
+To capture all keywords of your language, use alternation. Here we are capturing the "if"
+and "else" keywords:
+
+: M-: (treesit-query-capture (treesit-buffer-root-node) '(["if" "else"] @keywords))
+
+Note, to validate your queries use:
+
+: M-x (treesit-query-validate 'LANGUAGE '(QUERRY @catpture-name))
+
+Once we know the queries, we can setup font-lock. For example, here we fontify comments
+and keywords.
+
+#+begin_src emacs-lisp
+  (require 'treesit)
+
+  (defvar LANGUAGE-ts-mode--keywords
+      '("else"
+        "if"
+        ;; <snip>
+        )
+    "LANGUAGE keywords for tree-sitter font-locking.")
+
+  (defvar LANGUAGE-ts-mode--font-lock-settings
+    (treesit-font-lock-rules
+     :language 'LANGUAGE
+     :feature 'comment
+     '((comment) @font-lock-comment-face)
+
+     :language 'LANGUAGE
+     :feature 'keyword
+     `([,@LANGUAGE-ts-mode--keywords] @font-lock-keyword-face)))
+    "LANGUAGE tree-sitter font-lock settings.")
+
+  ;;;###autoload
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE"
+    "Major mode for editing LANGUAGE files using tree-sitter."
+
+    (when (treesit-ready-p 'LANGUAGE)
+      (treesit-parser-create 'LANGUAGE)
+
+      ;; Font-lock
+      (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
+
+      ;; `treesit-font-lock-feature-list' contains four sublists where the first
+      ;; sublist is level 1, and so on.  Each sublist contains a set of feature
+      ;; names that correspond to the
+      ;;   :feature 'NAME
+      ;; entries in LANGUAGE-ts-mode--font-lock-settings.  For example, 'comment for comments,
+      ;; 'definition for function definitions, 'keyword for language keywords, etc.
+      ;; Font-lock applies the faces defined in each sublist up to and including
+      ;; `treesit-font-lock-level', which defaults to 3.
+      (setq-local treesit-font-lock-feature-list
+                  '((comment definition)
+                    (keyword string type)
+                    (builtin constant escape-sequence label number)
+                    (bracket delimiter error function operator property variable)))
+
+      (treesit-major-mode-setup)))
+#+end_src
+
+Notice how the @capture-name in the comment query is @font-lock-comment-face. This face is
+applied to the items captured by the query. You can see available faces by using =M-x
+list-faces-display=.  You'll probably want to stick with faces that come with stock Emacs to
+avoid dependenices on other packages or create your own face.
+
 * Issues
 
 - [ ] Building libtree-sitter-matlab.dll from src on Windows produces a DLL that fails.
@@ -66,137 +235,9 @@ becoming a guide for writting a tree-sitter mode for Emacs 30 or later.
 
   where EXT = .dll, .so, or .dylib.
 
-* Guide to building a tree-sitter mode
+- [ ] Easy deployment?
 
-1. Syntax trees and queries. If you are not familar with the concepts behind tree-sitter, see
-   https://tree-sitter.github.io/tree-sitter. In particular, learn the notion of queries and try out
-   queries in the playground section of the site on one of the languages supported by the site. A
-   good understanding of the syntax tree and queires are required to implement a new tree-sitter
-   major mode. You don't need to understand how to implement a lanugage parser.
+  : M-x list-packages
 
-2. Documentation
-
-   - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
-   - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
-
-3. Place the tree-sitter language library in =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=
-   (EXT=.so on Linux, .dll on Windows, .dylib on Mac)
-
-   - You can grab the LANGUAGE.EXT from https://github.com/emacs-tree-sitter/tree-sitter-langs/releases
-     and rename it to =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=.
-
-   - You can build it using
-
-     : M-x treesit-install-language-grammar
-
-4. Create a basic LANGUAGE-ts-mode.el to validate your tree-sitter shared library is good.
-
-   It is possible that =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT= was built incorrectly,
-   so we create the following to validate it, replacing LANGUAGE with your language name.
-
-   #+begin_src emacs-lisp
-     ;; Basic LANGUAGE-ts-mode.el
-
-     (require 'treesit)
-
-     (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE"
-       "Major mode for editing LANGUAGE files with tree-sitter."
-
-       (when (treesit-ready-p 'LANGUAGE)
-         (treesit-parser-create 'LANGUAGE)
-         (treesit-major-mode-setup)))
-
-     (provide 'LANGUAGE-ts-mode)
-
-   #+end_src
-
-   Validate your LANGAUGE-ts-mode works. Create foo.txt containing valid LANGUAGE content, then open
-   foo.txt in Emacs and run:
-
-   : M-x LANGUAGE-ts-mode
-
-   You should now be able to use:
-
-   : M-x treesit-inspect-mode
-   : M-x treesit-explore-mode
-
-5. Setup font-lock
-
-   Queries are needed to identify syntax tree nodes to fontify. See
-   https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html
-
-   You can use =M-x treesit-explore-mode= to see the nodes of the syntax tree.
-
-   An example of a query that identifies comments (assuming =comment= is a valid node type), in a
-   file that has =M-x LANGUAGE-ts-mode= active.
-
-   : M-: (treesit-query-capture (treesit-buffer-root-node) '((comment) @comments))
-
-   Suppose your lanugage contains the keyword "if", you can find all "if" keywords using:
-
-   : M-: (treesit-query-capture (treesit-buffer-root-node) '("if" @keywords))
-
-   To capture all keywords of your language, use alternation. Here we are capturing the "if"
-   and "else" keywords:
-   
-   : M-: (treesit-query-capture (treesit-buffer-root-node) '(["if" "else"] @keywords))
-
-   Note, to validate your queries use:
-
-   : M-x (treesit-query-validate 'LANGUAGE '(QUERRY @catpture-name))
-
-   Once we know the queries, we can setup font-lock. For example, here we fontify comments
-   and keywords.
-
-   #+begin_src emacs-lisp
-     (require 'treesit)
-
-     (defvar LANGUAGE-ts-mode--keywords
-         '("else"
-           "if"
-           ;; <snip>
-           )
-       "LANGUAGE keywords for tree-sitter font-locking.")
-
-     (defvar LANGUAGE-ts-mode--font-lock-settings
-       (treesit-font-lock-rules
-        :language 'LANGUAGE
-        :feature 'comment
-        '((comment) @font-lock-comment-face)
-
-        :language 'LANGUAGE
-        :feature 'keyword
-        `([,@LANGUAGE-ts-mode--keywords] @font-lock-keyword-face)))
-       "LANGUAGE tree-sitter font-lock settings.")
-
-     ;;;###autoload
-     (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE"
-       "Major mode for editing LANGUAGE files using tree-sitter."
-
-       (when (treesit-ready-p 'LANGUAGE)
-         (treesit-parser-create 'LANGUAGE)
-
-         ;; Font-lock
-         (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
-
-         ;; `treesit-font-lock-feature-list' contains four sublists where the first
-         ;; sublist is level 1, and so on.  Each sublist contains a set of feature
-         ;; names that correspond to the
-         ;;   :feature 'NAME
-         ;; entries in LANGUAGE-ts-mode--font-lock-settings.  For example, 'comment for comments,
-         ;; 'definition for function definitions, 'keyword for language keywords, etc.
-         ;; Font-lock applies the faces defined in each sublist up to and including
-         ;; `treesit-font-lock-level', which defaults to 3.
-         (setq-local treesit-font-lock-feature-list
-                     '((comment definition)
-                       (keyword string type)
-                       (builtin constant escape-sequence label number)
-                       (bracket delimiter error function operator property variable)))
-
-         (treesit-major-mode-setup)))
-   #+end_src
-
-   Notice how the @capture-name in the comment query is @font-lock-comment-face. This face is
-   applied to the items captured by the query. You can see available faces by using =M-x
-   list-faces-display=.  You'll probably want to stick with faces that come with stock Emacs to
-   avoid dependenices on other packages or create your own face.
+  makes it easy to install packages from ELPA, MELPA, etc. but how to we get
+  libtree-sitter-LANUGAGE.EXT (EXT = .so, .dll, .dylib) installed?

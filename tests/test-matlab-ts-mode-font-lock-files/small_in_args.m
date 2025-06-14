@@ -3,5 +3,5 @@ function small_in_args(in)
 % help comment
 
     % code comment
-    out = in;
+    disp(num2str(in));
 end

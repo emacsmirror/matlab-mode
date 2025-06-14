@@ -31,7 +31,9 @@ LOADPATH = ./
 LOADDEFS = matlab-autoload.el
 LOADDIRS = .
 
-EL_SRCS  = $(filter-out $(LOADDEFS), $(wildcard *.el))
+EL_SRCS  := $(filter-out $(LOADDEFS), $(wildcard *.el))
+# Ignore flycheck_* files created by the flycheck Emacs package
+EL_SRCS  := $(filter-out flycheck_%, $(EL_SRCS))
 
 # Emacs 30 or later has treesit built-in. If running older Emacs, don't build it.
 HAVE_TREESIT_EMACS = $(shell "$(EMACS)" --batch -Q --eval \

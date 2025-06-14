@@ -1,9 +1,12 @@
 c ccc ccccccccc ccc
 kkkkkkkk ffffffffffffffbvvvD vvvvvvvvvvD vvvvvvvb
     kkkkkkkkk
-       vvv ttttt ttttttttttttttt
-       vvvvvvvvvv tttttt
-       vvvvvvvvvvvvvvvvv ttttt tttttt t ttt 
-       vvvvvvvvvvvvvvvvv ttttt ttttttttttttttt t t
+       PPP bnDDb bBBBBBBBBBBBBBb
+       PPPPPPPPPP tttttt
+       PPP bnDnb tttttt
+       PPPPPPPDPPP
+       PPPPPPPDPPP tttttt
+       PPPPPPPDPPPPPPPPP bnDnb tttttt d SsS 
+       PPPPPPPDPPPPPPPPP bnDnb bBBBBBBBBBBBBBb d n
     kkk
 kkk
