@@ -14,7 +14,7 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #
 
-EMACS = emacs
+EMACS ?= emacs
 EMACSFLAGS = --batch -Q --eval '(setq debug-on-error t)'
 
 MATLAB_FILES = $(wildcard *.m)
@@ -32,11 +32,16 @@ all: $(TEST_TARGETS)
 
 .PHONY: modetests
 modetests: metest.el
-	$(EMACS) $(EMACSFLAGS) -l metest.el -e "metest-all-syntax-tests"
+	"$(EMACS)" $(EMACSFLAGS) -l metest.el -e "metest-all-syntax-tests"
 
 .PHONY: shelltests
 shelltests: mstest.el
-	$(CLEAN_MATLABPATH) $(EMACS) $(EMACSFLAGS) -l mstest.el $(MATLAB_PROG_SETUP) -e "mstest-run-all-tests"
+	$(CLEAN_MATLABPATH) "$(EMACS)" $(EMACSFLAGS) -l mstest.el $(MATLAB_PROG_SETUP) -e "mstest-run-all-tests"
+
+.PHONY: test-matlab-ts-mode-font-lock
+test-matlab-ts-mode-font-lock:
+	"$(EMACS)" $(EMACSFLAGS) -l $@.el -e $@
+
 
 # [eof] tests/Makefile
 

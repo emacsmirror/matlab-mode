@@ -1,0 +1,202 @@
+# File: contributing/treesit-mode-how-to.org
+
+# | Copyright 2025 Free Software Foundation, Inc.
+# |
+# | This program is free software: you can redistribute it and/or modify
+# | it under the terms of the GNU General Public License as published by
+# | the Free Software Foundation, either version 3 of the License, or
+# | (at your option) any later version.
+# |
+# | This program is distributed in the hope that it will be useful,
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# | GNU General Public License for more details.
+# |
+# | You should have received a copy of the GNU General Public License
+# | along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# |
+# | Commentary:
+# |
+# | Use this as a template for creating org-files with MATLAB and other language code blocks.
+# | The '#+COMMENT' lines configure org-mode.
+
+#+title: MATLAB and Tree-Sitter
+#+author: John Ciolfi
+#+date: Jun-13-2025
+
+* Overview
+
+This is a set of notes that I'm taking as I develop matlab-ts-mode.el with the goal of this
+becoming a guide for writting a tree-sitter mode for Emacs 30 or later.
+
+* Issues
+
+- [ ] Building libtree-sitter-matlab.dll from src on Windows produces a DLL that fails.
+
+  - Install MSYS2
+  - Run MSYS2 bash, then: pacman -S gcc
+  - Install gpg from https://www.gpg4win.org/ and place it on on the path before MSYS2.
+  - Install matlab tree sitter from src using Emacs 30.1
+  #+begin_example
+    emacs
+    M-x treesit-install-language-grammar
+    Language: matlab
+    There is no recipe for matlab, do you want to build it interactively? (y or n) y
+    Enter the URL of the Git repository of the language grammar: https://github.com/acristoffers/tree-sitter-matlab
+    Enter the tag or branch (default: default branch): abi/14
+    Enter the subdirectory in which the parser.c file resides (default: "src"):
+    Enter the C compiler to use (default: auto-detect):
+    Enter the C++ compiler to use (default: auto-detect):
+    Install to (default: ~/.emacs.d/tree-sitter):
+  #+end_example
+
+  The resulting dll is bad. Maybe gcc 13 is not a valid version of gcc.
+
+  Note the build of the dll from https://github.com/emacs-tree-sitter/tree-sitter-langs is good.
+
+- [ ] M-x treesit-install-language-grammar should specify the tree-sitter ABI version.
+
+  Emacs 30.1 is ABI 14 from =(treesit-library-abi-version)=, which is behind the current tree-sitter
+  version, 15.
+
+  Emacs should do something like:
+
+  : tree-sitter generate --abi 13
+  : gcc src/*.c -I./src -o ~/.emacs.d/tree-sitter/libtree-sitter-matlab.EXT --shared -fPIC -Os
+
+  where EXT = .dll, .so, or .dylib.
+
+* Guide to building a tree-sitter mode
+
+1. Syntax trees and queries. If you are not familar with the concepts behind tree-sitter, see
+   https://tree-sitter.github.io/tree-sitter. In particular, learn the notion of queries and try out
+   queries in the playground section of the site on one of the languages supported by the site. A
+   good understanding of the syntax tree and queires are required to implement a new tree-sitter
+   major mode. You don't need to understand how to implement a lanugage parser.
+
+2. Documentation
+
+   - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
+   - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
+
+3. Place the tree-sitter language library in =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=
+   (EXT=.so on Linux, .dll on Windows, .dylib on Mac)
+
+   - You can grab the LANGUAGE.EXT from https://github.com/emacs-tree-sitter/tree-sitter-langs/releases
+     and rename it to =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=.
+
+   - You can build it using
+
+     : M-x treesit-install-language-grammar
+
+4. Create a basic LANGUAGE-ts-mode.el to validate your tree-sitter shared library is good.
+
+   It is possible that =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT= was built incorrectly,
+   so we create the following to validate it, replacing LANGUAGE with your language name.
+
+   #+begin_src emacs-lisp
+     ;; Basic LANGUAGE-ts-mode.el
+
+     (require 'treesit)
+
+     (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE"
+       "Major mode for editing LANGUAGE files with tree-sitter."
+
+       (when (treesit-ready-p 'LANGUAGE)
+         (treesit-parser-create 'LANGUAGE)
+         (treesit-major-mode-setup)))
+
+     (provide 'LANGUAGE-ts-mode)
+
+   #+end_src
+
+   Validate your LANGAUGE-ts-mode works. Create foo.txt containing valid LANGUAGE content, then open
+   foo.txt in Emacs and run:
+
+   : M-x LANGUAGE-ts-mode
+
+   You should now be able to use:
+
+   : M-x treesit-inspect-mode
+   : M-x treesit-explore-mode
+
+5. Setup font-lock
+
+   Queries are needed to identify syntax tree nodes to fontify. See
+   https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html
+
+   You can use =M-x treesit-explore-mode= to see the nodes of the syntax tree.
+
+   An example of a query that identifies comments (assuming =comment= is a valid node type), in a
+   file that has =M-x LANGUAGE-ts-mode= active.
+
+   : M-: (treesit-query-capture (treesit-buffer-root-node) '((comment) @comments))
+
+   Suppose your lanugage contains the keyword "if", you can find all "if" keywords using:
+
+   : M-: (treesit-query-capture (treesit-buffer-root-node) '("if" @keywords))
+
+   To capture all keywords of your language, use alternation. Here we are capturing the "if"
+   and "else" keywords:
+   
+   : M-: (treesit-query-capture (treesit-buffer-root-node) '(["if" "else"] @keywords))
+
+   Note, to validate your queries use:
+
+   : M-x (treesit-query-validate 'LANGUAGE '(QUERRY @catpture-name))
+
+   Once we know the queries, we can setup font-lock. For example, here we fontify comments
+   and keywords.
+
+   #+begin_src emacs-lisp
+     (require 'treesit)
+
+     (defvar LANGUAGE-ts-mode--keywords
+         '("else"
+           "if"
+           ;; <snip>
+           )
+       "LANGUAGE keywords for tree-sitter font-locking.")
+
+     (defvar LANGUAGE-ts-mode--font-lock-settings
+       (treesit-font-lock-rules
+        :language 'LANGUAGE
+        :feature 'comment
+        '((comment) @font-lock-comment-face)
+
+        :language 'LANGUAGE
+        :feature 'keyword
+        `([,@LANGUAGE-ts-mode--keywords] @font-lock-keyword-face)))
+       "LANGUAGE tree-sitter font-lock settings.")
+
+     ;;;###autoload
+     (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE"
+       "Major mode for editing LANGUAGE files using tree-sitter."
+
+       (when (treesit-ready-p 'LANGUAGE)
+         (treesit-parser-create 'LANGUAGE)
+
+         ;; Font-lock
+         (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
+
+         ;; `treesit-font-lock-feature-list' contains four sublists where the first
+         ;; sublist is level 1, and so on.  Each sublist contains a set of feature
+         ;; names that correspond to the
+         ;;   :feature 'NAME
+         ;; entries in LANGUAGE-ts-mode--font-lock-settings.  For example, 'comment for comments,
+         ;; 'definition for function definitions, 'keyword for language keywords, etc.
+         ;; Font-lock applies the faces defined in each sublist up to and including
+         ;; `treesit-font-lock-level', which defaults to 3.
+         (setq-local treesit-font-lock-feature-list
+                     '((comment definition)
+                       (keyword string type)
+                       (builtin constant escape-sequence label number)
+                       (bracket delimiter error function operator property variable)))
+
+         (treesit-major-mode-setup)))
+   #+end_src
+
+   Notice how the @capture-name in the comment query is @font-lock-comment-face. This face is
+   applied to the items captured by the query. You can see available faces by using =M-x
+   list-faces-display=.  You'll probably want to stick with faces that come with stock Emacs to
+   avoid dependenices on other packages or create your own face.

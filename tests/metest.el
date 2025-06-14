@@ -21,15 +21,14 @@
 
 ;;; Code:
 
+(defvar met-testfile-path nil
+  "Location of test MATLAB code.")
+
 (let* ((lf (or load-file-name (buffer-file-name (current-buffer))))
        (d1 (file-name-directory lf))
-       (d (file-name-directory (directory-file-name d1)))
-       )
-  (defvar met-testfile-path d1
-    "Location of test MATLAB code.")
-  (add-to-list 'load-path (expand-file-name d) t))
-
-(defvar met-testfile-path) ; quiet compiler
+       (parent-dir (expand-file-name (file-name-directory (directory-file-name d1)))))
+  (setq met-testfile-path d1)
+  (add-to-list 'load-path parent-dir t))
 
 (require 'matlab-mode)
 (require 'mlint)
@@ -40,6 +39,8 @@
 (require 'metest-indent-test2)
 (require 'metest-imenu)
 (require 'metest-imenu-tlc)
+
+(require 'test-matlab-ts-mode-font-lock)
 
 (defun metest-all-syntax-tests ()
   "Run all the syntax test cases in this file."
@@ -81,7 +82,10 @@
   ;; TODO - enable this test on Windows. It currently fails, so disabling on
   ;; windows. See https://github.com/mathworks/Emacs-MATLAB-Mode/issues/34
   (when (not (eq system-type 'windows-nt))
-    (metest-fill-paragraph)))
+    (metest-fill-paragraph))
+
+  ;; matlab-ts-mode tests
+  (metest-run 'test-matlab-ts-mode-font-lock))
 
 (defun metest-run (test)
   "Run and time TEST."

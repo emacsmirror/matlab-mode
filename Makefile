@@ -32,6 +32,14 @@ LOADDEFS = matlab-autoload.el
 LOADDIRS = .
 
 EL_SRCS  = $(filter-out $(LOADDEFS), $(wildcard *.el))
+
+# Emacs 30 or later has treesit built-in. If running older Emacs, don't build it.
+HAVE_TREESIT_EMACS = $(shell "$(EMACS)" --batch -Q --eval \
+		      	"(when (>= emacs-major-version 30) (message \"have-treesit\"))" 2>&1)
+ifneq ($(filter have-treesit,$(HAVE_TREESIT_EMACS)),have-treesit)
+    EL_SRCS := $(filter-out matlab-ts-mode.el,$(EL_SRCS))
+endif
+
 ELC = $(EL_SRCS:.el=.elc)
 
 GOALS := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),all)
@@ -42,7 +50,7 @@ all: lisp tests
 .PHONY: lisp
 lisp: $(LOADDEFS) $(ELC)
 
-HAVE_OLD_EMACS = $(shell $(EMACS) --batch -Q --eval \
+HAVE_OLD_EMACS = $(shell "$(EMACS)" --batch -Q --eval \
 		   "(when (<= emacs-major-version 28) (message \"have-old-emacs\"))" 2>&1)
 ifeq ($(filter have-old-emacs,$(HAVE_OLD_EMACS)),have-old-emacs)
     BATCH_UPDATE = --eval '(setq generated-autoload-file "$(abspath $(LOADDEFS))")' \
@@ -52,7 +60,7 @@ else
 endif
 
 $(LOADDEFS): | .clean.tstamp
-	$(EMACS) $(EMACSFLAGS) $(addprefix -L ,$(LOADPATH)) $(BATCH_UPDATE)
+	"$(EMACS)" $(EMACSFLAGS) $(addprefix -L ,$(LOADPATH)) $(BATCH_UPDATE)
 
 CHECK_FOR_LEXICAL_BINDING = \
 	@awk 'NR==1 && !/-*- lexical-binding: t -*-/ { \
@@ -60,7 +68,7 @@ CHECK_FOR_LEXICAL_BINDING = \
 
 %.elc: %.el | $(LOADDEFS)
 	$(CHECK_FOR_LEXICAL_BINDING) $<
-	$(EMACS) $(EMACSFLAGS) $(addprefix -L ,$(LOADPATH)) -f batch-byte-compile $<
+	"$(EMACS)" $(EMACSFLAGS) $(addprefix -L ,$(LOADPATH)) -f batch-byte-compile $<
 
 $(ELC): $(LOADDEFS) $(MAKEFILE_LIST) | .clean.tstamp
 
@@ -83,7 +91,7 @@ tests: .tests.tstamp
 ALL_FILES = $(wildcard */* */* */*/* */*/*/* */*/*/*/*)
 
 .tests.tstamp: $(LOADDEFS) $(ELC) $(ALL_FILES)
-	$(MAKE) -C tests
+	$(MAKE) EMACS="$(EMACS)" -C tests
 	@touch $@
 
 # When switching emacs versions, we need to clean generated files
