@@ -163,25 +163,15 @@ START and END specify the region to be fontified."
    '((comment) @font-lock-comment-face
      (line_continuation) @font-lock-comment-face)
 
-   ;; %#NAME pragma comments
+   ;; Special comments that override normal comment font
    :language 'matlab
    :feature 'comment
    :override t
-   '(((comment) @matlab-ts-pragma-face (:match "^%#.+$" @matlab-ts-pragma-face)))
-
-   ;; %% comment heading
-   :language 'matlab
-   :feature 'comment
-   :override t
-   '(((comment) @matlab-ts-comment-heading-face (:match "^%%\\(?:[ \t].+\\)?$"
-                                                        @matlab-ts-comment-heading-face)))
-
-   ;; Doc help comments
-   :language 'matlab
-   :feature 'comment
-   :override t
-   '((function_definition (comment) @matlab-ts-mode--doc-comment-capture)
-     (class_definition (comment) @matlab-ts-mode--doc-comment-capture))
+   '(((comment) @matlab-ts-pragma-face (:match "^%#.+$" @matlab-ts-pragma-face)) ;; %#pragma's
+     ((comment) @matlab-ts-comment-heading-face ;; %% comment heading
+      (:match "^%%\\(?:[ \t].+\\)?$" @matlab-ts-comment-heading-face))
+     (function_definition (comment) @matlab-ts-mode--doc-comment-capture) ;; doc help comments
+     (class_definition (comment) @matlab-ts-mode--doc-comment-capture)) ;; doc help comments
 
    ;; Keywords: if, else, etc.
    :language 'matlab
