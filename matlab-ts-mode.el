@@ -93,6 +93,7 @@
       "persistent"
       "properties"
       (return_statement)
+      "spmd"
       "switch"
       "try"
       "while")
@@ -176,9 +177,7 @@ START and END specify the region to be fontified."
    ;; Keywords: if, else, etc.
    :language 'matlab
    :feature 'keyword
-   `(([,@matlab-ts-mode--keywords] @font-lock-keyword-face)
-     ;; spmd is "incorrectly" identified as an identifier, hence special case that
-     (((identifier) @font-lock-keyword-face (:equal "spmd" @font-lock-keyword-face))))
+   `(([,@matlab-ts-mode--keywords] @font-lock-keyword-face))
 
    ;; function/classdef
    :language 'matlab
