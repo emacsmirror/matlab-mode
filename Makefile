@@ -46,6 +46,14 @@ ELC = $(EL_SRCS:.el=.elc)
 
 GOALS := $(if $(MAKECMDGOALS),$(MAKECMDGOALS),all)
 
+ifeq ($(OS),Windows_NT)
+    MSYS2_FIND = $(wildcard C:/msys64/usr/bin/find.exe)
+    ifneq ($(MSYS2_FIND),)
+        FIND ?= $(MSYS2_FIND)
+    endif
+endif
+FIND ?= find
+
 .PHONY: all
 all: lisp tests
 
@@ -106,8 +114,8 @@ ALL_FILES = $(wildcard */* */* */*/* */*/*/* */*/*/*/*)
 clean:
 	$(RM) $(LOADDEFS)
 	$(RM) *.elc
-	find . -name .git -prune -o -name "*.tstamp" -exec $(RM) {} \;
-	find . -name .git -prune -o -name "*~" -exec $(RM) {} \;
+	$(FIND) . -name .git -prune -o -name "*.tstamp" -exec $(RM) {} \;
+	$(FIND) . -name .git -prune -o -name "*~" -exec $(RM) {} \;
 
 #--------------------------------#
 # Test various versions of Emacs #
@@ -169,7 +177,7 @@ check-emacs-versions: $(CHECK_TARGETS)
 list-files-for-release:
 	@/usr/bin/ls -1 *.el | grep -v -P '(matlab-autoload.el|matlab-maint.el)'
 	@/usr/bin/ls bin/*.sh
-	@find toolbox -name '*.m' -print
+	@$(FIND) toolbox -name '*.m' -print
 
 # [EOF] Makefile
 

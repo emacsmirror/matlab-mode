@@ -10,8 +10,8 @@ cc
 c ccccc cccc cccccccc cc cccc cc c cccccc cccc cccccccc cccc cc cccccccccc
 c ccccc ccc ccccc c ccc ccc ccccccccc cc ccc cccc ccc ccccc c c
 
-wwwww w w wwwwwwww wwww wwwwwww ww w ww
+ddddd d n cccccccc cccc ccccccc cc c cc
 
-w wwww ww wwww w wwwwww wwww wwwwwwww
+c cccc cc cccc c cccccc cccc cccccccc
 
-ww wwwwww wwww wwwwwww
+cc cccccc cccc ccccccc

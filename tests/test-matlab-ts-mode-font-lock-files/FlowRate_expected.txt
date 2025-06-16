@@ -1,9 +1,9 @@
 c ccc ccccccccc ccc
 c ccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-wwwwwwww wwwwwwww w wwwww
-   wwwwwwwwwww
-      www    wwww
-      wwwwww wwwwwwwwwwwwwwww
-      wwww   wwwwwwwwwwwwwwwww
-   www
-www
+kkkkkkkk ffffffff d fffff
+   kkkkkkkkkkk
+      PPP    bnnb
+      PPPPPP bddddddddDddddnb
+      PPPP   bddddddddDddddnnb
+   kkk
+kkk
