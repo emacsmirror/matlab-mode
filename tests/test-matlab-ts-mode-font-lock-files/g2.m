@@ -1,0 +1,6 @@
+% -*- matlab-ts -*-
+function...
+        ...
+        g2
+    disp('in g2')
+end
