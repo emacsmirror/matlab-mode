@@ -38,6 +38,10 @@
 
 (require 'treesit)
 
+;;-------------------------;;
+;; Section: Customizations ;;
+;;-------------------------;;
+
 (defgroup matlab-ts nil
   "MATLAB(R) tree-sitter mode."
   :prefix "matlab-ts-"
@@ -59,6 +63,10 @@
        :bold t))
   "Face for \"%% code section\" headings when NOT in matlab-sections-minor-mode.")
 
+;;--------------------;;
+;; Section: font-lock ;;
+;;--------------------;;
+
 (defvar matlab-ts-mode--keywords
   ;; Nodes like "if" are captured by their text because they are part of a bigger node that captures
   ;; them as such (and need more than just their text to define the node), but it doesn't make much
@@ -71,32 +79,30 @@
   ;; Note, arguments, methods, properties are semi-keywords in that in the right location
   ;; the are keywords, otherwise in the wrong location they are variables, but tree-sitter
   ;; correctly handles them by letting use look for these as content of the nodes.
-  '(
-      "arguments"
-      (break_statement)
-      "case"
-      "catch"
-      "classdef"
-      (continue_statement)
-      "else"
-      "elseif"
-      "end"
-      "enumeration"
-      "events"
-      "for"
-      "function"
-      "global"
-      "if"
-      "methods"
-      "otherwise"
-      "parfor"
-      "persistent"
-      "properties"
-      (return_statement)
-      "spmd"
-      "switch"
-      "try"
-      "while")
+  '("arguments"
+    (break_statement)
+    "case"
+    "catch"
+    "classdef"
+    (continue_statement)
+    "else"
+    "elseif"
+    "end"
+    "enumeration"
+    "events"
+    "for"
+    "function"
+    "global"
+    "if"
+    "methods"
+    "otherwise"
+    "parfor"
+    "persistent"
+    "properties"
+    (return_statement)
+    "switch"
+    "try"
+    "while")
   "MATLAB keywords for tree-sitter font-locking.")
 
 (defvar matlab-ts-mode--type-functions
@@ -119,13 +125,13 @@ In MATLAB,
   % The documentation help comment for myFunction immediately follows the
   % function defintion.
 
-      % code comment have a blank line
+      % code comments are preceeded with a blank line
       out = 1;
   end
 
   function out = myFunctionWithoutHelp
 
-      % code comment have a blank line
+      % code comments are preceeded with a blank line
       out = 1;
   end
 
@@ -174,10 +180,10 @@ START and END specify the region to be fontified."
      (function_definition (comment) @matlab-ts-mode--doc-comment-capture) ;; doc help comments
      (class_definition (comment) @matlab-ts-mode--doc-comment-capture)) ;; doc help comments
 
-   ;; Keywords: if, else, etc.
+   ;; ;; Keywords: if, else, etc.
    :language 'matlab
    :feature 'keyword
-   `(([,@matlab-ts-mode--keywords] @font-lock-keyword-face))
+   `([,@matlab-ts-mode--keywords] @font-lock-keyword-face)
 
    ;; function/classdef
    :language 'matlab
