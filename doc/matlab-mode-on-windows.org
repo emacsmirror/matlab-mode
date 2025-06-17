@@ -20,12 +20,7 @@ To use Emacs on Windows with the matlab-mode package,
    : $ pacman -S unzip
    : $ pacman -S man
 
-   [Optional] Install GCC which is needed for [[file:matlab-tree-sitter.org]] and perhaps other
-   items. Assuming you have an Intel 64-bit processor,
-
-   : C:> bash
-   : $ pacman -S gcc
-   : $ cc --version               # This should be gcc and 'cc' needed by tree-sitter
+  After installing =man=, you can browse man pages in Emacs using =M-x woman=.
 
 3. Install gpg from https://www.gpg4win.org/. Note there is a version gpg.exe in MSYS2 that does not
    work with the Emacs 30.1 package manager. Therefore, install gpg4win and place that gpg on the
@@ -55,20 +50,23 @@ To use Emacs on Windows with the matlab-mode package,
    install. You may want to use the latest from MELPA, though either the GNU elpa version or MELPA
    version should be fine.
 
-7. [Optional] Install flycheck, lsp-mode, and lsp-ui. Run =M-x list-packages=, search for them and
+7. [Optional] Install lsp-mode, lsp-ui, and flycheck. Run =M-x list-packages=, search for them and
    install them. Then install the MATLAB Lanugage Server, see
    [[file:matlab-language-server-lsp-mode.org]].
 
-8. [Optional]. Use bash for =M-x shell=
+8. [Optional] Use bash for =M-x shell=
 
    + =M-x customize-variable RET shell-file-name RET= and set to ="C:/msys64/usr/bin/bash.exe"=
 
    + Add to =~/.emacs=
 
      #+begin_src emacs-lisp
-       ;; Prompt, PS1 setup for M-x shell
-       (setenv "PS1" "\\[\\e[32m\\]\\u@\\h \\[\\e[33m\\]\\w\\[\\e[0m\\]\\n\\$ ")
+       ;; "M-x shell" bash prompt using `shell-file-name' customized to "C:/msys64/usr/bin/bash.exe"
+       ;; See https://en.wikipedia.org/wiki/ANSI_escape_code for the escape codes
+       (if (eq (frame-parameter nil 'background-mode) 'light)
+           (setenv "PS1" "\\[\\e[32m\\]\\u@\\h \\[\\e[34m\\]\\w\\[\\e[0m\\]\\n\\$ ")
+         (setenv "PS1" "\\[\\e[32m\\]\\u@\\h \\[\\e[33m\\]\\w\\[\\e[0m\\]\\n\\$ "))
      #+end_src
 
 9. [Optional] Install =magit= for Git by =M-x list-packages=, then clicking on =magit= from melpa
-   to install.
+   to install. You'll also need to install https://gitforwindows.org/.
