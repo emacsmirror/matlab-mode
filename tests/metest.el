@@ -85,7 +85,9 @@
   ;; matlab-ts-mode tests
   (when (>= emacs-major-version 30)
     (require 'test-matlab-ts-mode-font-lock)
-    (metest-run 'test-matlab-ts-mode-font-lock)))
+    (metest-run 'test-matlab-ts-mode-font-lock)
+    (require 'test-matlab-ts-mode-indent)
+    (metest-run 'test-matlab-ts-mode-indent)))
 
 (defun metest-run (test)
   "Run and time TEST."

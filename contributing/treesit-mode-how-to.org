@@ -16,22 +16,25 @@
 # | along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # |
 # | Commentary:
-# |
-# | Use this as a template for creating org-files with MATLAB and other language code blocks.
-# | The '#+COMMENT' lines configure org-mode.
+# |   Guidelines for writting a major mode powered by tree-sitter
 
-#+title: MATLAB and Tree-Sitter
+#+title: Tree-Sitter How To
 #+author: John Ciolfi
 #+date: Jun-13-2025
 
-* Overview
+* TODO
+
+- [ ] Add how to setup comments and syntax table
+- [ ] Add indent assert rule
+- [ ] Add font-lock test
+- [ ] Add indent test  
+
+* Guide to building a tree-sitter mode
 
 This is a set of notes that I'm taking as I develop matlab-ts-mode.el with the goal of this
 becoming a guide for writting a tree-sitter mode for Emacs 30 or later.
 
-* Guide to building a tree-sitter mode
-
-** Syntax trees and queries
+* Syntax trees and queries
 
 If you are not familar with the concepts behind tree-sitter, see
 https://tree-sitter.github.io/tree-sitter. In particular, learn the notion of queries and try out
@@ -68,12 +71,12 @@ tree is roughly 10 times the text size of the program being analyzed. However, t
 tree sitter are highly accuracte and fast syntax coloring (font-lock), indentation, code
 navigation via syntatic expressions, etc.
 
-** Documentation
+* Documentation
 
  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
 
-** libtree-sitter-LANGUAGE.EXT
+* libtree-sitter-LANGUAGE.EXT
 
 Place the tree-sitter language library in =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=
 (EXT=.so on Linux, .dll on Windows, .dylib on Mac). There are other locations that this can
@@ -117,7 +120,39 @@ You should now be able to use:
 : M-x treesit-inspect-mode
 : M-x treesit-explore-mode
 
-** Setup font-lock
+* Debugging tips
+
+- Incremental updates to your LANGUAGE-ts-mode
+
+   As you update =LANUGAGE-ts-mode.el= you need to tell Emacs to pickup the updates. To do this,
+
+    - Use *=C-x C-e=*. With the cursor =(point)= at the end of the syntatic expression of your *.el
+      file and run =C-x C-e= (or =M-x eval-last-sexp=) to evaluate the sexp prior to the cursor
+      point.
+
+    - Alternatively, use *=C-M-x* (or =M-x eval-defun=). With the =(point)= in the =defvar=,
+      =defcusom=, or =defface=, run =C-M-x= to evaluate it.
+
+   Note: =M-x eval-buffer= will not reevaluate already defined =defvar='s, so you must use
+   one of the above two to update a =defvar=.
+
+- =M-x LANGUAGE-ts-mode=
+
+ - After making updates to =LANGUAGE-ts-mode.el= and evaluating them, you run =M-x LANGUAGE-ts-mode=
+   to re-load your mode in your =test.lang= file. For example, when writing the indent rules, you'll
+   need to run =M-x LANGUAGE-ts-mode= after =M=x eval-defun= on in your =(defvar
+   LANGUAGE-ts-mode--indent-rules ....)=.
+
+- Use =M-x ielm=
+
+  In the =*ielm*= buffer created by =M-x ielm=, you can examine tree-sitter nodes, etc. For example:
+
+  #+begin_example
+  ELISP> (with-current-buffer "test.lang"
+	 (treesit-node-parent (treesit-node-at (point))))
+  #+end_example
+
+* Font-lock
 
 Queries are needed to identify syntax tree nodes to fontify. See
 https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html
@@ -181,14 +216,15 @@ and keywords.
       ;; names that correspond to the
       ;;   :feature 'NAME
       ;; entries in LANGUAGE-ts-mode--font-lock-settings.  For example, 'comment for comments,
-      ;; 'definition for function definitions, 'keyword for language keywords, etc.
+      ;; 'definition for function definitions, 'keyword for language keywords, etc. Below
+      ;; we have a few examples. You can use any names for your features.
       ;; Font-lock applies the faces defined in each sublist up to and including
       ;; `treesit-font-lock-level', which defaults to 3.
       (setq-local treesit-font-lock-feature-list
-                  '((comment definition)
+          	'((comment definition)
                     (keyword string type)
-                    (builtin constant escape-sequence label number)
-                    (bracket delimiter error function operator property variable)))
+                    (number)
+                    (bracket delimiter error)))
 
       (treesit-major-mode-setup)))
 #+end_src
@@ -197,6 +233,154 @@ Notice how the @capture-name in the comment query is @font-lock-comment-face. Th
 applied to the items captured by the query. You can see available faces by using =M-x
 list-faces-display=.  You'll probably want to stick with faces that come with stock Emacs to
 avoid dependenices on other packages or create your own face.
+
+* Comments
+
+TODO
+
+* Indent
+
+Tree-sitter indentation is controlled by =treesit-simple-indent-rules=.  We create a variable
+containing our N indent rules and tell tree-sitter about them
+
+#+begin_src emacs-lisp
+  (defvar LANGUAGE-ts-mode--indent-rules
+      `((LANGUAGE
+         (MATCHER-1 ANCHOR-1 OFFSET-1)
+         (MATCHER-N ANCHOR-N OFFSET-N)))
+      "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
+
+  ;;;###autoload
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE"
+    "Major mode for editing LANGUAGE files using tree-sitter."
+
+    (when (treesit-ready-p 'LANGUAGE)
+      (treesit-parser-create 'LANGUAGE)
+
+      ;; Indent
+      (setq-local treesit-simple-indent-rules LANGUAGE-ts-mode--indent-rules)
+
+      (treesit-major-mode-setup)))
+#+end_src
+
+To write the indent rules, we need to define the /matcher/, /anchor/, and /offset/ of each rule as
+explained in the Emacs manual, "[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Parser-based Indentation]]".  The /matcher/ and /anchor/ are are
+functions that take three arguments, =node=, =parent= node, and =bol=.  =bol= is the
+beginning-of-line buffer position. /matcher/ returns non-nil when the rule applies and /anchor/
+returns the buffer position which along with /offset/ determine the indent level of the line.
+
+Let's take this basic example of our LANGUAGE, =if_else.lang= file
+
+#+begin_example
+  if a > 1
+      b = a * 2;
+  else    
+      b = a;
+  end
+#+end_example
+
+Running =M-x treesit-explore-mode= gives us:
+
+#+begin_example
+  (source_file
+   (if_statement if
+    condition: (comparison_operator (identifier) > (number))
+    \n
+    (block
+     (assignment left: (identifier) =
+      right: (binary_operator left: (identifier) * right: (number)))
+     ;)
+    (else_clause else \n
+     (block
+      (assignment left: (identifier) = right: (identifier))
+      ;))
+    end)
+   \n)
+#+end_example
+
+We start with
+
+#+begin_src emacs-lisp
+  (defvar tmp-debug-indent-rule
+    '((lambda (node parent bol)
+      (message "-->N:%S P:%S BOL:%S GP:%S NPS:%S"
+               node parent bol
+               (treesit-node-parent parent)
+               (treesit-node-prev-sibling node))
+        nil)
+      nil
+      0))
+
+  (defvar LANGUAGE-ts-mode--indent-rules
+    `((LANGUAGE
+       ,tmp-debug-indent-rule
+       ((parent-is "^source_file$") column-0 0)
+       ))
+    "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
+#+end_src
+
+We set
+
+: M-: (setq treesit--indent-verbose t)
+
+and then hit the =TAB= key when vising a our =if_else.lang= file.
+
+The first rule, =((parent-is "source_file") column-0 0)= is the rule for the root node, which in our
+LANGUAGE is "source_file" and says to sart on column 0.
+
+The two lambda debugging rules aid in writing rules will be removed when we have completed the
+rules.  For example, with the above and we type =TAB= on the "b = a * 2" line in the following
+=if_else.lang= file.
+
+#+begin_example
+  if a > 1
+      b = a * 2;
+  else    
+      b = a;
+  end
+#+end_example
+
+we'll see in the =*Messages*= buffer we'll see the error:
+
+ : node: #<treesit-node block in 14-24> parent: #<treesit-node if_statement in 1-44> bol: 14
+
+where point 14-24 is "b = a * 2" and we see it has node named "block". Thus, we update we add to our
+indent rules, =((node-is "block") parent 4)= and a couple more rules as shown below.
+
+*Tip*: =C-M-x= in our =defvar= and re-run =M-x LANGUAGE-ts-mode= file to pickup the new indent
+rules.
+
+#+begin_src emacs-lisp
+  (defvar LANGUAGE-ts-mode--indent-rules
+    `((LANGUAGE
+       ,tmp-debug-indent-rule
+       ((parent-is "^source_file$") column-0 0)
+       ((node-is "^block$") parent 4)
+       ((node-is "^else_clause$") parent 0)
+       ((node-is "%end$") parent 0)
+       ))
+    "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
+#+end_src
+
+We can simplify this because the "else_clause" and "end" nodes have the same indent rules:
+
+#+begin_src emacs-lisp
+  (defvar LANGUAGE-ts-mode--indent-rules
+    `((LANGUAGE
+       ,tmp-debug-indent-rule
+       ((parent-is "^source_file$") column-0 0)
+       ((node-is "^block$") parent 4)
+       ((node-is ,(rx bol (or "else_clause" "end") eol)) parent 0)
+       ))
+    "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
+#+end_src
+
+Following this process, we add additional rules and our indent engine is complete after we remove
+the debugging rules.
+
+*Tip*: If you look at the defintion, =M-x find-variable RET treesit-simple-indent-presets RET=, you
+can see how the built-in /matchers/ and /achors/ are written. From that, you can write your own as
+needed.
 
 * Issues
 
@@ -241,3 +425,34 @@ avoid dependenices on other packages or create your own face.
 
   makes it easy to install packages from ELPA, MELPA, etc. but how to we get
   libtree-sitter-LANUGAGE.EXT (EXT = .so, .dll, .dylib) installed?
+
+- [ ] In [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Parser-Based Indentation]] we have prev-line which goes backward exactly one line
+
+  Consider a programming lanugage with a few statements, e.g.
+
+  #+begin_example
+    {
+        a = 1;
+        b = 2;
+
+
+    }
+  #+end_example
+
+  If you use prev-line on the blank-line immediately after "b = 2;", you'll get the expected
+  point below "b". If you use prev-line on the second blank line after "b = 2;", you'll get
+  0, which is unexpected in many languages. I suspect it may be safe to just update prev-real
+  line too look backwards to the first prior line with non-whitespace or if you are worried
+  about compatibility, introduce:
+
+  #+begin_src emacs-lisp
+    (cons 'prev-real-line (lambda (_n _p bol &rest _)
+    			(save-excursion
+    			  (goto-char bol)
+    			  (forward-line -1)
+    			  (while (and (not (bobp))
+    				      (looking-at "^[ \t]*$"))
+    			    (forward-line -1))
+    			  (skip-chars-forward " \t")
+    			  (point))))
+  #+end_src

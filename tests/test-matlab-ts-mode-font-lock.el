@@ -1,4 +1,4 @@
-;;; test-matlab-ts-mode-font-lock.el --- Testing suite for MATLAB Emacs -*- lexical-binding: t -*-
+;;; test-matlab-ts-mode-font-lock.el --- Test matlab-ts-mode font-lock -*- lexical-binding: t -*-
 ;;
 ;; Copyright Free Software Foundation
 
@@ -17,16 +17,22 @@
 
 ;;; Commentary:
 ;;
-;;  Validate font-lock faces in matlab-ts-mode
+;; Validate matlab-ts-mode font-lock faces.
+;; Load ../matlab-ts-mode.el via require and run font-lock tests using
+;; ./test-matlab-ts-mode-font-lock-files/NAME.m comparing against
+;; ./test-matlab-ts-mode-font-lock-files/NAME_expected.txt
+;;
 
 ;;; Code:
 
+(require 'cl-macs)
+
+;; Add abs-path of ".." to load-path so we can (require 'matlab-ts-mode)
 (let* ((lf (or load-file-name (buffer-file-name (current-buffer))))
        (d1 (file-name-directory lf))
        (parent-dir (expand-file-name (file-name-directory (directory-file-name d1)))))
   (add-to-list 'load-path parent-dir t))
 
-(require 'cl-macs)
 (require 'matlab-ts-mode)
 
 (defun test-matlab-ts-mode-font-lock-files ()
@@ -37,26 +43,26 @@
   (cons "test-matlab-ts-mode-font-lock" (test-matlab-ts-mode-font-lock-files)))
 
 (cl-defun test-matlab-ts-mode-font-lock (&optional m-file)
-  "Test font-lock using ./test-matlab-ts-mode-font-lock-files/M-FILE.
-Compare ./test-matlab-ts-mode-font-lock-files/M-FILE against
+  "Test font-lock using ./test-matlab-ts-mode-font-lock-files/NAME.m.
+Compare ./test-matlab-ts-mode-font-lock-files/NAME.m against
 ./test-matlab-ts-mode-font-lock-files/NAME_expected.txt, where
-NAME_expected.txt is of same length as M-FILE and has a character for
+NAME_expected.txt is of same length as NAME.m and has a character for
 each face setup by font-lock.
 
-If M-FILE is not provided, loop comparing all
-  ./test-matlab-ts-mode-font-lock-files/*.m
+If M-FILE NAME.m is not provided, loop comparing all
+./test-matlab-ts-mode-font-lock-files/NAME.m files.
 
-For example, given foo.m containing
+For example, given foo.m containing:
     function a = foo
         a = 1;
     end
-we'll have expected that looks like
+we'll have expected that looks like:
     kkkkkkkk v d fff
         d d dd
     kkk
 
-For debugging, you can run with a specified M-FILE,
-  M-: (test-matlab-ts-mode-font-lock \"test-matlab-ts-mode-font-lock-files/M-FILE\")"
+For debugging, you can run with a specified NAME.m,
+  M-: (test-matlab-ts-mode-font-lock \"test-matlab-ts-mode-font-lock-files/NAME.m\")"
 
   (when (or (< emacs-major-version 30)
             (not (progn
@@ -109,7 +115,7 @@ For debugging, you can run with a specified M-FILE,
         (font-lock-mode 1)
         (font-lock-flush (point-min) (point-max))
         (font-lock-ensure (point-min) (point-max))
-        
+
         (goto-char (point-min))
         (let* ((got "")
                (expected-file (replace-regexp-in-string "\\.m$" "_expected.txt"
