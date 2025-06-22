@@ -48,7 +48,7 @@
 (defvar test-matlab-ts-mode-indent (cons "test-matlab-ts-mode-indent"
                                          (test-matlab-ts-mode-indent-files)))
 
-(defun trim ()
+(defun test-matlab-ts-mode-indent--trim ()
   "Trim trailing whitespace and lines."
   (setq buffer-file-coding-system 'utf-8-unix)
   (let ((delete-trailing-lines t))
@@ -87,7 +87,7 @@ EXPECTED content in EXPECTED-FILE."
               (parent (and node (treesit-node-parent node))))
          (when (string= (treesit-node-type parent) "ERROR")
            (insert " ")))
-               
+
         (call-interactively #'indent-for-tab-command) ;; TAB on code just added
 
         ;; While next line in our original contents is a newline insert "\n"
@@ -101,7 +101,7 @@ EXPECTED content in EXPECTED-FILE."
           (call-interactively #'indent-for-tab-command))
         (forward-line))
 
-      (trim)
+      (test-matlab-ts-mode-indent--trim)
 
       (let ((typing-got (buffer-substring (point-min) (point-max))))
         (set-buffer-modified-p nil)
@@ -123,7 +123,7 @@ If M-FILE (NAME.m) is not provided, loop comparing all
 
 For debugging, you can run with a specified NAME.m,
   M-: (test-matlab-ts-mode-font-lock \"test-matlab-ts-mode-indent-files/NAME.m\")"
-  
+
   (let* ((m-files (if m-file
                       (progn
                         (setq m-file (file-truename m-file))
@@ -142,7 +142,7 @@ For debugging, you can run with a specified NAME.m,
           (message "START: test-matlab-ts-mode-indent %s" m-file)
           (find-file m-file)
           (indent-region (point-min) (point-max))
-          (trim)
+          (test-matlab-ts-mode-indent--trim)
           (let ((got (buffer-substring (point-min) (point-max)))
                 (got-file (concat expected-file "~")))
             (set-buffer-modified-p nil)
@@ -158,7 +158,7 @@ For debugging, you can run with a specified NAME.m,
 
         (when expected ;; expected-file exists?
           (test-matlab-ts-mode-indent--typing m-file expected expected-file)))
-          
+
       (message "PASS: test-matlab-ts-mode-indent %s" m-file)))
   "success")
 

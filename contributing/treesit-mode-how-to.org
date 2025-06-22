@@ -20,19 +20,53 @@
 
 #+title: Tree-Sitter How To
 #+author: John Ciolfi
-#+date: Jun-13-2025
+#+date: Jun-22-2025
 
 * TODO
 
 - [ ] Add how to setup comments and syntax table
 - [ ] Add indent assert rule
 - [ ] Add font-lock test
-- [ ] Add indent test  
+- [ ] Add indent tests
+- [ ] Add feature-based test for indent
+      - (directory-files-recursively DIR "\\.m$")
+      - On each file, check parse tree for ERROR nodes and see if it really has an error by running
+        matlab/bin/arch/mlint and looking for "Parse error". If no parse error, then flag these as
+        issues with the matlab tree-sitter.
+      - Indent the file to see if matlab-ts-mode--indent-assert-rule fires
 
 * Guide to building a tree-sitter mode
 
-This is a set of notes that I'm taking as I develop matlab-ts-mode.el with the goal of this
-becoming a guide for writting a tree-sitter mode for Emacs 30 or later.
+This is a set of notes that I'm taking as I develop matlab-ts-mode.el with the goal of this becoming
+a guide for writting a tree-sitter mode.
+
+This guide assumes was written when using Emacs 30.1 and the goal is to create *LANGUAGE-ts-mode*
+for /file.lang/ files.
+
+In creating a tree-sitter mode for a programming lanugage, you have two options. Releverage an
+old-style existing mode via =(define-derived-mode LANGUAGE-ts-mode OLD-LANGUAGE-mode "LANGUAGE"
+...)= and overriding items such as font-lock and indent. The other approach is
+to create a new LANGUAGE-ts-mode based on prog-mode which we recommend to eliminate coupling between
+the old-style mode and the new tree-sitter mode.
+
+#+begin_src emacs-lisp
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE" ...)
+#+end_src
+
+To create the mode, we recommend following this order:
+
+1. *Font-lock*. We suggest doing this first, so that /file.lang/ is syntatically colored when
+   viewing it.
+2. *Indent*. Next we setup indentation so that you can edit /file.lang/ easily.
+3. *Syntax table and comments*.
+4. *Navigation*. Setup treesit-defun-type-regexp and treesit-defun-name-function to enable navigation
+   features like beginning-of-defun and end-of-defun
+5. *Imenu*
+
+** Documentation
+
+ - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
+ - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
 
 * Syntax trees and queries
 
@@ -70,11 +104,6 @@ parser is fast and incrementally updates as you type. The memory required to rep
 tree is roughly 10 times the text size of the program being analyzed. However, the benefits of
 tree sitter are highly accuracte and fast syntax coloring (font-lock), indentation, code
 navigation via syntatic expressions, etc.
-
-* Documentation
-
- - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
- - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
 
 * libtree-sitter-LANGUAGE.EXT
 
@@ -154,8 +183,8 @@ You should now be able to use:
 
 * Font-lock
 
-Queries are needed to identify syntax tree nodes to fontify. See
-https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html
+Queries are needed to identify syntax tree nodes to fontify. See [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html][Emacs manual - Pattern Matching
+Tree-sitter Nodes]].
 
 You can use =M-x treesit-explore-mode= to see the nodes of the syntax tree.
 

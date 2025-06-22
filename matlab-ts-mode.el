@@ -70,6 +70,103 @@
 		 (const :tag "Standard" 3)
 		 (const :tag "Standard plus parse errors" 4)))
 
+;;-----------------------;;
+;; Section: Syntax table ;;
+;;-----------------------;;
+
+(defvar matlab-ts-mode--syntax-table
+  (let ((st (make-syntax-table (standard-syntax-table))))
+    ;; Comment Handling:
+    ;; 1. Single line comments: % text (single char start),
+    ;;                          note includes "%{ text"
+    ;; 2. Multiline comments:   %{
+    ;;                            lines
+    ;;                          %}
+    ;; 3. Ellipsis line continuations comments: "... optional text"
+    ;;    are handled in `matlab-ts-mode--syntax-propertize'
+    (modify-syntax-entry ?%  "< 13" st)
+    (modify-syntax-entry ?{  "(} 2c" st)
+    (modify-syntax-entry ?}  "){ 4c" st)
+    (modify-syntax-entry ?\n ">"    st)
+
+    ;; String Handling:
+    ;;   Single quoted string (character vector):    'text'
+    ;;   Double-quoted string:                       "text"
+    ;;   Transpose:           varname'
+    ;;   Quoted quotes:       ' don''t '    or " this "" "
+    ;;   Unterminated Char V: ' text
+    (modify-syntax-entry ?'  "\"" st)
+    (modify-syntax-entry ?\" "\"" st)
+
+    ;; Words and Symbols:
+    (modify-syntax-entry ?_  "_" st)
+
+    ;; Punctuation:
+    (modify-syntax-entry ?\\ "." st)
+    (modify-syntax-entry ?\t " " st)
+    (modify-syntax-entry ?+  "." st)
+    (modify-syntax-entry ?-  "." st)
+    (modify-syntax-entry ?*  "." st)
+    (modify-syntax-entry ?/  "." st)
+    (modify-syntax-entry ?=  "." st)
+    (modify-syntax-entry ?<  "." st)
+    (modify-syntax-entry ?>  "." st)
+    (modify-syntax-entry ?&  "." st)
+    (modify-syntax-entry ?|  "." st)
+
+    ;; Parenthetical blocks:
+    ;;   Note: these are in standard syntax table, repeated here for completeness.
+    (modify-syntax-entry ?\(  "()" st)
+    (modify-syntax-entry ?\)  ")(" st)
+    (modify-syntax-entry ?\[  "(]" st)
+    (modify-syntax-entry ?\]  ")[" st)
+    (modify-syntax-entry ?{   "(}" st)
+    (modify-syntax-entry ?}   "){" st)
+
+    st)
+  "The matlab-ts-mode syntax table.")
+
+(defun matlab-ts-mode--put-char-category (pos category)
+  "At character POS, put text proerty CATEGORY."
+  (when (not (eobp))
+    (put-text-property pos (1+ pos) 'category category)
+    (put-text-property pos (1+ pos) 'mcm t)))
+
+(defmacro matlab-ts-mode--syntax-symbol (symbol syntax doc)
+  "Create a new SYMBOL with DOC used as a text property category with SYNTAX."
+  (declare (indent defvar) (debug (sexp form sexp)) (doc-string 3))
+  `(progn (defconst ,symbol ,syntax ,doc)
+	  (put ',symbol 'syntax-table ,symbol)))
+
+;; In the Syntax Table descriptors, "<" is for comments
+(matlab-ts-mode--syntax-symbol matlab-ts-mode--ellipsis-syntax (string-to-syntax "<")
+  "Syntax placed on ellipsis to treat them as comments.")
+
+(defun matlab-ts-mode--syntax-propertize (&optional start end)
+  "Scan region between START and END to add properties.
+If region is not specified, scan the whole buffer.
+This will mark ellipsis line continuation's
+  ... optional text
+as comments which is how they are treated by MATLAB."
+  (save-match-data ;; avoid 'Syntax Checking transmuted the match-data'
+    (save-excursion
+      ;; Scan region, but always expand to beginning of line
+      (goto-char (or start (point-min)))
+      (beginning-of-line)
+
+      ;; Edits can change what properties characters can have so remove ours and reapply
+      (remove-text-properties (point) (save-excursion (goto-char (or end (point-max)))
+						      (end-of-line) (point))
+			      '(category nil mcm nil))
+
+      ;; Tell Emacs that ellipsis (...) line continuations are comments.
+      (while (and (not (>= (point) (or end (point-max)))) (not (eobp)))
+        (if (treesit-search-forward-goto (treesit-node-at (point))
+                                         (rx bol "line_continuation" eol)
+                                         t) ;; goto start of: ... optional text
+	    (matlab-ts-mode--put-char-category (point) 'matlab-ts-mode--ellipsis-syntax)
+          (goto-char (point-max)))))))
+
 ;;--------------------;;
 ;; Section: font-lock ;;
 ;;--------------------;;
@@ -187,13 +284,13 @@ START and END specify the region to be fontified."
 (defvar matlab-ts-mode--font-lock-settings
   (treesit-font-lock-rules
 
-   ;; Comments and line continuation: ... optional text
+   ;; F-Rule: Comments and line continuation: ... optional text
    :language 'matlab
    :feature 'comment
    '((comment) @font-lock-comment-face
      (line_continuation) @font-lock-comment-face)
 
-   ;; Special comments that override normal comment font
+   ;; F-Rule: special comments that override normal comment font
    :language 'matlab
    :feature 'comment
    :override t
@@ -203,12 +300,12 @@ START and END specify the region to be fontified."
      (function_definition (comment) @matlab-ts-mode--doc-comment-capture) ;; doc help comments
      (class_definition (comment) @matlab-ts-mode--doc-comment-capture)) ;; doc help comments
 
-   ;; ;; Keywords: if, else, etc.
+   ;; F-Rule: keywords: if, else, etc.
    :language 'matlab
    :feature 'keyword
    `([,@matlab-ts-mode--keywords] @font-lock-keyword-face)
 
-   ;; function/classdef
+   ;; F-Rule: function/classdef and items definiting them, e.g. the function arguments
    :language 'matlab
    :feature 'definition
    '((function_definition name: (identifier) @font-lock-function-name-face)
@@ -237,21 +334,21 @@ START and END specify the region to be fontified."
      (attribute (identifier) @font-lock-type-face "=" (identifier) @font-lock-builtin-face)
      (attribute (identifier) @font-lock-type-face))
 
-   ;; Strings
+   ;; F-Rule: strings "double quote" and 'single quote'
    :language 'matlab
    :feature 'string
    '((string_content) @font-lock-string-face
      ((string_content) ["\"" "'"]) @matlab-ts-string-delimiter-face
      (string ["\"" "'"] @matlab-ts-string-delimiter-face))
 
-   ;; Transpose uses "'" after an identifier, e.g. for matrix A we tranpose it via: A' since "'" is
-   ;; also used as a string, we use a different face for transpose and put it under the string
-   ;; category.
+   ;; F-Rule: transpose uses "'" after an identifier, e.g. for matrix A we tranpose it via: A'
+   ;; since "'" is also used as a string, we use a different face for transpose and put it under
+   ;; the string category.
    :language 'matlab
    :feature 'string
    '((postfix_operator "'" @font-lock-function-name-face))
 
-   ;; Types, e.g. int32()
+   ;; F-Rule: Types, e.g. int32()
    :language 'matlab
    :feature 'type
    `((function_call name: (identifier)
@@ -262,24 +359,24 @@ START and END specify the region to be fontified."
                                     eol))
                               @font-lock-type-face)))
 
-   ;; Constant numbers
+   ;; F-Rule: Constant literal numbers, e.g. 1234
    :language 'matlab
    :feature 'number
    '((number) @font-lock-constant-face)
 
-   ;; Brackets
+   ;; F-Rule: Brackets
    :language 'matlab
    :feature 'bracket
    '((["(" ")" "[" "]" "{" "}"]) @font-lock-bracket-face)
 
-   ;; Delimiters
+   ;; F-Rule: Delimiters, e.g. semicolon
    :language 'matlab
    :feature 'delimiter
    '((["," "." ";" ":" "@" "?"]) @font-lock-delimiter-face)
 
-   ;; Syntax errors
+   ;; F-Rule: Syntax errors
    :language 'matlab
-   :feature 'error
+   :feature 'syntax-error
    :override t
    '((ERROR) @font-lock-warning-face)
 
@@ -328,7 +425,7 @@ expression."
              (p-node (treesit-node-at prev-real-line-bol)))
         (string-match-p prev-real-line-node-type (or (treesit-node-type p-node) ""))))))
 
-(defvar tmp-debug-indent-rule
+(defvar matlab-ts--indent-debug-rule
   '((lambda (node parent bol)
       (message "-->N:%S P:%S BOL:%S GP:%S NPS:%S"
                node parent bol
@@ -355,12 +452,10 @@ expression."
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
-     ;; ,tmp-debug-indent-rule
-
-     ;; Rule: classdef's, function's, or code for a script that is at the top-level
+     ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
      ((parent-is ,(rx bol "source_file" eol)) column-0 0)
 
-     ;; Rule: within a function/classdef doc block comment "%{ ... %}"?
+     ;; I-Rule: within a function/classdef doc block comment "%{ ... %}"?
      ((lambda (node parent bol &rest _)
         (and (not node)
              (string= "comment" (treesit-node-type parent))
@@ -369,7 +464,7 @@ expression."
              (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent))))
       parent 2)
 
-     ;; Rule: function/classdef doc comment?
+     ;; I-Rule: function/classdef doc comment?
      ((lambda (node parent &rest _)
         (or (and (string= "comment" (or (treesit-node-type node) ""))
                  (matlab-ts-mode--is-doc-comment node parent))
@@ -378,7 +473,7 @@ expression."
                  (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent)))))
       parent 0)
 
-     ;; Rule: within a code block comment "%{ ... %}"?
+     ;; I-Rule: within a code block comment "%{ ... %}"?
      ((lambda (node parent bol &rest _)
         (and (not node)
              (string= "comment" (treesit-node-type parent))
@@ -387,7 +482,7 @@ expression."
       parent
       2)
 
-     ;; Rule: last line of code block coment "%{ ... %}"?
+     ;; I-Rule: last line of code block coment "%{ ... %}"?
      ((lambda (node parent bol &rest _)
         (and (not node)
              (string= "comment" (treesit-node-type parent))
@@ -396,141 +491,141 @@ expression."
       parent
       0)
 
-     ;; Rule: switch case and otherwise statements
+     ;; I-Rule: switch case and otherwise statements
      ((node-is ,(rx bol (or "case_clause" "otherwise_clause") eol))
       parent ,matlab-ts-mode--switch-indent-level)
 
-     ;; Rule: first line of code witin a switch case or otherwise statement, node is block
+     ;; I-Rule: first line of code witin a switch case or otherwise statement, node is block
      ((parent-is ,(rx bol (or "case_clause" "otherwise_clause") eol))
       parent ,matlab-ts-mode--switch-indent-level)
 
-     ;; Rule: nested functions
+     ;; I-Rule: nested functions
      ((n-p-gp ,(rx bol "function_definition" eol) ,(rx bol "block" eol)
               ,(rx bol "function_definition" eol))
       parent 0)
 
-     ;; Rule: constructs within classdef or function's.
+     ;; I-Rule: constructs within classdef or function's.
      ((node-is ,(rx bol (or "arguments_statement" "block" "enumeration" "enum" "methods" "events"
                             "function_definition" "property" "properties")
                     eol))
       parent ,matlab-ts-mode--indent-level)
 
-     ;; Rule: elseif, else, catch, end statements go back to parent level
+     ;; I-Rule: elseif, else, catch, end statements go back to parent level
      ((node-is ,(rx bol (or "elseif_clause" "else_clause" "catch_clause" "end") eol)) parent 0)
 
-     ;; Rule: code in if, for, methods, function, arguments statements
+     ;; I-Rule: code in if, for, methods, function, arguments statements
      ((parent-is ,(rx bol (or "if_statement" "for_statement" "while_statement"
                               "methods" "events" "enumeration"
                               "function_definition" "arguments_statement")
                       eol))
       parent ,matlab-ts-mode--indent-level)
 
-     ;; Rule: function a<RET>
-     ;;       end
+     ;; I-Rule: function a<RET>
+     ;;         end
      ((n-p-gp nil ,(rx bol "\n" eol) ,(rx bol (or "function_definition") eol))
       grand-parent ,matlab-ts-mode--indent-level)
 
-     ;; Rule: case 10<RET>
+     ;; I-Rule: case 10<RET>
      ((n-p-gp nil ,(rx bol "\n" eol) ,(rx bol (or "switch_statement" "case_clause"
                                                   "otherwise_clause")
                                           eol))
       grand-parent ,matlab-ts-mode--switch-indent-level)
 
-     ;; Rule:  if condition1 || ...     |      if condition1 + condition2 == ...
-     ;; <TAB>     condition2 || ...     |         2770000 ...
+     ;; I-Rule:  if condition1 || ...     |      if condition1 + condition2 == ...
+     ;; <TAB>       condition2 || ...     |         2770000 ...
      ((parent-is ,(rx bol (or "boolean_operator" "comparison_operator") eol)) parent 0)
 
-     ;; Rule:  elseif ...
-     ;; <TAB>      condition2 || ...
+     ;; I-Rule:  elseif ...
+     ;; <TAB>        condition2 || ...
      ((parent-is ,(rx bol (or "else_clause" "elseif_clause") eol))
       parent ,matlab-ts-mode--indent-level)
-     
-     ;; Rule: if a ...
+
+     ;; I-Rule: if a ...
      ;; <TAB>
      ((n-p-gp nil ,(rx bol "\n" eol)
               ,(rx bol (or "if_statement" "else_clause" "elseif_clause" ) eol))
       grand-parent ,matlab-ts-mode--indent-level)
 
-     ;; Rule: disp(myMatrix(1:  ...
-     ;; <TAB>               end)); 
+     ;; I-Rule: disp(myMatrix(1:  ...
+     ;; <TAB>                 end));
      ((parent-is ,(rx bol "range" eol)) parent 0)
 
-     ;; Rule: try<RET>    |   catch<RET>
+     ;; I-Rule: try<RET>    |   catch<RET>
      ((parent-is ,(rx bol (or "try_statement" "catch_clause") eol))
       parent ,matlab-ts-mode--indent-level)
 
-     ;; Rule: function a
-     ;;           x = 1;
-     ;; <TAB>     y = 2;
+     ;; I-Rule: function a
+     ;;             x = 1;
+     ;; <TAB>       y = 2;
      ((parent-is ,(rx bol "block" eol)) parent 0)
 
-     ;; Rule: "switch var" and we type RET after the var
+     ;; I-Rule: "switch var" and we type RET after the var
      (,(matlab-ts-mode--prev-real-line-is (rx bol "\n" eol) (rx bol "switch" eol))
       ,#'matlab-ts-mode--prev-real-line ,matlab-ts-mode--switch-indent-level)
 
-     ;; Rule: "function foo()" and we type RET after the ")"
+     ;; I-Rule: "function foo()" and we type RET after the ")"
      (,(matlab-ts-mode--prev-real-line-is nil (rx bol "function" eol))
       ,#'matlab-ts-mode--prev-real-line ,matlab-ts-mode--indent-level)
 
-     ;; Rule:  a = ...
-     ;; <TAB>      1;
+     ;; I-Rule:  a = ...
+     ;; <TAB>        1;
      ((parent-is ,(rx bol "assignment" eol)) parent ,matlab-ts-mode--indent-level)
 
-     ;; Rule:  a = 2 * ...
-     ;; <TAB>      1;
+     ;; I-Rule:  a = 2 * ...
+     ;; <TAB>        1;
      ((parent-is ,(rx bol "binary_operator" eol)) parent 0)
 
-     ;; Rule:  a = ( ...       |     a = [  ...     |     a = {    ...
-     ;;             1 ...      |          1 ...     |            1 ...
-     ;; <TAB>      );          |         ];         |         };
+     ;; I-Rule:  a = ( ...       |     a = [  ...     |     a = {    ...
+     ;;               1 ...      |          1 ...     |            1 ...
+     ;; <TAB>        );          |         ];         |         };
      ((node-is ,(rx bol (or ")" "]" "}") eol)) parent 0)
 
-     ;; Rule:  a = ( ...
-     ;; <TAB>       1 ...
+     ;; I-Rule:  a = ( ...
+     ;; <TAB>         1 ...
      ((parent-is ,(rx bol "parenthesis" eol)) parent 1)
 
-     ;; Rule:  a = [   ...    |    a = { ...
-     ;; <TAB>        2 ...    |          2 ...
+     ;; I-Rule:  a = [   ...    |    a = { ...
+     ;; <TAB>          2 ...    |          2 ...
      ((parent-is ,(rx bol (or "matrix" "cell") eol)) parent ,matlab-ts-mode--array-indent-level)
 
-     ;; Rule:  function [   ...              |    function name (   ...
-     ;; <TAB>            a, ... % comment    |                   a, ... % comment
+     ;; I-Rule:  function [   ...              |    function name (   ...
+     ;; <TAB>              a, ... % comment    |                   a, ... % comment
      ((parent-is ,(rx bol (or "multioutput_variable" "function_arguments") eol)) parent 1)
 
-     ;; Rule:  a = [    2 ...       |   function a ...
-     ;; <TAB>           1 ...       |            = fcn
+     ;; I-Rule:  a = [    2 ...       |   function a ...
+     ;; <TAB>             1 ...       |            = fcn
      ((parent-is ,(rx bol (or "row" "function_output") eol)) parent 0)
 
-     ;; Rule:  a = ...
-     ;; <TAB>      1;
+     ;; I-Rule:  a = ...
+     ;; <TAB>        1;
      ((n-p-gp nil nil ,(rx bol "assignment" eol)) grand-parent ,matlab-ts-mode--indent-level)
 
-     ;; Rule:  a = my_function(1, ...
-     ;; <TAB>                  2, ...
+     ;; I-Rule:  a = my_function(1, ...
+     ;; <TAB>                    2, ...
      ((parent-is ,(rx bol "arguments" eol)) parent 0)
 
-     ;; Rule:  my_function( ...
-     ;; <TAB>      1, ...
+     ;; I-Rule:  my_function( ...
+     ;; <TAB>        1, ...
      ((node-is ,(rx bol "arguments" eol)) parent ,matlab-ts-mode--indent-level)
 
-     ;; Rule: function indent_tab_between_fcns   |   function indent_tab_in_fcn
-     ;;       end                                |      disp('here')
-     ;; <TAB>                                    |
-     ;;       function b                         |   end
-     ;;       end                                |
+     ;; I-Rule: function indent_tab_between_fcns   |   function indent_tab_in_fcn
+     ;;         end                                |      disp('here')
+     ;; <TAB>                                      |
+     ;;         function b                         |   end
+     ;;         end                                |
      ((lambda (node parent bol)
         (and (not node)
              (string= (treesit-node-type parent) "\n")))
       grand-parent 0)
 
-     ;; Rule: In an empty line, string, etc. just maintain indent
-     ;;       switch in
-     ;;         case 10
-     ;;           disp('11');
+     ;; I-Rule: In an empty line, string, etc. just maintain indent
+     ;;         switch in
+     ;;           case 10
+     ;;             disp('11');
      ;; <TAB>
      (no-node ,#'matlab-ts-mode--prev-real-line 0)
 
-     ;; Rule: Assert if no rule matched and asserts are enabled.
+     ;; I-Rule: Assert if no rule matched and asserts are enabled.
      ,matlab-ts-mode--indent-assert-rule
      ))
   "Tree-sitter indent rules for `matlab-ts-mode'.")
@@ -542,12 +637,19 @@ expression."
   (when (treesit-ready-p 'matlab)
     (treesit-parser-create 'matlab)
 
+    ;; Syntax table - think of this as a "language character descriptor". It tells us what
+    ;; characters belong to word like things giving us movement commands e.g. C-M-f, matching
+    ;; parens, `show-paren-mode', etc.
+    (set-syntax-table matlab-ts-mode--syntax-table)
+    (setq-local syntax-propertize-function #'matlab-ts-mode--syntax-propertize)
+    ;; TODO: check other items in matlab--syntax-propertize, i.e. command-dual
+
     ;; Comments
-    ;;   TODO: M-; on code comments, then a 2nd M-; doesn't uncomment
-    ;;   likely need to also set up the syntax table.
     (setq-local comment-start      "%")
     (setq-local comment-end        "")
     (setq-local comment-start-skip "%\\s-+")
+    ;; TODO - page-delimiter, paragraph-start, etc. from matlab-mode
+
 
     ;; TODO function end handling
     ;; TODO add strings to syntax table?
@@ -571,11 +673,16 @@ expression."
                 '((comment definition)
                   (keyword string type)
                   (number bracket delimiter)
-                  ( error)))
+                  (syntax-error)))
 
     ;; Indent
-    (setq-local indent-tabs-mode nil ;; for consistency between Unix and Windows we don't use TABs.
-                treesit-simple-indent-rules matlab-ts-mode--indent-rules)
+    (setq-local indent-tabs-mode nil) ;; for consistency between Unix and Windows we don't use TABs.
+    (setq-local treesit-simple-indent-rules
+                (if treesit--indent-verbose ;; add debugging print as first rule?
+                    (list (append `,(list (caar matlab-ts-mode--indent-rules))
+                                  (list matlab-ts--indent-debug-rule)
+                                  (cdar matlab-ts-mode--indent-rules)))
+                  matlab-ts-mode--indent-rules))
 
     (treesit-major-mode-setup)))
 
