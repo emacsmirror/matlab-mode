@@ -84,10 +84,10 @@
     ;;                          %}
     ;; 3. Ellipsis line continuations comments: "... optional text"
     ;;    are handled in `matlab-ts-mode--syntax-propertize'
-    (modify-syntax-entry ?%  "< 13" st)
+    (modify-syntax-entry ?%  "< 13"  st)
     (modify-syntax-entry ?{  "(} 2c" st)
     (modify-syntax-entry ?}  "){ 4c" st)
-    (modify-syntax-entry ?\n ">"    st)
+    (modify-syntax-entry ?\n ">"     st)
 
     ;; String Handling:
     ;;   Single quoted string (character vector):    'text'
@@ -207,7 +207,7 @@ as comments which is how they are treated by MATLAB."
     "switch"
     "try"
     "while")
-  "MATLAB keywords for tree-sitter font-locking.")
+  "The matlab-ts-mode font-lock keywords.")
 
 (defvar matlab-ts-mode--type-functions
   '("double"
@@ -220,7 +220,7 @@ as comments which is how they are treated by MATLAB."
     "uint16"
     "uint32"
     "uint64")
-  "MATLAB data type functions.")
+  "The matlab-ts-mode data type functions.")
 
 (defun matlab-ts-mode--is-doc-comment (comment-node parent)
   "Is the COMMENT-NODE under PARENT a help doc comment.
@@ -381,7 +381,7 @@ START and END specify the region to be fontified."
    '((ERROR) @font-lock-warning-face)
 
    )
-  "MATLAB tree-sitter font-lock settings.")
+  "The matlab-ts-mode font-lock settings.")
 
 
 ;;-----------------:;
@@ -629,6 +629,10 @@ expression."
      ,matlab-ts-mode--indent-assert-rule
      ))
   "Tree-sitter indent rules for `matlab-ts-mode'.")
+
+;;-------------------------;;
+;; Section: matlab-ts-mode ;;
+;;-------------------------;;
 
 ;;;###autoload
 (define-derived-mode matlab-ts-mode prog-mode "MATLAB:ts"

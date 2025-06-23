@@ -18,64 +18,67 @@
 # | Commentary:
 # |   Guidelines for writting a major mode powered by tree-sitter
 
+#+startup: showall
+#+startup: inlineimages       //  C-c C-x C-v to toggle, C-c C-x C-M-v to redisplay
+#+startup: latexpreview       //  C-c C-x C-l to toggle
+
+#+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles-from-org.css"/>
+#+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+#+options: ^:{}
+#+options: toc:nil
+#+latex_header: \usepackage[margin=0.5in]{geometry}
+#+latex_header: \usepackage{parskip}
+#+latex_header: \usepackage{tocloft}
+#+latex_header: \advance\cftsecnumwidth 0.5em\relax
+#+latex_header: \advance\cftsubsecindent 0.5em\relax
+#+latex_header: \advance\cftsubsecnumwidth 0.5em\relax
+
 #+title: Tree-Sitter How To
 #+author: John Ciolfi
 #+date: Jun-22-2025
 
 * TODO
 
-- [ ] Add how to setup comments and syntax table
-- [ ] Add indent assert rule
-- [ ] Add font-lock test
-- [ ] Add indent tests
-- [ ] Add feature-based test for indent
+- [ ] Add sweep test for indent
       - (directory-files-recursively DIR "\\.m$")
       - On each file, check parse tree for ERROR nodes and see if it really has an error by running
         matlab/bin/arch/mlint and looking for "Parse error". If no parse error, then flag these as
         issues with the matlab tree-sitter.
       - Indent the file to see if matlab-ts-mode--indent-assert-rule fires
+- [ ] Add   ./tests/test-runner.el
 
 * Guide to building a tree-sitter mode
 
-This is a set of notes that I'm taking as I develop matlab-ts-mode.el with the goal of this becoming
-a guide for writting a tree-sitter mode.
+This guide to building a *LANGUAGE-ts-mode* for /file.lang/ files was written for Emacs 30.1.
 
-This guide assumes was written when using Emacs 30.1 and the goal is to create *LANGUAGE-ts-mode*
-for /file.lang/ files.
-
-In creating a tree-sitter mode for a programming lanugage, you have two options. Releverage an
+In creating a tree-sitter mode for a programming language, you have two options. You can leverage an
 old-style existing mode via =(define-derived-mode LANGUAGE-ts-mode OLD-LANGUAGE-mode "LANGUAGE"
-...)= and overriding items such as font-lock and indent. The other approach is
-to create a new LANGUAGE-ts-mode based on prog-mode which we recommend to eliminate coupling between
-the old-style mode and the new tree-sitter mode.
+...)= and then override items such as font-lock and indent. The other approach is to create a new
+LANGUAGE-ts-mode based on prog-mode which we recommend to eliminate coupling between the old-style
+mode and the new tree-sitter mode.
 
 #+begin_src emacs-lisp
-  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE" ...)
+ (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE" ...)
 #+end_src
 
 To create the mode, we recommend following this order:
 
-1. *Font-lock*. We suggest doing this first, so that /file.lang/ is syntatically colored when
+1. *Font-lock*. We suggest doing this first, so that /file.lang/ is syntactically colored when
    viewing it.
-2. *Indent*. Next we setup indentation so that you can edit /file.lang/ easily.
+2. *Indent*. Next we set up indentation so that you can edit /file.lang/ easily.
 3. *Syntax table and comments*.
-4. *Navigation*. Setup treesit-defun-type-regexp and treesit-defun-name-function to enable navigation
-   features like beginning-of-defun and end-of-defun
+4. *Navigation*. Set up treesit-defun-type-regexp and treesit-defun-name-function to enable
+   navigation features like beginning-of-defun and end-of-defun
 5. *Imenu*
-
-** Documentation
-
- - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
- - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
 
 * Syntax trees and queries
 
-If you are not familar with the concepts behind tree-sitter, see
-https://tree-sitter.github.io/tree-sitter. In particular, learn the notion of queries and try out
-queries in the playground section of the site on one of the languages supported by the site. A
-good understanding of the syntax tree and queires are required to implement a new tree-sitter
-major mode. You don't need to understand how to implement a lanugage parser if one already
-exists, otherwise you'll need to write a tree-sitter language parser.
+If you are not familiar with the concepts behind tree-sitter, see
+https://tree-sitter.github.io/tree-sitter. Learn the notion of queries and try out queries in the
+playground section of the site on one of the languages supported by the site. A good understanding
+of the syntax tree and queires are required to implement a new tree-sitter major mode. You don't
+need to understand how to implement a lanugage parser if one already exists, otherwise you'll need
+to write a tree-sitter language parser.
 
 The tree-sitter parser produces a syntax tree:
 
@@ -102,8 +105,13 @@ Mac) is used to create a syntax tree of LANUAGE:
 Each node in the syntax tree knows it start point and end point in the LANGUAGE program. The
 parser is fast and incrementally updates as you type. The memory required to represent the syntax
 tree is roughly 10 times the text size of the program being analyzed. However, the benefits of
-tree sitter are highly accuracte and fast syntax coloring (font-lock), indentation, code
-navigation via syntatic expressions, etc.
+tree sitter are highly accurate and fast syntax coloring (font-lock), indentation, code
+navigation via syntactic expressions, etc.
+
+* Documentation
+
+ - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
+ - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
 
 * libtree-sitter-LANGUAGE.EXT
 
@@ -118,10 +126,12 @@ reside in, though =~/.emacs.d/tree-sitter/= is the default.
 
   : M-x treesit-install-language-grammar
 
-Next, create a basic LANGUAGE-ts-mode.el to validate your tree-sitter shared library is good.
-
 It is possible that =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT= was built incorrectly,
 so we create the following to validate it, replacing LANGUAGE with your language name.
+
+Next, create a basic LANGUAGE-ts-mode.el to validate your tree-sitter shared library is good.  If
+your libtree-sitter-LANGUAGE.EXT was built incorrectly (e.g. wrong compiler version), the following
+will likely hang.
 
 #+begin_src emacs-lisp
   ;; Basic LANGUAGE-ts-mode.el
@@ -153,7 +163,7 @@ You should now be able to use:
 
 - Incremental updates to your LANGUAGE-ts-mode
 
-   As you update =LANUGAGE-ts-mode.el= you need to tell Emacs to pickup the updates. To do this,
+   As you update =LANUGAGE-ts-mode.el= you need to tell Emacs to pick up the updates. To do this,
 
     - Use *=C-x C-e=*. With the cursor =(point)= at the end of the syntatic expression of your *.el
       file and run =C-x C-e= (or =M-x eval-last-sexp=) to evaluate the sexp prior to the cursor
@@ -183,10 +193,9 @@ You should now be able to use:
 
 * Font-lock
 
-Queries are needed to identify syntax tree nodes to fontify. See [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html][Emacs manual - Pattern Matching
-Tree-sitter Nodes]].
-
-You can use =M-x treesit-explore-mode= to see the nodes of the syntax tree.
+Queries are needed to identify syntax tree nodes to semantically color language elements
+(font-lock). See [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html][Emacs manual - Pattern Matching Tree-sitter Nodes]]. You can use =M-x
+treesit-explore-mode= to see the nodes of the syntax tree.
 
 An example of a query that identifies comments (assuming =comment= is a valid node type), in a
 file that has =M-x LANGUAGE-ts-mode= active.
@@ -206,18 +215,26 @@ Note, to validate your queries use:
 
 : M-x (treesit-query-validate 'LANGUAGE '(QUERRY @catpture-name))
 
-Once we know the queries, we can setup font-lock. For example, here we fontify comments
+Once we know the queries, we can set up font-lock. For example, here we fontify comments
 and keywords.
 
 #+begin_src emacs-lisp
+  ;;; LANGUAGE-ts-mode.el --- comment -*- lexical-binding: t -*-
+
+  ;;; Commentary:
+  ;;   <snip>
+
+  ;;; Code:
+
   (require 'treesit)
 
   (defvar LANGUAGE-ts-mode--keywords
-      '("else"
-        "if"
-        ;; <snip>
-        )
-    "LANGUAGE keywords for tree-sitter font-locking.")
+    '("else"
+      "if"
+      "end"
+      ;; <snip>
+      )
+    "The LANGUAGE-ts-mode font-lock keywords.")
 
   (defvar LANGUAGE-ts-mode--font-lock-settings
     (treesit-font-lock-rules
@@ -227,11 +244,11 @@ and keywords.
 
      :language 'LANGUAGE
      :feature 'keyword
-     `([,@LANGUAGE-ts-mode--keywords] @font-lock-keyword-face)))
-    "LANGUAGE tree-sitter font-lock settings.")
+     `([,@LANGUAGE-ts-mode--keywords] @font-lock-keyword-face))
+  "The LANGUAGE tree-sitter font-lock settings.")
 
   ;;;###autoload
-  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE"
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE:ts"
     "Major mode for editing LANGUAGE files using tree-sitter."
 
     (when (treesit-ready-p 'LANGUAGE)
@@ -239,40 +256,249 @@ and keywords.
 
       ;; Font-lock
       (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
-
-      ;; `treesit-font-lock-feature-list' contains four sublists where the first
-      ;; sublist is level 1, and so on.  Each sublist contains a set of feature
-      ;; names that correspond to the
-      ;;   :feature 'NAME
-      ;; entries in LANGUAGE-ts-mode--font-lock-settings.  For example, 'comment for comments,
-      ;; 'definition for function definitions, 'keyword for language keywords, etc. Below
-      ;; we have a few examples. You can use any names for your features.
-      ;; Font-lock applies the faces defined in each sublist up to and including
-      ;; `treesit-font-lock-level', which defaults to 3.
-      (setq-local treesit-font-lock-feature-list
-          	'((comment definition)
-                    (keyword string type)
-                    (number)
-                    (bracket delimiter error)))
+      (setq-local treesit-font-lock-feature-list '((comment definition)
+  						 (keyword string type)
+  						 (number bracket delimiter)
+  						 (syntax-error)))
 
       (treesit-major-mode-setup)))
+
+  (provide 'LANGUAGE-ts-mode)
+  ;;; LANGUAGE-ts-mode.el ends here
 #+end_src
 
-Notice how the @capture-name in the comment query is @font-lock-comment-face. This face is
+Notice how the =@capture-name= in the comment query is =@font-lock-comment-face=. This face is
 applied to the items captured by the query. You can see available faces by using =M-x
-list-faces-display=.  You'll probably want to stick with faces that come with stock Emacs to
-avoid dependenices on other packages or create your own face.
+list-faces-display=.  You'll probably want to stick with faces that come with stock Emacs to avoid
+dependencies on other packages or create your own face.
 
-* Comments
+The =treesit-font-lock-feature-list= contains four sublists where the first sublist is font-lock
+level 1, and so on. Each sublist contains a set of feature; names that correspond to the =:feature
+'NAME= entries in =LANGUAGE-ts-mode--font-lock-settings=.  For example, ='comment= for comments,
+='definition= for function and other definitions, ='keyword= for language keywords, etc. Font-lock
+applies the faces defined in each sublist up to and including `treesit-font-lock-level', which
+defaults to 3. If you'd like to have your font-lock default to level 4, add:
 
-TODO
+#+begin_src emacs-lisp
+  (defcustom LANGUAGE-ts-font-lock-level 4
+    "Level of font lock, 1 for minimum syntax highlighting and 4 for maximum."
+    :type '(choice (const :tag "Minimal" 1)
+  		 (const :tag "Low" 2)
+  		 (const :tag "Standard" 3)
+  		 (const :tag "Standard plus parse errors" 4)))
+
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE:ts"
+
+    ;; <snip>
+    (setq-local treesit-font-lock-level LANGUAGE-ts-font-lock-level)
+    (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
+    ;; <snip>
+    )
+#+end_src
+
+** Font-lock tests
+
+It is recommended that you create tests to validate your font-lock set up and commit your tests with
+your code together. This will make it easier for you and others to update your code without causing
+regressions. Under our LANGUAGE-ts-mode.el, we create a tests subdirectory containing our tests:
+
+#+begin_example
+  ./LANGUAGE-ts-mode.el
+  ./tests/test-runner.el
+  ./tests/test-LANGUAGE-ts-mode-font-lock.el
+  ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1.lang
+  ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt
+#+end_example
+
+Where =tests/test-LANGUAGE-ts-mode-font-lock.el= is shown below. Notice that there's a
+=code-to-face= table that assigns a character "code" to each face we are using. You may need to
+update this table to meet your needs.
+
+To add tests, create files of form
+=./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1.lang= and then
+
+ : M-: (test-LANGUAGE-ts-mode-font-lock)
+
+This will create =./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt~= and
+after examining it, rename it to
+=./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt=.
+ 
+To run your tests in a build system, use
+
+#+begin_src bash
+  emacs --batch -Q --eval "(setq debug-on-error t)" -l test-runner.el -eval test-runner
+#+end_src
+
+#+begin_src emacs-lisp
+  ;;; test-LANGUAGE-ts-mode-font-lock.el --- Test LANGUAGE-ts-mode font-lock -*- lexical-binding: t -*-
+
+  ;;; Code:
+
+  (require 'cl-macs)
+
+  ;; Add abs-path of ".." to load-path so we can (require 'LANGUAGE-ts-mode)
+  (let* ((lf (or load-file-name (buffer-file-name (current-buffer))))
+         (d1 (file-name-directory lf))
+         (parent-dir (expand-file-name (file-name-directory (directory-file-name d1)))))
+    (add-to-list 'load-path parent-dir t))
+
+  (require 'LANGUAGE-ts-mode)
+
+  (defun test-LANGUAGE-ts-mode-font-lock-files ()
+    "Return list of full paths to each test-LANGUAGE-ts-mode-font-lock-files/*.lang."
+    (directory-files "test-LANGUAGE-ts-mode-font-lock-files" t "\\.lang$"))
+
+  (defvar test-LANGUAGE-ts-mode-font-lock
+    (cons "test-LANGUAGE-ts-mode-font-lock" (test-LANGUAGE-ts-mode-font-lock-files)))
+
+  (cl-defun test-LANGUAGE-ts-mode-font-lock (&optional lang-file)
+    "Test font-lock using ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang.
+  Compare ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang against
+  ./test-LANGUAGE-ts-mode-font-lock-files/NAME_expected.txt, where
+  NAME_expected.txt is of same length as NAME.lang and has a character for
+  each face set up by font-lock.
+
+  If LANG-FILE NAME.lang is not provided, loop comparing all
+  ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang files.
+
+  For debugging, you can run with a specified NAME.lang,
+    M-: (test-LANGUAGE-ts-mode-font-lock \"test-LANGUAGE-ts-mode-font-lock-files/NAME.lang\")"
+
+    (when (or (< emacs-major-version 30)
+              (not (progn
+                     (require 'treesit)
+                     (when (fboundp 'treesit-ready-p)
+                       (treesit-ready-p 'LANGUAGE t)))))
+      (message "skipping-test: test-LANGUAGE-ts-mode-font-lock.el - LANGUAGE tree sitter not available.")
+      (cl-return-from test-LANGUAGE-ts-mode-font-lock))
+
+    (let* ((lang-files (if lang-file
+                        (progn
+                          (setq lang-file (file-truename lang-file))
+                          (when (not (file-exists-p lang-file))
+                            (error "File %s does not exist" lang-file))
+                          (list lang-file))
+                      (test-LANGUAGE-ts-mode-font-lock-files)))
+           (code-to-face '(
+                           ("b" . font-lock-bracket-face)
+                           ("B" . font-lock-builtin-face)
+                           ("c" . font-lock-comment-face)
+                           ("C" . font-lock-comment-delimiter-face)
+                           ("d" . default)
+                           ("D" . font-lock-delimiter-face)
+                           ("f" . font-lock-function-name-face)
+                           ("h" . font-lock-doc-face)
+                           ("k" . font-lock-keyword-face)
+                           ("n" . font-lock-constant-face)
+                           ("s" . font-lock-string-face)
+                           ("P" . font-lock-property-name-face)
+                           ("t" . font-lock-type-face)
+                           ("v" . font-lock-variable-name-face)
+                           ("w" . font-lock-warning-face)
+                           ))
+           (face-to-code (mapcar (lambda (pair)
+                                   (cons (cdr pair) (car pair)))
+                                 code-to-face)))
+      (dolist (lang-file lang-files)
+        (save-excursion
+          (message "START: test-LANGUAGE-ts-mode-font-lock %s" lang-file)
+
+          (when (boundp 'treesit-font-lock-level)
+            (setq treesit-font-lock-level 4))
+
+          (find-file lang-file)
+
+          ;; Force font lock to throw catchable errors.
+          (font-lock-mode 1)
+          (font-lock-flush (point-min) (point-max))
+          (font-lock-ensure (point-min) (point-max))
+
+          (goto-char (point-min))
+          (let* ((got "")
+                 (expected-file (replace-regexp-in-string "\\.lang$" "_expected.txt"
+                                                          lang-file))
+                 (got-file (concat expected-file "~"))
+                 (expected (when (file-exists-p expected-file)
+                             (with-temp-buffer
+                               (insert-file-contents-literally expected-file)
+                               (buffer-string)))))
+            (while (not (eobp))
+              (let* ((face (if (face-at-point) (face-at-point) 'default))
+                     (code (if (looking-at "\\([ \t\n]\\)")
+                               (match-string 1)
+                             (cdr (assoc face face-to-code)))))
+                (when (not code)
+                  (error "Face, %S, is not in face-to-code alist" face))
+                (setq got (concat got code))
+                (forward-char)
+                (when (looking-at "\n")
+                  (setq got (concat got "\n"))
+                  (forward-char))))
+
+            (when (not (string= got expected))
+              (let ((coding-system-for-write 'raw-text-unix))
+                (write-region got nil got-file))
+              (when (not expected)
+                (error "Baseline for %s does not exists.  \
+  See %s and if it looks good rename it to %s"
+                       lang-file got-file expected-file))
+              (when (= (length got) (length expected))
+                (let* ((diff-idx (1- (compare-strings got nil nil expected nil nil)))
+                       (got-code (substring got diff-idx (1+ diff-idx)))
+                       (got-face (cdr (assoc got-code code-to-face)))
+                       (expected-code (substring expected diff-idx (1+ diff-idx)))
+                       (expected-face (cdr (assoc expected-code code-to-face))))
+                  (error "Baseline for %s does not match, got: %s, expected: %s.  \
+  Difference at column %d (got code-to-face \"%s\" . %S, expected code-to-face \"%s\" . %S"
+                         lang-file got-file expected-file
+                         diff-idx
+                         got-code got-face
+                         expected-code expected-face)))
+              (error "Baseline for %s does not match, lengths are different, got: %s, expected: %s"
+                     lang-file got-file expected-file))
+            (kill-buffer)))
+        (message "PASS: test-LANGUAGE-ts-mode-font-lock %s" lang-file)))
+    "success")
+
+  (provide 'test-LANGUAGE-ts-mode-font-lock)
+  ;;; test-LANGUAGE-ts-mode-font-lock.el ends here
+
+#+end_src
 
 * Indent
 
-Tree-sitter indentation is controlled by =treesit-simple-indent-rules=.  We create a variable
-containing our N indent rules and tell tree-sitter about them
+Tree-sitter indentation is defined by =treesit-simple-indent-rules=.  We create a variable
+containing our N indent rules and tell tree-sitter about them. Notice that we create debug and
+assert rules which are set up so that you can deploy them in production without any cost. The debug
+rule is only added when =treesit--indent-verbose= is =t=. The assert rule should never be hit if
+your rules cover all cases, thus it has no cost. The assert rule must be activated which we do in
+the tests.
 
 #+begin_src emacs-lisp
+  (defvar LANGUAGE-ts--indent-debug-rule
+    '((lambda (node parent bol)
+        (message "-->N:%S P:%S BOL:%S GP:%S NPS:%S"
+                 node parent bol
+                 (treesit-node-parent parent)
+                 (treesit-node-prev-sibling node))
+        nil)
+      nil
+      0))
+
+  (defvar LANGUAGE-ts-mode--indent-assert nil
+    "Tests should set this to t to identify when we fail to find an indent rule.")
+
+  (defvar LANGUAGE-ts-mode--indent-assert-rule
+    '((lambda (node parent bol)
+        (when LANGUAGE-ts-mode--indent-assert
+          (error "Assert no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
+                 node parent bol
+                 (treesit-node-parent parent)
+                 (treesit-node-prev-sibling node)
+                 (buffer-name))))
+      nil
+      0))
+
   (defvar LANGUAGE-ts-mode--indent-rules
       `((LANGUAGE
          (MATCHER-1 ANCHOR-1 OFFSET-1)
@@ -286,17 +512,31 @@ containing our N indent rules and tell tree-sitter about them
     (when (treesit-ready-p 'LANGUAGE)
       (treesit-parser-create 'LANGUAGE)
 
+      ;; Font-lock
+      (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
+      (setq-local treesit-font-lock-feature-list '((comment definition)
+  						 (keyword string type)
+  						 (number bracket delimiter)
+  						 (syntax-error)))
+
       ;; Indent
-      (setq-local treesit-simple-indent-rules LANGUAGE-ts-mode--indent-rules)
+      (setq-local treesit-simple-indent-rules
+                  (if treesit--indent-verbose ;; add debugging print as first rule?
+                      (list (append `,(list (caar LANGUAGE-ts-mode--indent-rules))
+                                    (list LANGUAGE-ts--indent-debug-rule)
+                                    (cdar LANGUAGE-ts-mode--indent-rules)))
+                    LANGUAGE-ts-mode--indent-rules))
 
       (treesit-major-mode-setup)))
 #+end_src
 
 To write the indent rules, we need to define the /matcher/, /anchor/, and /offset/ of each rule as
 explained in the Emacs manual, "[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Parser-based Indentation]]".  The /matcher/ and /anchor/ are are
-functions that take three arguments, =node=, =parent= node, and =bol=.  =bol= is the
-beginning-of-line buffer position. /matcher/ returns non-nil when the rule applies and /anchor/
-returns the buffer position which along with /offset/ determine the indent level of the line.
+functions that take three arguments, tree-sitter =node=, tree-sitter =parent= node, and =bol=.  The
+=node= can be nil when not in a node. For example, when you type return, RET, after a statement.
+=bol= is the beginning-of-line buffer position. /matcher/ returns non-nil when the rule applies and
+/anchor/ returns the buffer position, which along with /offset/ determines the indent level of the
+line.
 
 Let's take this basic example of our LANGUAGE, =if_else.lang= file
 
@@ -330,20 +570,10 @@ Running =M-x treesit-explore-mode= gives us:
 We start with
 
 #+begin_src emacs-lisp
-  (defvar tmp-debug-indent-rule
-    '((lambda (node parent bol)
-      (message "-->N:%S P:%S BOL:%S GP:%S NPS:%S"
-               node parent bol
-               (treesit-node-parent parent)
-               (treesit-node-prev-sibling node))
-        nil)
-      nil
-      0))
-
   (defvar LANGUAGE-ts-mode--indent-rules
     `((LANGUAGE
-       ,tmp-debug-indent-rule
-       ((parent-is "^source_file$") column-0 0)
+       ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+       ,LANGUAGE-ts-mode--indent-assert-rule
        ))
     "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
 #+end_src
@@ -352,14 +582,7 @@ We set
 
 : M-: (setq treesit--indent-verbose t)
 
-and then hit the =TAB= key when vising a our =if_else.lang= file.
-
-The first rule, =((parent-is "source_file") column-0 0)= is the rule for the root node, which in our
-LANGUAGE is "source_file" and says to sart on column 0.
-
-The two lambda debugging rules aid in writing rules will be removed when we have completed the
-rules.  For example, with the above and we type =TAB= on the "b = a * 2" line in the following
-=if_else.lang= file.
+and then hit the =TAB= key on lines when vising our =if_else.lang= file:
 
 #+begin_example
   if a > 1
@@ -369,47 +592,642 @@ rules.  For example, with the above and we type =TAB= on the "b = a * 2" line in
   end
 #+end_example
 
-we'll see in the =*Messages*= buffer we'll see the error:
+If we type =TAB= on the if a > 1 we'll see
 
- : node: #<treesit-node block in 14-24> parent: #<treesit-node if_statement in 1-44> bol: 14
+ : -->N:#<treesit-node if_statement in 1-48> P:#<treesit-node source_file in 1-49> BOL:1 GP:nil NPS:nil
 
-where point 14-24 is "b = a * 2" and we see it has node named "block". Thus, we update we add to our
-indent rules, =((node-is "block") parent 4)= and a couple more rules as shown below.
+This gives us our first rule, =((parent-is "source_file") column-0 0)= is the rule for the root
+node, which in our LANGUAGE is "source_file" and says to sart on column 0.
 
-*Tip*: =C-M-x= in our =defvar= and re-run =M-x LANGUAGE-ts-mode= file to pickup the new indent
+If we type  =TAB= on the "b = a * 2" line in the following =if_else.lang= file.
+we'll see in the =*Messages*= buffer we'll see in the =*Messages*= buffer:
+
+ : -->N:#<treesit-node block in 14-24> P:#<treesit-node if_statement in 1-48> BOL:14 GP:#<treesit-node source_file in 1-49> NPS:#<treesit-node "
+
+where point 14-24 is "b = a * 2" and we see it has a node named "block". Thus, we update we add to our
+indent rules, =((node-is "block") parent 4)= and a couple more rules as shown below. Notice we
+included a comment before each rule, which will aid in the long-term maintance of the code. If the
+font-lock rules are complex, you may also want to add ";; F-Rule: description" comments to them.
+
+#+begin_src emacs-lisp
+  (defvar LANGUAGE-ts-mode--indent-rules
+    `((LANGUAGE
+       ;; I-Rule: code at start of file is located at column 0
+       ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+       ;; I-Rule: if a > 1
+       ;;   <TAB>    b = a * 2;
+       ((node-is ,(rx bol "block" eol)) parent 4)
+       ;; I-Rule: <TAB> else
+       ((node-is ,(rx bol "else_clause" eol)) parent 0)
+       ;; I-Rule: <TAB> end
+       ((node-is ,(rx bol "end" eol)) parent 0)
+       ;; I-Rule: Assert if no rule hit
+       ,LANGUAGE-ts-mode--indent-assert-rule
+       ))
+    "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
+#+end_src
+
+*Tip*: =C-M-x= in our =defvar= and re-run =M-x LANGUAGE-ts-mode= file to pick up the new indent
 rules.
 
-#+begin_src emacs-lisp
-  (defvar LANGUAGE-ts-mode--indent-rules
-    `((LANGUAGE
-       ,tmp-debug-indent-rule
-       ((parent-is "^source_file$") column-0 0)
-       ((node-is "^block$") parent 4)
-       ((node-is "^else_clause$") parent 0)
-       ((node-is "%end$") parent 0)
-       ))
-    "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
-#+end_src
-
-We can simplify this because the "else_clause" and "end" nodes have the same indent rules:
-
-#+begin_src emacs-lisp
-  (defvar LANGUAGE-ts-mode--indent-rules
-    `((LANGUAGE
-       ,tmp-debug-indent-rule
-       ((parent-is "^source_file$") column-0 0)
-       ((node-is "^block$") parent 4)
-       ((node-is ,(rx bol (or "else_clause" "end") eol)) parent 0)
-       ))
-    "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
-#+end_src
-
-Following this process, we add additional rules and our indent engine is complete after we remove
-the debugging rules.
-
 *Tip*: If you look at the defintion, =M-x find-variable RET treesit-simple-indent-presets RET=, you
-can see how the built-in /matchers/ and /achors/ are written. From that, you can write your own as
+can see how the built-in /matchers/ and /anchors/ are written. From that, you can write your own as
 needed.
+
+We can simplify this because the "else_clause" and "end" nodes have the same indent rules
+so we can combine them and also handle handle nested if-statements as shown below.
+
+#+begin_src emacs-lisp
+  ;;; LANGUAGE-ts-mode.el --- comment -*- lexical-binding: t -*-
+
+  ;;; Commentary:
+  ;;   <snip>
+
+  ;;; Code:
+
+  (require 'treesit)
+
+  ;;--------------------;;
+  ;; Section: font-lock ;;
+  ;;--------------------;;
+
+  (defvar LANGUAGE-ts-mode--keywords
+    '("else"
+      "if"
+      "end"
+      ;; <snip>
+      )
+    "The LANGUAGE-ts-mode font-lock keywords.")
+
+  (defvar LANGUAGE-ts-mode--font-lock-settings
+    (treesit-font-lock-rules
+     :language 'LANGUAGE
+     :feature 'comment
+     '((comment) @font-lock-comment-face)
+
+     :language 'LANGUAGE
+     :feature 'keyword
+     `([,@LANGUAGE-ts-mode--keywords] @font-lock-keyword-face))
+  "The LANGUAGE tree-sitter font-lock settings.")
+
+  ;;-----------------;;
+  ;; Section: Indent ;;
+  ;;-----------------;;
+
+  (defvar LANGUAGE-ts--indent-debug-rule
+    '((lambda (node parent bol)
+        (message "-->N:%S P:%S BOL:%S GP:%S NPS:%S"
+                 node parent bol
+                 (treesit-node-parent parent)
+                 (treesit-node-prev-sibling node))
+        nil)
+      nil
+      0))
+
+  (defvar LANGUAGE-ts-mode--indent-assert nil
+    "Tests should set this to t to identify when we fail to find an indent rule.")
+
+  (defvar LANGUAGE-ts-mode--indent-assert-rule
+    '((lambda (node parent bol)
+        (when LANGUAGE-ts-mode--indent-assert
+          (error "Assert no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
+                 node parent bol
+                 (treesit-node-parent parent)
+                 (treesit-node-prev-sibling node)
+                 (buffer-name))))
+      nil
+      0))
+
+  (defvar LANGUAGE-ts-mode--indent-rules
+    `((LANGUAGE
+       ;; I-Rule: code at start of file is located at column 0
+       ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+       ;; I-Rule: if a > 1
+       ;;   <TAB>    b = a * 2;
+       ((node-is ,(rx bol "block" eol)) parent 4)
+       ;; I-Rule: <TAB> if condition
+       ;;         <TAB> else
+       ;;         <TAB> end
+       ((node-is ,(rx bol (or "if_statement" "else_clause" "end") eol)) parent 0)
+       ;; I-Rule: Assert if no rule hit
+       ,LANGUAGE-ts-mode--indent-assert-rule
+       ))
+    "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
+
+  ;;---------------------------;;
+  ;; Section: LANGUAGE-ts-mode ;;
+  ;;---------------------------;;
+
+  ;;;###autoload
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE:ts"
+    "Major mode for editing LANGUAGE files using tree-sitter."
+
+    (when (treesit-ready-p 'LANGUAGE)
+      (treesit-parser-create 'LANGUAGE)
+
+      ;; Font-lock
+      (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
+      (setq-local treesit-font-lock-feature-list '((comment definition)
+  						 (keyword string type)
+  						 (number bracket delimiter)
+  						 (syntax-error)))
+
+      ;; Indent
+      (setq-local treesit-simple-indent-rules
+                  (if treesit--indent-verbose ;; add debugging print as first rule?
+                      (list (append `,(list (caar LANGUAGE-ts-mode--indent-rules))
+                                    (list LANGUAGE-ts--indent-debug-rule)
+                                    (cdar LANGUAGE-ts-mode--indent-rules)))
+                    LANGUAGE-ts-mode--indent-rules))
+
+      (treesit-major-mode-setup)))
+
+  (provide 'LANGUAGE-ts-mode)
+  ;;; LANGUAGE-ts-mode.el ends here
+#+end_src
+
+Following this process, we complete our our indent engine by adding more rules. As we develop
+the rules, it is good to lockdown expected behavior with tests.
+
+** Indent tests
+
+We copy the font-lock pattern for our indent tests:
+
+#+begin_example
+  ./LANGUAGE-ts-mode.el
+  ./tests/test-runner.el
+  ./tests/test-LANGUAGE-ts-mode-indent.el
+  ./tests/test-LANGUAGE-ts-mode-indent-files/font_lock_test1.lang
+  ./tests/test-LANGUAGE-ts-mode-indent-files/font_lock_test1_expected.txt
+#+end_example
+
+where test-LANGUAGE-ts-mode-indent.el contains:
+
+#+begin_src emacs-lisp
+  ;;; test-matlab-ts-mode-indent.el --- Test matlab-ts-mode indent -*- lexical-binding: t -*-
+
+  ;;; Commentary:
+  ;; <snip>
+
+  ;;; Code:
+
+  (require 'cl-seq)
+
+  ;; Add abs-path of ".." to load-path so we can (require 'matlab-ts-mode)
+  (let* ((lf (or load-file-name (buffer-file-name (current-buffer))))
+         (d1 (file-name-directory lf))
+         (parent-dir (expand-file-name (file-name-directory (directory-file-name d1)))))
+    (add-to-list 'load-path parent-dir t))
+
+  (require 'LANGUAGE-ts-mode)
+
+  (setq LANGUAGE-ts-mode--indent-assert t)
+
+  (defun test-LANGUAGE-ts-mode-indent-files ()
+    "Return list of full paths to each test-LANGUAGE-ts-mode-indent-files/*.lang."
+    (cl-delete-if (lambda (m-file)
+                    (string-match "_expected\\.lang$" m-file))
+                  (directory-files "test-LANGUAGE-ts-mode-indent-files" t "\\.lang$")))
+
+  (defvar test-LANGUAGE-ts-mode-indent (cons "test-LANGUAGE-ts-mode-indent"
+                                           (test-LANGUAGE-ts-mode-indent-files)))
+
+  (defun test-LANGUAGE-ts-mode-indent--trim ()
+    "Trim trailing whitespace and lines."
+    (setq buffer-file-coding-system 'utf-8-unix)
+    (let ((delete-trailing-lines t))
+      (delete-trailing-whitespace (point-min) (point-max))))
+
+  (defun test-LANGUAGE-ts-mode-indent--typing (m-file expected expected-file)
+    "Exercise indent by simulating the creation of M-FILE via typing.
+  This compares the simulation of typing M-FILE line by line against
+  EXPECTED content in EXPECTED-FILE."
+
+    (message "START: test-LANGUAGE-ts-mode-indent (typing) %s" m-file)
+
+    (let* ((typing-m-file-name (concat "typing__" (file-name-nondirectory m-file)))
+           (contents (with-temp-buffer
+                       (insert-file-contents-literally m-file)
+                       (buffer-substring (point-min) (point-max))))
+           (lines (split-string (string-trim contents) "\n")))
+      (with-current-buffer (get-buffer-create typing-m-file-name)
+        (erase-buffer)
+        (LANGUAGE-ts-mode)
+
+        ;; Insert the non-empty lines into typing-m-file-name buffer
+        (dolist (line lines)
+          (setq line (string-trim line))
+          (when (not (string= line ""))
+            (insert line "\n")))
+
+        ;; Now indent each line and insert the empty ("") lines into typing-m-file-buffer
+        ;; as we indent. This exercises the RET and TAB behaviors which cause different
+        ;; tree-sitter nodes to be provided to the indent engine rules.
+        (goto-char (point-min))
+        (while (not (eobp))
+
+          (call-interactively #'indent-for-tab-command) ;; TAB on code just added
+
+          ;; While next line in our original contents is a newline insert "\n"
+          (while (let ((next-line (nth (line-number-at-pos (point)) lines)))
+                   (and next-line (string-match-p "^[ \t\r]*$" next-line)))
+            (goto-char (line-end-position))
+            ;; RET to add blank line
+            (call-interactively #'newline)
+            ;; TAB on the same blank line can result in different tree-sitter nodes than
+            ;; the RET, so exercise that.
+            (call-interactively #'indent-for-tab-command))
+          (forward-line))
+
+        (test-LANGUAGE-ts-mode-indent--trim)
+
+        (let ((typing-got (buffer-substring (point-min) (point-max))))
+          (set-buffer-modified-p nil)
+          (kill-buffer)
+          (when (not (string= typing-got expected))
+            (let ((coding-system-for-write 'raw-text-unix)
+                  (typing-got-file (replace-regexp-in-string "\\.lang$" "_typing.lang~" m-file)))
+              (write-region typing-got nil typing-got-file)
+              (error "Typing %s line-by-line does not match %s, we got %s" m-file expected-file
+                     typing-got-file)))))))
+
+  (defun test-LANGUAGE-ts-mode-indent (&optional m-file)
+    "Test indent using ./test-LANGUAGE-ts-mode-indent-files/NAME.lang.
+  Compare indent of ./test-LANGUAGE-ts-mode-indent-files/NAME.lang against
+  ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang
+
+  If M-FILE (NAME.lang) is not provided, loop comparing all
+  ./test-LANGUAGE-ts-mode-indent-files/NAME.lang files.
+
+  For debugging, you can run with a specified NAME.lang,
+    M-: (test-LANGUAGE-ts-mode-font-lock \"test-LANGUAGE-ts-mode-indent-files/NAME.lang\")"
+
+    (let* ((m-files (if m-file
+                        (progn
+                          (setq m-file (file-truename m-file))
+                          (when (not (file-exists-p m-file))
+                            (error "File %s does not exist" m-file))
+                          (list m-file))
+                      (test-LANGUAGE-ts-mode-indent-files))))
+      (dolist (m-file m-files)
+        (let* ((expected-file (replace-regexp-in-string "\\.lang$" "_expected.lang" m-file))
+               (expected (when (file-exists-p expected-file)
+                           (with-temp-buffer
+                             (insert-file-contents-literally expected-file)
+                             (buffer-string)))))
+
+          (save-excursion
+            (message "START: test-LANGUAGE-ts-mode-indent %s" m-file)
+            (find-file m-file)
+            (indent-region (point-min) (point-max))
+            (test-LANGUAGE-ts-mode-indent--trim)
+            (let ((got (buffer-substring (point-min) (point-max)))
+                  (got-file (concat expected-file "~")))
+              (set-buffer-modified-p nil)
+              (kill-buffer)
+              (when (not (string= got expected))
+                (let ((coding-system-for-write 'raw-text-unix))
+                  (write-region got nil got-file))
+                (when (not expected)
+                  (error "Baseline for %s does not exists - if %s looks good rename it to %s"
+                         m-file got-file expected-file))
+                (error "Baseline for %s does not match, got: %s, expected: %s"
+                       m-file got-file expected-file))))
+
+          (when expected ;; expected-file exists?
+            (test-LANGUAGE-ts-mode-indent--typing m-file expected expected-file)))
+
+        (message "PASS: test-LANGUAGE-ts-mode-indent %s" m-file)))
+    "success")
+
+  (provide 'test-LANGUAGE-ts-mode-indent)
+  ;;; test-LANGUAGE-ts-mode-indent.el ends here
+
+#+end_src
+
+* Syntax table and comments
+
+The Emacs "syntax table" is not related to the syntax tree created by tree-sitter. A syntax tree
+represents the hierarchical structure of your source code, giving a structural blueprint of your
+code.
+
+Think of the syntax table as a "language character descriptor". The syntax table defines the
+syntatic role of each character within the buffer containing your source code.  Characters are
+assigned a syntax class which includes word characters, comment start, comment end, string
+delimiters, opening and closing delimiters (e.g.  =(=, =)=, =[=, =]=, ={=, =}=), etc. The syntax
+table enables natural code editing and navitagion capabilities. For example, the syntax table is
+used by movement commands, e.g. =C-M-f", =M-x forward-sexp=, based on syntatic expressions (words,
+symbols, or balanced expressions). The syntax table is used for parentheses matching. It enables
+comment operations such as =M-;=, =M-x comment-dwim=.
+
+Below is our minimal LANGUAGE-ts-mode.el with the syntax table and comment support added. Note, our
+single-line comments are of form "% comment" and block comments are of form "%{ <lines> %}". This is
+set up by using the [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Syntax-Descriptors.html][Emacs Syntax Descriptors]]. This may seem a bit obscure, but it's very elegant for
+comments that start or end with one or two characters. If you have more complex syntax needs, for
+example you'd like to allow "// single-line comments" but not for URL's http://location you'll need
+to =(setq-local syntax-propertize-function (syntax-properties-rules ("./\\(/+\\)" (1 "."))))=.  If
+you have more complex needs you'll need to set syntax-propertize-function to a function that calls
+=(put-text-property start-point end-point 'category CATEGORY)=.
+
+Notice that in our =LANGUAGE-ts-mode= definition, we set up the syntax table and comments first.
+This is good practice because these are fundamental to Emacs.
+
+#+begin_src emacs-lisp
+  ;;; LANGUAGE-ts-mode.el --- comment -*- lexical-binding: t -*-
+
+  ;;; Commentary:
+  ;;   <snip>
+
+  ;;; Code:
+
+  (require 'treesit)
+
+  ;;-----------------------;;
+  ;; Section: Syntax table ;;
+  ;;-----------------------;;
+
+  (defvar LANGUAGE-ts-mode--syntax-table
+    (let ((st (make-syntax-table (standard-syntax-table))))
+      ;; Comment Handling:
+      ;; 1. Single line comments: % text (single char start),
+      ;;                          note includes "%{ text"
+      ;; 2. Multiline comments:   %{
+      ;;                            lines
+      ;;                          %}
+      (modify-syntax-entry ?%  "< 13"  st)
+      (modify-syntax-entry ?{  "(} 2c" st)
+      (modify-syntax-entry ?}  "){ 4c" st)
+      (modify-syntax-entry ?\n ">"     st)
+
+      ;; String Handling:
+      ;;   Single quoted string: 'text'
+      ;;   Double-quoted string: "text"
+      (modify-syntax-entry ?'  "\"" st)
+      (modify-syntax-entry ?\" "\"" st)
+
+      ;; Words and Symbols include the underscore
+      (modify-syntax-entry ?_  "_" st)
+
+      ;; Punctuation:
+      (modify-syntax-entry ?\\ "." st)
+      (modify-syntax-entry ?\t " " st)
+      (modify-syntax-entry ?+  "." st)
+      (modify-syntax-entry ?-  "." st)
+      (modify-syntax-entry ?*  "." st)
+      (modify-syntax-entry ?/  "." st)
+      (modify-syntax-entry ?=  "." st)
+      (modify-syntax-entry ?<  "." st)
+      (modify-syntax-entry ?>  "." st)
+      (modify-syntax-entry ?&  "." st)
+      (modify-syntax-entry ?|  "." st)
+
+      ;; Parenthetical blocks:
+      ;;   Note: these are in standard syntax table, repeated here for completeness.
+      (modify-syntax-entry ?\(  "()" st)
+      (modify-syntax-entry ?\)  ")(" st)
+      (modify-syntax-entry ?\[  "(]" st)
+      (modify-syntax-entry ?\]  ")[" st)
+      (modify-syntax-entry ?{   "(}" st)
+      (modify-syntax-entry ?}   "){" st)
+
+      st)
+    "The LANGUAGE-ts-mode syntax table.")
+
+  ;;--------------------;;
+  ;; Section: font-lock ;;
+  ;;--------------------;;
+
+  (defvar LANGUAGE-ts-mode--keywords
+    '("else"
+      "if"
+      "end"
+      ;; <snip>
+      )
+    "The LANGUAGE-ts-mode font-lock keywords.")
+
+  (defvar LANGUAGE-ts-mode--font-lock-settings
+    (treesit-font-lock-rules
+     :language 'LANGUAGE
+     :feature 'comment
+     '((comment) @font-lock-comment-face)
+
+     :language 'LANGUAGE
+     :feature 'keyword
+     `([,@LANGUAGE-ts-mode--keywords] @font-lock-keyword-face))
+  "The LANGUAGE tree-sitter font-lock settings.")
+
+  ;;-----------------;;
+  ;; Section: Indent ;;
+  ;;-----------------;;
+
+  (defvar LANGUAGE-ts--indent-debug-rule
+    '((lambda (node parent bol)
+        (message "-->N:%S P:%S BOL:%S GP:%S NPS:%S"
+                 node parent bol
+                 (treesit-node-parent parent)
+                 (treesit-node-prev-sibling node))
+        nil)
+      nil
+      0))
+
+  (defvar LANGUAGE-ts-mode--indent-assert nil
+    "Tests should set this to t to identify when we fail to find an indent rule.")
+
+  (defvar LANGUAGE-ts-mode--indent-assert-rule
+    '((lambda (node parent bol)
+        (when LANGUAGE-ts-mode--indent-assert
+          (error "Assert no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
+                 node parent bol
+                 (treesit-node-parent parent)
+                 (treesit-node-prev-sibling node)
+                 (buffer-name))))
+      nil
+      0))
+
+  (defvar LANGUAGE-ts-mode--indent-rules
+    `((LANGUAGE
+       ;; I-Rule: code at start of file is located at column 0
+       ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+       ;; I-Rule: if a > 1
+       ;;   <TAB>    b = a * 2;
+       ((node-is ,(rx bol "block" eol)) parent 4)
+       ;; I-Rule: <TAB> if condition
+       ;;         <TAB> else
+       ;;         <TAB> end
+       ((node-is ,(rx bol (or "if_statement" "else_clause" "end") eol)) parent 0)
+       ;; I-Rule: Assert if no rule hit
+       ,LANGUAGE-ts-mode--indent-assert-rule
+       ))
+    "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
+
+  ;;---------------------------;;
+  ;; Section: LANGUAGE-ts-mode ;;
+  ;;---------------------------;;
+
+  ;;;###autoload
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE:ts"
+    "Major mode for editing LANGUAGE files using tree-sitter."
+
+    (when (treesit-ready-p 'LANGUAGE)
+      (treesit-parser-create 'LANGUAGE)
+
+      ;; Syntax-table
+      (set-syntax-table LANGUAGE-ts-mode--syntax-table)
+
+      ;; Comments
+      (setq-local comment-start      "%")
+      (setq-local comment-end        "")
+      (setq-local comment-start-skip "%\\s-+")
+
+      (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
+      (setq-local treesit-font-lock-feature-list '((comment definition)
+  						 (keyword string type)
+  						 (number bracket delimiter)
+  						 (syntax-error)))
+
+      ;; Indent
+      (setq-local treesit-simple-indent-rules
+                  (if treesit--indent-verbose ;; add debugging print as first rule?
+                      (list (append `,(list (caar LANGUAGE-ts-mode--indent-rules))
+                                    (list LANGUAGE-ts--indent-debug-rule)
+                                    (cdar LANGUAGE-ts-mode--indent-rules)))
+                    LANGUAGE-ts-mode--indent-rules))
+
+      (treesit-major-mode-setup)))
+
+  (provide 'LANGUAGE-ts-mode)
+  ;;; LANGUAGE-ts-mode.el ends here
+#+end_src
+
+** Syntax table tests
+
+We follow a similar pattern for writing tests.
+
+#+begin_src emacs-lisp
+  ;;; test-LANGUAGE-ts-mode-syntax-table.el --- -*- lexical-binding: t -*-
+
+  ;;; Commentary:
+
+  ;; <snip>
+
+  ;;; Code:
+
+  (require 'cl-macs)
+
+  ;; Add abs-path of ".." to load-path so we can (require 'LANGUAGE-ts-mode)
+  (let* ((lf (or load-file-name (buffer-file-name (current-buffer))))
+         (d1 (file-name-directory lf))
+         (parent-dir (expand-file-name (file-name-directory (directory-file-name d1)))))
+    (add-to-list 'load-path parent-dir t))
+
+  (require 'LANGUAGE-ts-mode)
+
+  (defun test-LANGUAGE-ts-mode-syntax-table-files ()
+    "Return list of full paths to each test-LANGUAGE-ts-mode-syntax-table-files/*.lang."
+    (directory-files "test-LANGUAGE-ts-mode-syntax-table-files" t "\\.lang$"))
+
+  (defvar test-LANGUAGE-ts-mode-syntax-table
+    (cons "test-LANGUAGE-ts-mode-syntax-table" (test-LANGUAGE-ts-mode-syntax-table-files)))
+
+  (cl-defun test-LANGUAGE-ts-mode-syntax-table (&optional m-file)
+    "Test syntax-table using ./test-LANGUAGE-ts-mode-syntax-table-files/NAME.lang.
+  Compare ./test-LANGUAGE-ts-mode-syntax-table-files/NAME.lang against
+  ./test-LANGUAGE-ts-mode-syntax-table-files/NAME_expected.txt, where
+  NAME_expected.txt gives the `syntax-ppss` value of each character in NAME.lang
+
+  If M-FILE NAME.lang is not provided, loop comparing all
+  ./test-LANGUAGE-ts-mode-syntax-table-files/NAME.lang files.
+
+  For debugging, you can run with a specified NAME.lang,
+    M-: (test-LANGUAGE-ts-mode-syntax-table \"test-LANGUAGE-ts-mode-syntax-table-files/NAME.lang\")"
+
+    (when (or (< emacs-major-version 30)
+              (not (progn
+                     (require 'treesit)
+                     (when (fboundp 'treesit-ready-p)
+                       (treesit-ready-p 'LANGUAGE t)))))
+      (message "skipping-test: test-LANGUAGE-ts-mode-syntax-table.el - tree sitter not available.")
+      (cl-return-from test-LANGUAGE-ts-mode-syntax-table))
+
+    (let ((m-files (if m-file
+                       (progn
+                         (setq m-file (file-truename m-file))
+                         (when (not (file-exists-p m-file))
+                           (error "File %s does not exist" m-file))
+                         (list m-file))
+                     (test-LANGUAGE-ts-mode-syntax-table-files))))
+      (dolist (m-file m-files)
+        (save-excursion
+          (message "START: test-LANGUAGE-ts-mode-syntax-table %s" m-file)
+
+          (find-file m-file)
+          (goto-char (point-min))
+
+          (let* ((got "")
+                 (expected-file (replace-regexp-in-string "\\.lang$" "_expected.txt" m-file))
+                 (got-file (concat expected-file "~"))
+                 (expected (when (file-exists-p expected-file)
+                             (with-temp-buffer
+                               (insert-file-contents-literally expected-file)
+                               (buffer-string)))))
+            (while (not (eobp))
+              (when (looking-at "^")
+                (setq got (concat got (format "Line:%d: %s\n"
+                                              (line-number-at-pos)
+                                              (buffer-substring-no-properties (point)
+                                                                              (line-end-position))))))
+              
+              (let ((char (buffer-substring-no-properties (point) (1+ (point)))))
+                (when (string= char "\n")
+                  (setq char "\\n"))
+                (setq got (concat got (format "  %2s: %S\n" char (syntax-ppss (point))))))
+
+              (forward-char))
+
+            (when (not (string= got expected))
+              (let ((coding-system-for-write 'raw-text-unix))
+                (write-region got nil got-file))
+              (when (not expected)
+                (error "Baseline for %s does not exists.  \
+  See %s and if it looks good rename it to %s"
+                       m-file got-file expected-file))
+              (error "Baseline for %s does not match, got: %s, expected: %s"
+                     m-file got-file expected-file))
+            (kill-buffer)))
+        (message "PASS: test-LANGUAGE-ts-mode-syntax-table %s" m-file)))
+    "success")
+
+  (provide 'test-LANGUAGE-ts-mode-syntax-table)
+  ;;; test-LANGUAGE-ts-mode-syntax-table.el ends here
+
+#+end_src
+
+* Summary
+
+Tree-sitter powered modes provide highly accurate syntax coloring, indentation, and other features.
+In addition, tree-sitter modes are generally much more performant than the older-style regular
+expression based modes.
+
+A downside of a tree-sitter mode is that the necessary =libtree-sitter-LANGUAGE.EXT= shared library
+files are not provided with the =NAME-ts-mode='s that are shipped with Emacs. For =NAME-ts-mode='s
+that are installed via =M-x package-install LANGUAGE-ts-mode=, the corresponding
+=libtree-sitter-LANUAGE.EXT= shared libraries are not installed.  You can have Emacs build them
+via =M-x treesit-install-language-grammar=, but this can result in shared libraries
+that do not run correctly because of a compiler version mismatch between what was used for Emacs and
+what was used to build =libtree-sitter-LANGUAGE.EXT=.
+
+Another problem with =M-x treesit-install-language-grammar= is that it doesn't specify the
+application binary interface (ABI) version when building. For example, Emacs 30.1 is at ABI 14
+=(treesit-library-abi-version)=, and tree-sitter is at 15 and if you attempt to use what
+=M-x treesit-install-language-grammar= creates, you'll see:
+
+ : Warning (treesit): The installed language grammar for LANGUAGE cannot be located or has problems (version-mismatch): 15
+
+Ideally, =M-x treesit-install-language-grammar= would be updated to do more error checking to
+ensure the right compilers are in place and specify the ABI version. Something like:
+
+ : tree-sitter generate --abi 14
+ : gcc src/*.c -I./src -o ~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.so --shared -fPIC -Os
 
 * Issues
 
@@ -436,25 +1254,6 @@ needed.
 
   Note the build of the dll from https://github.com/emacs-tree-sitter/tree-sitter-langs is good.
 
-- [ ] M-x treesit-install-language-grammar should specify the tree-sitter ABI version.
-
-  Emacs 30.1 is ABI 14 from =(treesit-library-abi-version)=, which is behind the current tree-sitter
-  version, 15.
-
-  Emacs should do something like:
-
-  : tree-sitter generate --abi 13
-  : gcc src/*.c -I./src -o ~/.emacs.d/tree-sitter/libtree-sitter-matlab.EXT --shared -fPIC -Os
-
-  where EXT = .dll, .so, or .dylib.
-
-- [ ] Easy deployment?
-
-  : M-x list-packages
-
-  makes it easy to install packages from ELPA, MELPA, etc. but how to we get
-  libtree-sitter-LANUGAGE.EXT (EXT = .so, .dll, .dylib) installed?
-
 - [ ] In [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Parser-Based Indentation]] we have prev-line which goes backward exactly one line
 
   Consider a programming lanugage with a few statements, e.g.
@@ -463,7 +1262,6 @@ needed.
     {
         a = 1;
         b = 2;
-
 
     }
   #+end_example
