@@ -19,8 +19,6 @@
 # |   Guidelines for writting a major mode powered by tree-sitter
 
 #+startup: showall
-#+startup: inlineimages       //  C-c C-x C-v to toggle, C-c C-x C-M-v to redisplay
-#+startup: latexpreview       //  C-c C-x C-l to toggle
 
 #+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles-from-org.css"/>
 #+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles.css"/>
@@ -46,6 +44,9 @@
         issues with the matlab tree-sitter.
       - Indent the file to see if matlab-ts-mode--indent-assert-rule fires
 - [ ] Add   ./tests/test-runner.el
+- [ ] Add test for comment handling
+- [ ] Investigate [[https://www.gnu.org/software/emacs/manual/html_mono/ert.html][ERT]] and [[https://github.com/jorgenschaefer/emacs-buttercup][buttercup]] testing
+- [ ] When done, replace: matlab => LANGUAGE, .m => .lang, m-file => lang-file.
 
 * Guide to building a tree-sitter mode
 
@@ -67,9 +68,25 @@ To create the mode, we recommend following this order:
    viewing it.
 2. *Indent*. Next we set up indentation so that you can edit /file.lang/ easily.
 3. *Syntax table and comments*.
-4. *Navigation*. Set up treesit-defun-type-regexp and treesit-defun-name-function to enable
+4. *Imenu*
+5. *Navigation*. Set up treesit-defun-type-regexp and treesit-defun-name-function to enable
    navigation features like beginning-of-defun and end-of-defun
-5. *Imenu*
+
+Perhaps the most important item is to write tests while creating the =LANGUAGE=ts-mode=. We provide
+some example tests that are designed to be repurposed by your =LANGUAGE-ts-mode=. Avoid developing
+the full fledged mode, then adding tests because if you are like the rest of us, you'll keep putting
+off writing the tests which will make =LANGUAGE-ts=mode= very difficult to maintain.
+
+Emacs has the testing frameworks, [[https://www.gnu.org/software/emacs/manual/html_node/ert/index.html][ERT, Emacs Lisp Regressing Testing.]] There is also the [[https://github.com/jorgenschaefer/emacs-buttercup/][Emacs
+buttercup]] though this is non-ELPA. As you'll see below, the techniques I used don't rely on ERT in
+some of the tests because I wanted it to be very easy to add tests.  For example, when writing a
+font-lock test, all you should do is provide the =file.lang= and run the test. The test will see
+there is no expected baseline to compare against, so it will generate one for you and ask you to
+validate it. The expect baseline for =file.lang= is =file_expected.txt= and the contents of the
+=file_expected.txt= is of same length of =file.lang=, where each character's face is encoded in a
+signle character. This makes it very easy to lockdown the behavior of font-lock without having to
+write lisp code to add the test. The same test strategy is used for other aspects of our
+=LANGUAGE-ts-mode=.
 
 * Syntax trees and queries
 
@@ -322,7 +339,7 @@ To add tests, create files of form
 This will create =./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt~= and
 after examining it, rename it to
 =./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt=.
- 
+
 To run your tests in a build system, use
 
 #+begin_src bash
@@ -543,7 +560,7 @@ Let's take this basic example of our LANGUAGE, =if_else.lang= file
 #+begin_example
   if a > 1
       b = a * 2;
-  else    
+  else
       b = a;
   end
 #+end_example
@@ -587,7 +604,7 @@ and then hit the =TAB= key on lines when vising our =if_else.lang= file:
 #+begin_example
   if a > 1
       b = a * 2;
-  else    
+  else
       b = a;
   end
 #+end_example
@@ -785,8 +802,8 @@ where test-LANGUAGE-ts-mode-indent.el contains:
 
   (defun test-LANGUAGE-ts-mode-indent-files ()
     "Return list of full paths to each test-LANGUAGE-ts-mode-indent-files/*.lang."
-    (cl-delete-if (lambda (m-file)
-                    (string-match "_expected\\.lang$" m-file))
+    (cl-delete-if (lambda (lang-file)
+                    (string-match "_expected\\.lang$" lang-file))
                   (directory-files "test-LANGUAGE-ts-mode-indent-files" t "\\.lang$")))
 
   (defvar test-LANGUAGE-ts-mode-indent (cons "test-LANGUAGE-ts-mode-indent"
@@ -798,29 +815,29 @@ where test-LANGUAGE-ts-mode-indent.el contains:
     (let ((delete-trailing-lines t))
       (delete-trailing-whitespace (point-min) (point-max))))
 
-  (defun test-LANGUAGE-ts-mode-indent--typing (m-file expected expected-file)
-    "Exercise indent by simulating the creation of M-FILE via typing.
-  This compares the simulation of typing M-FILE line by line against
+  (defun test-LANGUAGE-ts-mode-indent--typing (lang-file expected expected-file)
+    "Exercise indent by simulating the creation of LANG-FILE via typing.
+  This compares the simulation of typing LANG-FILE line by line against
   EXPECTED content in EXPECTED-FILE."
 
-    (message "START: test-LANGUAGE-ts-mode-indent (typing) %s" m-file)
+    (message "START: test-LANGUAGE-ts-mode-indent (typing) %s" lang-file)
 
-    (let* ((typing-m-file-name (concat "typing__" (file-name-nondirectory m-file)))
+    (let* ((typing-lang-file-name (concat "typing__" (file-name-nondirectory lang-file)))
            (contents (with-temp-buffer
-                       (insert-file-contents-literally m-file)
+                       (insert-file-contents-literally lang-file)
                        (buffer-substring (point-min) (point-max))))
            (lines (split-string (string-trim contents) "\n")))
-      (with-current-buffer (get-buffer-create typing-m-file-name)
+      (with-current-buffer (get-buffer-create typing-lang-file-name)
         (erase-buffer)
         (LANGUAGE-ts-mode)
 
-        ;; Insert the non-empty lines into typing-m-file-name buffer
+        ;; Insert the non-empty lines into typing-lang-file-name buffer
         (dolist (line lines)
           (setq line (string-trim line))
           (when (not (string= line ""))
             (insert line "\n")))
 
-        ;; Now indent each line and insert the empty ("") lines into typing-m-file-buffer
+        ;; Now indent each line and insert the empty ("") lines into typing-lang-file-buffer
         ;; as we indent. This exercises the RET and TAB behaviors which cause different
         ;; tree-sitter nodes to be provided to the indent engine rules.
         (goto-char (point-min))
@@ -846,39 +863,39 @@ where test-LANGUAGE-ts-mode-indent.el contains:
           (kill-buffer)
           (when (not (string= typing-got expected))
             (let ((coding-system-for-write 'raw-text-unix)
-                  (typing-got-file (replace-regexp-in-string "\\.lang$" "_typing.lang~" m-file)))
+                  (typing-got-file (replace-regexp-in-string "\\.lang$" "_typing.lang~" lang-file)))
               (write-region typing-got nil typing-got-file)
-              (error "Typing %s line-by-line does not match %s, we got %s" m-file expected-file
+              (error "Typing %s line-by-line does not match %s, we got %s" lang-file expected-file
                      typing-got-file)))))))
 
-  (defun test-LANGUAGE-ts-mode-indent (&optional m-file)
+  (defun test-LANGUAGE-ts-mode-indent (&optional lang-file)
     "Test indent using ./test-LANGUAGE-ts-mode-indent-files/NAME.lang.
   Compare indent of ./test-LANGUAGE-ts-mode-indent-files/NAME.lang against
   ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang
 
-  If M-FILE (NAME.lang) is not provided, loop comparing all
+  If LANG-FILE (NAME.lang) is not provided, loop comparing all
   ./test-LANGUAGE-ts-mode-indent-files/NAME.lang files.
 
   For debugging, you can run with a specified NAME.lang,
     M-: (test-LANGUAGE-ts-mode-font-lock \"test-LANGUAGE-ts-mode-indent-files/NAME.lang\")"
 
-    (let* ((m-files (if m-file
+    (let* ((lang-files (if lang-file
                         (progn
-                          (setq m-file (file-truename m-file))
-                          (when (not (file-exists-p m-file))
-                            (error "File %s does not exist" m-file))
-                          (list m-file))
+                          (setq lang-file (file-truename lang-file))
+                          (when (not (file-exists-p lang-file))
+                            (error "File %s does not exist" lang-file))
+                          (list lang-file))
                       (test-LANGUAGE-ts-mode-indent-files))))
-      (dolist (m-file m-files)
-        (let* ((expected-file (replace-regexp-in-string "\\.lang$" "_expected.lang" m-file))
+      (dolist (lang-file lang-files)
+        (let* ((expected-file (replace-regexp-in-string "\\.lang$" "_expected.lang" lang-file))
                (expected (when (file-exists-p expected-file)
                            (with-temp-buffer
                              (insert-file-contents-literally expected-file)
                              (buffer-string)))))
 
           (save-excursion
-            (message "START: test-LANGUAGE-ts-mode-indent %s" m-file)
-            (find-file m-file)
+            (message "START: test-LANGUAGE-ts-mode-indent %s" lang-file)
+            (find-file lang-file)
             (indent-region (point-min) (point-max))
             (test-LANGUAGE-ts-mode-indent--trim)
             (let ((got (buffer-substring (point-min) (point-max)))
@@ -890,14 +907,14 @@ where test-LANGUAGE-ts-mode-indent.el contains:
                   (write-region got nil got-file))
                 (when (not expected)
                   (error "Baseline for %s does not exists - if %s looks good rename it to %s"
-                         m-file got-file expected-file))
+                         lang-file got-file expected-file))
                 (error "Baseline for %s does not match, got: %s, expected: %s"
-                       m-file got-file expected-file))))
+                       lang-file got-file expected-file))))
 
           (when expected ;; expected-file exists?
-            (test-LANGUAGE-ts-mode-indent--typing m-file expected expected-file)))
+            (test-LANGUAGE-ts-mode-indent--typing lang-file expected expected-file)))
 
-        (message "PASS: test-LANGUAGE-ts-mode-indent %s" m-file)))
+        (message "PASS: test-LANGUAGE-ts-mode-indent %s" lang-file)))
     "success")
 
   (provide 'test-LANGUAGE-ts-mode-indent)
@@ -1101,7 +1118,7 @@ This is good practice because these are fundamental to Emacs.
 
 ** Syntax table tests
 
-We follow a similar pattern for writing tests.
+We follow a similar pattern for writing syntax table tests.
 
 #+begin_src emacs-lisp
   ;;; test-LANGUAGE-ts-mode-syntax-table.el --- -*- lexical-binding: t -*-
@@ -1129,13 +1146,13 @@ We follow a similar pattern for writing tests.
   (defvar test-LANGUAGE-ts-mode-syntax-table
     (cons "test-LANGUAGE-ts-mode-syntax-table" (test-LANGUAGE-ts-mode-syntax-table-files)))
 
-  (cl-defun test-LANGUAGE-ts-mode-syntax-table (&optional m-file)
+  (cl-defun test-LANGUAGE-ts-mode-syntax-table (&optional lang-file)
     "Test syntax-table using ./test-LANGUAGE-ts-mode-syntax-table-files/NAME.lang.
   Compare ./test-LANGUAGE-ts-mode-syntax-table-files/NAME.lang against
   ./test-LANGUAGE-ts-mode-syntax-table-files/NAME_expected.txt, where
   NAME_expected.txt gives the `syntax-ppss` value of each character in NAME.lang
 
-  If M-FILE NAME.lang is not provided, loop comparing all
+  If LANG-FILE NAME.lang is not provided, loop comparing all
   ./test-LANGUAGE-ts-mode-syntax-table-files/NAME.lang files.
 
   For debugging, you can run with a specified NAME.lang,
@@ -1149,22 +1166,22 @@ We follow a similar pattern for writing tests.
       (message "skipping-test: test-LANGUAGE-ts-mode-syntax-table.el - tree sitter not available.")
       (cl-return-from test-LANGUAGE-ts-mode-syntax-table))
 
-    (let ((m-files (if m-file
+    (let ((lang-files (if lang-file
                        (progn
-                         (setq m-file (file-truename m-file))
-                         (when (not (file-exists-p m-file))
-                           (error "File %s does not exist" m-file))
-                         (list m-file))
+                         (setq lang-file (file-truename lang-file))
+                         (when (not (file-exists-p lang-file))
+                           (error "File %s does not exist" lang-file))
+                         (list lang-file))
                      (test-LANGUAGE-ts-mode-syntax-table-files))))
-      (dolist (m-file m-files)
+      (dolist (lang-file lang-files)
         (save-excursion
-          (message "START: test-LANGUAGE-ts-mode-syntax-table %s" m-file)
+          (message "START: test-LANGUAGE-ts-mode-syntax-table %s" lang-file)
 
-          (find-file m-file)
+          (find-file lang-file)
           (goto-char (point-min))
 
           (let* ((got "")
-                 (expected-file (replace-regexp-in-string "\\.lang$" "_expected.txt" m-file))
+                 (expected-file (replace-regexp-in-string "\\.lang$" "_expected.txt" lang-file))
                  (got-file (concat expected-file "~"))
                  (expected (when (file-exists-p expected-file)
                              (with-temp-buffer
@@ -1176,7 +1193,7 @@ We follow a similar pattern for writing tests.
                                               (line-number-at-pos)
                                               (buffer-substring-no-properties (point)
                                                                               (line-end-position))))))
-              
+
               (let ((char (buffer-substring-no-properties (point) (1+ (point)))))
                 (when (string= char "\n")
                   (setq char "\\n"))
@@ -1190,11 +1207,11 @@ We follow a similar pattern for writing tests.
               (when (not expected)
                 (error "Baseline for %s does not exists.  \
   See %s and if it looks good rename it to %s"
-                       m-file got-file expected-file))
+                       lang-file got-file expected-file))
               (error "Baseline for %s does not match, got: %s, expected: %s"
-                     m-file got-file expected-file))
+                     lang-file got-file expected-file))
             (kill-buffer)))
-        (message "PASS: test-LANGUAGE-ts-mode-syntax-table %s" m-file)))
+        (message "PASS: test-LANGUAGE-ts-mode-syntax-table %s" lang-file)))
     "success")
 
   (provide 'test-LANGUAGE-ts-mode-syntax-table)
@@ -1202,19 +1219,34 @@ We follow a similar pattern for writing tests.
 
 #+end_src
 
+** Comment tests
+
+TODO
+
+* IMenu
+
+Emacs =M-g i= (=M-x imenu=), makes it easy to jump to items in your file. If our mode populates
+imenu with the location of the function definitions, we can quickly jump to them by name. You can
+also leverage [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Which-Function.html][M-x which-function-mode]] to have Emacs display the imenu entry for the current point in
+the mode line.
+
+To populate imenu,
+
+TODO
+
 * Summary
 
 Tree-sitter powered modes provide highly accurate syntax coloring, indentation, and other features.
 In addition, tree-sitter modes are generally much more performant than the older-style regular
-expression based modes.
+expression based modes, especially for a reasonably complex programming language.
 
 A downside of a tree-sitter mode is that the necessary =libtree-sitter-LANGUAGE.EXT= shared library
 files are not provided with the =NAME-ts-mode='s that are shipped with Emacs. For =NAME-ts-mode='s
 that are installed via =M-x package-install LANGUAGE-ts-mode=, the corresponding
-=libtree-sitter-LANUAGE.EXT= shared libraries are not installed.  You can have Emacs build them
-via =M-x treesit-install-language-grammar=, but this can result in shared libraries
-that do not run correctly because of a compiler version mismatch between what was used for Emacs and
-what was used to build =libtree-sitter-LANGUAGE.EXT=.
+=libtree-sitter-LANUAGE.EXT= shared libraries are not installed.  You can have Emacs build
+=~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT= via =M-x treesit-install-language-grammar=, but
+this can result in shared libraries that do not run correctly because of a compiler version mismatch
+between what was used for Emacs and what was used to build =libtree-sitter-LANGUAGE.EXT=.
 
 Another problem with =M-x treesit-install-language-grammar= is that it doesn't specify the
 application binary interface (ABI) version when building. For example, Emacs 30.1 is at ABI 14
@@ -1228,6 +1260,16 @@ ensure the right compilers are in place and specify the ABI version. Something l
 
  : tree-sitter generate --abi 14
  : gcc src/*.c -I./src -o ~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.so --shared -fPIC -Os
+
+As of Jun-2025, for Emacs 30.1, you can copy the prebuilt shared library, LANGUAGE.EXT, from
+https://github.com/emacs-tree-sitter/tree-sitter-langs and place it in
+=~/.emacs.d/tree-sitter/libtree-sitter-LANUGAGE.EXT=. Note, Emacs will first look for
+=libtree-sitter-LANGUAGE.EXT= in =treesit-extra-load-path=, then in subdirectory =tree-sitter= under
+=user-emacs-directory= (=~/.emacs.d/tree-sitter/libtree-sitter-LANUGAGE.EXT=), then in the system
+=/lib=.
+
+These downsides are relatively minor compared with the benefits of a tree-sitter powered mode. It is
+well worth writing a tree-sitter mode.
 
 * Issues
 
