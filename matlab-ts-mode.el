@@ -1,4 +1,4 @@
-;;; matlab-ts-mode.el --- MATLAB Tree-Sitter Mode -*- lexical-binding: t -*-
+;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
 ;; Copyright 2025 Free Software Foundation, Inc.
 ;;
@@ -6,9 +6,8 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
 ;; Author: John Ciolfi <john.ciolfi.32@gmail.com>
-;; Created: Jun-14-2025
-;; Keywords: MATLAB(R)
-;; Package-Requires: ((emacs "30.1"))
+;; Created: Jun-24-2025
+;; Keywords: MATLAB
 
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
@@ -631,6 +630,13 @@ expression."
   "Tree-sitter indent rules for `matlab-ts-mode'.")
 
 ;;-------------------------;;
+;; Section: defun movement ;;
+;;-------------------------;;
+(defvar matlab-ts-mode--defun-type-regexp
+  (rx bol (or "function_definition" "class_definition") eol)
+  "Tree-sitter rules that identify defun nodes.")
+
+;;-------------------------;;
 ;; Section: matlab-ts-mode ;;
 ;;-------------------------;;
 
@@ -646,13 +652,19 @@ expression."
     ;; parens, `show-paren-mode', etc.
     (set-syntax-table matlab-ts-mode--syntax-table)
     (setq-local syntax-propertize-function #'matlab-ts-mode--syntax-propertize)
-    ;; TODO: check other items in matlab--syntax-propertize, i.e. command-dual
 
     ;; Comments
     (setq-local comment-start      "%")
     (setq-local comment-end        "")
     (setq-local comment-start-skip "%\\s-+")
-    ;; TODO - page-delimiter, paragraph-start, etc. from matlab-mode
+
+    ;; Setup `forward-page' and `backward-page' to use ^L or "%% heading" comments
+    (setq-local page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
+
+    ;; Setup `fill-paragraph'
+    (setq-local paragraph-start (concat "^$\\|" page-delimiter))
+    (setq-local paragraph-separate paragraph-start)
+    (setq-local paragraph-ignore-fill-prefix t)
 
 
     ;; TODO function end handling
@@ -673,11 +685,10 @@ expression."
     ;; Font-lock
     (setq-local treesit-font-lock-level matlab-ts-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
-    (setq-local treesit-font-lock-feature-list
-                '((comment definition)
-                  (keyword string type)
-                  (number bracket delimiter)
-                  (syntax-error)))
+    (setq-local treesit-font-lock-feature-list '((comment definition)
+                                                 (keyword string type)
+                                                 (number bracket delimiter)
+                                                 (syntax-error)))
 
     ;; Indent
     (setq-local indent-tabs-mode nil) ;; for consistency between Unix and Windows we don't use TABs.
@@ -687,6 +698,20 @@ expression."
                                   (list matlab-ts--indent-debug-rule)
                                   (cdar matlab-ts-mode--indent-rules)))
                   matlab-ts-mode--indent-rules))
+
+    ;; Defun Movement: C-M-a (or M-x beginning-of-defun), C-M-e (or M-x end-of-defun)
+    (setq-local treesit-defun-type-regexp matlab-ts-mode--defun-type-regexp) ;; TODO
+
+    ;; TODO's
+    (setq-local treesit-defun-name-function nil) ;; TODO
+
+    (setq-local treesit-simple-imenu-settings nil) ;; TODO
+    ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist/
+
+    (setq-local treesit-outline-predicate nil) ;; TODO
+    (setq-local treesit-thing-settings nil) ;; TODO
+
+    ;; TODO - Menu's
 
     (treesit-major-mode-setup)))
 
