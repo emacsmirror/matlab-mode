@@ -338,7 +338,7 @@ function has_nested_fcn
                              % help
                              % !!4
         code(A);
-    %!!8
+        %!!8
     end
 
     %!!4

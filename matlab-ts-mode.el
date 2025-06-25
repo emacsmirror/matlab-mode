@@ -221,6 +221,42 @@ as comments which is how they are treated by MATLAB."
     "uint64")
   "The matlab-ts-mode data type functions.")
 
+(cl-defun matlab-ts-mode--get-doc-comment-candidate (comment-node)
+  "Get candidate doc comment node or nil.
+Return a comment node based on COMMENT-NODE if it is a candidate for a
+help doc comment."
+
+  ;; Backup over a copyright comment line
+  (when (string-match-p "\\`[ \t]*%[ \t]*copyright\\b"
+                        (treesit-node-text comment-node))
+    (setq comment-node (treesit-node-prev-sibling comment-node))
+    (when (not (string= "comment" (treesit-node-type comment-node)))
+      (cl-return-from matlab-ts-mode--get-doc-comment-candidate)))
+
+  (let ((prev-node (treesit-node-prev-sibling comment-node)))
+    (when prev-node
+      (while (string-match-p (rx bol "line_continuation" eol)
+			     (treesit-node-type prev-node))
+        (setq prev-node (treesit-node-prev-sibling prev-node)))
+      (let ((prev-type (treesit-node-type prev-node)))
+        ;; The true (t) cases. Note line continuation ellipsis are allowed.
+        ;;    function foo          function foo(a)
+        ;;    % doc comment         % doc comment
+        ;;    end                   end
+        (when (or (string-match-p (rx bol (or
+                                           "function_arguments" ;; function input args?
+                                           "superclasses")      ;; subclass
+                                      eol)
+                                  prev-type)
+	          (and (string= prev-type "identifier")           ;; id could be a fcn or class id
+	               (string-match-p (rx bol
+                                           (or "function"         ;; fcn wihtout in and out args
+                                               "function_output"  ;; fcn w/out args and no in args
+                                               "classdef")        ;; base class
+                                           eol)
+                                       (treesit-node-type (treesit-node-prev-sibling prev-node)))))
+          comment-node)))))
+
 (defun matlab-ts-mode--is-doc-comment (comment-node parent)
   "Is the COMMENT-NODE under PARENT a help doc comment.
 In MATLAB,
@@ -251,19 +287,14 @@ In MATLAB,
 
 Similar behavior for classdef's."
 
-  (when (string-match-p (rx bol (or "function_definition" "class_definition") eol)
-                        (treesit-node-type parent))
+  (setq comment-node (matlab-ts-mode--get-doc-comment-candidate comment-node))
+  (when (and comment-node
+             (string-match-p (rx bol (or "function_definition" "class_definition") eol)
+                             (treesit-node-type parent)))
     (let ((definition-point (treesit-node-start parent)))
       (save-excursion
         (goto-char (treesit-node-start comment-node))
         (beginning-of-line)
-
-        ;; Skip backwards over the copyright line to prior content.
-        (when (looking-at "^[ \t]*%[ \t]*copyright\\b")
-          (beginning-of-line)
-          (forward-line -1)
-          (while (looking-at "^[ \t]*$")
-            (forward-line -1)))
 
         ;; result - is doc comment?
         (or (<= (point) definition-point) ;; at definition?
