@@ -39,6 +39,7 @@
 (require 'metest-indent-test2)
 (require 'metest-imenu)
 (require 'metest-imenu-tlc)
+(require 't-utils)
 
 (defun metest-all-syntax-tests ()
   "Run all the syntax test cases in this file."
@@ -82,12 +83,9 @@
   (when (not (eq system-type 'windows-nt))
     (metest-fill-paragraph))
 
-  ;; matlab-ts-mode tests
-  (when (>= emacs-major-version 30)
-    (require 'test-matlab-ts-mode-font-lock)
-    (metest-run 'test-matlab-ts-mode-font-lock)
-    (require 'test-matlab-ts-mode-indent)
-    (metest-run 'test-matlab-ts-mode-indent)))
+  ;; test-*.el
+  (when (>= emacs-major-version 30) ;; TODO - should we eliminate this version check?
+    (t-utils-run)))
 
 (defun metest-run (test)
   "Run and time TEST."

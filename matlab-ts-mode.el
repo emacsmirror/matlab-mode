@@ -650,6 +650,7 @@ expression."
     ;; Syntax table - think of this as a "language character descriptor". It tells us what
     ;; characters belong to word like things giving us movement commands e.g. C-M-f, matching
     ;; parens, `show-paren-mode', etc.
+    ;; See: ./tests/test-matlab-ts-mode-syntax-table.el
     (set-syntax-table matlab-ts-mode--syntax-table)
     (setq-local syntax-propertize-function #'matlab-ts-mode--syntax-propertize)
 
@@ -682,7 +683,7 @@ expression."
     ;;   Maybe use completion api and complete on each letter?
     ;;   Maybe look at functionSignatures.json?
 
-    ;; Font-lock
+    ;; Font-lock. See: ./tests/test-matlab-ts-mode-font-lock.el
     (setq-local treesit-font-lock-level matlab-ts-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list '((comment definition)
@@ -690,7 +691,7 @@ expression."
                                                  (number bracket delimiter)
                                                  (syntax-error)))
 
-    ;; Indent
+    ;; Indent. See: ./tests/test-matlab-ts-mode-indent.el
     (setq-local indent-tabs-mode nil) ;; for consistency between Unix and Windows we don't use TABs.
     (setq-local treesit-simple-indent-rules
                 (if treesit--indent-verbose ;; add debugging print as first rule?
