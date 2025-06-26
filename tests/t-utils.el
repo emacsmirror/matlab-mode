@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'cl-seq)
+(require 'cl-macs)
 
 ;; Add abs-path of ".." to load-path so we can require packages from above us.
 (let* ((lf (or load-file-name (buffer-file-name (current-buffer))))
@@ -97,6 +98,50 @@ files.  The default MATCH is \"^test-.*\\\\.el$\""
   "Return \"- took N seconds\".
 N is `current-time' minus START-TIME."
   (format "- took %.2f seconds" (float-time (time-subtract (current-time) start-time))))
+
+(cl-defmacro t-utils-xr (&rest commands)
+  "Execute and record results of each command in list of COMMANDS.
+This returns a string recofrding point movement and buffer modification
+differences for each command."
+  (let ((result (format "Executing commands from line %d:\n%s\n"
+                        (line-number-at-pos)
+                        (buffer-substring-no-properties (line-beginning-position)
+                                                        (line-end-position))))
+        (result-seperator ""))
+    (dolist (command commands)
+      (let ((start-point (point))
+            (start-contents (buffer-substring-no-properties (point-min) (point-max))))
+        (setq result (concat result result-seperator
+                             (format "--> %s // invoked at start point %d\n" command start-point)))
+        (setq result-seperator "\n")
+        (eval command)
+        (let ((end-point (point))
+              (end-contents (buffer-substring-no-properties (point-min) (point-max))))
+          (if (equal start-point end-point)
+              (setq result (concat result "No point movement\n"))
+            (let* ((current-line (buffer-substring-no-properties (line-beginning-position)
+                                                                 (line-end-position)))
+                   (position (format "%d:%d: " (line-number-at-pos) (current-column)))
+                   (carrot (concat (make-string (+ (length position) (current-column)) ?\s) "^")))
+              (setq result (concat result
+                                   (format "End point: %d\n|%s%s\n|%s\n"
+                                           end-point position current-line carrot)))))
+          (if (equal start-contents end-contents)
+              (setq result (concat result "No buffer modifications\n"))
+            (let* ((tmp-name-prefix (buffer-name))
+                   (start-tmp-file (make-temp-file (concat tmp-name-prefix ".start.") nil ".txt"
+                                                   start-contents))
+                   (end-tmp-file (make-temp-file (concat tmp-name-prefix ".end.") nil ".txt"
+                                                 end-contents))
+                   (diff-buf (diff start-tmp-file end-tmp-file)))
+              (save-window-excursion
+                (with-current-buffer diff-buf
+                  (setq result (concat result
+                                       (concat "New contents (diff):\n"
+                                               (buffer-substring-no-properties
+                                                (point-min) (point-max))))))
+                (kill-buffer diff-buf)))))))
+    result))
 
 (defun t-utils-test-font-lock (test-name lang-files code-to-face)
   "Test font-lock using on each lang-file in LANG-FILES list.
