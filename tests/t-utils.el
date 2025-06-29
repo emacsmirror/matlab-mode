@@ -617,12 +617,12 @@ directory, create TEST-NAME-files/NAME.EXT, then run the test.  Follow
 the messages to accept the generated baseline after validating it."
 
   (dolist (lang-file lang-files)
-    (save-excursion
+    (with-temp-buffer
+
       (let ((start-time (current-time)))
         (message "START: %s %s" test-name lang-file)
 
-        (find-file lang-file)
-        (goto-char (point-min))
+        (t-utils--insert-file-for-test lang-file)
 
         (let* ((got "")
                (expected-file (replace-regexp-in-string "\\.[^.]+$" "_expected.txt" lang-file))
@@ -631,6 +631,7 @@ the messages to accept the generated baseline after validating it."
                            (with-temp-buffer
                              (insert-file-contents-literally expected-file)
                              (buffer-string)))))
+          (forward-line) ;; skip the mode line specification
           (while (not (eobp))
             (when (looking-at "^")
               (setq got (concat got (format "Line:%d: %s\n"
@@ -645,6 +646,7 @@ the messages to accept the generated baseline after validating it."
 
             (forward-char))
 
+          (kill-buffer)
           (when (not (string= got expected))
             (let ((coding-system-for-write 'raw-text-unix))
               (write-region got nil got-file))
@@ -653,8 +655,7 @@ the messages to accept the generated baseline after validating it."
 See %s and if it looks good rename it to %s"
                      lang-file got-file expected-file))
             (error "Baseline for %s does not match, got: %s, expected: %s"
-                   lang-file got-file expected-file))
-          (kill-buffer))
+                   lang-file got-file expected-file)))
         (message "PASS: %s %s %s" test-name lang-file (t-utils--took start-time))))))
 
 (provide 't-utils)

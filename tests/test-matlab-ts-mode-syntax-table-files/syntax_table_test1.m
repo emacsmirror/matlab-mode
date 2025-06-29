@@ -1,3 +1,4 @@
+% -*- matlab-ts -*-
 function syntax_table_test1
 % help comment
 
