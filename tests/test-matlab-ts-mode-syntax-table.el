@@ -49,8 +49,7 @@ after validating it, rename it to
 
     (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
       (t-utils-test-syntax-table test-name m-files)))
-  
-  ;; return "success" for M-: (test-matlab-ts-mode-font-lock)
+
   "success")
 
 (provide 'test-matlab-ts-mode-syntax-table)

@@ -72,7 +72,6 @@ after validating it, rename it to
                            ("w" . font-lock-warning-face)
                            )))
       (t-utils-test-font-lock test-name m-files code-to-face))
-    ;; return "success" for M-: (test-matlab-ts-mode-font-lock)
     "success"))
 
 (provide 'test-matlab-ts-mode-font-lock)

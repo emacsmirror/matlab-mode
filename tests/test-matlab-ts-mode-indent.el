@@ -65,7 +65,6 @@ after validating it, rename it to
                                 (forward-line)))))
 
       (t-utils-test-indent test-name m-files line-manipulator)))
-    ;; return "success" for M-: (test-matlab-ts-mode-font-lock)
     "success")
 
 (provide 'test-matlab-ts-mode-indent)

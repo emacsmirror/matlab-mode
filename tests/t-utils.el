@@ -94,54 +94,274 @@ files.  The default MATCH is \"^test-.*\\\\.el$\""
                      (replace-regexp-in-string "\\.el" "" (file-name-nondirectory test-file)))))
       (funcall test-fun))))
 
+(defvar-local t-utils--buf-file nil
+  "Name of file associated with t-utils temporary buffers.")
+
+(defun t-utils--insert-file-for-test (file)
+  "Insert FILE into current temporary buffer for testing."
+  (insert-file-contents-literally file)
+  (goto-char (point-min))
+  (when (not (looking-at "^.* -\\*- \\([-a-z0-9]+\\) -\\*-"))
+    (error "First line of %s must contain -*- MODE-NAME -*-" file))
+  (let* ((mode (match-string 1))
+         (mode-cmd (intern (concat mode "-mode"))))
+    (funcall mode-cmd))
+  (setq-local t-utils--buf-file file)
+  ;; Incase the mode moves the point, reset to point-min.
+  (goto-char (point-min)))
+
 (defun t-utils--took (start-time)
   "Return \"- took N seconds\".
 N is `current-time' minus START-TIME."
   (format "- took %.2f seconds" (float-time (time-subtract (current-time) start-time))))
 
-(cl-defmacro t-utils-xr (&rest commands)
-  "Execute and record results of each command in list of COMMANDS.
-This returns a string recofrding point movement and buffer modification
-differences for each command."
-  (let ((result (format "Executing commands from line %d:\n%s\n"
-                        (line-number-at-pos)
-                        (buffer-substring-no-properties (line-beginning-position)
-                                                        (line-end-position))))
-        (result-seperator ""))
+(defun t-utils--get-buf-file ()
+  "Return the file corresponding to the buffer under test."
+  (cond ((and (local-variable-if-set-p 't-utils--buf-file)
+              t-utils--buf-file)
+         t-utils--buf-file)
+        ((buffer-file-name)
+         (buffer-file-name))
+        (t
+         (error "`t-utils-xr` must be invoked from within a file buffer"))))
+
+(defun t-utils--diff-strings (start-contents end-contents)
+  "Return an `org-mode' code block diff of START-CONTENTS and END-CONTENTS."
+  ;;; xxx do a one-time diff check on sameple start/end contents vs result
+  (save-window-excursion
+    (let* ((tmp-name-prefix (t-utils--get-buf-file))
+           (start-tmp-file (make-temp-file (concat tmp-name-prefix ".start.") nil ".txt"
+                                           start-contents))
+           (end-tmp-file (make-temp-file (concat tmp-name-prefix ".end.") nil ".txt"
+                                         end-contents))
+           (diff-switches "-u") ;; ensure expected unified diff
+           (diff-win (diff start-tmp-file end-tmp-file))
+           (diff-buf (window-buffer diff-win)))
+      (with-current-buffer diff-buf
+        (read-only-mode -1)
+
+        ;; Delete the "diff -u start-file end-file" command
+        (goto-char (point-min))
+        (re-search-forward "^--- ")
+        (beginning-of-line)
+        (delete-region (point-min) (point))
+
+        ;; Remove temp file names and time stamps to make output stable and easier to read
+        (re-search-forward "^--- .+$")
+        (replace-match "--- start_contents")
+        (re-search-forward "^\\+\\+\\+ .+$")
+        (replace-match "+++ end_contents")
+
+        ;; Remove the diff finished buffer info. At end of buffer there's a blank line then
+        ;; "Diff finished. TIME"
+        (goto-char (point-max))
+        (forward-line -2)
+        (delete-region (point) (point-max))
+
+        (delete-file start-tmp-file)
+        (delete-file end-tmp-file)
+
+        (let ((diff-result (buffer-substring-no-properties (point-min) (point-max))))
+          (kill-buffer diff-buf)
+          (concat "  Buffer modified:\n"
+                  "  #+begin_src diff\n"
+                  diff-result
+                  "  #+end_src diff\n"))))))
+
+(defvar t-utils--xr-impl-result-active)
+(defvar t-utils--xr-impl-result)
+
+(defun t-utils--xr-impl (commands)
+  "Implementation for `t-utils-xr' that processes COMMANDS."
+  (when (or (= (point) 1)
+            (not (save-excursion (goto-char (1- (point))) (looking-at ")"))))
+    (error "Expected point to be after a closing parenthisis, \")\""))
+
+  (let* ((buf-file (t-utils--get-buf-file))
+         (start-line (line-number-at-pos))
+         (xr-end-point (point))
+         (xr-start-point
+          (save-excursion
+            (backward-list)
+            (when (not (looking-at "(t-utils-xr"))
+              (error "`backward-list from point, %d, didn't not jump to (t-utils-xr" xr-end-point))
+            (point)))
+         (xr-cmd (buffer-substring-no-properties xr-start-point xr-end-point))
+         (result (format "\n* Executing commands from %s:%d:%d:\n\n  %s\n"
+                         (file-name-nondirectory buf-file)
+                         (line-number-at-pos xr-start-point)
+                         (save-excursion (goto-char xr-start-point)
+                                         (current-column))
+                         xr-cmd)))
+
     (dolist (command commands)
       (let ((start-point (point))
-            (start-contents (buffer-substring-no-properties (point-min) (point-max))))
-        (setq result (concat result result-seperator
-                             (format "--> %s // invoked at start point %d\n" command start-point)))
-        (setq result-seperator "\n")
-        (eval command)
+            (start-contents (buffer-substring-no-properties (point-min) (point-max)))
+            (key-command (when (eq (type-of command) 'string)
+                           ;; Keybinding, e.g. (t-utils-xr "C-M-a")
+                           (let ((cmd (key-binding (kbd command))))
+                             (when (not cmd)
+                               (user-error "%s:%d: Command, %s, is not a known keybinding"
+                                           buf-file start-line command))
+                             cmd))))
+
+        (setq result (concat result "\n"
+                             (format "- Invoking      : %S%s\n"
+                                     command (if key-command
+                                                 (concat " = " (symbol-name key-command))
+                                               ""))
+                             (format "  Start point   : %4d\n" start-point)))
+
+        (if key-command
+            ;; a keybinding: (t-util-xr "C-M-a")
+            (call-interactively key-command)
+          ;; a command: (t-utils-xr (beginning-of-defun))
+          (eval command))
+
         (let ((end-point (point))
               (end-contents (buffer-substring-no-properties (point-min) (point-max))))
+
+          ;; Record point movement by adding what happened to result
           (if (equal start-point end-point)
-              (setq result (concat result "No point movement\n"))
+              (setq result (concat result "  No point movement\n"))
             (let* ((current-line (buffer-substring-no-properties (line-beginning-position)
                                                                  (line-end-position)))
                    (position (format "%d:%d: " (line-number-at-pos) (current-column)))
                    (carrot (concat (make-string (+ (length position) (current-column)) ?\s) "^")))
-              (setq result (concat result
-                                   (format "End point: %d\n|%s%s\n|%s\n"
-                                           end-point position current-line carrot)))))
-          (if (equal start-contents end-contents)
-              (setq result (concat result "No buffer modifications\n"))
-            (let* ((tmp-name-prefix (buffer-name))
-                   (start-tmp-file (make-temp-file (concat tmp-name-prefix ".start.") nil ".txt"
-                                                   start-contents))
-                   (end-tmp-file (make-temp-file (concat tmp-name-prefix ".end.") nil ".txt"
-                                                 end-contents))
-                   (diff-buf (diff start-tmp-file end-tmp-file)))
-              (save-window-excursion
-                (with-current-buffer diff-buf
-                  (setq result (concat result
-                                       (concat "New contents (diff):\n"
-                                               (buffer-substring-no-properties
-                                                (point-min) (point-max))))))
-                (kill-buffer diff-buf)))))))
-    result))
+              (setq result (concat result (format "  Moved to point: %4d\n  : %s%s\n  : %s\n"
+                                                  end-point position current-line carrot)))))
+
+          ;; Record buffer modifications by adding what happened to result
+          (setq result (concat result
+                               (if (equal start-contents end-contents)
+                                   "  No buffer modifications\n"
+                                 (t-utils--diff-strings start-contents end-contents)))))))
+    (if t-utils--xr-impl-result-active
+        (progn
+          (setq t-utils--xr-impl-result result)
+          nil)
+      result)))
+
+(cl-defmacro t-utils-xr (&rest commands)
+  "Execute and record results of each command in list of COMMANDS.
+This returns a string recofrding point movement and buffer modification
+differences for each command.  See `t-utils-test-xr' for details."
+  (t-utils--xr-impl commands))
+
+(defun t-utils-test-xr (test-name lang-files)
+  "Execute and record (t-utils-xr COMMANDS) from LANG-FILES list.
+For each NAME.EXT in LANG-FILES, run each (t-utils-xr COMMANDS) and
+compare results against NAME_expected.org.  TEST-NAME is used in
+messages.
+
+The commands that you can place within (t-utils-xr COMMANDS) are
+ 1. Lisp expressions.  For example,
+      (t-utils-xr (beginning-of-defun))
+ 2. Keybindings.  For example,
+      (t-utils-xr \"C-M-a\")
+Multiple expressions or keybindings can be specified.
+
+Consider ./test-defun-movement/my_test.c:
+
+  1 | #include <stdlib.h>
+  2 |
+  3 | int fcn1(void) {
+  4 |   // (t-utils-xr \"C-M-e\" \"C-M-e\")
+  5 |   return 1;
+  6 | }
+  7 |
+  8 | int main(void) {
+  9 |   return fcn1();
+  10|   // (t-utils-xr (beginning-of-defun) (beginning-of-defun))
+  11| }
+
+You can interactively evaulate each (t-utils-xr COMMANDS) by placing the
+`point' on the closing parenthesis and typing \\[eval-last-sexp].  For
+example, with the point after the closing parenthesis on line 4 and
+running \\[eval-last-sexp], we'll see in the *Messages* buffer:
+
+    * Executing commands from my_test.c:4:
+
+      // (t-utils-xr \"C-M-e\" \"C-M-e\")
+
+    - Invoking      : \"C-M-e\" = c-end-of-defun
+      Start point   :   72
+      Moved to point:   87
+      : 7:0:
+      :      ^
+      No buffer modifications
+
+    - Invoking      : \"C-M-e\" = c-end-of-defun
+      Start point   :   87
+      Moved to point:  158
+      : 12:0:
+      :       ^
+      No buffer modifications
+
+Running
+
+  M-: (t-utils-test-xr \"test-defun-movement\"
+                       \\='(\"test-defun-movement/my_test.c\"))
+
+will run the two (t-utils-xr COMMANDS) statements from line 4 and 10 of
+my_test.c.  The result is compared against
+test-defun-movement/my_test_expected.org.  If my_test_expected.org does
+not exist or result doesn't match the existing my_test_expected.org,
+my_test_expected.org~ is generated and if it looks correct, you should
+rename it to my_test_expected.org.  The contents of my_test_expected.org
+for this example is:
+
+  TODO xxx contents of my_test_expected.org"
+
+  (dolist (lang-file lang-files)
+    (with-temp-buffer
+      (t-utils--insert-file-for-test lang-file)
+      (let* ((start-time (current-time))
+             (expected-file (replace-regexp-in-string "\\.[^.]+$" "_expected.org"
+                                                      lang-file))
+             (expected (when (file-exists-p expected-file)
+                         (with-temp-buffer
+                           (insert-file-contents-literally expected-file)
+                           (buffer-string))))
+             (got "#+startup: showall\n")
+             (got-file (concat expected-file "~")))
+
+        (message "START: %s %s" test-name lang-file)
+
+        (while (re-search-forward "(t-utils-xr" nil t)
+          (re-search-backward "(")
+          (forward-list)
+          (let* ((xr-end-point (point)))
+            ;; Setting t-utils--xr-impl-result-active to t prevents t-utils--xr-impl from returning
+            ;; the result and instead returns the result via global t-utils--xr-impl-result. This
+            ;; prevents the result text from being displayed when run via emacs --batch. However,
+            ;; we still see 'nil' displayed, but I don't think there's much we can do about that.
+            (setq t-utils--xr-impl-result-active t)
+            (condition-case err
+                (progn
+                  (eval-last-sexp nil)
+                  (setq got (concat got t-utils--xr-impl-result)))
+              (error (setq t-utils--xr-impl-result-active nil)
+                     (signal (car err) (cdr err))))
+            ;; look for next (t-utils-xr COMMANDS)
+            (goto-char xr-end-point)))
+
+        (kill-buffer)
+
+        (when (string= got "")
+          (error "No (t-utils-xr COMMANDS) found in %s" lang-file))
+
+        (when (not (string= got expected))
+          (let ((coding-system-for-write 'raw-text-unix))
+            (write-region got nil got-file))
+          (when (not expected)
+            (error "Baseline for %s does not exists.  \
+See %s and if it looks good rename it to %s"
+                   lang-file got-file expected-file))
+          (error "Baseline for %s does not match, got: %s, expected: %s"
+                 lang-file got-file expected-file))
+
+        (message "PASS: %s %s %s" test-name lang-file (t-utils--took start-time))))))
 
 (defun t-utils-test-font-lock (test-name lang-files code-to-face)
   "Test font-lock using on each lang-file in LANG-FILES list.
@@ -170,12 +390,15 @@ where int and void are keywords, etc. and CODE-TO-FACE contains:
     (\"D\" . font-lock-delimiter-face)
     (\"f\" . font-lock-function-name-face)
     (\"k\" . font-lock-keyword-face)
-    (\"n\" . font-lock-constant-face))"
+    (\"n\" . font-lock-constant-face))
+
+xxx give example calling test-name.el (and for others)"
 
   (let ((face-to-code (mapcar (lambda (pair)
                                 (cons (cdr pair) (car pair)))
                               code-to-face)))
     (dolist (lang-file lang-files)
+      ;; xxx save window excursion?
       (save-excursion
         (let ((start-time (current-time)))
           (message "START: %s %s" test-name lang-file)
@@ -191,14 +414,15 @@ where int and void are keywords, etc. and CODE-TO-FACE contains:
           (font-lock-ensure (point-min) (point-max))
 
           (goto-char (point-min))
-          (let* ((got "")
-                 (expected-file (replace-regexp-in-string "\\.[^.]+$" "_expected.txt"
+          (let* ((expected-file (replace-regexp-in-string "\\.[^.]+$" "_expected.txt"
                                                           lang-file))
-                 (got-file (concat expected-file "~"))
                  (expected (when (file-exists-p expected-file)
                              (with-temp-buffer
                                (insert-file-contents-literally expected-file)
-                               (buffer-string)))))
+                               (buffer-string))))
+                 (got "")
+                 (got-file (concat expected-file "~")))
+
             (while (not (eobp))
               (let* ((face (if (face-at-point) (face-at-point) 'default))
                      (code (if (looking-at "\\([ \t\n]\\)")
@@ -211,6 +435,8 @@ where int and void are keywords, etc. and CODE-TO-FACE contains:
                 (when (looking-at "\n")
                   (setq got (concat got "\n"))
                   (forward-char))))
+
+            ;; xxx (kill-buffer) and elsewhere to ensure when test fails, state is unchanged
 
             (when (not (string= got expected))
               (let ((coding-system-for-write 'raw-text-unix))
@@ -339,7 +565,7 @@ See `t-utils--test-indent-type' for LINE-MANIPULATOR."
                          (insert-file-contents-literally expected-file)
                          (buffer-string))))
            lang-file-major-mode)
-      
+
       ;; Indent lang-file
       (save-excursion
         (let ((start-time (current-time)))
@@ -407,7 +633,7 @@ the messages to accept the generated baseline after validating it."
                                             (line-number-at-pos)
                                             (buffer-substring-no-properties (point)
                                                                             (line-end-position))))))
-            
+
             (let ((char (buffer-substring-no-properties (point) (1+ (point)))))
               (when (string= char "\n")
                 (setq char "\\n"))
