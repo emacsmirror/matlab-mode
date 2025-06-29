@@ -197,7 +197,8 @@ You can run `t-utils--diff-check' to debug"))))
 
   ;; Do a one time diff on sample start/end contents vs expected result
   (when (not t-utils--diff-checked)
-    (t-utils--diff-check))
+    (t-utils--diff-check)
+    (setq t-utils--diff-checked t))
 
   (t-utils--diff-strings-impl start-contents end-contents))
 
