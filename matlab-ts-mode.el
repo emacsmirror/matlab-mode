@@ -686,7 +686,8 @@ expression."
     (setq-local syntax-propertize-function #'matlab-ts-mode--syntax-propertize)
 
     ;; Comments
-    (setq-local comment-start      "%")
+    ;; See: tests/test-matlab-ts-mode-comments.el
+    (setq-local comment-start      "% ")
     (setq-local comment-end        "")
     (setq-local comment-start-skip "%\\s-+")
 
@@ -732,6 +733,7 @@ expression."
                   matlab-ts-mode--indent-rules))
 
     ;; Defun Movement: C-M-a (or M-x beginning-of-defun), C-M-e (or M-x end-of-defun)
+    ;; See: tests/test-matlab-ts-mode-defun-type.el
     (setq-local treesit-defun-type-regexp matlab-ts-mode--defun-type-regexp) ;; TODO
 
     ;; TODO's

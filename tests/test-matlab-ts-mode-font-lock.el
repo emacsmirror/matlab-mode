@@ -1,4 +1,4 @@
-;;; test-matlab-ts-mode-font-lock.el --- Test matlab-ts-mode font-lock -*- lexical-binding: t -*-
+;;; test-matlab-ts-mode-font-lock.el --- -*- lexical-binding: t -*-
 ;;
 ;; Copyright 2025 Free Software Foundation, Inc.
 

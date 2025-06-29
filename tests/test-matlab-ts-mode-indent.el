@@ -1,4 +1,4 @@
-;;; test-matlab-ts-mode-indent.el --- Test matlab-ts-mode indent -*- lexical-binding: t -*-
+;;; test-matlab-ts-mode-indent.el --- -*- lexical-binding: t -*-
 ;;
 ;; Copyright 2025 Free Software Foundation, Inc.
 ;;

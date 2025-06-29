@@ -273,7 +273,8 @@ You can run `t-utils--diff-check' to debug"))))
                                          "  #+begin_src diff\n"
                                          (t-utils-diff-strings start-contents end-contents)
                                          "  #+end_src diff\n")))))))
-    (if t-utils--xr-impl-result-active
+    (if (and (boundp 't-utils--xr-impl-result-active)
+             t-utils--xr-impl-result-active)
         (progn
           (setq t-utils--xr-impl-result result)
           nil)
