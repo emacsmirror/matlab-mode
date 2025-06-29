@@ -378,8 +378,11 @@ for this example is:
             (condition-case err
                 (progn
                   (eval-last-sexp nil)
-                  (setq got (concat got t-utils--xr-impl-result)))
-              (error (setq t-utils--xr-impl-result-active nil)
+                  (setq got (concat got t-utils--xr-impl-result)
+                        t-utils--xr-impl-result-active nil
+                        t-utils--xr-impl-result nil))
+              (error (setq t-utils--xr-impl-result-active nil
+                           t-utils--xr-impl-result nil)
                      (signal (car err) (cdr err))))
             ;; look for next (t-utils-xr COMMANDS)
             (goto-char xr-end-point)))

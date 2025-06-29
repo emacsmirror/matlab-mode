@@ -692,6 +692,7 @@ expression."
     (setq-local comment-start-skip "%\\s-+")
 
     ;; Setup `forward-page' and `backward-page' to use ^L or "%% heading" comments
+    ;; See: ./tests/test-matlab-ts-mode-page.el
     (setq-local page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
 
     ;; Setup `fill-paragraph'
