@@ -571,10 +571,10 @@ See `t-utils--test-indent-type' for LINE-MANIPULATOR."
            lang-file-major-mode)
 
       ;; Indent lang-file
-      (save-excursion
+      (with-temp-buffer
         (let ((start-time (current-time)))
+          (t-utils--insert-file-for-test lang-file)
           (message "START: %s <indent-region> %s" test-name lang-file)
-          (find-file lang-file)
           (setq lang-file-major-mode major-mode)
           (indent-region (point-min) (point-max))
           (t-utils-trim)
