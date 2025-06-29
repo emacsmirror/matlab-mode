@@ -26,6 +26,7 @@
 
 (require 'cl-seq)
 (require 'cl-macs)
+(require 'diff)
 
 ;; Add abs-path of ".." to load-path so we can require packages from above us.
 (let* ((lf (or load-file-name (buffer-file-name (current-buffer))))
@@ -130,50 +131,75 @@ N is `current-time' minus START-TIME."
         ((buffer-file-name)
          (buffer-file-name))
         (t
-         (error "`t-utils-xr` must be invoked from within a file buffer"))))
+         (error "This must be invoked from within a file buffer"))))
 
-(defun t-utils--diff-strings (start-contents end-contents)
-  "Return an `org-mode' code block diff of START-CONTENTS and END-CONTENTS."
-  ;;; xxx do a one-time diff check on sameple start/end contents vs result
-  (save-window-excursion
-    (let* ((tmp-name-prefix (t-utils--get-buf-file))
+(defun t-utils--diff-strings-impl (start-contents end-contents)
+  "Implementation for `t-utils-diff-string'.
+Returns diff of START-CONTENTS and END-CONTENTS."
+  (with-temp-buffer
+    (let* ((tmp-name-prefix (condition-case nil
+                                (t-utils--get-buf-file)
+                              ( error "t-utils--tmp-file")))
            (start-tmp-file (make-temp-file (concat tmp-name-prefix ".start.") nil ".txt"
                                            start-contents))
            (end-tmp-file (make-temp-file (concat tmp-name-prefix ".end.") nil ".txt"
                                          end-contents))
-           (diff-switches "-u") ;; ensure expected unified diff
-           (diff-win (diff start-tmp-file end-tmp-file))
-           (diff-buf (window-buffer diff-win)))
-      (with-current-buffer diff-buf
-        (read-only-mode -1)
+           (diff-buf (current-buffer)))
 
-        ;; Delete the "diff -u start-file end-file" command
-        (goto-char (point-min))
-        (re-search-forward "^--- ")
-        (beginning-of-line)
-        (delete-region (point-min) (point))
+      (diff-no-select start-tmp-file end-tmp-file "-u" t diff-buf)
 
-        ;; Remove temp file names and time stamps to make output stable and easier to read
-        (re-search-forward "^--- .+$")
-        (replace-match "--- start_contents")
-        (re-search-forward "^\\+\\+\\+ .+$")
-        (replace-match "+++ end_contents")
+      (read-only-mode -1)
 
-        ;; Remove the diff finished buffer info. At end of buffer there's a blank line then
-        ;; "Diff finished. TIME"
-        (goto-char (point-max))
-        (forward-line -2)
-        (delete-region (point) (point-max))
+      ;; Delete the "diff -u start-file end-file" command
+      (goto-char (point-min))
+      (re-search-forward "^--- ")
+      (beginning-of-line)
+      (delete-region (point-min) (point))
 
-        (delete-file start-tmp-file)
-        (delete-file end-tmp-file)
+      ;; Remove temp file names and time stamps to make output stable and easier to read
+      (re-search-forward "^--- .+$")
+      (replace-match "--- start_contents")
+      (re-search-forward "^\\+\\+\\+ .+$")
+      (replace-match "+++ end_contents")
 
-        (let ((diff-result (buffer-substring-no-properties (point-min) (point-max))))
-          (kill-buffer diff-buf)
-          (concat "  Buffer modified:\n"
-                  "  #+begin_src diff\n"
-                  diff-result
-                  "  #+end_src diff\n"))))))
+      ;; Remove the diff finished buffer info. At end of buffer there's a blank line then
+      ;; "Diff finished. TIME"
+      (goto-char (point-max))
+      (forward-line -2)
+      (delete-region (point) (point-max))
+
+      (delete-file start-tmp-file)
+      (delete-file end-tmp-file)
+
+      (let ((diff-result (buffer-substring-no-properties (point-min) (point-max))))
+        (kill-buffer diff-buf)
+        diff-result))))
+
+(defvar t-utils--diff-checked nil)
+
+(defun t-utils--diff-check ()
+  "Validate diff is setup correctly."
+
+  (let* ((s1 (concat "L1\n" "L2\n" "L3\n" "L4\n" "L5\n" "L6\n" "L7\n" "L8\n" "L9\n" "L10\n"))
+         (s2 (replace-regexp-in-string "L5" "L5-MODIFIED" s1))
+         (got (t-utils--diff-strings-impl s1 s2))
+         (expected (concat "--- start_contents\n"
+                           "+++ end_contents\n"
+                           "@@ -2,7 +2,7 @@\n"
+                           " L2\n L3\n L4\n-L5\n+L5-MODIFIED\n L6\n L7\n L8\n")))
+    (when (not (string= got expected))
+      (error "Running diff produced unexecpted results.
+Verify that diff is setup correctly, check `diff-command', etc.
+You can run `t-utils--diff-check' to debug"))))
+
+(defun t-utils-diff-strings (start-contents end-contents)
+  "Return diff of START-CONTENTS and END-CONTENTS."
+
+  ;; Do a one time diff on sample start/end contents vs expected result
+  (when (not t-utils--diff-checked)
+    (t-utils--diff-check))
+
+  (t-utils--diff-strings-impl start-contents end-contents))
 
 (defvar t-utils--xr-impl-result-active)
 (defvar t-utils--xr-impl-result)
@@ -242,7 +268,10 @@ N is `current-time' minus START-TIME."
           (setq result (concat result
                                (if (equal start-contents end-contents)
                                    "  No buffer modifications\n"
-                                 (t-utils--diff-strings start-contents end-contents)))))))
+                                 (concat "  Buffer modified:\n"
+                                         "  #+begin_src diff\n"
+                                         (t-utils-diff-strings start-contents end-contents)
+                                         "  #+end_src diff\n")))))))
     (if t-utils--xr-impl-result-active
         (progn
           (setq t-utils--xr-impl-result result)
