@@ -100,12 +100,19 @@ files.  The default MATCH is \"^test-.*\\\\.el$\""
 (defun t-utils--insert-file-for-test (file)
   "Insert FILE into current temporary buffer for testing."
   (insert-file-contents-literally file)
+  ;; CRLF -> LF for consistency between Unix and Windows
   (goto-char (point-min))
-  (when (not (looking-at "^.* -\\*- \\([-a-z0-9]+\\) -\\*-"))
-    (error "First line of %s must contain -*- MODE-NAME -*-" file))
+  (while (re-search-forward "\r" nil t)
+    (replace-match ""))
+  (goto-char (point-min))
+  ;; Set mode
+  (when (and (not (looking-at "^.* -\\*-[ \t]+\\([-a-z0-9]+\\)[ \t]+-\\*-"))
+             (not (looking-at "^.* -\\*-.*mode:[ \t]+\\([-a-z0-9]+\\).*-\\*-")))
+    (error "First line of %s must contain -*- MODE-NAME -*- (or -*- mode: MODE-NAME -*-)" file))
   (let* ((mode (match-string 1))
          (mode-cmd (intern (concat mode "-mode"))))
     (funcall mode-cmd))
+  ;; Stash away the real buffer file for later use.
   (setq-local t-utils--buf-file file)
   ;; Incase the mode moves the point, reset to point-min.
   (goto-char (point-min)))
@@ -394,19 +401,17 @@ where int and void are keywords, etc. and CODE-TO-FACE contains:
 
 xxx give example calling test-name.el (and for others)"
 
+  (when (boundp 'treesit-font-lock-level)
+    (setq treesit-font-lock-level 4))
+
   (let ((face-to-code (mapcar (lambda (pair)
                                 (cons (cdr pair) (car pair)))
                               code-to-face)))
     (dolist (lang-file lang-files)
-      ;; xxx save window excursion?
-      (save-excursion
+      (with-temp-buffer
+        (t-utils--insert-file-for-test lang-file)
         (let ((start-time (current-time)))
           (message "START: %s %s" test-name lang-file)
-
-          (when (boundp 'treesit-font-lock-level)
-            (setq treesit-font-lock-level 4))
-
-          (find-file lang-file)
 
           ;; Force font lock to throw catchable errors.
           (font-lock-mode 1)
@@ -436,7 +441,7 @@ xxx give example calling test-name.el (and for others)"
                   (setq got (concat got "\n"))
                   (forward-char))))
 
-            ;; xxx (kill-buffer) and elsewhere to ensure when test fails, state is unchanged
+            (kill-buffer)
 
             (when (not (string= got expected))
               (let ((coding-system-for-write 'raw-text-unix))
@@ -458,8 +463,7 @@ Difference at column %d: got code-to-face (\"%s\" . %S), expected code-to-face (
                          got-code got-face
                          expected-code expected-face)))
               (error "Baseline for %s does not match, lengths are different, got: %s, expected: %s"
-                     lang-file got-file expected-file))
-            (kill-buffer))
+                     lang-file got-file expected-file)))
           (message "PASS: %s %s %s" test-name lang-file (t-utils--took start-time)))))))
 
 (defun t-utils--test-indent-typing (lang-file lang-file-mode
