@@ -1,10 +1,6 @@
 % -*- matlab-ts -*-
 
-% Test validates that
-%  (setq-local treesit-defun-type-regexp matlab-ts-mode--defun-type-regexp)
-% is setup correctly.
-
-function b = defun_type(a)
+function b = move_via_defun(a)
 
     % (t-utils-xr (beginning-of-defun))
     % (t-utils-xr "C-M-a")

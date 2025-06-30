@@ -1,4 +1,4 @@
-;;; test-matlab-ts-mode-defun-type.el --- -*- lexical-binding: t -*-
+;;; test-matlab-ts-mode-movement.el --- -*- lexical-binding: t -*-
 ;;
 ;; Copyright 2025 Free Software Foundation, Inc.
 ;;
@@ -21,8 +21,8 @@
 ;;
 ;; Validate matlab-ts-mode indent.
 ;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-defun-type-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-defun-type-files/NAME_expected.org
+;; ./test-matlab-ts-mode-movement-files/NAME.m comparing against
+;; ./test-matlab-ts-mode-movement-files/NAME_expected.org
 ;;
 
 ;;; Code:
@@ -30,22 +30,22 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-defun-type (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-defun-type-files/NAME.m.
-Using ./test-matlab-ts-mode-defun-type-files/NAME.m, compare defun
+(cl-defun test-matlab-ts-mode-movement (&optional m-file)
+  "Test defun movement using ./test-matlab-ts-mode-movement-files/NAME.m.
+Using ./test-matlab-ts-mode-movement-files/NAME.m, compare defun
 movement against
-./test-matlab-ts-mode-defun-type-files/NAME_expected.org.  If M-FILE is
+./test-matlab-ts-mode-movement-files/NAME_expected.org.  If M-FILE is
 not provided, loop comparing all
-./test-matlab-ts-mode-defun-type-files/NAME.m files.
+./test-matlab-ts-mode-movement-files/NAME.m files.
 
 To add a test, create
-  ./test-matlab-ts-mode-defun-type-files/NAME.m
+  ./test-matlab-ts-mode-movement-files/NAME.m
 and run this function.  The baseline is saved for you as
-  ./test-matlab-ts-mode-defun-type-files/NAME_expected.org~
+  ./test-matlab-ts-mode-movement-files/NAME_expected.org~
 after validating it, rename it to
-  ./test-matlab-ts-mode-defun-type-files/NAME_expected.org"
+  ./test-matlab-ts-mode-movement-files/NAME_expected.org"
 
-  (let ((test-name "test-matlab-ts-mode-defun-type"))
+  (let ((test-name "test-matlab-ts-mode-movement"))
 
     (when (not (t-utils-is-treesit-available 'matlab test-name))
       (cl-return-from test-matlab-ts-mode-font-lock))
@@ -54,5 +54,5 @@ after validating it, rename it to
       (t-utils-test-xr test-name m-files)))
     "success")
 
-(provide 'test-matlab-ts-mode-defun-type)
-;;; test-matlab-ts-mode-defun-type.el ends here
+(provide 'test-matlab-ts-mode-movement)
+;;; test-matlab-ts-mode-movement.el ends here

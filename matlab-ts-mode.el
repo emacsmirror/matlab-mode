@@ -660,12 +660,16 @@ expression."
      ))
   "Tree-sitter indent rules for `matlab-ts-mode'.")
 
-;;-------------------------;;
-;; Section: defun movement ;;
-;;-------------------------;;
-(defvar matlab-ts-mode--defun-type-regexp
-  (rx bol (or "function_definition" "class_definition") eol)
-  "Tree-sitter rules that identify defun nodes.")
+;;-------------------;;
+;; Section: movement ;;
+;;-------------------;;
+
+(defvar matlab-ts-mode--thing-settings
+  `((matlab
+     (defun ,(rx bol "function_definition" eol)))
+    ;; TODO sexp, text, sentance - see c-ts-mode--thing-settings
+    )
+  "Tree-sitter rules that things for movement.")
 
 ;;-------------------------;;
 ;; Section: matlab-ts-mode ;;
@@ -694,12 +698,6 @@ expression."
     ;; Setup `forward-page' and `backward-page' to use ^L or "%% heading" comments
     ;; See: ./tests/test-matlab-ts-mode-page.el
     (setq-local page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
-
-    ;; Setup `fill-paragraph'
-    (setq-local paragraph-start (concat "^$\\|" page-delimiter))
-    (setq-local paragraph-separate paragraph-start)
-    (setq-local paragraph-ignore-fill-prefix t)
-
 
     ;; TODO function end handling
     ;; TODO add strings to syntax table?
@@ -733,9 +731,8 @@ expression."
                                   (cdar matlab-ts-mode--indent-rules)))
                   matlab-ts-mode--indent-rules))
 
-    ;; Defun Movement: C-M-a (or M-x beginning-of-defun), C-M-e (or M-x end-of-defun)
-    ;; See: tests/test-matlab-ts-mode-defun-type.el
-    (setq-local treesit-defun-type-regexp matlab-ts-mode--defun-type-regexp) ;; TODO
+    ;; Movement. See: tests/test-matlab-ts-mode-movement.el
+    (setq-local treesit-thing-settings matlab-ts-mode--thing-settings)
 
     ;; TODO's
     (setq-local treesit-defun-name-function nil) ;; TODO
@@ -744,8 +741,10 @@ expression."
     ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist/
 
     (setq-local treesit-outline-predicate nil) ;; TODO
-    (setq-local treesit-thing-settings nil) ;; TODO
 
+    ;; TODO Highlight parens OR if/end type blocks
+    ;; TODO Electric pair mode
+    
     ;; TODO - Menu's
 
     (treesit-major-mode-setup)))

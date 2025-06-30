@@ -90,6 +90,17 @@ signle character. This makes it very easy to lockdown the behavior of font-lock 
 write lisp code to add the test. The same test strategy is used for other aspects of our
 =LANGUAGE-ts-mode=.
 
+* Major Mode Conventions
+
+Start by reading [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Major-Mode-Conventions.html][Emacs Major Mode Conventions]], with the following exceptions:
+
+- Do not use kill-all-local-variables because the *-ts-mode.el shipped with Emacs do not use that.
+- Do not set major-mode to 'LANGUAGE-ts-mode, this is set by =(treesit-parser-create 'LANGUAGE)=
+- Do not setup indent-line-function, we'll do that using treesit
+- Do not set font-lock-defaults, we'll do that using treesit
+- Do not use make-local-variable, instead use setq-local
+- Do not setup a mode hook, this is done for you via xxx
+
 * Syntax trees and queries
 
 If you are not familiar with the concepts behind tree-sitter, see
@@ -982,7 +993,7 @@ We follow a similar pattern for writing syntax table tests.
 
       (let ((lang-files (t-utils-get-files (concat test-name "-files") "\\.lang$" nil lang-file)))
         (t-utils-test-syntax-table test-name lang-files)))
-    
+
     ;; return "success" for M-: (test-LANGUAGE-ts-mode-font-lock)
     "success")
 
@@ -990,6 +1001,29 @@ We follow a similar pattern for writing syntax table tests.
   ;;; test-LANGUAGE-ts-mode-syntax-table.el ends here
 
 #+end_src
+
+* treesit-thing-settings
+
+Examining treesit-major-mode-setup,
+
+ : M-: (find-function 'treesit-major-mode-setup)
+
+we see that with Emacs 30.1, there are three items to setup:
+
+ : 'sexp
+ : 'sentence
+ : 'defun
+ : 'text
+
+You should setup 'defun instead of treesit-defun-type-regexp for a consistent setup and all things
+for navigation are all controlled by treesit-thing-settings.  If you do set
+treesit-defun-type-regexp it overrides 'defun for compatibility.
+
+If you define sexp you should also define text to conver comments and strings. sexp is used by
+forward-sexp.
+
+'sentence is used by forward-sentance via forward-sentence-function which is set to
+treesit-forward-sentence.
 
 * Fill paragraph, M-q
 
@@ -1365,7 +1399,7 @@ well worth writing a tree-sitter mode.
                            (insert-file-contents-literally expected-file)
                            (buffer-string))))
              lang-file-major-mode)
-        
+
         ;; Indent lang-file
         (save-excursion
           (let ((start-time (current-time)))
@@ -1433,7 +1467,7 @@ well worth writing a tree-sitter mode.
                                               (line-number-at-pos)
                                               (buffer-substring-no-properties (point)
                                                                               (line-end-position))))))
-              
+
               (let ((char (buffer-substring-no-properties (point) (1+ (point)))))
                 (when (string= char "\n")
                   (setq char "\\n"))
@@ -1518,8 +1552,44 @@ well worth writing a tree-sitter mode.
 
   : char * str = "a very long string a very long string a very long string a very long string a very long string a very long string a very long string a very long string ";
 
+  results in:
+
   TODO validate this occurs with c-ts-mode.
 
-  Would like an option to have M-q indent or fill comments. When in a string it should indent.
-  Though ideally, it should correctly break the string into multiple lines so there's no semantic
-  difference.
+  Would like an option to have M-q indent or fill comments. When in a string it should do nothing
+  if it can't guarantee the syntax will be correct. Ideally, we'd have a way to fill strings
+  by using the appropriate string concatenation characters.
+
+- [ ] Doc for https://www.gnu.org/software/emacs/manual/html_mono/elisp.html is misleading.
+  It mentions a "comment" thing, but that is not used by treesit. Also looking at the
+  setting for C/C++, what's written
+
+   : Here's an example treesit-thing-settings for C and C++:
+   :
+   : ((c
+   :   (defun "function_definition")
+   :   (sexp (not "[](),[{}]"))
+   :   (comment "comment")
+   :   (string "raw_string_literal")
+   :   (text (or comment string)))
+   :  (cpp
+   :   (defun ("function_definition" . cpp-ts-mode-defun-valid-p))
+   :   (defclass "class_specifier")
+   :   (comment "comment")))
+
+  doesn't match treesit.el. What about just stating what is needed:
+
+  TODO
+
+- [ ] In https://www.gnu.org/software/emacs/manual/html_node/elisp/Major-Mode-Conventions.html
+
+  Major Mode Conventions:
+
+  - The major mode command should start by calling kill-all-local-variables. This runs the normal
+    hook change-major-mode-hook, then gets rid of the buffer-local variables of the major mode
+    previously in effect. See Creating and Deleting Buffer-Local Bindings.
+
+  However, existing Emacs 30.1 modes like c-ts-mode do not call this?
+
+  TODO verify
+
