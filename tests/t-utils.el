@@ -202,8 +202,21 @@ You can run `t-utils--diff-check' to debug"))))
 
   (t-utils--diff-strings-impl start-contents end-contents))
 
+(defun t-utils--get-point-for-display (point)
+  "Return \"<point> L<num> C<num>\" for POINT."
+  (format "%d L%d C%d"
+          point
+          (line-number-at-pos point)
+          (save-excursion (goto-char point)
+                          (current-column))))
+
 (defvar t-utils--xr-impl-result-active)
 (defvar t-utils--xr-impl-result)
+
+(defun  t-utils--use-xr-impl-result ()
+  "Send result to `t-utils--xr-impl-result'?"
+  (and (boundp 't-utils--xr-impl-result-active)
+       t-utils--xr-impl-result-active))
 
 (defun t-utils--xr-impl (commands)
   "Implementation for `t-utils-xr' that processes COMMANDS."
@@ -211,7 +224,8 @@ You can run `t-utils--diff-check' to debug"))))
             (not (save-excursion (goto-char (1- (point))) (looking-at ")"))))
     (error "Expected point to be after a closing parenthisis, \")\""))
 
-  (let* ((buf-file (t-utils--get-buf-file))
+  (let* ((line-move-visual nil) ;; C-n moves by true lines and not the width
+         (buf-file (t-utils--get-buf-file))
          (start-line (line-number-at-pos))
          (xr-end-point (point))
          (xr-start-point
@@ -226,9 +240,16 @@ You can run `t-utils--diff-check' to debug"))))
                          (line-number-at-pos xr-start-point)
                          (save-excursion (goto-char xr-start-point)
                                          (current-column))
-                         xr-cmd)))
+                         xr-cmd))
+         (cmd-num 0))
+
+    ;; Enable "C-SPC" in `t-utils-xr' commands.  Under regular running, we are being invoked from
+    ;; `t-utils-xr-test' and current buffer is a temporary buffer.  In batch mode,
+    ;; `transient-mark-mode' is not active, thus activate it.
+    (transient-mark-mode 1)
 
     (dolist (command commands)
+      (setq cmd-num (1+ cmd-num))
       (let ((start-point (point))
             (start-contents (buffer-substring-no-properties (point-min) (point-max)))
             (key-command (when (eq (type-of command) 'string)
@@ -253,28 +274,40 @@ You can run `t-utils--diff-check' to debug"))))
           (eval command))
 
         (let ((end-point (point))
-              (end-contents (buffer-substring-no-properties (point-min) (point-max))))
+              (end-contents (buffer-substring-no-properties (point-min) (point-max)))
+              (debug-msg (format "%d: %S, start point %s" cmd-num command
+                                 (t-utils--get-point-for-display start-point))))
 
           ;; Record point movement by adding what happened to result
           (if (equal start-point end-point)
-              (setq result (concat result "  No point movement\n"))
+              (setq result (concat result "  No point movement\n")
+                    debug-msg (concat debug-msg ", no point movement"))
             (let* ((current-line (buffer-substring-no-properties (line-beginning-position)
                                                                  (line-end-position)))
                    (position (format "%d:%d: " (line-number-at-pos) (current-column)))
                    (carrot (concat (make-string (+ (length position) (current-column)) ?\s) "^")))
               (setq result (concat result (format "  Moved to point: %4d\n  : %s%s\n  : %s\n"
-                                                  end-point position current-line carrot)))))
+                                                  end-point position current-line carrot))
+                    debug-msg (concat debug-msg
+                                      (format ", moved point to %s"
+                                              (t-utils--get-point-for-display (point)))))))
 
           ;; Record buffer modifications by adding what happened to result
-          (setq result (concat result
-                               (if (equal start-contents end-contents)
-                                   "  No buffer modifications\n"
-                                 (concat "  Buffer modified:\n"
-                                         "  #+begin_src diff\n"
-                                         (t-utils-diff-strings start-contents end-contents)
-                                         "  #+end_src diff\n")))))))
-    (if (and (boundp 't-utils--xr-impl-result-active)
-             t-utils--xr-impl-result-active)
+          (if (equal start-contents end-contents)
+              (setq result (concat result "  No buffer modifications\n")
+                    debug-msg (concat debug-msg ", no buffer modifications"))
+            (setq result (concat result
+                                 "  Buffer modified:\n"
+                                 "  #+begin_src diff\n"
+                                 (t-utils-diff-strings start-contents end-contents)
+                                 "  #+end_src diff\n")
+                  debug-msg (concat debug-msg ", buffer modified")))
+
+          (when (not (t-utils--use-xr-impl-result))
+            ;; Display debugging info for interactive evaluation of (t-utils-xr COMMANDS)
+            (read-string (concat debug-msg "\n" "Enter to continue:"))))))
+
+    (if (t-utils--use-xr-impl-result)
         (progn
           (setq t-utils--xr-impl-result result)
           nil)
