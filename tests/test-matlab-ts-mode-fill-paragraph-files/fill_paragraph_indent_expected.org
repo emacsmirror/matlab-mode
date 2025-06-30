@@ -1,0 +1,49 @@
+#+startup: showall
+
+* Executing commands from fill_paragraph_indent.m:4:6:
+
+  (t-utils-xr (set-fill-column 60) "C-n" "M-q")
+
+- Invoking      : (set-fill-column 60)
+  Start point   :  108
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  108
+  Moved to point:  118
+  : 5:9:  if a > 2
+  :               ^
+  No buffer modifications
+
+- Invoking      : "M-q" = prog-fill-reindent-defun
+  Start point   :  118
+  Moved to point:  121
+  : 5:12:     if a > 2
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,13 +2,13 @@
+ function b = fill_paragraph_indent
+ 
+     % (t-utils-xr (set-fill-column 60) "C-n" "M-q")
+- if a > 2
+-b= 1;
+-      end
+-s1 = "a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string ";
+-              disp(s1);
++    if a > 2
++        b= 1;
++    end
++    s1 = "a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string ";
++    disp(s1);
+ 
+-   s2 = "foo"; % a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment
++    s2 = "foo"; % a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment  a long comment
+ 
+-       disp(s2);
++    disp(s2);
+ end
+  #+end_src diff

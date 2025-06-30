@@ -31,9 +31,9 @@
 #+latex_header: \advance\cftsubsecindent 0.5em\relax
 #+latex_header: \advance\cftsubsecnumwidth 0.5em\relax
 
-#+title: How to Create an Emacs Tree-Sitter Major Mode
+#+title: How to Create and Test an Emacs Tree-Sitter Major Mode
 #+author: John Ciolfi
-#+date: Jun-25-2025
+#+date: Jun-30-2025
 
 * TODO
 
@@ -753,7 +753,7 @@ where test-LANGUAGE-ts-mode-indent.el contains:
 
 #+end_src
 
-* Syntax Table and Comments
+* Syntax Table
 
 The Emacs "syntax table" is not related to the syntax tree created by tree-sitter. A syntax tree
 represents the hierarchical structure of your source code, giving a structural blueprint of your
@@ -991,7 +991,30 @@ We follow a similar pattern for writing syntax table tests.
 
 #+end_src
 
-** Comment tests
+* Fill paragraph, M-q
+
+=M-q= is bound to =prog-fill-reindent-defun= from =prog-mode=, which when the point is in a comment
+will fill the comment. If the point is in code it will indent the code. If the point is in a string,
+M-q will fill the string like it's plain text, which can result in syntax errors. This is expected
+behavior because one can then fix the syntax behaviors by adding appropriate string
+continuations. There's no way to alter the string filling behavior besides using defadvice, which
+you should not do.
+
+If your syntax table correctly identifies comments and strings, then it M-q just works, though you
+should still add tests to validate it works.  If you'd like tree-sitter nodes other than comments
+and strings to be filled like plain text, you should add a =text= entry to =treesit-thing-settings=,
+e.g. if nodeName1 and nodeName2 should be filled like plain text, use:
+
+ #+begin_src emacs-lisp
+ (defvar LANGAUAGE-ts-mode--thing-settings
+  `((LANGUAGE
+     (text ,(rx (or "nodeName1" "nodeName2"))))))
+ #+end_src
+
+and in defun of LANGUAGE-ts-mode, add =(setq-local treesit-thing-settings
+LANGUAGE-ts-mode--thing-settings)= after you've setup your syntax table.
+
+** Fill paragraph tests
 
 TODO
 
@@ -1489,3 +1512,14 @@ well worth writing a tree-sitter mode.
     			  (skip-chars-forward " \t")
     			  (point))))
   #+end_src
+
+- [ ] M-q (prog-fill-reindent-defun), when the point is in a string and you type M-q it will
+  split long strings into multiple lies which results in syntax errors in some languages, e.g. C.
+
+  : char * str = "a very long string a very long string a very long string a very long string a very long string a very long string a very long string a very long string ";
+
+  TODO validate this occurs with c-ts-mode.
+
+  Would like an option to have M-q indent or fill comments. When in a string it should indent.
+  Though ideally, it should correctly break the string into multiple lines so there's no semantic
+  difference.
