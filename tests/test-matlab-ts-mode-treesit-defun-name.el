@@ -22,7 +22,7 @@
 ;; Validate matlab-ts-mode indent.
 ;; Load ../matlab-ts-mode.el via require and run indent tests using
 ;; ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.org
+;; ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt
 ;;
 
 ;;; Code:
@@ -34,16 +34,16 @@
   "Test defun movement using ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m.
 Using ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m, compare defun
 movement against
-./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.org.  If M-FILE is
+./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt.  If M-FILE is
 not provided, loop comparing all
 ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m
 and run this function.  The baseline is saved for you as
-  ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.org~
+  ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt~
 after validating it, rename it to
-  ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.org"
+  ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt"
 
   (let ((test-name "test-matlab-ts-mode-treesit-defun-name"))
 
