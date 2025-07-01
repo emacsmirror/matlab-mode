@@ -62,6 +62,7 @@ after validating it, rename it to
                            ("h" . font-lock-doc-face) ;; function doc help comment
                            ("H" . matlab-ts-comment-heading-face) ;; %% comment heading
                            ("k" . font-lock-keyword-face)
+                           ("M" . matlab-ts-comment-to-do-marker-face)
                            ("n" . font-lock-constant-face) ;; numbers
                            ("s" . font-lock-string-face)
                            ("S" . matlab-ts-string-delimiter-face)

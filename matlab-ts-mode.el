@@ -62,6 +62,17 @@
        :bold t))
   "Face for \"%% code section\" headings when NOT in matlab-sections-minor-mode.")
 
+(defface matlab-ts-comment-to-do-marker-face
+  '((((class color) (background light))
+     :inherit font-lock-comment-face
+     :background "yellow"
+     :weight bold)
+    (((class color) (background dark))
+     :inherit font-lock-comment-face
+     :background "yellow4"
+     :weight bold))
+  "*Face use to highligh to do markers in comments.")
+
 (defcustom matlab-ts-font-lock-level 4
   "Level of font lock, 1 for minimum syntax highlighting and 4 for maximum."
   :type '(choice (const :tag "Minimal" 1)
@@ -311,6 +322,43 @@ START and END specify the region to be fontified."
      (treesit-node-start comment-node) (treesit-node-end comment-node)
      font-lock-doc-face override start end)))
 
+(defun matlab-ts-mode--comment-heading-capture (comment-node override start end &rest _)
+  "Fontify \"%% heading\" comment lines.
+COMMENT-NODE is the tree-sitter node containing \"%% heading\" lines.
+treesit-font-lock-rules rule and OVERRIDE is from that rule.
+START and END specify the region to be fontified."
+  (save-excursion
+    (goto-char start)
+    (while (< (point) end)
+      (when (looking-at "^[ \t]+\\(%%\\(?:[ \t].+\\)?\\)$")
+        (let ((heading-start (match-beginning 1))
+              (heading-end (match-end 1)))
+          (treesit-fontify-with-override
+           (treesit-node-start comment-node) (treesit-node-end comment-node)
+           'matlab-ts-comment-heading-face override heading-start heading-end)))
+      (forward-line))))
+
+(defun matlab-ts-mode--comment-to-do-capture (comment-node override start end &rest _)
+  "Fontify comment to do markers.
+COMMENT-NODE is the tree-sitter comment node.
+treesit-font-lock-rules rule and OVERRIDE is from that rule.
+START and END specify the region to be fontified."
+  (save-excursion
+    (goto-char start)
+    (let ((case-fold-search nil))
+      (while (< (point) end)
+        (if (re-search-forward (rx word-start (group (or (seq "FIX" "ME")
+                                                         (seq "X" "XX")
+                                                         (seq "TO" "DO")))
+                                   word-end)
+                               end t)
+            (let ((keyword-start (match-beginning 1))
+                  (keyword-end (match-end 1)))
+              (treesit-fontify-with-override
+               (treesit-node-start comment-node) (treesit-node-end comment-node)
+               'matlab-ts-comment-to-do-marker-face override keyword-start keyword-end))
+          (goto-char end))))))
+
 (defvar matlab-ts-mode--font-lock-settings
   (treesit-font-lock-rules
 
@@ -325,10 +373,16 @@ START and END specify the region to be fontified."
    :feature 'comment
    :override t
    '(((comment) @matlab-ts-pragma-face (:match "^%#.+$" @matlab-ts-pragma-face)) ;; %#pragma's
-     ((comment) @matlab-ts-comment-heading-face ;; %% comment heading
-      (:match "^%%\\(?:[ \t].+\\)?$" @matlab-ts-comment-heading-face))
+     ((comment) @matlab-ts-mode--comment-heading-capture) ;; %% comment heading
+
      (function_definition (comment) @matlab-ts-mode--doc-comment-capture) ;; doc help comments
      (class_definition (comment) @matlab-ts-mode--doc-comment-capture)) ;; doc help comments
+
+   ;; F-Rule: fix-me, etc. comment keywords
+   :language 'matlab
+   :feature 'comment
+   :override t
+   '(((comment) @matlab-ts-mode--comment-to-do-capture))
 
    ;; F-Rule: keywords: if, else, etc.
    :language 'matlab
@@ -744,7 +798,7 @@ expression."
 
     ;; TODO Highlight parens OR if/end type blocks
     ;; TODO Electric pair mode
-    
+
     ;; TODO - Menu's
 
     (treesit-major-mode-setup)))

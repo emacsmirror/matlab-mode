@@ -1,12 +1,22 @@
 c ccc ccccccccc ccc
 kkkkkkkk bvD vb d ffffffffffffffffffff
 h hhhh hhh hhhhhhhhhhhhhhhhhhhh
+h
+h h hhhhh h hhhhhhh hhhhhhh hh hhh hhh hhhhhhh
+h
 
-     HH HHHHHHH HHHHHHH H
+    c cccc cccccc ccccccc
+    HH HHHHHHH HHHHHHH H
+    c
+    c cccc ccccccc
+    c
+    HH HHHHHHH HHHHHHH H HHHHHH HHH HHHHHHH
+    c
+    c cccc cccc
 
-     d d nD
+    d d nD
 
-     HH HHHHHHH HHHHHHH H
+    HH HHHHHHH HHHHHHH H
 
-     d d nD
+    d d nD
 kkk
