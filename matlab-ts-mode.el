@@ -347,6 +347,8 @@ START and END specify the region to be fontified."
     (goto-char start)
     (let ((case-fold-search nil))
       (while (< (point) end)
+        ;; Note, the markers below have spaces in them so we don't find them when typing C-s
+        ;; while editing this file.
         (if (re-search-forward (rx word-start (group (or (seq "FIX" "ME")
                                                          (seq "X" "XX")
                                                          (seq "TO" "DO")))
@@ -481,6 +483,63 @@ START and END specify the region to be fontified."
 (defvar matlab-ts-mode--array-indent-level 2
   "Indentation level for elements in an array.")
 
+;; `matlab-ts-mode--function-indent-level'
+;;
+;; It is recommended that all function statemements have terminating end statements.  In some cases
+;; for compatibilty MATLAB doesn't require a function end statement.  When functions do not have an
+;; end, we don't indent the body of the function per older MATLAB coding standard.  Example:
+;;
+;;     function a = fcn1    |    function a = fcn2
+;;     a = 1;               |        a = 1;
+;;                          |    end
+;;
+;; If a *.m file contains functions, and one of the functions is terminated with end, then every
+;; function in the file must be terminated with end.  If a *.m file contains a function with one or
+;; more nested functions, then every function in the file must be terminated with end.  If a script
+;; contains one or more local functions, then every function in the file must be terminated with
+;; end.
+;;
+;; When we enter `matlab-ts-mode', we examine the content and set the state of this variable.  If
+;; matlab-ts--function-indent-level is nil, while editing, if functions become terminated with
+;; ends, we set this to t.  We never go from t to nil because it's easy to get in a temporary nil
+;; state during edits and we don't want to cause unexpected indentation behavior.")
+
+(defvar-local matlab-ts-mode--function-indent-level 'unset
+  "Function indent level is 0 or `matlab-ts-mode--indent-level'.")
+
+(defun matlab-ts-mode--set-function-indent-level (&optional _node parent _bol &rest _)
+  "Setup the function indent level for end vs end-less functions.
+For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
+
+  ;; - When matlab-ts-mode--function-indent-level is 'unset we set this to
+  ;;     0 or matlab-ts-mode--indent-level
+  ;;   based on the buffer content.
+  ;; - Otherwise, matlab-ts-mode--function-indent-level is 0, we will "upgrade" it to
+  ;;   matlab-ts-mode--indent-level if function end's appear.
+
+  (let ((root (if (and parent (string= (treesit-node-type parent) "function_definition"))
+                  parent
+                (treesit-buffer-root-node))))
+    (if (treesit-search-subtree (treesit-buffer-root-node) "^ERROR$")
+        ;; If we have syntax errors, assume that functions will have ends when entering
+        ;; matlab-ts-mode, otherwise leave matlab-ts--function-indent-level unchanged.
+        (when (equal matlab-ts-mode--function-indent-level 'unset)
+          (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level))
+      (let ((first-fcn (treesit-search-subtree root (rx bol "function_definition" eol))))
+        (if (not first-fcn)
+            ;; assume that if functions are added they will have ends
+            (setq-local matlab-ts--function-indent-level t)
+          (let ((have-end (string= (treesit-node-type (treesit-node-child first-fcn -1)) "end")))
+            (if (equal matlab-ts-mode--function-indent-level 'unset)
+                (setq-local matlab-ts-mode--function-indent-level
+                            (if have-end
+                                matlab-ts-mode--indent-level
+                              0))
+              (when have-end
+                (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level))
+              ))))))
+  matlab-ts-mode--function-indent-level)
+
 (defun matlab-ts-mode--prev-real-line (_n _p bol &rest _)
   "Return point of first non-whitespace looking backward.
 BOL, beginning-of-line point, is where to start from."
@@ -584,9 +643,17 @@ expression."
       parent ,matlab-ts-mode--switch-indent-level)
 
      ;; I-Rule: nested functions
-     ((n-p-gp ,(rx bol "function_definition" eol) ,(rx bol "block" eol)
+     ((n-p-gp ,(rx bol "function_definition" eol)
+              ,(rx bol "block" eol)
               ,(rx bol "function_definition" eol))
       parent 0)
+
+     ;; I-Rule: elseif, else, catch, end statements go back to parent level
+     ((node-is ,(rx bol (or "elseif_clause" "else_clause" "catch_clause" "end") eol)) parent 0)
+
+     ;; I-Rule: function's
+     ((parent-is ,(rx bol "function_definition" eol))
+      parent ,#'matlab-ts-mode--set-function-indent-level)
 
      ;; I-Rule: constructs within classdef or function's.
      ((node-is ,(rx bol (or "arguments_statement" "block" "enumeration" "enum" "methods" "events"
@@ -594,10 +661,7 @@ expression."
                     eol))
       parent ,matlab-ts-mode--indent-level)
 
-     ;; I-Rule: elseif, else, catch, end statements go back to parent level
-     ((node-is ,(rx bol (or "elseif_clause" "else_clause" "catch_clause" "end") eol)) parent 0)
-
-     ;; I-Rule: code in if, for, methods, function, arguments statements
+     ;; I-Rule: code in if, for, methods, arguments statements, etc.
      ((parent-is ,(rx bol (or "if_statement" "for_statement" "while_statement"
                               "methods" "events" "enumeration"
                               "function_definition" "arguments_statement")
@@ -777,6 +841,7 @@ expression."
                                                  (syntax-error)))
 
     ;; Indent. See: ./tests/test-matlab-ts-mode-indent.el
+    (matlab-ts-mode--set-function-indent-level)
     (setq-local indent-tabs-mode nil) ;; for consistency between Unix and Windows we don't use TABs.
     (setq-local treesit-simple-indent-rules
                 (if treesit--indent-verbose ;; add debugging print as first rule?

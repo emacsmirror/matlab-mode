@@ -223,6 +223,8 @@ You should now be able to use:
 
 * Font-lock
 
+TODO - add FIXME, XXX, and TODO marker coloring.
+
 Queries are needed to identify syntax tree nodes to semantically color language elements
 (font-lock). See [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Pattern-Matching.html][Emacs manual - Pattern Matching Tree-sitter Nodes]]. You can use =M-x
 treesit-explore-mode= to see the nodes of the syntax tree.
@@ -1593,3 +1595,41 @@ well worth writing a tree-sitter mode.
 
   TODO verify
 
+* new matlab-ts-mode
+
+  1. Improved font-lock (semantic coloring) performance, making editing even more smooth.
+
+  2. More accurate fontification, we now identify language elements accurately and use
+     more faces to color them.
+
+  3. Fixes edge-case fontification issues when compared with matlab-mode
+
+     Create issue for this:
+       #+begin_src matlab-ts
+       x = [1 2; 3 4];
+       y = x''               % this is valid double transpose where matlab-mode gets it wrong
+       #+end_src
+
+     Function identification, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/48
+
+  4. In comments, we now highlight =FIXME=, =TODO=, and =XXX= markers.
+
+  5. Simplifies the semantics for indent. The indent rules are:
+
+     - TODO
+
+  6. Improved indent performance, making editing even more smooth.
+
+  7. Fixes various edge-case indent issues, some are
+
+     - Auto-indentation of end, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/33
+
+  8. There's no longer prompting if you want functions to have end's. This is now computed
+     automatically
+
+  9. Improved fill-paragraph, M-q, which will now fill comments and when not in a comment, indent
+     the current function or statement.
+
+  10. Accurate type of m-file detection, which improves matlab-sections-minor-mode.
+
+      TODO
