@@ -24,9 +24,10 @@
 
 ;;; Code:
 
-(require 'cl-seq)
 (require 'cl-macs)
+(require 'cl-seq)
 (require 'diff)
+(require 'treesit)
 
 ;; Add abs-path of ".." to load-path so we can require packages from above us.
 (let* ((lf (or load-file-name (buffer-file-name (current-buffer))))
@@ -619,9 +620,10 @@ match NAME_expected.txt, NAME_expected.EXT~ will be created.  You are
 then instructured to validate the indent and rename NAME_expected.EXT~
 to NAME_expected.EXT.
 
-To add a test for TEST-NAME.el, in it's corresponding TEST-NAME-files/
-directory, create TEST-NAME-files/NAME.EXT, then run the test.  Follow
-the messages to accept the generated baseline after validating it.
+To add a test for TEST-NAME.el which call this function, in the
+corresponding TEST-NAME-files/ directory, create
+TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+accept the generated baseline after validating it.
 
 Two methods are used to indent each file in LANG-FILES,
  1. (indent-region (point-min) (point-man))
@@ -676,14 +678,15 @@ See `t-utils--test-indent-type' for LINE-MANIPULATOR."
 Compare syntax-table of each NAME.EXT in LANG-FILES against NAME_expected.txt.
 TEST-NAME is used in messages.
 
-If NAME_expected.txt does not exist or the syntax-table of NAME.txt doesn't
+If NAME_expected.txt does not exist or the syntax-table of NAME.ext doesn't
 match NAME_expected.txt, NAME_expected.txt~ will be created.  You are
 then instructured to validate the syntax-table and rename NAME_expected.txt~
 to NAME_expected.txt.
 
-To add a test for TEST-NAME.el, in it's corresponding TEST-NAME-files/
-directory, create TEST-NAME-files/NAME.EXT, then run the test.  Follow
-the messages to accept the generated baseline after validating it."
+To add a test for TEST-NAME.el which call this function, in the
+corresponding TEST-NAME-files/ directory, create
+TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+accept the generated baseline after validating it."
 
   (dolist (lang-file lang-files)
     (with-temp-buffer
@@ -714,6 +717,64 @@ the messages to accept the generated baseline after validating it."
               (setq got (concat got (format "  %2s: %S\n" char (syntax-ppss (point))))))
 
             (forward-char))
+
+          (kill-buffer)
+          (when (not (string= got expected))
+            (let ((coding-system-for-write 'raw-text-unix))
+              (write-region got nil got-file))
+            (when (not expected)
+              (error "Baseline for %s does not exists.  \
+See %s and if it looks good rename it to %s"
+                     lang-file got-file expected-file))
+            (error "Baseline for %s does not match, got: %s, expected: %s"
+                   lang-file got-file expected-file)))
+        (message "PASS: %s %s %s" test-name lang-file (t-utils--took start-time))))))
+
+(defun t-utils-test-treesit-defun-name (test-name lang-files)
+  "Test `treesit-defun-name-function' setup.
+Compare the result of `treesit-defun-name-function' against each
+tree-sitter node in each NAME.EXT of LANG-FILES against
+NAME_expected.txt.  TEST-NAME is used in messages.
+
+If NAME_expected.txt does not exist or the result from NAME.EXT doesn't
+match NAME_expected.txt, NAME_expected.txt~ will be created.  You are
+then instructured to validate the syntax-table and rename NAME_expected.txt~
+to NAME_expected.txt.
+
+To add a test for TEST-NAME.el which call this function, in the
+corresponding TEST-NAME-files/ directory, create
+TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+accept the generated baseline after validating it."
+
+  (dolist (lang-file lang-files)
+    (with-temp-buffer
+
+      (let ((start-time (current-time)))
+        (message "START: %s %s" test-name lang-file)
+
+        (t-utils--insert-file-for-test lang-file)
+
+        (let* ((root (treesit-buffer-root-node))
+               (expected-file (replace-regexp-in-string "\\.[^.]+$" "_expected.txt" lang-file))
+               (expected (when (file-exists-p expected-file)
+                           (with-temp-buffer
+                             (insert-file-contents-literally expected-file)
+                             (buffer-string))))
+               (got "")
+               (got-file (concat expected-file "~")))
+
+          (treesit-search-subtree
+           root
+           (lambda (node)
+             (let ((defun-name (funcall treesit-defun-name-function node))
+                   (node-type (replace-regexp-in-string "\n" "\\n" (treesit-node-type node)))
+                   (node-start (treesit-node-start node))
+                   (node-end (treesit-node-end node)))
+               (setq got (concat
+                          got
+                          (format "Node %25s at %4d to %4d: defun-name = %s\n"
+                                  node-type node-start node-end (if defun-name defun-name "nil")))))
+             nil))
 
           (kill-buffer)
           (when (not (string= got expected))

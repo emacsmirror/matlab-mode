@@ -789,6 +789,17 @@ expression."
     )
   "Tree-sitter rules that things for movement.")
 
+;;---------------------;;
+;; Section: Change Log ;;
+;;---------------------;;
+
+(defun matlab-ts-mode--defun-name (node)
+  "Return the defun name of NODE for Change Log entries."
+    (when (string-match-p
+           (rx bol (or "function_definition" "class_definition") eol)
+           (treesit-node-type node))
+      (treesit-node-text (treesit-node-child-by-field-name node "name"))))
+
 ;;-------------------------;;
 ;; Section: matlab-ts-mode ;;
 ;;-------------------------;;
@@ -817,12 +828,10 @@ expression."
     ;; See: ./tests/test-matlab-ts-mode-page.el
     (setq-local page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
 
-    ;; TODO function end handling
-    ;; TODO add strings to syntax table?
+    ;; TODO function name vs file name prompt to fix
     ;; TODO what about syntax table and electric keywords?
     ;; TODO function / end match like matlab-mode
     ;; TODO code folding
-    ;; TODO fill paragraph, etc. look at c-ts-common.el
     ;; TODO outline: look at https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
     ;; TODO imenu: look at https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
     ;; TODO handle file name mismatch between function / classdef name
@@ -853,8 +862,8 @@ expression."
     ;; Movement. See: tests/test-matlab-ts-mode-movement.el
     (setq-local treesit-thing-settings matlab-ts-mode--thing-settings)
 
-    ;; TODO's
-    (setq-local treesit-defun-name-function nil) ;; TODO
+    ;; Change Logs. See: tests/test-matlab-ts-mode-treesit-defun-name.el
+    (setq-local treesit-defun-name-function #'matlab-ts-mode--defun-name)
 
     (setq-local treesit-simple-imenu-settings nil) ;; TODO
     ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist/

@@ -1054,6 +1054,16 @@ LANGUAGE-ts-mode--thing-settings)= after you've setup your syntax table.
 
 TODO
 
+* treesit-defun-name-function
+
+Emacs supports the concept of Change Logs for documentating changes.  With version control systems
+like git, there's less need for Change Logs, though the format of the Change Logs.  In Emacs using
+=C-x 4 a= (add-change-log-entry-other-window) will end up calling =add-log-current-defun= which
+defers to the =treesit-defun-name-function= to get information for the entry to add to the log file.
+
+TODO
+
+
 * IMenu
 
 Emacs =M-g i= (=M-x imenu=), makes it easy to jump to items in your file. If our mode populates
@@ -1633,3 +1643,8 @@ well worth writing a tree-sitter mode.
   10. Accurate type of m-file detection, which improves matlab-sections-minor-mode.
 
       TODO
+
+  11. Change Log command now work with MATALB *.m files.
+
+      Running =C-x 4 a= (add-change-log-entry-other-window) will now insert the name of the function
+      or classdef for the current point.
