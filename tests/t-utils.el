@@ -407,6 +407,8 @@ for this example is:
             ;; the result and instead returns the result via global t-utils--xr-impl-result. This
             ;; prevents the result text from being displayed when run via emacs --batch. However,
             ;; we still see 'nil' displayed, but I don't think there's much we can do about that.
+            ;; Note, using: (let ((standard-output (lambda (_)))) (eval-last-sexp nil))
+            ;; still causes nil to be displayed when run from emacs --batch.
             (setq t-utils--xr-impl-result-active t)
             (condition-case err
                 (progn
