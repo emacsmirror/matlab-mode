@@ -37,6 +37,8 @@
 
 * TODO
 
+- [ ] Clean up flow and make a real mode, e.g. my-c-ts-mode with file extension .my_c.
+- [ ] Clean up the testing. This is a work in progress and needs many fixes.
 - [ ] Add sweep test for indent
       - (directory-files-recursively DIR "\\.m$")
       - On each file, check parse tree for ERROR nodes and see if it really has an error by running
@@ -1063,15 +1065,39 @@ defers to the =treesit-defun-name-function= to get information for the entry to 
 
 TODO
 
-
 * IMenu
 
 Emacs =M-g i= (=M-x imenu=), makes it easy to jump to items in your file. If our mode populates
 imenu with the location of the function definitions, we can quickly jump to them by name. You can
 also leverage [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Which-Function.html][M-x which-function-mode]] to have Emacs display the imenu entry for the current point in
-the mode line.
+the mode line. You can view imenu in a sidebar window, using, [[https://github.com/oantolin/embark][embark]], [[https://github.com/rnkn/side-hustle][side-hustle]], or [[https://github.com/bmag/imenu-list][imenu-list.]]
 
-To populate imenu,
+To populate imenu, in LANGUAGE-ts-mode, we setup =treesit-simple-imenu-settings=, where each element
+is of form =(category regexp pred name-fn)=, but form many languages, you only need to specify the
+first two elements.  When name-fcn is nil the imenu names are generated the
+=treesit-defun-name-function= which we already setup.
+
+#+begin_src emacs-lisp
+  (defvar LANGUAGE-ts-mode--imenu-settings
+    `(("Class" ,(rx bol "class_definition" eol))
+      ("Function" ,(rx bol "function_definition" eol)))
+    "Tree-sitter imenu setttings.")
+
+  ;; <snip>
+
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE:ts"
+    ;; <snip>
+    (setq-local treesit-defun-name-function #LANGUAGE-ts-mode--defun-name)
+    (setq-local treesit-simple-imenu-settings LANGUAGE-ts-mode--imenu-settings)
+    ;; <snip>
+    )
+#+end_src
+
+Alternatively, for complex languages, you can =(setq-local imenu-create-index-function
+#'LANGUAGE-ts-imenu-create-index)= and within =LANGUAGE-ts-imenu-create-index=, walk the tree-sitter
+parse tree and generate the index.
+
+* Final version
 
 TODO
 

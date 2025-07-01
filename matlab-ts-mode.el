@@ -785,9 +785,13 @@ expression."
 (defvar matlab-ts-mode--thing-settings
   `((matlab
      (defun ,(rx bol "function_definition" eol)))
-    ;; TODO sexp, text, sentance - see c-ts-mode--thing-settings
+    ;; Future possibility, setup sexp, text, sentance.
+    ;; - Setup sexp, text for C-M-f C-M-b, but how do we define balanced expressions?
+    ;;   Note setting text alters code path for M-; (comment-dwim), but shouldn't
+    ;;   change behavior.
+    ;; - Setup sentance for M-e (forward-sentance), but how do we define a sentance?
     )
-  "Tree-sitter rules that things for movement.")
+  "Tree-sitter things for movement.")
 
 ;;---------------------;;
 ;; Section: Change Log ;;
@@ -799,6 +803,14 @@ expression."
            (rx bol (or "function_definition" "class_definition") eol)
            (treesit-node-type node))
       (treesit-node-text (treesit-node-child-by-field-name node "name"))))
+
+;;----------------;;
+;; Section: imenu ;;
+;;----------------;;
+
+(defvar matlab-ts-mode--imenu-settings
+  `((nil ,(rx bol (or "function_definition" "class_definition") eol)))
+  "Tree-sitter imenu setttings.")
 
 ;;-------------------------;;
 ;; Section: matlab-ts-mode ;;
@@ -828,13 +840,11 @@ expression."
     ;; See: ./tests/test-matlab-ts-mode-page.el
     (setq-local page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
 
-    ;; TODO function name vs file name prompt to fix
+    ;; TODO function/classdef name vs file name prompt to fix
     ;; TODO what about syntax table and electric keywords?
     ;; TODO function / end match like matlab-mode
     ;; TODO code folding
     ;; TODO outline: look at https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
-    ;; TODO imenu: look at https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
-    ;; TODO handle file name mismatch between function / classdef name
     ;; TODO face for all built-in functions such as dbstop, quit, sin, etc.
     ;;   https://www.mathworks.com/help/matlab/referencelist.html?type=function&category=index&s_tid=CRUX_lftnav_function_index
     ;;   https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
@@ -865,15 +875,20 @@ expression."
     ;; Change Logs. See: tests/test-matlab-ts-mode-treesit-defun-name.el
     (setq-local treesit-defun-name-function #'matlab-ts-mode--defun-name)
 
-    (setq-local treesit-simple-imenu-settings nil) ;; TODO
+    ;; TODO - lsp-mode and imenu
+    ;; I think we need (setq-local lsp-enable-imenu nil) when lsp-mode is used.  Can we find a
+    ;; automatic way to do this? See:
     ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist/
+
+    (setq-local treesit-simple-imenu-settings matlab-ts-mode--imenu-settings)
+
+    ;; 
+    ;; https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
 
     (setq-local treesit-outline-predicate nil) ;; TODO
 
     ;; TODO Highlight parens OR if/end type blocks
     ;; TODO Electric pair mode
-
-    ;; TODO - Menu's
 
     (treesit-major-mode-setup)))
 
