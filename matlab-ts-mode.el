@@ -928,15 +928,18 @@ Returns t if tree-sitter NODE defines an outline heading."
     ;; Change Logs. See: tests/test-matlab-ts-mode-treesit-defun-name.el
     (setq-local treesit-defun-name-function #'matlab-ts-mode--defun-name)
 
+    ;; M-x imenu
+    ;; See: ./tests/test-matlab-ts-mode-imenu.el
+    ;;
     ;; TODO - lsp-mode and imenu
     ;; I think we need (setq-local lsp-enable-imenu nil) when lsp-mode is used.  Can we find a
     ;; automatic way to do this? See:
     ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist/
-
     (setq-local imenu-create-index-function #'matlab-ts-mode--imenu-create-index)
 
-    ;; TODO outline: look at https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
-    (setq-local treesit-outline-predicate #'matlab-ts-mode--outline-predicate) ;; TODO
+    ;; M-x outline-minor-mode
+    ;; See: ./tests/test-matlab-ts-mode-outline.el
+    (setq-local treesit-outline-predicate #'matlab-ts-mode--outline-predicate)
 
     ;; TODO Highlight parens OR if/end type blocks
     ;; TODO Electric pair mode
