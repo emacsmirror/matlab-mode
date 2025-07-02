@@ -32,7 +32,10 @@
                      (indent-tabs-mode . nil)
                      ;; Monitors are quite large and lisp code often has long variable / function
                      ;; names, so using a fill-column of 100 seems reasonable.
-                     (fill-column . 100)))
+                     (fill-column . 100)
+		     ;; page-delimiter is used by forward-page "C-x ]", and backward-page "C-x ["
+		     (page-delimiter . "^;;; ")
+		     ))
  (org-mode . ((indent-tabs-mode . nil)
 	      (fill-column . 100))))
 

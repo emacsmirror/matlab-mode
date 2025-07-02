@@ -39,6 +39,9 @@
 
 - [ ] Clean up flow and make a real mode, e.g. my-c-ts-mode with file extension .my_c.
 - [ ] Clean up the testing. This is a work in progress and needs many fixes.
+- [ ] Font-lock
+  (setq treesit--font-lock-verbose t)
+  Fontifying text from START-POINT to END-POINT, Face: FACE, Node: TYPE
 - [ ] Add sweep test for indent
       - (directory-files-recursively DIR "\\.m$")
       - On each file, check parse tree for ERROR nodes and see if it really has an error by running
@@ -51,6 +54,7 @@
   + validate we replaced: matlab => LANGUAGE, .m => .lang, m-file => lang-file
   + double check our t-utils.el programatically insert it
   + programatically insert all tests?
+
 
 * Guide to building a tree-sitter mode
 
@@ -1659,27 +1663,34 @@ well worth writing a tree-sitter mode.
 
   4. In comments, we now highlight =FIXME=, =TODO=, and =XXX= markers.
 
-  5. Simplifies the semantics for indent. The indent rules are:
+  5. Fixed fontification of "%% section" to require that the be the start of a comment and
+     on their own line.
+
+  6. Simplifies the semantics for indent. The indent rules are:
 
      - TODO
 
-  6. Improved indent performance, making editing even more smooth.
+  7. Improved indent performance, making editing even more smooth.
 
-  7. Fixes various edge-case indent issues, some are
+  8. Fixes various edge-case indent issues, some are
 
      - Auto-indentation of end, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/33
 
-  8. There's no longer prompting if you want functions to have end's. This is now computed
+  9. There's no longer prompting if you want functions to have end's. This is now computed
      automatically
 
-  9. Improved fill-paragraph, M-q, which will now fill comments and when not in a comment, indent
-     the current function or statement.
+  10. Improved fill-paragraph, M-q, which will now fill comments and when not in a comment, indent
+      the current function or statement.
 
-  10. Accurate type of m-file detection, which improves matlab-sections-minor-mode.
+  11. Accurate type of m-file detection, which improves matlab-sections-minor-mode.
 
       TODO
 
-  11. Change Log command now work with MATALB *.m files.
+  12. Change Log command now work with MATALB *.m files.
 
       Running =C-x 4 a= (add-change-log-entry-other-window) will now insert the name of the function
       or classdef for the current point.
+
+  13. Added support for =M-x outline-minor-mode=. Outline headings are =function='s, =classdef='s,
+      and "%% heading" comments.
+

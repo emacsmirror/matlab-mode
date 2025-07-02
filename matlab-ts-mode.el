@@ -37,9 +37,7 @@
 
 (require 'treesit)
 
-;;-------------------------;;
-;; Section: Customizations ;;
-;;-------------------------;;
+;;; Customizations
 
 (defgroup matlab-ts nil
   "MATLAB(R) tree-sitter mode."
@@ -71,18 +69,31 @@
      :inherit font-lock-comment-face
      :background "yellow4"
      :weight bold))
-  "*Face use to highligh to do markers in comments.")
+  ;; Note we split up the markers with spaces below so C-s when editing this file
+  ;; doesn't find them.
+  (concat "*Face use to highlight "
+          "TO" "DO," " FIX" "ME," " and XX" "X markers ignoring case in comments.
+Guidelines:
+ - FIX" "ME" " and XX" "X markers should be fixed prior to committing
+   code to a source repository.
+ - TO" "DO markers can remain in code and be committed with the code to a
+   source repository.  TO" "DO markers should reflect improvements are are
+   not problems with the existing code."))
 
 (defcustom matlab-ts-font-lock-level 4
-  "Level of font lock, 1 for minimum syntax highlighting and 4 for maximum."
+  "*Level of font lock, 1 for minimal syntax highlighting and 4 for maximum."
   :type '(choice (const :tag "Minimal" 1)
 		 (const :tag "Low" 2)
 		 (const :tag "Standard" 3)
 		 (const :tag "Standard plus parse errors" 4)))
 
-;;-----------------------;;
-;; Section: Syntax table ;;
-;;-----------------------;;
+;;; Global variables used in multiple code ";;; sections"
+
+(defvar matlab-ts-mode--comment-heading-re
+  "^[ \t]*\\(%%\\(?:[ \t].+\\)?\\)$"
+  "Regexp matching \"%% headings\" lines.")
+
+;;; Syntax table
 
 (defvar matlab-ts-mode--syntax-table
   (let ((st (make-syntax-table (standard-syntax-table))))
@@ -177,9 +188,7 @@ as comments which is how they are treated by MATLAB."
 	    (matlab-ts-mode--put-char-category (point) 'matlab-ts-mode--ellipsis-syntax)
           (goto-char (point-max)))))))
 
-;;--------------------;;
-;; Section: font-lock ;;
-;;--------------------;;
+;;; font-lock
 
 (defvar matlab-ts-mode--keywords
   ;; Nodes like "if" are captured by their text because they are part of a bigger node that captures
@@ -316,53 +325,54 @@ Similar behavior for classdef's."
 
 (defun matlab-ts-mode--doc-comment-capture (comment-node override start end &rest _)
   "Fontify function/classdef documentation comments.
-COMMENT-NODE is the tree-sitter node from the \"doc comments\"
-treesit-font-lock-rules rule and OVERRIDE is from that rule.
-START and END specify the region to be fontified."
+COMMENT-NODE is the tree-sitter node from a treesit-font-lock-rules rule
+and OVERRIDE is from that rule.  START and END specify the region to be
+fontified which could be smaller or larger START and END specify the
+region to be fontified."
   (when (matlab-ts-mode--is-doc-comment comment-node (treesit-node-parent comment-node))
     (treesit-fontify-with-override
      (treesit-node-start comment-node) (treesit-node-end comment-node)
      font-lock-doc-face override start end)))
 
 (defun matlab-ts-mode--comment-heading-capture (comment-node override start end &rest _)
-  "Fontify \"%% heading\" comment lines.
-COMMENT-NODE is the tree-sitter node containing \"%% heading\" lines.
-treesit-font-lock-rules rule and OVERRIDE is from that rule.
-START and END specify the region to be fontified."
+  "Fontify the \"%% heading\" start line in COMMENT-NODE.
+COMMENT-NODE is the tree-sitter node from a treesit-font-lock-rules rule
+and OVERRIDE is from that rule.  START and END specify the region to be
+fontified which could be smaller or larger than the COMMENT-NODE
+start-point and end-point."
   (save-excursion
-    (goto-char start)
-    (while (< (point) end)
-      (when (looking-at "^[ \t]+\\(%%\\(?:[ \t].+\\)?\\)$")
-        (let ((heading-start (match-beginning 1))
-              (heading-end (match-end 1)))
-          (treesit-fontify-with-override
-           (treesit-node-start comment-node) (treesit-node-end comment-node)
-           'matlab-ts-comment-heading-face override heading-start heading-end)))
-      (forward-line))))
+    (goto-char (treesit-node-start comment-node))
+    (beginning-of-line)
+    (when (looking-at matlab-ts-mode--comment-heading-re)
+      (let ((heading-start (match-beginning 1))
+            (heading-end (match-end 1)))
+        (treesit-fontify-with-override heading-start heading-end
+                                       'matlab-ts-comment-heading-face
+                                       override start end)))))
 
 (defun matlab-ts-mode--comment-to-do-capture (comment-node override start end &rest _)
-  "Fontify comment to do markers.
-COMMENT-NODE is the tree-sitter comment node.
-treesit-font-lock-rules rule and OVERRIDE is from that rule.
-START and END specify the region to be fontified."
+  "Fontify comment to do, fix me, and triple-x markers.
+COMMENT-NODE is the tree-sitter comment node from a
+treesit-font-lock-rules rule and OVERRIDE is from that rule.  START and
+END specify the region to be fontified which could be smaller or larger
+than the COMMENT-NODE start-point and end-point."
   (save-excursion
-    (goto-char start)
-    (let ((case-fold-search nil))
-      (while (< (point) end)
-        ;; Note, the markers below have spaces in them so we don't find them when typing C-s
+    (let ((comment-end (treesit-node-end comment-node)))
+      (goto-char (treesit-node-start comment-node))
+      (while (< (point) comment-end)
+        ;; Note, the markers below have spaces in them so we don't find them when searching "C-s"
         ;; while editing this file.
-        (if (re-search-forward (rx word-start (group (or (seq "FIX" "ME")
-                                                         (seq "X" "XX")
-                                                         (seq "x" "xx")
-                                                         (seq "TO" "DO")))
+        (if (re-search-forward (rx word-start (group (or (seq "to" "do")
+                                                         (seq "fix" "me")
+                                                         (seq "x" "xx")))
                                    word-end)
-                               end t)
+                               comment-end t)
             (let ((keyword-start (match-beginning 1))
                   (keyword-end (match-end 1)))
-              (treesit-fontify-with-override
-               (treesit-node-start comment-node) (treesit-node-end comment-node)
-               'matlab-ts-comment-to-do-marker-face override keyword-start keyword-end))
-          (goto-char end))))))
+              (treesit-fontify-with-override keyword-start keyword-end
+                                             'matlab-ts-comment-to-do-marker-face
+                                             override start end))
+          (goto-char comment-end))))))
 
 (defvar matlab-ts-mode--font-lock-settings
   (treesit-font-lock-rules
@@ -473,9 +483,7 @@ START and END specify the region to be fontified."
   "The matlab-ts-mode font-lock settings.")
 
 
-;;-----------------:;
-;; Section: Indent ;;
-;;-----------------;;
+;;; Indent
 
 ;; We discourage customizing the indentation rules. Having one-style of consistent indentation makes
 ;; reading others' code easier.
@@ -781,9 +789,7 @@ expression."
      ))
   "Tree-sitter indent rules for `matlab-ts-mode'.")
 
-;;-------------------;;
-;; Section: movement ;;
-;;-------------------;;
+;;; Movement
 
 (defvar matlab-ts-mode--thing-settings
   `((matlab
@@ -793,12 +799,19 @@ expression."
     ;;   Note setting text alters code path for M-; (comment-dwim), but shouldn't
     ;;   change behavior.
     ;; - Setup sentance for M-e (forward-sentance), but how do we define a sentance?
+    ;;
+    ;; See Perl's sexp setup, https://hg.sr.ht/~pranshu/perl-ts-mode
+    ;;   Sexp navigation
+    ;;   my $r = join '-', @arr + 2 - 1;
+    ;;   The sexps (circle bracket), and sentence[square bracker] would be:
+    ;;
+    ;;   [((my) ($r)) = ((join) '-', (((@arr) + (2)) - (1)));]
+    ;;   Commands like C-M-b, C-M-f, M-e, M-a will reflect on this.
+    ;;   It makes moving around seem more fun and cool.
     )
   "Tree-sitter things for movement.")
 
-;;---------------------;;
-;; Section: Change Log ;;
-;;---------------------;;
+;;; Change Log
 
 (defun matlab-ts-mode--defun-name (node)
   "Return the defun name of NODE for Change Log entries."
@@ -807,9 +820,7 @@ expression."
            (treesit-node-type node))
       (treesit-node-text (treesit-node-child-by-field-name node "name"))))
 
-;;----------------;;
-;; Section: imenu ;;
-;;----------------;;
+;;; imenu
 
 (defun matlab-ts-mode--imenu-create-index ()
   "Return index for imenu.
@@ -842,7 +853,7 @@ This will return alist of functions and classes in the current buffer:
               (when (and prev-type
                          (string-match-p (rx bol (or "get." "set.") eol) prev-type))
                 (setq name (concat prev-type name)))
-                     
+
               ;; If nested function prefix with that by looking to parent
               (while parent
                 (when (string= "function_definition" (treesit-node-type parent))
@@ -854,9 +865,20 @@ This will return alist of functions and classes in the current buffer:
          nil)))
     index))
 
-;;-------------------------;;
-;; Section: matlab-ts-mode ;;
-;;-------------------------;;
+;;; Outline minor mode, M-x outline-minor-mode
+
+(defun matlab-ts-mode--outline-predicate (node)
+  "Outline headings for `outline-minor-mode' with MATLAB.
+Returns t if tree-sitter NODE defines an outline heading."
+  (let ((node-type (treesit-node-type node)))
+    (or (string-match-p (rx bol (or "function_definition" "class_definition") eol) node-type)
+        (and (string= "comment" node-type)
+             (save-excursion
+               (goto-char (treesit-node-start node))
+               (beginning-of-line)
+               (looking-at matlab-ts-mode--comment-heading-re))))))
+
+;;; matlab-ts-mode
 
 ;;;###autoload
 (define-derived-mode matlab-ts-mode prog-mode "MATLAB:ts"
@@ -880,18 +902,7 @@ This will return alist of functions and classes in the current buffer:
 
     ;; Setup `forward-page' and `backward-page' to use ^L or "%% heading" comments
     ;; See: ./tests/test-matlab-ts-mode-page.el
-    (setq-local page-delimiter "^\\(\f\\|%%\\(\\s-\\|\n\\)\\)")
-
-    ;; TODO function/classdef name vs file name prompt to fix
-    ;; TODO what about syntax table and electric keywords?
-    ;; TODO function / end match like matlab-mode
-    ;; TODO code folding
-    ;; TODO outline: look at https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
-    ;; TODO face for all built-in functions such as dbstop, quit, sin, etc.
-    ;;   https://www.mathworks.com/help/matlab/referencelist.html?type=function&category=index&s_tid=CRUX_lftnav_function_index
-    ;;   https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
-    ;;   Maybe use completion api and complete on each letter?
-    ;;   Maybe look at functionSignatures.json?
+    (setq-local page-delimiter "^\\(?:\f\\|%%\\(?:\\s-\\|\n\\)\\)")
 
     ;; Font-lock. See: ./tests/test-matlab-ts-mode-font-lock.el
     (setq-local treesit-font-lock-level matlab-ts-font-lock-level)
@@ -924,13 +935,21 @@ This will return alist of functions and classes in the current buffer:
 
     (setq-local imenu-create-index-function #'matlab-ts-mode--imenu-create-index)
 
-    ;; 
-    ;; https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
-
-    (setq-local treesit-outline-predicate nil) ;; TODO
+    ;; TODO outline: look at https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip
+    (setq-local treesit-outline-predicate #'matlab-ts-mode--outline-predicate) ;; TODO
 
     ;; TODO Highlight parens OR if/end type blocks
     ;; TODO Electric pair mode
+    ;; TODO function/classdef name vs file name prompt to fix
+    ;; TODO what about syntax table and electric keywords?
+    ;; TODO function / end match like matlab-mode
+    ;; TODO code folding
+    ;; TODO font-lock highlight operators, *, /, +, -, ./, booleans true/false, etc.
+    ;; TODO face for all built-in functions such as dbstop, quit, sin, etc.
+    ;;   https://www.mathworks.com/help/matlab/referencelist.html?type=function&category=index&s_tid=CRUX_lftnav_function_index
+    ;;   https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
+    ;;   Maybe use completion api and complete on each letter?
+    ;;   Maybe look at functionSignatures.json?
 
     (treesit-major-mode-setup)))
 

@@ -5,18 +5,20 @@ function [a, b] = test_comment_heading
 % % isn't a section heading in the doc comment
 %
 
-    % text before heading
+    %%% not a comment heading
+
+    %%foo not a comment heading, must have at least one space
+
     %% comment heading 1
+    % text here
     %
-    % some comment
+    %% not a comment heading
     %
-    %% comment heading 2 within one comment
-    %
-    % some text
+    % some text  %% not a comment heading
 
-    a = 1;
+    a = 1; %% not a comment heading
 
-    %% comment heading 3
+    %% comment heading 2
 
     b = 1;
 end

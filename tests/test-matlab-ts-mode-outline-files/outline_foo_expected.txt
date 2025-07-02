@@ -1,0 +1,8 @@
+Section heading lines
+
+outline_foo.m:2: classdef outline_foo
+outline_foo.m:4:         function one(a)
+outline_foo.m:7:             %% heading 1
+outline_foo.m:10:             %% heading 2
+outline_foo.m:18:         function two
+outline_foo.m:21:             function goo

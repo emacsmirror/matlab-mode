@@ -27,6 +27,7 @@
 (require 'cl-macs)
 (require 'cl-seq)
 (require 'diff)
+(require 'outline)
 (require 'treesit)
 
 ;; Add abs-path of ".." to load-path so we can require packages from above us.
@@ -678,9 +679,9 @@ See `t-utils--test-indent-type' for LINE-MANIPULATOR."
 Compare syntax-table of each NAME.EXT in LANG-FILES against NAME_expected.txt.
 TEST-NAME is used in messages.
 
-If NAME_expected.txt does not exist or the syntax-table of NAME.ext doesn't
+If NAME_expected.txt does not exist or the result of NAME.ext doesn't
 match NAME_expected.txt, NAME_expected.txt~ will be created.  You are
-then instructured to validate the syntax-table and rename NAME_expected.txt~
+then instructured to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which call this function, in the
@@ -738,7 +739,7 @@ NAME_expected.txt.  TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
 NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
-instructured to validate the syntax-table and rename NAME_expected.txt~
+instructured to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which call this function, in the
@@ -795,7 +796,7 @@ LANG-FILES against NAME_expected.txt.  TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
 NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
-instructured to validate the syntax-table and rename NAME_expected.txt~
+instructured to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which call this function, in the
@@ -822,6 +823,62 @@ accept the generated baseline after validating it."
                              "\n")
                             "\n"))
                (got-file (concat expected-file "~")))
+
+          (kill-buffer)
+          (when (not (string= got expected))
+            (let ((coding-system-for-write 'raw-text-unix))
+              (write-region got nil got-file))
+            (when (not expected)
+              (error "Baseline for %s does not exists.  \
+See %s and if it looks good rename it to %s"
+                     lang-file got-file expected-file))
+            (error "Baseline for %s does not match, got: %s, expected: %s"
+                   lang-file got-file expected-file)))
+        (message "PASS: %s %s %s" test-name lang-file (t-utils--took start-time))))))
+
+(defun t-utils-test-outline-search-function (test-name lang-files)
+  "Test setup for `outline-minor-mode'.
+Compare the result of `outline-search-function' on each NAME.EXT in
+LANG-FILES against NAME_expected.txt.  TEST-NAME is used in messages.
+
+If NAME_expected.txt does not exist or the result doesn't match
+NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
+instructured to validate the result and rename NAME_expected.txt~
+to NAME_expected.txt.
+
+To add a test for TEST-NAME.el which call this function, in the
+corresponding TEST-NAME-files/ directory, create
+TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+accept the generated baseline after validating it."
+
+  (dolist (lang-file lang-files)
+    (with-temp-buffer
+
+      (let ((start-time (current-time))
+            (lang-file-base (file-name-nondirectory lang-file)))
+        (message "START: %s %s" test-name lang-file)
+
+        (t-utils--insert-file-for-test lang-file)
+
+        (let* ((expected-file (replace-regexp-in-string "\\.[^.]+$" "_expected.txt" lang-file))
+               (expected (when (file-exists-p expected-file)
+                           (with-temp-buffer
+                             (insert-file-contents-literally expected-file)
+                             (buffer-string))))
+               (got "Section heading lines\n\n")
+               (got-file (concat expected-file "~")))
+
+          (while (not (eobp))
+            (let ((next-heading (funcall outline-search-function)))
+              (if next-heading
+                  (let ((heading-info (format "%s:%d: %s\n"
+                                              lang-file-base
+                                              (line-number-at-pos)
+                                              (buffer-substring-no-properties
+                                               (line-beginning-position) (line-end-position)))))
+                    (setq got (concat got heading-info))
+                    (forward-line))
+                (goto-char (point-max)))))
 
           (kill-buffer)
           (when (not (string= got expected))

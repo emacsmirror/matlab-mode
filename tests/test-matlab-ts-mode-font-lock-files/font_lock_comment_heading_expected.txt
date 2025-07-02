@@ -5,16 +5,18 @@ h
 h h hhhhh h hhhhhhh hhhhhhh hh hhh hhh hhhhhhh
 h
 
-    c cccc cccccc ccccccc
-    HH HHHHHHH HHHHHHH H
-    c
-    c cccc ccccccc
-    c
-    HH HHHHHHH HHHHHHH H HHHHHH HHH HHHHHHH
-    c
-    c cccc cccc
+    ccc ccc c ccccccc ccccccc
 
-    d d nD
+    ccccc ccc c ccccccc cccccccc cccc cccc cc ccccc ccc ccccc
+
+    HH HHHHHHH HHHHHHH H
+    c cccc cccc
+    c
+    cc ccc c ccccccc ccccccc
+    c
+    c cccc cccc  cc ccc c ccccccc ccccccc
+
+    d d nD cc ccc c ccccccc ccccccc
 
     HH HHHHHHH HHHHHHH H
 
