@@ -206,6 +206,7 @@ as comments which is how they are treated by MATLAB."
     "events"
     "for"
     "function"
+    "get." ;; when used in a classdef method, e.g. function value = get.propName(obj)
     "global"
     "if"
     "methods"
@@ -214,6 +215,7 @@ as comments which is how they are treated by MATLAB."
     "persistent"
     "properties"
     (return_statement)
+    "set." ;; when used in a classdef method, e.g. function obj = set.propName(obj, val)
     "switch"
     "try"
     "while")
@@ -351,6 +353,7 @@ START and END specify the region to be fontified."
         ;; while editing this file.
         (if (re-search-forward (rx word-start (group (or (seq "FIX" "ME")
                                                          (seq "X" "XX")
+                                                         (seq "x" "xx")
                                                          (seq "TO" "DO")))
                                    word-end)
                                end t)
@@ -808,9 +811,48 @@ expression."
 ;; Section: imenu ;;
 ;;----------------;;
 
-(defvar matlab-ts-mode--imenu-settings
-  `((nil ,(rx bol (or "function_definition" "class_definition") eol)))
-  "Tree-sitter imenu setttings.")
+(defun matlab-ts-mode--imenu-create-index ()
+  "Return index for imenu.
+This will return alist of functions and classes in the current buffer:
+   \\='((\"function1\" . start-point1)
+     (\"function2\" . start-point2)"
+  (let ((root (treesit-buffer-root-node))
+        (index '()))
+    (treesit-search-subtree
+     root
+     (lambda (node)
+       (let ((type (treesit-node-type node)))
+         (pcase type
+
+           ("class_definition"
+            (let* ((name (concat
+                          "-classdef:"
+                          (treesit-node-text (treesit-node-child-by-field-name node "name"))))
+                   (start-pt (treesit-node-start node)))
+              (push `(,name . ,start-pt) index)))
+
+           ("function_definition"
+            (let* ((name-node (treesit-node-child-by-field-name node "name"))
+                   (prev-type (treesit-node-type (treesit-node-prev-sibling name-node)))
+                   (name (treesit-node-text name-node))
+                   (start-pt (treesit-node-start node))
+                   (parent (treesit-node-parent node)))
+
+              ;; classdef get.propName or set.propName
+              (when (and prev-type
+                         (string-match-p (rx bol (or "get." "set.") eol) prev-type))
+                (setq name (concat prev-type name)))
+                     
+              ;; If nested function prefix with that by looking to parent
+              (while parent
+                (when (string= "function_definition" (treesit-node-type parent))
+                  (let ((parent-name
+                         (treesit-node-text (treesit-node-child-by-field-name parent "name"))))
+                    (setq name (concat parent-name "." name))))
+                (setq parent (treesit-node-parent parent)))
+              (push `(,name . ,start-pt) index))))
+         nil)))
+    index))
 
 ;;-------------------------;;
 ;; Section: matlab-ts-mode ;;
@@ -880,7 +922,7 @@ expression."
     ;; automatic way to do this? See:
     ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist/
 
-    (setq-local treesit-simple-imenu-settings matlab-ts-mode--imenu-settings)
+    (setq-local imenu-create-index-function #'matlab-ts-mode--imenu-create-index)
 
     ;; 
     ;; https://hg.sr.ht/~pranshu/perl-ts-mode/browse/perl-ts-mode.el?rev=tip

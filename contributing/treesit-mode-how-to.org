@@ -1094,8 +1094,17 @@ first two elements.  When name-fcn is nil the imenu names are generated the
 #+end_src
 
 Alternatively, for complex languages, you can =(setq-local imenu-create-index-function
-#'LANGUAGE-ts-imenu-create-index)= and within =LANGUAGE-ts-imenu-create-index=, walk the tree-sitter
-parse tree and generate the index.
+#'LANGUAGE-ts-mode--imenu-create-index)= and within =LANGUAGE-ts-imenu-create-index=, walk the
+tree-sitter parse tree and generate the index.
+
+TODO
+
+* treesit-outline-predicate
+
+This needs to be setup if treesit-simple-imenu-settings isn't set and you are using a custom
+imenu-create-index-function as we did above.
+
+TODO
 
 * Final version
 

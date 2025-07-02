@@ -736,9 +736,9 @@ Compare the result of `treesit-defun-name-function' against each
 tree-sitter node in each NAME.EXT of LANG-FILES against
 NAME_expected.txt.  TEST-NAME is used in messages.
 
-If NAME_expected.txt does not exist or the result from NAME.EXT doesn't
-match NAME_expected.txt, NAME_expected.txt~ will be created.  You are
-then instructured to validate the syntax-table and rename NAME_expected.txt~
+If NAME_expected.txt does not exist or the result doesn't match
+NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
+instructured to validate the syntax-table and rename NAME_expected.txt~
 to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which call this function, in the
@@ -775,6 +775,53 @@ accept the generated baseline after validating it."
                           (format "Node %25s at %4d to %4d: defun-name = %s\n"
                                   node-type node-start node-end (if defun-name defun-name "nil")))))
              nil))
+
+          (kill-buffer)
+          (when (not (string= got expected))
+            (let ((coding-system-for-write 'raw-text-unix))
+              (write-region got nil got-file))
+            (when (not expected)
+              (error "Baseline for %s does not exists.  \
+See %s and if it looks good rename it to %s"
+                     lang-file got-file expected-file))
+            (error "Baseline for %s does not match, got: %s, expected: %s"
+                   lang-file got-file expected-file)))
+        (message "PASS: %s %s %s" test-name lang-file (t-utils--took start-time))))))
+
+(defun t-utils-test-imenu (test-name lang-files)
+  "Test imenu support.
+Compare the result of `imenu-create-index-function' on each NAME.EXT in
+LANG-FILES against NAME_expected.txt.  TEST-NAME is used in messages.
+
+If NAME_expected.txt does not exist or the result doesn't match
+NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
+instructured to validate the syntax-table and rename NAME_expected.txt~
+to NAME_expected.txt.
+
+To add a test for TEST-NAME.el which call this function, in the
+corresponding TEST-NAME-files/ directory, create
+TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+accept the generated baseline after validating it."
+
+  (dolist (lang-file lang-files)
+    (with-temp-buffer
+
+      (let ((start-time (current-time)))
+        (message "START: %s %s" test-name lang-file)
+
+        (t-utils--insert-file-for-test lang-file)
+
+        (let* ((index (funcall imenu-create-index-function))
+               (expected-file (replace-regexp-in-string "\\.[^.]+$" "_expected.txt" lang-file))
+               (expected (when (file-exists-p expected-file)
+                           (with-temp-buffer
+                             (insert-file-contents-literally expected-file)
+                             (buffer-string))))
+               (got (concat (string-join
+                             (mapcar (lambda (el) (substring-no-properties (car el))) index)
+                             "\n")
+                            "\n"))
+               (got-file (concat expected-file "~")))
 
           (kill-buffer)
           (when (not (string= got expected))

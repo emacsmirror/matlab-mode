@@ -1,0 +1,4 @@
+get.inputMatrix
+set.inputMatrix
+a
+-classdef:imenu_symPosDef
