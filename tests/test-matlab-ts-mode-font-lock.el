@@ -60,13 +60,13 @@ after validating it, rename it to
                            ("D" . font-lock-delimiter-face)
                            ("f" . font-lock-function-name-face)
                            ("h" . font-lock-doc-face) ;; function doc help comment
-                           ("H" . matlab-ts-comment-heading-face) ;; %% comment heading
+                           ("H" . matlab-ts-mode-comment-heading-face) ;; %% comment heading
                            ("k" . font-lock-keyword-face)
-                           ("M" . matlab-ts-comment-to-do-marker-face)
+                           ("M" . matlab-ts-mode-comment-to-do-marker-face)
                            ("n" . font-lock-constant-face) ;; numbers
                            ("s" . font-lock-string-face)
-                           ("S" . matlab-ts-string-delimiter-face)
-                           ("p" . matlab-ts-pragma-face)
+                           ("S" . matlab-ts-mode-string-delimiter-face)
+                           ("p" . matlab-ts-mode-pragma-face)
                            ("P" . font-lock-property-name-face)
                            ("t" . font-lock-type-face)
                            ("v" . font-lock-variable-name-face)

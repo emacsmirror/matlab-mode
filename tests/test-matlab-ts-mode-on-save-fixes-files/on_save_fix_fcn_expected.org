@@ -1,0 +1,28 @@
+#+startup: showall
+
+* Executing commands from on_save_fix_fcn.m:3:2:
+
+  (t-utils-xr (rename-buffer "tmp__on_save_fix_fcn.m") (matlab-ts-mode-on-save-fix-name t))
+
+- Invoking      : (rename-buffer "tmp__on_save_fix_fcn.m")
+  Start point   :  113
+  No point movement
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-on-save-fix-name t)
+  Start point   :  113
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ 
+ % (t-utils-xr (rename-buffer "tmp__on_save_fix_fcn.m") (matlab-ts-mode-on-save-fix-name t))
+ 
+-function foo
++function tmp__on_save_fix_fcn
+     disp('foo')
+     bar;
+ end
+  #+end_src diff

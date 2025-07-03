@@ -1694,3 +1694,6 @@ well worth writing a tree-sitter mode.
   13. Added support for =M-x outline-minor-mode=. Outline headings are =function='s, =classdef='s,
       and "%% heading" comments.
 
+  14. On save fix of function/classdef name now handles buffer names that aren't valid MATLAB
+      identifiers.  On save fix of function/classdef name handles buffers not associated with files
+      on disk.  Also fixed cases where detection of scripts failed.

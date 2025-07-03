@@ -41,26 +41,26 @@
 
 (defgroup matlab-ts nil
   "MATLAB(R) tree-sitter mode."
-  :prefix "matlab-ts-"
+  :prefix "matlab-ts-mode-"
   :group 'languages)
 
-(defface matlab-ts-pragma-face
+(defface matlab-ts-mode-pragma-face
   '((t :inherit font-lock-comment-face
        :bold t))
   "*Face to use for pragma %# lines.")
 
-(defface matlab-ts-string-delimiter-face
+(defface matlab-ts-mode-string-delimiter-face
   '((t :inherit font-lock-string-face
        :bold t))
   "*Face to use for \\='single quote\\=' and \"double quote\" string delimiters.")
 
-(defface matlab-ts-comment-heading-face
+(defface matlab-ts-mode-comment-heading-face
   '((t :inherit font-lock-comment-face
        :overline t
        :bold t))
   "Face for \"%% code section\" headings when NOT in matlab-sections-minor-mode.")
 
-(defface matlab-ts-comment-to-do-marker-face
+(defface matlab-ts-mode-comment-to-do-marker-face
   '((((class color) (background light))
      :inherit font-lock-comment-face
      :background "yellow"
@@ -80,12 +80,21 @@ Guidelines:
    source repository.  TO" "DO markers should reflect improvements are are
    not problems with the existing code."))
 
-(defcustom matlab-ts-font-lock-level 4
+(defcustom matlab-ts-mode-font-lock-level 4
   "*Level of font lock, 1 for minimal syntax highlighting and 4 for maximum."
   :type '(choice (const :tag "Minimal" 1)
 		 (const :tag "Low" 2)
 		 (const :tag "Standard" 3)
 		 (const :tag "Standard plus parse errors" 4)))
+
+(defcustom matlab-ts-mode-on-save-fixes
+  '(matlab-ts-mode-on-save-fix-name)
+  "List of function symbols which offer to fix *.m files on save.
+During save these functions are called and will prompt to fix issues in
+*.m files.  Each function gets no arguments, and returns nothing.  They
+can move point, but it will be restored for them."
+  :type '(repeat (choice :tag "Function: "
+                         (matlab-ts-mode-on-save-fix-name))))
 
 ;;; Global variables used in multiple code ";;; sections"
 
@@ -347,7 +356,7 @@ start-point and end-point."
       (let ((heading-start (match-beginning 1))
             (heading-end (match-end 1)))
         (treesit-fontify-with-override heading-start heading-end
-                                       'matlab-ts-comment-heading-face
+                                       'matlab-ts-mode-comment-heading-face
                                        override start end)))))
 
 (defun matlab-ts-mode--comment-to-do-capture (comment-node override start end &rest _)
@@ -370,7 +379,7 @@ than the COMMENT-NODE start-point and end-point."
             (let ((keyword-start (match-beginning 1))
                   (keyword-end (match-end 1)))
               (treesit-fontify-with-override keyword-start keyword-end
-                                             'matlab-ts-comment-to-do-marker-face
+                                             'matlab-ts-mode-comment-to-do-marker-face
                                              override start end))
           (goto-char comment-end))))))
 
@@ -387,13 +396,14 @@ than the COMMENT-NODE start-point and end-point."
    :language 'matlab
    :feature 'comment
    :override t
-   '(((comment) @matlab-ts-pragma-face (:match "^%#.+$" @matlab-ts-pragma-face)) ;; %#pragma's
+   '(((comment) @matlab-ts-mode-pragma-face
+      (:match "^%#.+$" @matlab-ts-mode-pragma-face)) ;; %#pragma's
      ((comment) @matlab-ts-mode--comment-heading-capture) ;; %% comment heading
 
      (function_definition (comment) @matlab-ts-mode--doc-comment-capture) ;; doc help comments
      (class_definition (comment) @matlab-ts-mode--doc-comment-capture)) ;; doc help comments
 
-   ;; F-Rule: fix-me, etc. comment keywords
+   ;; F-Rule: to do, fix me, triple-x marker comment keywords
    :language 'matlab
    :feature 'comment
    :override t
@@ -437,8 +447,8 @@ than the COMMENT-NODE start-point and end-point."
    :language 'matlab
    :feature 'string
    '((string_content) @font-lock-string-face
-     ((string_content) ["\"" "'"]) @matlab-ts-string-delimiter-face
-     (string ["\"" "'"] @matlab-ts-string-delimiter-face))
+     ((string_content) ["\"" "'"]) @matlab-ts-mode-string-delimiter-face
+     (string ["\"" "'"] @matlab-ts-mode-string-delimiter-face))
 
    ;; F-Rule: transpose uses "'" after an identifier, e.g. for matrix A we tranpose it via: A'
    ;; since "'" is also used as a string, we use a different face for transpose and put it under
@@ -878,11 +888,89 @@ Returns t if tree-sitter NODE defines an outline heading."
                (beginning-of-line)
                (looking-at matlab-ts-mode--comment-heading-re))))))
 
+;;; Save hooks
+
+(defun matlab-ts-mode--highlight-ask (begin end prompt)
+  "Highlight from BEGIN to END while asking PROMPT as a yes-no question."
+  (let ((mo (make-overlay begin end (current-buffer)))
+        (show-paren-mode nil) ;; this will highlight things we often ask about.  disable.
+        ans)
+    (condition-case nil
+        (progn
+          (overlay-put mo 'face 'matlab-region-face)
+          (setq ans (y-or-n-p prompt))
+          (delete-overlay mo))
+      (quit (delete-overlay mo)
+            (error "Quit")))
+    ans))
+
+(defun matlab-ts-mode-on-save-fix-name (&optional no-prompt)
+  "If file name and function/classdef name are different, offer to fix.
+If optional NO-PROMPT is t, fix the name if needed without prompting."
+  (interactive)
+  (when (or no-prompt (not noninteractive)) ;; can only prompt if in interactive mode
+    (let* ((root (treesit-buffer-root-node))
+           (children (treesit-node-children root)))
+      (cl-loop for child in children do
+               (let ((child-type (treesit-node-type child)))
+                 (cond
+                  ;; Case: function_definition or class_definition
+                  ((string-match-p (rx bol (or "function_definition" "class_definition") eol)
+                                   child-type)
+                   (let* ((def-name-node (treesit-node-child-by-field-name child "name"))
+                          (def-name (treesit-node-type def-name-node))
+                          (file-name (file-name-nondirectory (or (buffer-file-name) (buffer-name))))
+                          (base-name-no-ext (replace-regexp-in-string "\\.[^.]+\\'" "" file-name)))
+                     ;; When base-name-no-ext is a valid name, MATLAB will use that.
+                     ;; Invalid file names result in an error in MATLAB, so don't try to fix
+                     ;; the function/classdef name in that case.
+                     (when (and (string-match-p "\\`[a-zA-Z][a-zA-Z0-9_]*\\'" base-name-no-ext)
+                                (not (string= def-name base-name-no-ext)))
+                       (let ((start-pt (treesit-node-start def-name-node))
+                             (end-pt (treesit-node-end def-name-node)))
+                         (when (or no-prompt
+                                   (matlab-ts-mode--highlight-ask
+                                    start-pt end-pt
+                                    (concat (if (string= child-type "function_definition")
+                                                "Function"
+                                              "Classdef")
+                                            " name and file names are different. Fix?")))
+                           (save-excursion
+                             (goto-char start-pt)
+                             (delete-region start-pt end-pt)
+                             (insert base-name-no-ext))))))
+                   (cl-return))
+
+                  ;; Case: anthing except a comment
+                  ((not (string= "comment" child-type))
+                   (cl-return))))))))
+
+(defun matlab-ts-mode--write-file-callback ()
+  "Called from `write-contents-functions'.
+When `matlab-verify-on-save-flag' is true, run `matlab-mode-verify-fix-file'.
+Enable/disable `matlab-sections-minor-mode' based on file content."
+  (mapc (lambda (fix-function)
+          (funcall fix-function))
+        matlab-ts-mode-on-save-fixes)
+  ;; `write-contents-functions' expects this callback to return nil to continue with other hooks and
+  ;; the final save. See `run-hook-with-args-until-success'.
+  nil)
+
 ;;; matlab-ts-mode
 
 ;;;###autoload
 (define-derived-mode matlab-ts-mode prog-mode "MATLAB:ts"
-  "Major mode for editing MATLAB files with tree-sitter."
+  "Major mode for editing MATLAB files with tree-sitter.
+
+This mode is independent from the classic matlab-mode.el, `matlab-mode',
+so configuration variables of that mode, like do not affect this mode.
+
+If you have the MATLAB tree-sitter grammar installed,
+  (treesit-ready-p \\='matlab)
+is t, add the following to an Init File (e.g. `user-init-file' or
+`site-run-file') to enter the MATLAB tree-sitter mode by default:
+
+  (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))"
 
   (when (treesit-ready-p 'matlab)
     (treesit-parser-create 'matlab)
@@ -905,7 +993,7 @@ Returns t if tree-sitter NODE defines an outline heading."
     (setq-local page-delimiter "^\\(?:\f\\|%%\\(?:\\s-\\|\n\\)\\)")
 
     ;; Font-lock. See: ./tests/test-matlab-ts-mode-font-lock.el
-    (setq-local treesit-font-lock-level matlab-ts-font-lock-level)
+    (setq-local treesit-font-lock-level matlab-ts-mode-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list '((comment definition)
                                                  (keyword string type)
@@ -941,11 +1029,12 @@ Returns t if tree-sitter NODE defines an outline heading."
     ;; See: ./tests/test-matlab-ts-mode-outline.el
     (setq-local treesit-outline-predicate #'matlab-ts-mode--outline-predicate)
 
+    ;; Save hook
+    (add-hook 'write-contents-functions #'matlab-ts-mode--write-file-callback)
+
     ;; TODO Highlight parens OR if/end type blocks
     ;; TODO Electric pair mode
-    ;; TODO function/classdef name vs file name prompt to fix
     ;; TODO what about syntax table and electric keywords?
-    ;; TODO function / end match like matlab-mode
     ;; TODO code folding
     ;; TODO font-lock highlight operators, *, /, +, -, ./, booleans true/false, etc.
     ;; TODO face for all built-in functions such as dbstop, quit, sin, etc.
