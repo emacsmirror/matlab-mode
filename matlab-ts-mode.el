@@ -918,7 +918,7 @@ If optional NO-PROMPT is t, fix the name if needed without prompting."
                   ((string-match-p (rx bol (or "function_definition" "class_definition") eol)
                                    child-type)
                    (let* ((def-name-node (treesit-node-child-by-field-name child "name"))
-                          (def-name (treesit-node-type def-name-node))
+                          (def-name (treesit-node-text def-name-node))
                           (file-name (file-name-nondirectory (or (buffer-file-name) (buffer-name))))
                           (base-name-no-ext (replace-regexp-in-string "\\.[^.]+\\'" "" file-name)))
                      ;; When base-name-no-ext is a valid name, MATLAB will use that.

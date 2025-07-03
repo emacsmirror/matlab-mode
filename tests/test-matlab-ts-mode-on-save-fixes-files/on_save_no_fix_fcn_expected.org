@@ -1,0 +1,15 @@
+#+startup: showall
+
+* Executing commands from on_save_no_fix_fcn.m:3:2:
+
+  (t-utils-xr (rename-buffer "tmp__on_save_no_fix_fcn.m") (matlab-ts-mode-on-save-fix-name t))
+
+- Invoking      : (rename-buffer "tmp__on_save_no_fix_fcn.m")
+  Start point   :  116
+  No point movement
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-on-save-fix-name t)
+  Start point   :  116
+  No point movement
+  No buffer modifications
