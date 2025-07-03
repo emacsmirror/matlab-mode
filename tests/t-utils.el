@@ -252,63 +252,77 @@ You can run `t-utils--diff-check' to debug"))))
 
     (dolist (command commands)
       (setq cmd-num (1+ cmd-num))
-      (let ((start-point (point))
-            (start-contents (buffer-substring-no-properties (point-min) (point-max)))
-            (key-command (when (eq (type-of command) 'string)
-                           ;; Keybinding, e.g. (t-utils-xr "C-M-a")
-                           (let ((cmd (key-binding (kbd command))))
-                             (when (not cmd)
-                               (user-error "%s:%d: Command, %s, is not a known keybinding"
-                                           buf-file start-line command))
-                             cmd))))
+      (let ((standard-output (generate-new-buffer " *temp t-utils-xr-capture*" t)))
+        (unwind-protect
+            (let* ((start-pt (point))
+                   (start-pt-str (t-utils--get-point-for-display start-pt))
+                   (start-contents (buffer-substring-no-properties (point-min) (point-max)))
+                   (key-command (when (eq (type-of command) 'string)
+                                  ;; Keybinding, e.g. (t-utils-xr "C-M-a")
+                                  (let ((cmd (key-binding (kbd command))))
+                                    (when (not cmd)
+                                      (user-error "%s:%d: Command, %s, is not a known keybinding"
+                                                  buf-file start-line command))
+                                    cmd))))
+              (setq result (concat result "\n"
+                                   (format "- Invoking      : %S%s\n"
+                                           command (if key-command
+                                                       (concat " = " (symbol-name key-command))
+                                                     ""))
+                                   (format "  Start point   : %4d\n" start-pt)))
 
-        (setq result (concat result "\n"
-                             (format "- Invoking      : %S%s\n"
-                                     command (if key-command
-                                                 (concat " = " (symbol-name key-command))
-                                               ""))
-                             (format "  Start point   : %4d\n" start-point)))
+              (if key-command
+                  ;; a keybinding: (t-util-xr "C-M-a")
+                  (call-interactively key-command)
+                ;; a command: (t-utils-xr (beginning-of-defun))
+                (eval command))
 
-        (if key-command
-            ;; a keybinding: (t-util-xr "C-M-a")
-            (call-interactively key-command)
-          ;; a command: (t-utils-xr (beginning-of-defun))
-          (eval command))
+              (let ((end-pt (point))
+                    (end-contents (buffer-substring-no-properties (point-min) (point-max)))
+                    (debug-msg (format "%d: %S, start point %s" cmd-num command start-pt-str)))
 
-        (let ((end-point (point))
-              (end-contents (buffer-substring-no-properties (point-min) (point-max)))
-              (debug-msg (format "%d: %S, start point %s" cmd-num command
-                                 (t-utils--get-point-for-display start-point))))
+                ;; Record point movement by adding what happened to result
+                (if (equal start-pt end-pt)
+                    (setq result (concat result "  No point movement\n")
+                          debug-msg (concat debug-msg ", no point movement"))
+                  (let* ((current-line (buffer-substring-no-properties (line-beginning-position)
+                                                                       (line-end-position)))
+                         (position (format "%d:%d: " (line-number-at-pos) (current-column)))
+                         (carrot (concat (make-string (+ (length position) (current-column)) ?\s)
+                                         "^")))
+                    (setq result (concat result (format "  Moved to point: %4d\n  : %s%s\n  : %s\n"
+                                                        end-pt position current-line carrot))
+                          debug-msg (concat debug-msg
+                                            (format ", moved point to %s"
+                                                    (t-utils--get-point-for-display (point)))))))
 
-          ;; Record point movement by adding what happened to result
-          (if (equal start-point end-point)
-              (setq result (concat result "  No point movement\n")
-                    debug-msg (concat debug-msg ", no point movement"))
-            (let* ((current-line (buffer-substring-no-properties (line-beginning-position)
-                                                                 (line-end-position)))
-                   (position (format "%d:%d: " (line-number-at-pos) (current-column)))
-                   (carrot (concat (make-string (+ (length position) (current-column)) ?\s) "^")))
-              (setq result (concat result (format "  Moved to point: %4d\n  : %s%s\n  : %s\n"
-                                                  end-point position current-line carrot))
-                    debug-msg (concat debug-msg
-                                      (format ", moved point to %s"
-                                              (t-utils--get-point-for-display (point)))))))
+                ;; Grab standard-output from `prin1' or `print'
+                (with-current-buffer standard-output
+                  (let ((contents (string-trim (buffer-substring (point-min) (point-max)))))
+                    (when (not (string= contents ""))
+                      (setq result (concat result
+                                           "  standard-output:\n  "
+                                           (replace-regexp-in-string "^" "  " contents)
+                                           "\n")))))
+                
+                ;; Record buffer modifications by adding what happened to result
+                (if (equal start-contents end-contents)
+                    (setq result (concat result "  No buffer modifications\n")
+                          debug-msg (concat debug-msg ", no buffer modifications"))
+                  (setq result (concat result
+                                       "  Buffer modified:\n"
+                                       "  #+begin_src diff\n"
+                                       (t-utils-diff-strings start-contents end-contents)
+                                       "  #+end_src diff\n")
+                        debug-msg (concat debug-msg ", buffer modified")))
 
-          ;; Record buffer modifications by adding what happened to result
-          (if (equal start-contents end-contents)
-              (setq result (concat result "  No buffer modifications\n")
-                    debug-msg (concat debug-msg ", no buffer modifications"))
-            (setq result (concat result
-                                 "  Buffer modified:\n"
-                                 "  #+begin_src diff\n"
-                                 (t-utils-diff-strings start-contents end-contents)
-                                 "  #+end_src diff\n")
-                  debug-msg (concat debug-msg ", buffer modified")))
-
-          (when (not (t-utils--use-xr-impl-result))
-            ;; Display debugging info for interactive evaluation of (t-utils-xr COMMANDS)
-            (read-string (concat debug-msg "\n" "Enter to continue:"))))))
-
+                (when (not (t-utils--use-xr-impl-result))
+                  ;; Display debugging info for interactive evaluation of (t-utils-xr COMMANDS)
+                  (read-string (concat debug-msg "\n" "Enter to continue:")))))
+          ;; unwind-protect unwindforms
+          (and (buffer-name standard-output)
+               (kill-buffer standard-output)))))
+      
     (if (t-utils--use-xr-impl-result)
         (progn
           (setq t-utils--xr-impl-result result)
@@ -332,6 +346,10 @@ The commands that you can place within (t-utils-xr COMMANDS) are
       (t-utils-xr (beginning-of-defun))
  2. Keybindings.  For example,
       (t-utils-xr \"C-M-a\")
+ 3. `standard-output' is captured.  You use (prin1 OBJECT) or (print OBJECT)
+    to write `standard-output', which lets you capture the results
+    of functions in the baseline.  For example,
+      (t-utils-xr (prin1 (a-buffer-query-function-special-to-your-mode)))
 Multiple expressions or keybindings can be specified.
 
 Consider ./test-defun-movement/my_test.c:
@@ -411,16 +429,20 @@ for this example is:
             ;; we still see 'nil' displayed, but I don't think there's much we can do about that.
             ;; Note, using: (let ((standard-output (lambda (_)))) (eval-last-sexp nil))
             ;; still causes nil to be displayed when run from emacs --batch.
+            ;;
+            ;; One item to investigate: advising elisp--eval-last-sexp-print-value
+            ;; to make output go to a buffer. I believe output in this function is t, which
+            ;; means the echo area.
+            ;; Maybe just call elisp--eval-last-sexp-print-value and define output.
             (setq t-utils--xr-impl-result-active t)
-            (condition-case err
+            (unwind-protect
                 (progn
                   (eval-last-sexp nil)
                   (setq got (concat got t-utils--xr-impl-result)
                         t-utils--xr-impl-result-active nil
                         t-utils--xr-impl-result nil))
-              (error (setq t-utils--xr-impl-result-active nil
-                           t-utils--xr-impl-result nil)
-                     (signal (car err) (cdr err))))
+              (setq t-utils--xr-impl-result-active nil
+                    t-utils--xr-impl-result nil))
             ;; look for next (t-utils-xr COMMANDS)
             (goto-char xr-end-point)))
 

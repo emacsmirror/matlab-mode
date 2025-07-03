@@ -956,6 +956,56 @@ Enable/disable `matlab-sections-minor-mode' based on file content."
   ;; the final save. See `run-hook-with-args-until-success'.
   nil)
 
+;;; Electric Pair Mode, M-x electric-pair-mode
+
+(declare-function electric-pair-default-inhibit "elec-pair")
+(defun matlab-ts-mode--electric-pair-inhibit-predicate (char)
+  "Return non-nil if `electric-pair-mode' should not pair this CHAR.
+Do not pair the transpose operator, (\\='), but pair it when used as a
+single quote string."
+
+  ;; (point) is just after CHAR. For example, if we type a single quote:
+  ;;   x = '
+  ;;        ^--(point)
+
+  (cond
+   ;; Case: Single quote
+   ;;  str = '      : start of single quote string => nil
+   ;;  mat'         : transpose operator => t
+   ;;  str = " ' "  : add single quote in string => t
+   ((eq char ?')
+    (let* ((node-back1 (treesit-node-at (- (point) 1)))
+           (type-back1 (treesit-node-type node-back1)))
+      (cond
+       ;; Case: in comment, return t if it looks like a transpose, e.g. A' or similar.
+       ((string-match-p (rx bol (or "comment" "line_continuation") eol) type-back1)
+        (save-excursion
+          (forward-char -1)
+          (looking-at "\\w\\|\\s_\\|\\.")))
+
+       ;; Case: string delimiter
+       ;;    double up if starting a new string => return nil
+       ((string= "'" type-back1)
+        (not (string= "string" (treesit-node-type (treesit-node-parent node-back1)))))
+
+       ;; Case: inside a single quote string
+       ;;    s = 'foobar'
+       ;;            ^ insert here
+       ;;    s = 'foo''bar'
+       ((and (string= "string_content" type-back1)
+             (string= "'" (treesit-node-type (treesit-node-prev-sibling node-back1))))
+        nil)
+
+       ;; Case: not a string delimiter, return t
+       ;;   transpose:                  A'
+       ;;   inside double quote string: "foo'bar"
+       (t
+        t))))
+
+   ;; Case: Not a single quote, defer to the standard electric pair handling
+   (t
+    (funcall #'electric-pair-default-inhibit char))))
+
 ;;; matlab-ts-mode
 
 ;;;###autoload
@@ -1029,19 +1079,20 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; See: ./tests/test-matlab-ts-mode-outline.el
     (setq-local treesit-outline-predicate #'matlab-ts-mode--outline-predicate)
 
-    ;; Save hook
+    ;; Save hook. See: ./tests/test-matlab-ts-mode-on-save-fixes.el
     (add-hook 'write-contents-functions #'matlab-ts-mode--write-file-callback)
 
+    ;; Electric pair mode. See tests/test-matlab-ts-mode-electric-pair.el
+    (setq-local electric-pair-inhibit-predicate #'matlab-ts-mode--electric-pair-inhibit-predicate)
+
     ;; TODO Highlight parens OR if/end type blocks
-    ;; TODO Electric pair mode
-    ;; TODO what about syntax table and electric keywords?
-    ;; TODO code folding
     ;; TODO font-lock highlight operators, *, /, +, -, ./, booleans true/false, etc.
     ;; TODO face for all built-in functions such as dbstop, quit, sin, etc.
     ;;   https://www.mathworks.com/help/matlab/referencelist.html?type=function&category=index&s_tid=CRUX_lftnav_function_index
     ;;   https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
     ;;   Maybe use completion api and complete on each letter?
     ;;   Maybe look at functionSignatures.json?
+    ;; TODO code folding
 
     (treesit-major-mode-setup)))
 

@@ -1110,6 +1110,45 @@ imenu-create-index-function as we did above.
 
 TODO
 
+* Verify electric-pair-mode is good
+
+=M-x electric-pair-mode= for most languages will just work. However, if your language
+uses typical characters that are paired, e.g. a single quote for a string delimiter and
+also an operator such as a transpose, then you'll need to:
+
+#+begin_src emacs-lisp
+  (declare-function electric-pair-default-inhibit "elec-pair")
+  (defun LANGUAGE-ts-mode--electric-pair-inhibit-predicate (char)
+    "Return non-nil if `electric-pair-mode' should not pair this CHAR.
+  Do not pair the transpose operator, (\\='), but pair it when used as a
+  single quote string."
+
+    ;; (point) is just after CHAR. For example, if we type a single quote:
+    ;;   x = '
+    ;;        ^--(point)
+
+    (cond
+     ;; Case: Single quote
+     ((eq char ?')
+      ;; Look at the tree-sitter nodes and return t if the pairing should be inhibited.
+      ;; <snip>
+      )
+
+     ;; Case: Not a single quote, defer to the standard electric pair handling
+     (t
+      (funcall #'electric-pair-default-inhibit char))))
+
+  ;; <snip>
+  (define-derived-mode matlab-ts-mode prog-mode "LANGUAGE:ts"
+
+    ;; <snip>
+
+    ;; Electric pair mode
+    (setq-local electric-pair-inhibit-predicate #'matlab-ts-mode--electric-pair-inhibit-predicate)
+    )
+#+end_src
+
+
 * Final version
 
 TODO
@@ -1697,3 +1736,10 @@ well worth writing a tree-sitter mode.
   14. On save fix of function/classdef name now handles buffer names that aren't valid MATLAB
       identifiers.  On save fix of function/classdef name handles buffers not associated with files
       on disk.  Also fixed cases where detection of scripts failed.
+
+  15. Improved handling of single quotes for =M-x electric-pair-mode=. These will automatically
+      pair
+      - Single quote when used to create a single-quoted string, but not when used elsewhere,
+        e.g. a matrix transpose.
+      - Double quotes for a double-quoted string.
+      - Parenthesis =()=, Vectors, =[]=, and Cells ={}=.
