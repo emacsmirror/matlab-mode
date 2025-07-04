@@ -304,7 +304,7 @@ You can run `t-utils--diff-check' to debug"))))
                                            "  standard-output:\n  "
                                            (replace-regexp-in-string "^" "  " contents)
                                            "\n")))))
-                
+
                 ;; Record buffer modifications by adding what happened to result
                 (if (equal start-contents end-contents)
                     (setq result (concat result "  No buffer modifications\n")
@@ -322,7 +322,7 @@ You can run `t-utils--diff-check' to debug"))))
           ;; unwind-protect unwindforms
           (and (buffer-name standard-output)
                (kill-buffer standard-output)))))
-      
+
     (if (t-utils--use-xr-impl-result)
         (progn
           (setq t-utils--xr-impl-result result)
@@ -334,6 +334,9 @@ You can run `t-utils--diff-check' to debug"))))
 This returns a string recofrding point movement and buffer modification
 differences for each command.  See `t-utils-test-xr' for details."
   (t-utils--xr-impl commands))
+
+(defun t-utils--eval-sexp-print-advice (_old-function &rest _)
+  "Advice around `elisp--eval-last-sexp-print-value' to ignore the print.")
 
 (defun t-utils-test-xr (test-name lang-files)
   "Execute and record (t-utils-xr COMMANDS) from LANG-FILES list.
@@ -423,26 +426,27 @@ for this example is:
           (re-search-backward "(")
           (forward-list)
           (let* ((xr-end-point (point)))
-            ;; Setting t-utils--xr-impl-result-active to t prevents t-utils--xr-impl from returning
-            ;; the result and instead returns the result via global t-utils--xr-impl-result. This
-            ;; prevents the result text from being displayed when run via emacs --batch. However,
-            ;; we still see 'nil' displayed, but I don't think there's much we can do about that.
-            ;; Note, using: (let ((standard-output (lambda (_)))) (eval-last-sexp nil))
-            ;; still causes nil to be displayed when run from emacs --batch.
-            ;;
-            ;; One item to investigate: advising elisp--eval-last-sexp-print-value
-            ;; to make output go to a buffer. I believe output in this function is t, which
-            ;; means the echo area.
-            ;; Maybe just call elisp--eval-last-sexp-print-value and define output.
             (setq t-utils--xr-impl-result-active t)
             (unwind-protect
                 (progn
+                  ;; `eval-last-sexp' on (t-utils-xr COMMANDS) calls
+                  ;; `elisp--eval-last-sexp-print-value' which will (prin1 value output) where
+                  ;; output is t which means send to echo area.  We don't want to print value which
+                  ;; is nil in our case, so we override elisp--eval-last-sexp-print-value locally
+                  ;; during this eval.
+                  (advice-add #'elisp--eval-last-sexp-print-value :override
+                              #'t-utils--eval-sexp-print-advice)
+
                   (eval-last-sexp nil)
                   (setq got (concat got t-utils--xr-impl-result)
                         t-utils--xr-impl-result-active nil
                         t-utils--xr-impl-result nil))
-              (setq t-utils--xr-impl-result-active nil
-                    t-utils--xr-impl-result nil))
+              (progn
+                (setq t-utils--xr-impl-result-active nil
+                      t-utils--xr-impl-result nil)
+                (advice-remove #'elisp--eval-last-sexp-print-value
+                              #'t-utils--eval-sexp-print-advice)))
+
             ;; look for next (t-utils-xr COMMANDS)
             (goto-char xr-end-point)))
 
