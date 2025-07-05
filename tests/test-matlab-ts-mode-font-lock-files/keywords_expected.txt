@@ -1,7 +1,7 @@
 c ccc ccccccccc ccc
 kkkkkkkk ffffffff
     kkkkkkkkkk
-        PP d n
+        PP o n
     kkk
     kkkkkkk
         kkkkkkkk fffffffbvvb
@@ -9,8 +9,8 @@ kkkkkkkk ffffffff
 	        PP bnDnb tttttt
  	    kkk	 
 
-	    kkkkkk ddddd ddddd
-	    kkkkkk ddddd ddddd
+	    kkkkkk vvvvv vvvvv
+	    kkkkkk vvvvv vvvvv
 
 	    kkk
                 kkkkkk dd
@@ -23,30 +23,30 @@ kkkkkkkk ffffffff
 	        dddddddbddb
 	    kkk
 
-	    d d nD
-	    kkk d d nDdd
+	    v o nD
+	    kkk d o nDdd
 	        kk dddbdD nb
 		    kkkkkkkk
                 kkkkkk dddbdD nb
 		    kkkkkkkk
 		kkkk
-		    d d d d nD
+		    v o d o nD
                 kkk
                 ddddbbSsssssssss ss s ss s s S dddddddbdbbb
             kkk
 
-            d d n
-	    kkkkk d d nn
-	        d d d d nD
+            v o n
+	    kkkkk d o nn
+	        v o d o nD
             kkk
         kkk
 
         kkkkkkkk fffffffbb
-            d d nnnD
-            d d nnnD
-            d d dddddbnDdbD
-            kkkkkk d d nDd
-                dbdb d dddbdddbdddbddddbdbbbbD
+            v o nnnD
+            v o nnnD
+            v o dddddbnDdbD
+            kkkkkk d o nDd
+                dbdb o dddbdddbdddbddddbdbbbbD
             kkk
 
 	    kkkkkk

@@ -58,7 +58,7 @@
   '((t :inherit font-lock-comment-face
        :overline t
        :bold t))
-  "Face for \"%% code section\" headings when NOT in matlab-sections-minor-mode.")
+  "*Face for \"%% code section\" headings when NOT in matlab-sections-minor-mode.")
 
 (defface matlab-ts-mode-comment-to-do-marker-face
   '((((class color) (background light))
@@ -79,6 +79,23 @@ Guidelines:
  - TO" "DO markers can remain in code and be committed with the code to a
    source repository.  TO" "DO markers should reflect improvements are are
    not problems with the existing code."))
+
+(defface matlab-ts-mode-operator-face
+  '((((class color) (background light)) :foreground "blue4")
+    (((class color) (background dark))  :foreground "LightBlue")
+    (t :inverse-video t
+       :weight bold))
+  "*Face for operators: *, /, +, -, etc.")
+
+(defface matlab-ts-mode-command-arg-face
+  '((t :inherit font-lock-string-face
+       :slant italic))
+  "*Face used to highlight command dual arguments.")
+
+(defface matlab-ts-mode-system-command-face
+  '((t :inherit font-lock-builtin-face
+       :slant italic))
+  "*Face used to higlight \"!\" system commands.")
 
 (defcustom matlab-ts-mode-font-lock-level 4
   "*Level of font lock, 1 for minimal syntax highlighting and 4 for maximum."
@@ -238,6 +255,45 @@ as comments which is how they are treated by MATLAB."
     "try"
     "while")
   "The matlab-ts-mode font-lock keywords.")
+
+(defvar matlab-ts-mode--operators
+  ;; https://www.mathworks.com/help/matlab/matlab_prog/matlab-operators-and-special-characters.html
+  '("+"         ;; Addition or Unary plus, +value
+    "-"         ;; Subtraction or Unary minus, -value
+    ".*"        ;; Element-wise multiplication
+    "*"         ;; Matrix multiplication
+    "./"        ;; Element-wise right division
+    "/"         ;; Matrix right division
+    ".\\"       ;; Element-wise left division
+    "\\"        ;; Matrix left division (also known as backslash)
+    ".^"        ;; Element-wise power
+    "^"         ;; Matrix power
+    ".'"        ;; Transpose
+    "'"         ;; Complex conjugate transpose
+    "=="        ;; Equal to
+    "~="        ;; Not equal to
+    ">"         ;; Greater than
+    ">="        ;; Greater than or equal to
+    "<"         ;; Less than
+    "<=" 	;; Less than or equal to
+    "&"         ;; Find logical AND
+    "|"         ;; Find logical OR
+    "&&"        ;; Find logical AND (with short-circuiting)
+    "||"        ;; Find logical OR (with short-circuiting)
+    "~"	        ;; Find logical NOT
+    "@"         ;; Create anonymous functions and function handles, call superclass methods
+    ;; "!"      ;; "!" is like an operator, but has command-dual like syntax, so handled elsewhere
+    "?"         ;; Retrieve metaclass information for class name
+    "~"         ;; Represent logical NOT, suppress specific input or output arguments.
+    "="         ;; Variable creation and indexing assignment.
+    "<" "&"     ;; Specify one or more superclasses in a class definition.
+
+    ;; ".?"     ;; Specify the fields of a name-value structure as the names of all
+    ;;          ;    writable properties of the class.
+    ;;          ;    However, this isn't parsed correctly by matlab tree-sitter, see
+    ;;          ;    https://github.com/acristoffers/tree-sitter-matlab/issues/35
+    )
+  "The matlab-ts-mode font-lock operators.")
 
 (defvar matlab-ts-mode--type-functions
   '("double"
@@ -443,12 +499,41 @@ than the COMMENT-NODE start-point and end-point."
      (attribute (identifier) @font-lock-type-face "=" (identifier) @font-lock-builtin-face)
      (attribute (identifier) @font-lock-type-face))
 
+   ;; F-Rule: variable
+   :language 'matlab
+   :feature 'variable
+   '((assignment left: (identifier) @font-lock-variable-name-face)
+     (global_operator (identifier) @font-lock-variable-name-face)
+     (persistent_operator (identifier) @font-lock-variable-name-face))
+
+   ;; F-Rule: command dual arugments
+   :language 'matlab
+   :feature 'command-arg
+   '((command_argument) @matlab-ts-mode-command-arg-face)
+
+   ;; F-Rule: system and command dual commands.
+   :language 'matlab
+   :feature 'command-name
+   '(((command_name) @matlab-ts-mode-system-command-face
+      ;; System command: ! ls *.m *.txt
+      (:match "^!" @matlab-ts-mode-system-command-face))
+     ;; Command-dual with at least one arg: myFunction arg
+     ;; Commands with no args could be a variable or a function
+     ((command (command_name) @font-lock-function-call-face (command_argument))))
+
    ;; F-Rule: strings "double quote" and 'single quote'
    :language 'matlab
    :feature 'string
    '((string_content) @font-lock-string-face
      ((string_content) ["\"" "'"]) @matlab-ts-mode-string-delimiter-face
      (string ["\"" "'"] @matlab-ts-mode-string-delimiter-face))
+
+   ;; F-rule: operators: *, /, +, -, etc.
+   ;; Note, this rule must come after the string rule because single quote (') can be a transpose or
+   ;; string delimiter
+   :language 'matlab
+   :feature 'operator
+   `([,@matlab-ts-mode--operators] @matlab-ts-mode-operator-face)
 
    ;; F-Rule: transpose uses "'" after an identifier, e.g. for matrix A we tranpose it via: A'
    ;; since "'" is also used as a string, we use a different face for transpose and put it under
@@ -466,9 +551,14 @@ than the COMMENT-NODE start-point and end-point."
                               `(seq bol
                                     (or ,@matlab-ts-mode--type-functions)
                                     eol))
-                              @font-lock-type-face)))
+                            @font-lock-type-face)))
+
+   ;; TODO matlab-math-face for true/false or font-lock-constant-face like c++-ts-mode?  see
+   ;; https://www.mathworks.com/content/dam/mathworks/fact-sheet/matlab-basic-functions-reference.pdf
+   ;; - has special variables and constants, matlab.el has others
 
    ;; F-Rule: Constant literal numbers, e.g. 1234
+   ;; TODO use font-lock-number-face like c++-ts-mode or make a matlab-ts-mode-number-face
    :language 'matlab
    :feature 'number
    '((number) @font-lock-constant-face)
@@ -481,7 +571,7 @@ than the COMMENT-NODE start-point and end-point."
    ;; F-Rule: Delimiters, e.g. semicolon
    :language 'matlab
    :feature 'delimiter
-   '((["," "." ";" ":" "@" "?"]) @font-lock-delimiter-face)
+   '((["." "," ":" ";"]) @font-lock-delimiter-face)
 
    ;; F-Rule: Syntax errors
    :language 'matlab
@@ -1045,10 +1135,11 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Font-lock. See: ./tests/test-matlab-ts-mode-font-lock.el
     (setq-local treesit-font-lock-level matlab-ts-mode-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
-    (setq-local treesit-font-lock-feature-list '((comment definition)
-                                                 (keyword string type)
-                                                 (number bracket delimiter)
-                                                 (syntax-error)))
+    (setq-local treesit-font-lock-feature-list
+                '((comment definition)
+                  (keyword operator string type variable command-name command-arg)
+                  (number bracket delimiter)
+                  (syntax-error)))
 
     ;; Indent. See: ./tests/test-matlab-ts-mode-indent.el
     (matlab-ts-mode--set-function-indent-level)

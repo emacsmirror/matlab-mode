@@ -1,0 +1,13 @@
+c ccc ccccccccc ccc
+
+c ccccccc ccccc cc c cccccccc cc c cccccccc
+ddddddd
+
+FFFFFF aaa
+
+c ccccccccc cc cc cccccc cccccc cccccc ccccccccccc cccccc cc cc cc cccccc cccccccccccc ccccccc
+c cccccccc cccccccccc
+FFFFFFF aaa aaa
+
+c cccccc ccc ccccccc cccccccc cccccccc ccccccccc
+! !! aaa aaaaa

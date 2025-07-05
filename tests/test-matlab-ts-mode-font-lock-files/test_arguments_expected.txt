@@ -6,7 +6,7 @@ kkkkkkkk ffffffffffffffbvvvD vvvvvvvvvvD vvvvvvvb
        PPP bnDnb tttttt
        PPPPPPPDPPP
        PPPPPPPDPPP tttttt
-       PPPPPPPDPPPPPPPPP bnDnb tttttt d SsS 
-       PPPPPPPDPPPPPPPPP bnDnb bBBBBBBBBBBBBBb d n
+       PPPPPPPDPPPPPPPPP bnDnb tttttt o SsS 
+       PPPPPPPDPPPPPPPPP bnDnb bBBBBBBBBBBBBBb o n
     kkk
 kkk

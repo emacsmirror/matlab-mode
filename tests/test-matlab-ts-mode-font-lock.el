@@ -52,6 +52,8 @@ after validating it, rename it to
 
     (let* ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file))
            (code-to-face '(
+                           ("!" . matlab-ts-mode-system-command-face)
+                           ("a" . matlab-ts-mode-command-arg-face)
                            ("b" . font-lock-bracket-face)
                            ("B" . font-lock-builtin-face)
                            ("c" . font-lock-comment-face)
@@ -59,6 +61,7 @@ after validating it, rename it to
                            ("d" . default)
                            ("D" . font-lock-delimiter-face)
                            ("f" . font-lock-function-name-face)
+                           ("F" . font-lock-function-call-face)
                            ("h" . font-lock-doc-face) ;; function doc help comment
                            ("H" . matlab-ts-mode-comment-heading-face) ;; %% comment heading
                            ("k" . font-lock-keyword-face)
@@ -66,6 +69,7 @@ after validating it, rename it to
                            ("n" . font-lock-constant-face) ;; numbers
                            ("s" . font-lock-string-face)
                            ("S" . matlab-ts-mode-string-delimiter-face)
+                           ("o" . matlab-ts-mode-operator-face)
                            ("p" . matlab-ts-mode-pragma-face)
                            ("P" . font-lock-property-name-face)
                            ("t" . font-lock-type-face)

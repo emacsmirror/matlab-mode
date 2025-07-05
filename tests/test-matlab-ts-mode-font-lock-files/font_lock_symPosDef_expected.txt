@@ -1,20 +1,20 @@
 c ccc ccccccccc ccc
 kkkkkkkk fffffffffffffffffff
     kkkkkkkkkk
-        PPPPPPPPPPP d bn nD n nb
+        PPPPPPPPPPP o bn nD n nb
     kkk
     
     kkkkkkk
-        kkkkkkkk vvv d kkkkfffffffffffbvvvD vvvb
+        kkkkkkkk vvv o kkkkfffffffffffbvvvD vvvb
             kkk ddddbdddb
-                dddDddddddddddd d dddD
+                dddDddddddddddd o dddD
             kkkkk dd
                 dddddbSsssssssssss ssss ss sssssssss ssssssss sssssssssSb
             kkk
         kkk
 
-        kkkkkkkk v d kkkkfffffffffffbvvvb
-            d d dddDdddddddddddD
+        kkkkkkkk v o kkkkfffffffffffbvvvb
+            v o dddDdddddddddddD
         kkk
     kkk
 kkk

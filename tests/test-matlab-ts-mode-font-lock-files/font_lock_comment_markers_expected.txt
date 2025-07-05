@@ -1,5 +1,5 @@
 c ccc ccccccccc ccc
-kkkkkkkk v d fffffffffffffffffffffffff
+kkkkkkkk v o fffffffffffffffffffffffff
 h hhhh hhh hhhhhhh hh hh hhhhhhh
 
     c ccccccc
@@ -9,5 +9,5 @@ h hhhh hhh hhhhhhh hh hh hhhhhhh
     c MMMMM c cccc MMMM c ccc
     c
     c MMM
-    d d nD
+    v o nD
 kkk

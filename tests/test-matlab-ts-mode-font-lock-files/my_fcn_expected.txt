@@ -1,26 +1,26 @@
 c ccc ccccc ccccccccc ccc
-kkkkkkkk bvvvvD vvvvD vvvvb d ffffffbvvvD vvvD vvvb
+kkkkkkkk bvvvvD vvvvD vvvvb o ffffffbvvvD vvvD vvvb
 h hhhh hhhhhhh
 h hhhh hhhhhhh hhhh h
 
     c cccc ccccccc
-    kk ddd d ttttttbnb ppppppppppppp
-       dddd d dddbnnb d dd d bnbD
+    kk ddd o ttttttbnb ppppppppppppp
+       vvvv o dddbnnb o dd o bnbD
     kkkk
-       dddd d ddd d n d nD
+       vvvv o ddd o n o nD
     kkk
 
-    dddd d Sssss sssss ssss sSD
-    dddd d ddddbddddbD
+    vvvv o Sssss sssss ssss sSD
+    vvvv o ddddbddddbD
 
-    dddd d SsssssssssssSD
-    dddd d ddddbddddbD
+    vvvv o SsssssssssssSD
+    vvvv o ddddbddddbD
 kkk
 
-kkkkkkkk vvvv d ffffbvvvb
-    dddd d dddD
+kkkkkkkk vvvv o ffffbvvvb
+    vvvv o dddD
 kkk
 
-kkkkkkkk bvvvvb d ffffbvvvb
-    dddd d dddD
+kkkkkkkk bvvvvb o ffffbvvvb
+    vvvv o dddD
 kkk

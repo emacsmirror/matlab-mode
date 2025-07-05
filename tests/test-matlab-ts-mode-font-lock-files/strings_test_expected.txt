@@ -1,9 +1,9 @@
 c ccc ccccccccc ccc
 
-dd d SsssSD
-dd d SsssSD
+vv o SsssSD
+vv o SsssSD
 
-d d bn nD n nbD
-d d dfD   c ccccccccc
-d d dffD  c ccccccccc ccccccccc ccc cccccccccccc
-d d dfffD c ccccccccc ccccccccc ccccccccc ccc cccccccccccc
+v o bn nD n nbD
+v o doD   c ccccccccc
+v o dooD  c ccccccccc ccccccccc ccc cccccccccccc
+v o doooD c ccccccccc ccccccccc ccccccccc ccc cccccccccccc

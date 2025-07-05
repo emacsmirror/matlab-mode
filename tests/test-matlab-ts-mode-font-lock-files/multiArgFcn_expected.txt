@@ -2,10 +2,10 @@ c ccc ccccc ccccccccc ccc
 kkkkkkkk b ccc
     	   vvvv ccc c ccccccc ccc cccc
     	   vvvv ccc c ccccccc ccc cccc
-         b d ccc
+         b o ccc
 	 fffffffffffbvvvD ccc c ccccccc ccc ccc
     	             vvv  ccc c ccccccc ccc ccc
 		     b
-    dddd d dddD
-    dddd d dddD
+    vvvv o dddD
+    vvvv o dddD
 kkk

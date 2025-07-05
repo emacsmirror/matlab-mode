@@ -1,11 +1,11 @@
 c ccc ccccccccc ccc
 kkkkkkkk ffffffffffff
-   kkkkkkk btttttt d BBBBBBBBBb
-      kkkkkkkk vvv d fffffffbvvvDvvvvvvvvb
+   kkkkkkk btttttt o BBBBBBBBBb
+      kkkkkkkk vvv o fffffffbvvvDvvvvvvvvb
       kkk
    kkk
-   kkkkkkk btttttt d BBBBBBBb
-      kkkkkkkk vvv d fffffffbvvvDvvvvvvvvb
+   kkkkkkk btttttt o BBBBBBBb
+      kkkkkkkk vvv o fffffffbvvvDvvvvvvvvb
       kkk
    kkk
 kkk

@@ -1,13 +1,13 @@
 c ccc ccccccccc ccc
 c ccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 kkkkkkkk fffffffffffff
-   kkkkkkk btttttt d BBBBBBBBBb
-      kkkkkkkk vvv d fffffffbvvvDvvvvvvvvb
+   kkkkkkk btttttt o BBBBBBBBBb
+      kkkkkkkk vvv o fffffffbvvvDvvvvvvvvb
          ccc
       kkk
    kkk
-   kkkkkkk btttttt d BBBBBBBb
-      kkkkkkkk vvv d fffffffbvvvDvvvvvvvvb
+   kkkkkkk btttttt o BBBBBBBb
+      kkkkkkkk vvv o fffffffbvvvDvvvvvvvvb
           ccc
       kkk
    kkk

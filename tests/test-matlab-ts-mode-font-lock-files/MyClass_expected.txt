@@ -4,23 +4,23 @@ h hhhh hhhhhhh
 
     c ccccccc ccccc ccccccccccc
     kkkkkkkkkk
-        PPPPPPPPPP tttttt d nD c cccccc cccccccc cccc c ccccccc ccccc
+        PPPPPPPPPP tttttt o nD c cccccc cccccccc cccc c ccccccc ccccc
     kkk
 
     kkkkkkk
-        kkkkkkkk vvv d fffffffbvvvvvvvvvvvvb
+        kkkkkkkk vvv o fffffffbvvvvvvvvvvvvb
         h hhhhhhhhhhh hhhhhh
-            dddDdddddddddd d ddddddddddddD
+            dddDdddddddddd o ddddddddddddD
         kkk
 
-        kkkkkkkk vvvvvvvv d fffffffffffffbvvvb
+        kkkkkkkk vvvvvvvv o fffffffffffffbvvvb
         h hhhhhh hhhhhh
-            dddddddd d dddDddddddddddD
+            vvvvvvvv o dddDddddddddddD
         kkk
 
-        kkkkkkkk vvv d fffffffffffffbvvvD vvvvvvvvb
+        kkkkkkkk vvv o fffffffffffffbvvvD vvvvvvvvb
         h hhhhhh hhhhhh
-            dddDdddddddddd d ddddddddD
+            dddDdddddddddd o ddddddddD
         kkk
     kkk
 kkk

@@ -1,5 +1,5 @@
 c ccc ccccccccc ccc
-kkkkkkkk bvD vb d ffffffffffffffffffff
+kkkkkkkk bvD vb o ffffffffffffffffffff
 h hhhh hhh hhhhhhhhhhhhhhhhhhhh
 h
 h h hhhhh h hhhhhhh hhhhhhh hh hhh hhh hhhhhhh
@@ -16,9 +16,9 @@ h
     c
     c cccc cccc  cc ccc c ccccccc ccccccc
 
-    d d nD cc ccc c ccccccc ccccccc
+    v o nD cc ccc c ccccccc ccccccc
 
     HH HHHHHHH HHHHHHH H
 
-    d d nD
+    v o nD
 kkk
