@@ -450,7 +450,7 @@ than the COMMENT-NODE start-point and end-point."
 
    ;; F-Rule: special comments that override normal comment font
    :language 'matlab
-   :feature 'comment
+   :feature 'comment-special
    :override t
    '(((comment) @matlab-ts-mode-pragma-face
       (:match "^%#.+$" @matlab-ts-mode-pragma-face)) ;; %#pragma's
@@ -461,7 +461,7 @@ than the COMMENT-NODE start-point and end-point."
 
    ;; F-Rule: to do, fix me, triple-x marker comment keywords
    :language 'matlab
-   :feature 'comment
+   :feature 'comment-marker
    :override t
    '(((comment) @matlab-ts-mode--comment-to-do-capture))
 
@@ -500,6 +500,13 @@ than the COMMENT-NODE start-point and end-point."
      (attribute (identifier) @font-lock-type-face))
 
    ;; F-Rule: variable
+   ;; TODO - add font-lock-variable-name-face to variable uses.  Consider
+   ;;            i1 = [1, 2];
+   ;;            i2 = i1(1) + i3 + i4(i3);
+   ;;        we know i1 and i2 are varialbles from the (assignment left: (identifier))
+   ;;        However, we don't know if i3 or i4 are variables or functions because a function
+   ;;        can be called with no arguments, e.g. to call i3 function use i3 or i3(). i4 could
+   ;;        be a variable indexed by i1 or a function.
    :language 'matlab
    :feature 'variable
    '((assignment left: (identifier) @font-lock-variable-name-face)
@@ -534,13 +541,6 @@ than the COMMENT-NODE start-point and end-point."
    :language 'matlab
    :feature 'operator
    `([,@matlab-ts-mode--operators] @matlab-ts-mode-operator-face)
-
-   ;; F-Rule: transpose uses "'" after an identifier, e.g. for matrix A we tranpose it via: A'
-   ;; since "'" is also used as a string, we use a different face for transpose and put it under
-   ;; the string category.
-   :language 'matlab
-   :feature 'string
-   '((postfix_operator "'" @font-lock-function-name-face))
 
    ;; F-Rule: Types, e.g. int32()
    :language 'matlab
@@ -1136,7 +1136,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local treesit-font-lock-level matlab-ts-mode-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list
-                '((comment definition)
+                '((comment comment-special comment-marker definition)
                   (keyword operator string type variable command-name command-arg)
                   (number bracket delimiter)
                   (syntax-error)))
