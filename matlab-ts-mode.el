@@ -6,7 +6,7 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
 ;; Author: John Ciolfi <john.ciolfi.32@gmail.com>
-;; Created: Jun-24-2025
+;; Created: Jul-7-2025
 ;; Keywords: MATLAB
 
 ;; This file is free software: you can redistribute it and/or modify
@@ -36,6 +36,7 @@
 ;;; Code:
 
 (require 'treesit)
+(require 'matlab-ts-mode--builtins)
 
 ;;; Customizations
 
@@ -81,7 +82,7 @@ Guidelines:
    not problems with the existing code."))
 
 (defface matlab-ts-mode-operator-face
-  '((((class color) (background light)) :foreground "blue4")
+  '((((class color) (background light)) :foreground "navy")
     (((class color) (background dark))  :foreground "LightBlue")
     (t :inverse-video t
        :weight bold))
@@ -439,6 +440,11 @@ than the COMMENT-NODE start-point and end-point."
                                              override start end))
           (goto-char comment-end))))))
 
+(defun matlab-ts-mode--is-builtin (identifier-node)
+  "Return t if IDENTIFIER-NODE is a function provided with MATLAB."
+  (let ((id (treesit-node-text identifier-node)))
+    (gethash id matlab-ts-mode--builtins-ht)))
+
 (defvar matlab-ts-mode--font-lock-settings
   (treesit-font-lock-rules
 
@@ -511,7 +517,8 @@ than the COMMENT-NODE start-point and end-point."
    :feature 'variable
    '((assignment left: (identifier) @font-lock-variable-name-face)
      (global_operator (identifier) @font-lock-variable-name-face)
-     (persistent_operator (identifier) @font-lock-variable-name-face))
+     (persistent_operator (identifier) @font-lock-variable-name-face)
+     (for_statement (iterator (identifier) @font-lock-variable-name-face)))
 
    ;; F-Rule: command dual arugments
    :language 'matlab
@@ -573,7 +580,17 @@ than the COMMENT-NODE start-point and end-point."
    :feature 'delimiter
    '((["." "," ":" ";"]) @font-lock-delimiter-face)
 
+   :language 'matlab
+   :feature 'builtins
+   `(((identifier) @font-lock-builtin-face
+      (:pred matlab-ts-mode--is-builtin @font-lock-builtin-face)))
+
    ;; F-Rule: Syntax errors
+   ;; TODO - This captures too much at times, see
+   ;;        test-matlab-ts-mode-font-lock-files/font_lock_error.m
+   ;;        Can we do better? Should we not activate this by default?
+   ;;        What about narrowing what is shown and if too much, then do nothing?
+   ;;        Play with genBuiltinsHashTable.m adding syntax errors.
    :language 'matlab
    :feature 'syntax-error
    :override t
@@ -1136,7 +1153,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local treesit-font-lock-level matlab-ts-mode-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list
-                '((comment comment-special comment-marker definition)
+                '((comment comment-special comment-marker definition builtins)
                   (keyword operator string type variable command-name command-arg)
                   (number bracket delimiter)
                   (syntax-error)))
@@ -1177,12 +1194,17 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local electric-pair-inhibit-predicate #'matlab-ts-mode--electric-pair-inhibit-predicate)
 
     ;; TODO Highlight parens OR if/end type blocks
-    ;; TODO font-lock highlight operators, *, /, +, -, ./, booleans true/false, etc.
     ;; TODO face for all built-in functions such as dbstop, quit, sin, etc.
-    ;;   https://www.mathworks.com/help/matlab/referencelist.html?type=function&category=index&s_tid=CRUX_lftnav_function_index
-    ;;   https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
-    ;;   Maybe use completion api and complete on each letter?
-    ;;   Maybe look at functionSignatures.json?
+    ;;   - maintenance/genBuiltinsHashTable.m
+    ;;     Add namespaces
+    ;;     https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
+    ;; TODO font-lock string escape sequences
+    ;;      'foo\nbar' ==> (string ' (string_content) (escape_sequence) (string_content) ')
+    ;; TODO font-lock param=value pairs
+    ;;      writelines(out, outFile, LineEnding = '\n');
+    ;;      ==>     (arguments argument: (identifier) , argument: (identifier) , (identifier) =
+    ;;               (string ' (escape_sequence) '))
+    ;;
     ;; TODO code folding
 
     (treesit-major-mode-setup)))

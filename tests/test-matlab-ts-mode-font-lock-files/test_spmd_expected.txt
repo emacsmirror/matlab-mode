@@ -1,6 +1,6 @@
 c ccc ccccccccc ccc
 c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-dddddddbnb
+BBBBBBBbnb
 dddd
-    v o dddddbddddddddd o nbD
+    v o BBBBBbBBBBBBBBB o nbD
 ddd

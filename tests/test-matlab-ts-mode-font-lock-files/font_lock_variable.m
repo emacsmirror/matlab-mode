@@ -5,5 +5,9 @@ function font_lock_variable
     persistent foo1;
 
     foo2 = 'a'
-    
+
+    total = 0;
+    for idx = 1:10
+        total = total + idx;
+    end
 end

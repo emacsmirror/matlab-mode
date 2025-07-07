@@ -3,18 +3,18 @@ kkkkkkkk fffffffffffffffffffff
 h hhhh hh hhh
 h hhh hhhh hhhhhhh
 
-    ddddddbbD
+    BBBBBBbbD
 
     kkkkkkkk ffffff
 
         c cccc cc c cccccc ccccccc ccc cccc
-        ddddbSss ssssssSbD
+        BBBBbSss ssssssSbD
         dddddddD
     kkk
 
     kkkkkkkk fffffff
     h hhhhhhh hhh hhhhhhh
-        ddddbSss sssssssSbD
+        BBBBbSss sssssssSbD
         c ccccccc ccccc cccc
     kkk
 kkk

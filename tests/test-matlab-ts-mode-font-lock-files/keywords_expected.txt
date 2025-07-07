@@ -15,24 +15,24 @@ kkkkkkkk ffffffff
 	    kkk
                 kkkkkk dd
                   kkkk nn
-                    ddddbSssSb
+                    BBBBbSssSb
 		  kkkkkkkkk
-		    ddddbSsssSb
+		    BBBBbSsssSb
                 kkk
             kkkkk dd
-	        dddddddbddb
+	        BBBBBBBbddb
 	    kkk
 
 	    v o nD
-	    kkk d o nDdd
-	        kk dddbdD nb
+	    kkk v o nDdd
+	        kk BBBbdD nb
 		    kkkkkkkk
-                kkkkkk dddbdD nb
+                kkkkkk BBBbdD nb
 		    kkkkkkkk
 		kkkk
-		    v o d o nD
+		    v o B o nD
                 kkk
-                ddddbbSsssssssss ss s ss s s S dddddddbdbbb
+                BBBBbbSsssssssss ss s ss s s S BBBBBBBbdbbb
             kkk
 
             v o n
@@ -44,9 +44,9 @@ kkkkkkkk ffffffff
         kkkkkkkk fffffffbb
             v o nnnD
             v o nnnD
-            v o dddddbnDdbD
-            kkkkkk d o nDd
-                dbdb o dddbdddbdddbddddbdbbbbD
+            v o BBBBBbnDdbD
+            kkkkkk v o nDd
+                dbBb o BBBbBBBbBBBbBBBBbdbbbbD
             kkk
 
 	    kkkkkk

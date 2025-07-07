@@ -1,3 +1,7 @@
+# -*-conf-*-
+# Emacs Multi-file Packages
+# https://www.gnu.org/software/emacs/manual/html_node/elisp/Multi_002dfile-Packages.html
+
 *.ac
 *.in
 *.m4
@@ -17,3 +21,4 @@ matlab-maint.el
 tests
 doc
 contributing
+maintenance
