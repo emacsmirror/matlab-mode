@@ -72,7 +72,7 @@ after validating it, rename it to
                            ("S" . matlab-ts-mode-string-delimiter-face)
                            ("o" . matlab-ts-mode-operator-face)
                            ("p" . matlab-ts-mode-pragma-face)
-                           ("P" . font-lock-property-name-face)
+                           ("P" . matlab-ts-mode-property-face)
                            ("t" . font-lock-type-face)
                            ("v" . font-lock-variable-name-face)
                            ("w" . font-lock-warning-face)

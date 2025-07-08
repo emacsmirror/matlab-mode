@@ -98,8 +98,15 @@ Guidelines:
        :slant italic))
   "*Face used to higlight \"!\" system commands.")
 
+(defface matlab-ts-mode-property-face
+  '((t :inherit font-lock-property-name-face
+       :slant italic))
+  "*Face used on properties, enumerations, and events.")
+
 (defcustom matlab-ts-mode-font-lock-level 4
   "*Level of font lock, 1 for minimal syntax highlighting and 4 for maximum."
+  ;; Setting to 4 to show parse errors causes too much "red". See
+  ;; https://github.com/acristoffers/tree-sitter-matlab/issues/36
   :type '(choice (const :tag "Minimal" 1)
 		 (const :tag "Low" 2)
 		 (const :tag "Standard" 3)
@@ -393,8 +400,8 @@ Similar behavior for classdef's."
   "Fontify function/classdef documentation comments.
 COMMENT-NODE is the tree-sitter node from a treesit-font-lock-rules rule
 and OVERRIDE is from that rule.  START and END specify the region to be
-fontified which could be smaller or larger START and END specify the
-region to be fontified."
+fontified which could be smaller or larger than the COMMENT-NODE
+start-point and end-point."
   (when (matlab-ts-mode--is-doc-comment comment-node (treesit-node-parent comment-node))
     (treesit-fontify-with-override
      (treesit-node-start comment-node) (treesit-node-end comment-node)
@@ -440,10 +447,60 @@ than the COMMENT-NODE start-point and end-point."
                                              override start end))
           (goto-char comment-end))))))
 
+(defun matlab-ts-mode--namespace-builtins-capture (field-expression-node override start end &rest _)
+  "Fontify foo.bar.goo when it is a builtin function.
+FIELD-EXPRESSION-NODE is the tree-sitter comment node from a
+treesit-font-lock-rules rule and OVERRIDE is from that rule.  START and
+END specify the region to be fontified which could be smaller or larger
+than the FILED-EXPRESSION-NODE start-point and end-point."
+  (let ((children (treesit-node-children field-expression-node))
+        (path "")) ;; The "path" of FIELD-EXPRESSION, e.g. foo.bar.goo
+    (cl-loop for child in children do
+             (let ((child-type (treesit-node-type child)))
+               (cond
+                ;; Case: (identifier) or "."
+                ((or (string= child-type "identifier")
+                     (string= child-type "."))
+                 (setq path (concat path (treesit-node-text child))))
+                ;; Case: (function_call)
+                ((string= child-type "function_call")
+                 (let ((fcn-name-node (treesit-node-child-by-field-name child "name")))
+                   (setq path (concat path (treesit-node-text fcn-name-node)))))
+                ;; Case: other - shouldn't be able to get here, but be safe.
+                (t
+                 (cl-return)))))
+    (let ((builtin-type (gethash path matlab-ts-mode--builtins-ht)))
+      (when builtin-type
+        (let ((builtin-start (treesit-node-start field-expression-node))
+              builtin-end
+              prop-start
+              prop-end)
+          (if (eq builtin-type t)
+              (setq builtin-end (+ builtin-start (length path)))
+            ;; builtin-type is 'property or 'enumeration
+            (when (not (string-match "^\\(.+\\.\\)\\([^.]+\\)$" path))
+              (error "Assert: failed to parse path, %s" path))
+            (setq builtin-end (+ builtin-start (- (length (match-string 1 path)) 2)))
+            ;; We give the "." before the property or enum font-lock-delimiter-face, hence the +2.
+            (setq prop-start (+ builtin-end 2))
+            (setq prop-end (+ prop-start (length (match-string 2 path)))))
+
+          (treesit-fontify-with-override builtin-start builtin-end 'font-lock-builtin-face
+                                         override start end)
+          (when prop-start
+            (treesit-fontify-with-override prop-start prop-end 'matlab-ts-mode-property-face
+                                           override start end)))))))
+
 (defun matlab-ts-mode--is-builtin (identifier-node)
   "Return t if IDENTIFIER-NODE is a function provided with MATLAB."
-  (let ((id (treesit-node-text identifier-node)))
-    (gethash id matlab-ts-mode--builtins-ht)))
+  (let ((parent (treesit-node-parent identifier-node)))
+    ;; Consider
+    ;;    foo.bar.disp.goo = 1;  % both foo and disp are builtin functions, but in this case fields
+    ;;    foo.bar(1)             % +foo/bar.m - bar is a builtin, but foo.bar(1) is not.
+    (when (and (not (equal (treesit-node-type parent) "field_expression"))
+               (not (equal (treesit-node-type (treesit-node-parent parent)) "field_expression")))
+      (let ((id (treesit-node-text identifier-node)))
+        (gethash id matlab-ts-mode--builtins-ht)))))
 
 (defvar matlab-ts-mode--font-lock-settings
   (treesit-font-lock-rules
@@ -492,15 +549,15 @@ than the COMMENT-NODE start-point and end-point."
      (function_output (multioutput_variable (identifier) @font-lock-variable-name-face))
      ;; Fields of: arguments ... end , properties ... end
      (property (validation_functions (identifier) @font-lock-builtin-face))
-     (property name: (identifier) @font-lock-property-name-face
+     (property name: (identifier) @matlab-ts-mode-property-face
                (identifier) @font-lock-type-face :?)
-     (property name: (property_name (identifier) @font-lock-property-name-face)
+     (property name: (property_name (identifier) @matlab-ts-mode-property-face)
                (identifier) @font-lock-type-face :?)
-     ;; (property name: (property_name (identifier) @font-lock-property-name-face))
+     ;; (property name: (property_name (identifier) @matlab-ts-mode-property-face))
      ;; Enumeration's
-     (enum (identifier) @font-lock-property-name-face)
+     (enum (identifier) @matlab-ts-mode-property-face)
      ;; events block in classdef
-     (events (identifier) @font-lock-property-name-face)
+     (events (identifier) @matlab-ts-mode-property-face)
      ;; attributes of properties, methods
      (attribute (identifier) @font-lock-type-face "=" (identifier) @font-lock-builtin-face)
      (attribute (identifier) @font-lock-type-face))
@@ -590,6 +647,11 @@ than the COMMENT-NODE start-point and end-point."
    :feature 'builtins
    `(((identifier) @font-lock-builtin-face
       (:pred matlab-ts-mode--is-builtin @font-lock-builtin-face)))
+
+   :language 'matlab
+   :feature 'namespace-builtins
+   :override t
+   `((field_expression) @matlab-ts-mode--namespace-builtins-capture)
 
    ;; F-Rule: Syntax errors
    ;; TODO - This captures too much at times, see
@@ -1161,7 +1223,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local treesit-font-lock-feature-list
                 '((comment comment-special comment-marker definition)
                   (keyword operator string escape-sequence type command-name command-arg)
-                  (variable builtins number bracket delimiter)
+                  (variable builtins namespace-builtins number bracket delimiter)
                   (syntax-error)))
 
     ;; Indent. See: ./tests/test-matlab-ts-mode-indent.el
@@ -1205,6 +1267,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;   - maintenance/genBuiltinsHashTable.m
     ;;     Add namespaces
     ;;     https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
+    ;; TODO in matlab-ts-mode--builtins, add size to ht definition
     ;; TODO font-lock param=value pairs
     ;;      writelines(out, outFile, LineEnding = '\n');
     ;;      ==>     (arguments argument: (identifier) , argument: (identifier) , (identifier) =
