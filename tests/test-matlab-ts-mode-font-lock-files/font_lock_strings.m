@@ -1,7 +1,7 @@
 % -*- matlab-ts -*-
 
 s1 = "abc";
-s2 = 'def';
+s2 = 'One\nTwo';
 
 A = [1 2; 3 4];
 B = A';   % transpose

@@ -542,6 +542,12 @@ than the COMMENT-NODE start-point and end-point."
      ((string_content) ["\"" "'"]) @matlab-ts-mode-string-delimiter-face
      (string ["\"" "'"] @matlab-ts-mode-string-delimiter-face))
 
+   ;; F-Rule: escape sequences in strings e.g. \n as in "One\nTwo"
+   ;; See: ./tests/test-matlab-ts-mode-font-lock-files/font_lock_strings.m
+   :language 'matlab
+   :feature 'escape-sequence
+   '((escape_sequence) @font-lock-escape-face)
+
    ;; F-rule: operators: *, /, +, -, etc.
    ;; Note, this rule must come after the string rule because single quote (') can be a transpose or
    ;; string delimiter
@@ -1153,9 +1159,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local treesit-font-lock-level matlab-ts-mode-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list
-                '((comment comment-special comment-marker definition builtins)
-                  (keyword operator string type variable command-name command-arg)
-                  (number bracket delimiter)
+                '((comment comment-special comment-marker definition)
+                  (keyword operator string escape-sequence type command-name command-arg)
+                  (variable builtins number bracket delimiter)
                   (syntax-error)))
 
     ;; Indent. See: ./tests/test-matlab-ts-mode-indent.el
@@ -1193,13 +1199,12 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Electric pair mode. See tests/test-matlab-ts-mode-electric-pair.el
     (setq-local electric-pair-inhibit-predicate #'matlab-ts-mode--electric-pair-inhibit-predicate)
 
+    ;; TODO For font-lock reference tests
     ;; TODO Highlight parens OR if/end type blocks
     ;; TODO face for all built-in functions such as dbstop, quit, sin, etc.
     ;;   - maintenance/genBuiltinsHashTable.m
     ;;     Add namespaces
     ;;     https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
-    ;; TODO font-lock string escape sequences
-    ;;      'foo\nbar' ==> (string ' (string_content) (escape_sequence) (string_content) ')
     ;; TODO font-lock param=value pairs
     ;;      writelines(out, outFile, LineEnding = '\n');
     ;;      ==>     (arguments argument: (identifier) , argument: (identifier) , (identifier) =

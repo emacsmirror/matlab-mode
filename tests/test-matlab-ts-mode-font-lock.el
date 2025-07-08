@@ -60,6 +60,7 @@ after validating it, rename it to
                            ("C" . font-lock-comment-delimiter-face)
                            ("d" . default)
                            ("D" . font-lock-delimiter-face)
+                           ("E" . font-lock-escape-face)
                            ("f" . font-lock-function-name-face)
                            ("F" . font-lock-function-call-face)
                            ("h" . font-lock-doc-face) ;; function doc help comment
