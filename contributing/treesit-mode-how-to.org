@@ -1687,59 +1687,73 @@ well worth writing a tree-sitter mode.
 
   1. Improved font-lock (semantic coloring) performance, making editing even more smooth.
 
-  2. More accurate fontification, we now identify language elements accurately and use
-     more faces to color them.
+     - More accurate fontification, we now identify language elements accurately and use
+       more faces to color them.
 
-  3. Fixes edge-case fontification issues when compared with matlab-mode
+     - Fixes edge-case fontification issues when compared with matlab-mode
 
-     Create issue for this:
-       #+begin_src matlab-ts
-       x = [1 2; 3 4];
-       y = x''               % this is valid double transpose where matlab-mode gets it wrong
-       #+end_src
+       Create issue for this:
+         #+begin_src matlab-ts
+         x = [1 2; 3 4];
+         y = x''               % this is valid double transpose where matlab-mode gets it wrong
+         #+end_src
 
-     Function identification, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/48
+       Function identification, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/48
 
-  4. In comments, we now highlight =FIXME=, =TODO=, and =XXX= markers.
+     - In comments, we now highlight =FIXME=, =TODO=, and =XXX= markers.
 
-  5. Fixed fontification of "%% section" to require that the be the start of a comment and
-     on their own line.
+     - Fixed fontification of "%% section" to require that the be the start of a comment and
+       on their own line.
 
-  6. Simplifies the semantics for indent. The indent rules are:
+     - Variable creation/assignment will be semantically colored.
+  
+     - Now fontify all MATLAB/Simulink factory builtin provided functions, class
+       methods/properities, enums, etc. Note, if you override a builtin function with a variable,
+       the variable creation/assignment will be colored as a variable, but the use will continue to
+       be a function.  To avoid this confusing state, use variable names that collide with builtin
+       items.
+       
+  2. Improved indent
 
-     - TODO
+     - Simplfiied the semantics for indent. The indent rules are:
 
-  7. Improved indent performance, making editing even more smooth.
+       + TODO
 
-  8. Fixes various edge-case indent issues, some are
+     - Improved indent performance, making editing even more smooth.
 
-     - Auto-indentation of end, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/33
+     - Fixes various edge-case indent issues, some are
 
-  9. There's no longer prompting if you want functions to have end's. This is now computed
-     automatically
+       + Fixed indent of function definition when ellipsis continuations are used.
 
-  10. Improved fill-paragraph, M-q, which will now fill comments and when not in a comment, indent
-      the current function or statement.
+       + Auto-indentation of end, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/33
 
-  11. Accurate type of m-file detection, which improves matlab-sections-minor-mode.
+       + TODO
 
-      TODO
+  3. There's no longer prompting if you want functions to have end's. This is now computed
+     automatically.
 
-  12. Change Log command now work with MATALB *.m files.
+  4. Improved fill-paragraph, M-q, which will now fill comments and when not in a comment, indent
+     the current function or statement.
 
-      Running =C-x 4 a= (add-change-log-entry-other-window) will now insert the name of the function
-      or classdef for the current point.
+  5. Accurate type of m-file detection, which improves matlab-sections-minor-mode.
 
-  13. Added support for =M-x outline-minor-mode=. Outline headings are =function='s, =classdef='s,
-      and "%% heading" comments.
+     + TODO
 
-  14. On save fix of function/classdef name now handles buffer names that aren't valid MATLAB
-      identifiers.  On save fix of function/classdef name handles buffers not associated with files
-      on disk.  Also fixed cases where detection of scripts failed.
+  6. Change Log command now work with MATALB *.m files.
 
-  15. Improved handling of single quotes for =M-x electric-pair-mode=. These will automatically
-      pair
-      - Single quote when used to create a single-quoted string, but not when used elsewhere,
-        e.g. a matrix transpose.
-      - Double quotes for a double-quoted string.
-      - Parenthesis =()=, Vectors, =[]=, and Cells ={}=.
+     Running =C-x 4 a= (add-change-log-entry-other-window) will now insert the name of the function
+     or classdef for the current point.
+
+  7. Added support for =M-x outline-minor-mode=. Outline headings are =function='s, =classdef='s,
+     and "%% heading" comments.
+
+  8. On save fix of function/classdef name now handles buffer names that aren't valid MATLAB
+     identifiers.  On save fix of function/classdef name handles buffers not associated with files
+     on disk.  Also fixed cases where detection of scripts failed.
+
+  9. Improved handling of single quotes for =M-x electric-pair-mode=. These will automatically
+     pair
+     - Single quote when used to create a single-quoted string, but not when used elsewhere,
+       e.g. a matrix transpose.
+     - Double quotes for a double-quoted string.
+     - Parenthesis =()=, Vectors, =[]=, and Cells ={}=.
