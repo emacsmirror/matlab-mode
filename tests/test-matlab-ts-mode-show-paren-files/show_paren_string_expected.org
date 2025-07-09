@@ -1,0 +1,179 @@
+#+startup: showall
+
+* Executing commands from show_paren_string.m:4:2:
+
+  (t-utils-xr "C-a" "C-n" (re-search-forward "'") "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  140
+  Moved to point:   38
+  : 4:0: % (t-utils-xr "C-a" "C-n" (re-search-forward "'") "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :   38
+  Moved to point:  141
+  : 5:0: a';
+  :      ^
+  No buffer modifications
+
+- Invoking      : (re-search-forward "'")
+  Start point   :  141
+  Moved to point:  143
+  : 5:2: a';
+  :        ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  143
+  Moved to point:  142
+  : 5:1: a';
+  :       ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  142
+  No point movement
+  standard-output:
+    nil
+  No buffer modifications
+
+* Executing commands from show_paren_string.m:7:2:
+
+  (t-utils-xr "C-a" "C-n" (re-search-forward "'") "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  248
+  Moved to point:  146
+  : 7:0: % (t-utils-xr "C-a" "C-n" (re-search-forward "'") "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  146
+  Moved to point:  249
+  : 8:0: a.';
+  :      ^
+  No buffer modifications
+
+- Invoking      : (re-search-forward "'")
+  Start point   :  249
+  Moved to point:  252
+  : 8:3: a.';
+  :         ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  252
+  Moved to point:  251
+  : 8:2: a.';
+  :        ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  251
+  No point movement
+  standard-output:
+    nil
+  No buffer modifications
+
+* Executing commands from show_paren_string.m:10:2:
+
+  (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : (re-search-forward "<")
+  Start point   :  351
+  Moved to point:  359
+  : 11:7: s1 = '<foo '' bar>';
+  :              ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  359
+  Moved to point:  358
+  : 11:6: s1 = '<foo '' bar>';
+  :             ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  358
+  Moved to point:  357
+  : 11:5: s1 = '<foo '' bar>';
+  :            ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  357
+  No point movement
+  standard-output:
+    (357 358 370 371 nil)
+  No buffer modifications
+
+* Executing commands from show_paren_string.m:13:2:
+
+  (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : (re-search-forward ">")
+  Start point   :  458
+  Moved to point:  477
+  : 14:18: s2 = '<foo '' bar>';
+  :                          ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  477
+  No point movement
+  standard-output:
+    (464 465 477 478 nil)
+  No buffer modifications
+
+* Executing commands from show_paren_string.m:16:2:
+
+  (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : (re-search-forward "<")
+  Start point   :  577
+  Moved to point:  585
+  : 17:7: s3 = "<foo ' bar>";
+  :              ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  585
+  Moved to point:  584
+  : 17:6: s3 = "<foo ' bar>";
+  :             ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  584
+  Moved to point:  583
+  : 17:5: s3 = "<foo ' bar>";
+  :            ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  583
+  No point movement
+  standard-output:
+    (583 584 595 596 nil)
+  No buffer modifications
+
+* Executing commands from show_paren_string.m:19:2:
+
+  (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : (re-search-forward ">")
+  Start point   :  683
+  Moved to point:  701
+  : 20:17: s4 = "<foo ' bar>";
+  :                         ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  701
+  No point movement
+  standard-output:
+    (689 690 701 702 nil)
+  No buffer modifications

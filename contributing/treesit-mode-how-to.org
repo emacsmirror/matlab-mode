@@ -1757,3 +1757,6 @@ well worth writing a tree-sitter mode.
        e.g. a matrix transpose.
      - Double quotes for a double-quoted string.
      - Parenthesis =()=, Vectors, =[]=, and Cells ={}=.
+
+ 10. We now highlight starting and ending string quote when the point is on the start or end single
+     or double quote.

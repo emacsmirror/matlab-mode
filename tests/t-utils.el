@@ -36,7 +36,7 @@
        (parent-dir (expand-file-name (file-name-directory (directory-file-name d1)))))
   (add-to-list 'load-path parent-dir t))
 
-(defun t-utils-trim ()
+(defun t-utils--trim ()
   "Trim trailing whitespace and lines with utf-8-unix encoding."
   (setq buffer-file-coding-system 'utf-8-unix)
   (let ((delete-trailing-lines t))
@@ -620,7 +620,7 @@ and blank lines are inserted by calling `newline'.`"
           (call-interactively #'indent-for-tab-command))
         (forward-line))
 
-      (t-utils-trim)
+      (t-utils--trim)
 
       (let ((typing-got (buffer-substring (point-min) (point-max))))
         (set-buffer-modified-p nil)
@@ -672,7 +672,7 @@ See `t-utils--test-indent-type' for LINE-MANIPULATOR."
           (message "START: %s <indent-region> %s" test-name lang-file)
           (setq lang-file-major-mode major-mode)
           (indent-region (point-min) (point-max))
-          (t-utils-trim)
+          (t-utils--trim)
           (let ((got (buffer-substring (point-min) (point-max)))
                 (got-file (concat expected-file "~")))
             (set-buffer-modified-p nil)

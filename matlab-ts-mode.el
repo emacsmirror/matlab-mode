@@ -263,6 +263,8 @@ as comments which is how they are treated by MATLAB."
     "properties"
     (return_statement)
     "set." ;; when used in a classdef method, e.g. function obj = set.propName(obj, val)
+    ;; TODO "spmd" should be here - currently not supported by matlab tree-sitter, see
+    ;; https://github.com/acristoffers/tree-sitter-matlab/issues/25
     "switch"
     "try"
     "while")
@@ -1238,6 +1240,127 @@ single quote string."
    (t
     (funcall #'electric-pair-default-inhibit char))))
 
+(declare-function show-paren--default "paren")
+
+(defun matlab-ts-mode--show-paren-or-block ()
+  "Function to assign to `show-paren-data-function'.
+Highlights parens and if/end type blocks.
+Returns a list: \\='(HERE-BEGIN HERE-END THERE-BEGIN THERE-END MISMATCH)
+or nil"
+  (let* (here-begin
+         here-end
+         there-begin
+         there-end
+         mismatch
+         (pt (point))
+         (node-at-point (treesit-node-at pt))
+         ;; Handle case at end of a start node, e.g. point just after properties:
+         ;;    properties
+         ;;              ^
+         ;;        foo;
+         ;;    end
+         (node (if (and (equal "\n" (treesit-node-type node-at-point))
+                        (> pt 1))
+                   (progn
+                     (setq pt (1- pt))
+                     (treesit-node-at pt))
+                 node-at-point)))
+
+    ;; If point is in whitespace, (treesit-node-at (point)) returns the nearest node, but we don't
+    ;; want that.
+    (let ((node-start (treesit-node-start node))
+          (node-end (treesit-node-end node)))
+      (when (and (>= pt node-start)
+                 (<= pt node-end))
+        (let* ((start-to-parent '(("classdef"    . "class_definition")
+                                  ("methods"     . "methods")
+                                  ("properties"  . "properties")
+                                  ("enumeration" . "enumeration")
+                                  ("events"      . "events")
+                                  ("function"    . "function_definition")
+                                  ("arguments"   . "arguments_statement")
+                                  ("if"          . "if_statement")
+                                  ("switch"      . "switch_statement")
+                                  ("for"         . "for_statement")
+                                  ("parfor"      . "for_statement")
+                                  ("while"       . "while_statement")
+                                  ("try"         . "try_statement")
+                                  ;; TODO "spmd" should be here - currently not supported by matlab
+                                  ;; tree-sitter, see
+                                  ;; https://github.com/acristoffers/tree-sitter-matlab/issues/25
+                                  ))
+               (start-node-types (mapcar (lambda (pair) (car pair)) start-to-parent))
+               (start-re (concat "^" (rx-to-string `(or ,@start-node-types)) "$"))
+               (node-type (treesit-node-type node))
+               (parent-node (treesit-node-parent node))
+               (parent-type (treesit-node-type parent-node)))
+
+          ;; xxx when on inner item, e.g. elseif, else, case, otherwise, catch do same as
+          ;;     matlab-mode
+
+          (cond
+
+           ;; Case: on a start node, e.g. "function"
+           ((string-match-p start-re node-type)
+            (let* ((expected-parent-type (cdr (assoc node-type start-to-parent)))
+                   (expected-end-type "end") ;; all blocks terminate with an "end" statement
+                   (end-node (car (last (treesit-node-children parent-node)))))
+              (setq here-begin (treesit-node-start node)
+                    here-end (treesit-node-end node))
+              (if (and (equal (treesit-node-type parent-node) expected-parent-type)
+                       (equal (treesit-node-type end-node) expected-end-type))
+                  (setq there-begin (treesit-node-start end-node)
+                        there-end (treesit-node-end end-node))
+                ;; A missing end keyword will result in parent being "ERROR".
+                ;; See: tests/test-matlab-ts-mode-show-paren-files/show_paren_classdef_missing_end.m
+                (setq mismatch t))))
+
+           ;; Case: on a "end" node or an inner block that should be matcheed with parent
+           ((and (string-match-p (rx bol (or "end" "elseif" "else" "case" "otherwise" "catch") eol)
+                                 node-type)
+                 ;; and we have a matching parent node
+                 (progn
+                   (when (not (equal node-type "end"))
+                     (setq parent-node (treesit-node-parent parent-node))
+                     (setq parent-type (treesit-node-type parent-node)))
+                   (let ((parents (mapcar (lambda (pair)
+                                            (cdr pair))
+                                          start-to-parent)))
+                     (member parent-type parents))))
+            (let ((parent-to-start (mapcar (lambda (pair)
+                                             (cons (cdr pair) (car pair)))
+                                           start-to-parent)))
+
+              (setq here-begin (treesit-node-start node))
+              (setq here-end (treesit-node-end node))
+              (setq there-begin (treesit-node-start parent-node))
+              (setq there-end (+ there-begin (length (cdr (assoc parent-type parent-to-start)))))))
+
+           ;; Case: on a single or double quote for a string.
+           ((and (or (equal "'" node-type)
+                     (equal "\"" node-type))
+                 (equal "string" parent-type))
+            (let (q-start-node
+                  q-end-node)
+              (if (= (treesit-node-start parent-node) (treesit-node-start node))
+                  ;; looking at start quote
+                  (setq q-start-node node
+                        q-end-node parent-node)
+                ;; else looking at end quote
+                (setq q-start-node parent-node
+                      q-end-node node))
+
+              (setq here-begin (treesit-node-start q-start-node))
+              (setq here-end (1+ here-begin))
+              (setq there-end (treesit-node-end q-end-node))
+              (setq there-begin (1- there-end))))
+
+           ))))
+
+    (if (or here-begin here-end)
+        (list here-begin here-end there-begin there-end mismatch)
+     (funcall #'show-paren--default))))
+
 ;;; matlab-ts-mode
 
 ;;;###autoload
@@ -1264,7 +1387,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (set-syntax-table matlab-ts-mode--syntax-table)
     (setq-local syntax-propertize-function #'matlab-ts-mode--syntax-propertize)
 
-    ;; Comments
+    ;; Comments.
     ;; See: tests/test-matlab-ts-mode-comments.el
     (setq-local comment-start      "% ")
     (setq-local comment-end        "")
@@ -1274,7 +1397,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; See: ./tests/test-matlab-ts-mode-page.el
     (setq-local page-delimiter "^\\(?:\f\\|%%\\(?:\\s-\\|\n\\)\\)")
 
-    ;; Font-lock. See: ./tests/test-matlab-ts-mode-font-lock.el
+    ;; Font-lock.
+    ;; See: ./tests/test-matlab-ts-mode-font-lock.el
     (setq-local treesit-font-lock-level matlab-ts-mode-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list
@@ -1283,7 +1407,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
                   (variable builtins namespace-builtins number bracket delimiter)
                   (syntax-error)))
 
-    ;; Indent. See: ./tests/test-matlab-ts-mode-indent.el
+    ;; Indent.
+    ;; See: ./tests/test-matlab-ts-mode-indent.el
     (matlab-ts-mode--set-function-indent-level)
     (setq-local indent-tabs-mode nil) ;; for consistency between Unix and Windows we don't use TABs.
     (setq-local treesit-simple-indent-rules
@@ -1293,10 +1418,12 @@ is t, add the following to an Init File (e.g. `user-init-file' or
                                   (cdar matlab-ts-mode--indent-rules)))
                   matlab-ts-mode--indent-rules))
 
-    ;; Movement. See: tests/test-matlab-ts-mode-movement.el
+    ;; Movement.
+    ;; See: tests/test-matlab-ts-mode-movement.el
     (setq-local treesit-thing-settings matlab-ts-mode--thing-settings)
 
-    ;; Change Logs. See: tests/test-matlab-ts-mode-treesit-defun-name.el
+    ;; Change Logs.
+    ;; See: tests/test-matlab-ts-mode-treesit-defun-name.el
     (setq-local treesit-defun-name-function #'matlab-ts-mode--defun-name)
 
     ;; M-x imenu
@@ -1313,15 +1440,55 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; See: ./tests/test-matlab-ts-mode-outline.el
     (setq-local treesit-outline-predicate #'matlab-ts-mode--outline-predicate)
 
-    ;; Save hook. See: ./tests/test-matlab-ts-mode-on-save-fixes.el
+    ;; Save hook.
+    ;; See: ./tests/test-matlab-ts-mode-on-save-fixes.el
     (add-hook 'write-contents-functions #'matlab-ts-mode--write-file-callback)
 
-    ;; Electric pair mode. See tests/test-matlab-ts-mode-electric-pair.el
+    ;; Electric pair mode.
+    ;; See tests/test-matlab-ts-mode-electric-pair.el
     (setq-local electric-pair-inhibit-predicate #'matlab-ts-mode--electric-pair-inhibit-predicate)
 
+    ;; Highlight parens OR function/end, if/end, etc. type blocks
+    ;; See: tests/test-matlab-ts-mode-show-paren.el
+    (setq-local show-paren-data-function #'matlab-ts-mode--show-paren-or-block)
+
     ;; TODO Highlight parens OR if/end type blocks
+    ;;
     ;; TODO double check indent of function args when continuations are present
+    ;;
+    ;; TODO following comment here doesn't indent (same for arguments block and perhaps others)
+    ;;      classdef foo
+    ;;          properties
+    ;;              bar;
+    ;;                 % comment here
+    ;;          end
+    ;;          methods
+    ;;              function foo(a)
+    ;;
+    ;;                  switch a
+    ;;                % comment here
+    ;;                    case 1
+    ;;                % comment here
+    ;;                  end
+    ;;              end
+    ;;          end
+    ;;      end
+    ;;
+    ;; TODO indent of enumeration for comment not working
+    ;;      classdef show_paren_enumeration < uint32
+    ;;
+    ;;      % foo
+    ;;          enumeration
+    ;;            North (0)
+    ;;            East  (90)
+    ;;            South (180)
+    ;;            West  (270)
+    ;;         end
+    ;;      end
+    ;;
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
+    ;;
+    ;; TODO C-M-f when on "function" should jump to "end", currently doesn't
 
     (treesit-major-mode-setup)))
 

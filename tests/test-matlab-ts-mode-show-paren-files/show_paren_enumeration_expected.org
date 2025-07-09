@@ -1,0 +1,65 @@
+#+startup: showall
+
+* Executing commands from show_paren_enumeration.m:4:6:
+
+  (t-utils-xr "C-a" "C-n" "M-m" (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  145
+  Moved to point:   63
+  : 4:0:     % (t-utils-xr "C-a" "C-n" "M-m" (prin1 (matlab-ts-mode--show-paren-or-block)))
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :   63
+  Moved to point:  146
+  : 5:0:     enumeration
+  :      ^
+  No buffer modifications
+
+- Invoking      : "M-m" = back-to-indentation
+  Start point   :  146
+  Moved to point:  150
+  : 5:4:     enumeration
+  :          ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  150
+  No point movement
+  standard-output:
+    (150 161 329 332 nil)
+  No buffer modifications
+
+* Executing commands from show_paren_enumeration.m:10:10:
+
+  (t-utils-xr "C-a" "C-n" "M-m" (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  325
+  Moved to point:  239
+  : 10:0:         % (t-utils-xr "C-a" "C-n" "M-m" (prin1 (matlab-ts-mode--show-paren-or-block)))
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  239
+  Moved to point:  326
+  : 11:0:    end
+  :       ^
+  No buffer modifications
+
+- Invoking      : "M-m" = back-to-indentation
+  Start point   :  326
+  Moved to point:  329
+  : 11:3:    end
+  :          ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  329
+  No point movement
+  standard-output:
+    (329 332 150 161 nil)
+  No buffer modifications
