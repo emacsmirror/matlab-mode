@@ -1452,8 +1452,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; See: tests/test-matlab-ts-mode-show-paren.el
     (setq-local show-paren-data-function #'matlab-ts-mode--show-paren-or-block)
 
-    ;; TODO Highlight parens OR if/end type blocks
-    ;;
     ;; TODO double check indent of function args when continuations are present
     ;;
     ;; TODO following comment here doesn't indent (same for arguments block and perhaps others)
