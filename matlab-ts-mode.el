@@ -103,10 +103,14 @@ Guidelines:
        :slant italic))
   "*Face used on properties, enumerations, and events.")
 
-(defcustom matlab-ts-mode-font-lock-level 4
+(defface matlab-ts-mode-number-face
+  '((t :inherit font-lock-constant-face))
+  "*Face used for numbers.")
+
+(defcustom matlab-ts-mode-font-lock-level 3
   "*Level of font lock, 1 for minimal syntax highlighting and 4 for maximum."
-  ;; Setting to 4 to show parse errors causes too much "red". See
-  ;; https://github.com/acristoffers/tree-sitter-matlab/issues/36
+  ;; Setting to 4 to results in parse errors causing too much "red". See 'syntax-error
+  ;; font-lock feature below.
   :type '(choice (const :tag "Minimal" 1)
 		 (const :tag "Low" 2)
 		 (const :tag "Standard" 3)
@@ -491,6 +495,12 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
             (treesit-fontify-with-override prop-start prop-end 'matlab-ts-mode-property-face
                                            override start end)))))))
 
+(defun matlab-ts-mode--is-fcn-name-value (identifier-node)
+  "Return t if IDENTIFIER-NODE is a function name-value property."
+  (let ((next-sibling (treesit-node-next-sibling identifier-node)))
+    (and next-sibling
+         (string= (treesit-node-text next-sibling) "="))))
+
 (defun matlab-ts-mode--is-builtin (identifier-node)
   "Return t if IDENTIFIER-NODE is a function provided with MATLAB."
   (let ((parent (treesit-node-parent identifier-node)))
@@ -508,27 +518,42 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    ;; F-Rule: Comments and line continuation: ... optional text
    :language 'matlab
    :feature 'comment
-   '((comment) @font-lock-comment-face
+   '(
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_types.m
+     (comment) @font-lock-comment-face
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_continuation.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_continuation_fcn.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_continuation_fcn_g2.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_continuation_multiArgFcn.m
      (line_continuation) @font-lock-comment-face)
 
    ;; F-Rule: special comments that override normal comment font
    :language 'matlab
    :feature 'comment-special
    :override t
-   '(((comment) @matlab-ts-mode-pragma-face
+   '(;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_pragma_in_fcn.m
+     ((comment) @matlab-ts-mode-pragma-face
       (:match "^%#.+$" @matlab-ts-mode-pragma-face)) ;; %#pragma's
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_heading.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_sections.m
      ((comment) @matlab-ts-mode--comment-heading-capture) ;; %% comment heading
-
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_no_doc_help.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_fcn.m
      (function_definition (comment) @matlab-ts-mode--doc-comment-capture) ;; doc help comments
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_MyClass.m
      (class_definition (comment) @matlab-ts-mode--doc-comment-capture)) ;; doc help comments
 
    ;; F-Rule: to do, fix me, triple-x marker comment keywords
+   ;; See: test-matlab-ts-mode-font-lock-files/font_lock_comment_markers.m
    :language 'matlab
    :feature 'comment-marker
    :override t
    '(((comment) @matlab-ts-mode--comment-to-do-capture))
 
    ;; F-Rule: keywords: if, else, etc.
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_keywords.m
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_methods.m
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_keyword_spmd.m
    :language 'matlab
    :feature 'keyword
    `([,@matlab-ts-mode--keywords] @font-lock-keyword-face)
@@ -536,40 +561,63 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    ;; F-Rule: function/classdef and items definiting them, e.g. the function arguments
    :language 'matlab
    :feature 'definition
-   '((function_definition name: (identifier) @font-lock-function-name-face)
+   '(
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_no_args.m
+     (function_definition name: (identifier) @font-lock-function-name-face)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_symPosDef.m
      (class_definition name: (identifier) @font-lock-function-name-face)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_MySubClass.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_MySubSubClass.m
      (superclasses (property_name (identifier)) @font-lock-function-name-face)
      ;; Function inputs: functionName(in1, in2, in3)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_in_args.m
      (function_arguments arguments:
                          (identifier)      @font-lock-variable-name-face
                          ("," (identifier) @font-lock-variable-name-face) :*)
      ;; Function single output argument: function out = functionName(in1, in2)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_out_args.m
      (function_output (identifier) @font-lock-variable-name-face)
      ;; Function multiple output arguments: function [out1, out2] = functionName(in1, in2)
      (function_output (multioutput_variable (identifier) @font-lock-variable-name-face))
      ;; Fields of: arguments ... end , properties ... end
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_arguments.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_properties.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_MultiplePropBlocks.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_prop_access.m
      (property (validation_functions (identifier) @font-lock-builtin-face))
      (property name: (identifier) @matlab-ts-mode-property-face
                (identifier) @font-lock-type-face :?)
      (property name: (property_name (identifier) @matlab-ts-mode-property-face)
                (identifier) @font-lock-type-face :?)
-     ;; (property name: (property_name (identifier) @matlab-ts-mode-property-face))
      ;; Enumeration's
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_enum.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_enum_FlowRate.m
      (enum (identifier) @matlab-ts-mode-property-face)
-     ;; events block in classdef
+     ;; Events block in classdef
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_events.m
      (events (identifier) @matlab-ts-mode-property-face)
-     ;; attributes of properties, methods
+     ;; Attributes of properties, methods
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_attributes.m
      (attribute (identifier) @font-lock-type-face "=" (identifier) @font-lock-builtin-face)
      (attribute (identifier) @font-lock-type-face))
 
+   ;; F-Rule: Function Name = Value arguments
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_name_value_properties.m
+   :language 'matlab
+   :feature 'fcn-name-value
+   '(((function_call (arguments (identifier) @matlab-ts-mode-property-face))
+      (:pred matlab-ts-mode--is-fcn-name-value @matlab-ts-mode-property-face)))
+
    ;; F-Rule: variable
-   ;; TODO - add font-lock-variable-name-face to variable uses.  Consider
-   ;;            i1 = [1, 2];
-   ;;            i2 = i1(1) + i3 + i4(i3);
-   ;;        we know i1 and i2 are varialbles from the (assignment left: (identifier))
-   ;;        However, we don't know if i3 or i4 are variables or functions because a function
-   ;;        can be called with no arguments, e.g. to call i3 function use i3 or i3(). i4 could
-   ;;        be a variable indexed by i1 or a function.
+   ;; Could add font-lock-variable-name-face to variable uses.  Consider
+   ;;     i1 = [1, 2];
+   ;;     i2 = i1(1) + i3 + i4(i3);
+   ;; we know i1 and i2 are varialbles from the (assignment left: (identifier))
+   ;; However, we don't know if i3 or i4 are variables or functions because a function
+   ;; can be called with no arguments, e.g. to call i3 function use i3 or i3(). i4 could
+   ;; be a variable indexed by i1 or a function.
+   ;;
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_variable.m
    :language 'matlab
    :feature 'variable
    '((assignment left: (identifier) @font-lock-variable-name-face)
@@ -583,6 +631,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    '((command_argument) @matlab-ts-mode-command-arg-face)
 
    ;; F-Rule: system and command dual commands.
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_command.m
    :language 'matlab
    :feature 'command-name
    '(((command_name) @matlab-ts-mode-system-command-face
@@ -593,6 +642,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
      ((command (command_name) @font-lock-function-call-face (command_argument))))
 
    ;; F-Rule: strings "double quote" and 'single quote'
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_strings.m
    :language 'matlab
    :feature 'string
    '((string_content) @font-lock-string-face
@@ -607,7 +657,8 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 
    ;; F-rule: operators: *, /, +, -, etc.
    ;; Note, this rule must come after the string rule because single quote (') can be a transpose or
-   ;; string delimiter
+   ;; string delimiter.
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_operators.m
    :language 'matlab
    :feature 'operator
    `([,@matlab-ts-mode--operators] @matlab-ts-mode-operator-face)
@@ -623,47 +674,53 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
                                     eol))
                             @font-lock-type-face)))
 
-   ;; TODO matlab-math-face for true/false or font-lock-constant-face like c++-ts-mode?  see
+   ;; F-Rule: Constant literal numbers, e.g. 1234, 12.34, 10e10
+   ;; We could use this for items like true, false, pi, etc. See some of these numbers in:
    ;; https://www.mathworks.com/content/dam/mathworks/fact-sheet/matlab-basic-functions-reference.pdf
-   ;; - has special variables and constants, matlab.el has others
-
-   ;; F-Rule: Constant literal numbers, e.g. 1234
-   ;; TODO use font-lock-number-face like c++-ts-mode or make a matlab-ts-mode-number-face
+   ;; however, they do show up as builtins, which to me seems more accurate.
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_numbers.m
    :language 'matlab
    :feature 'number
-   '((number) @font-lock-constant-face)
+   '((number) @matlab-ts-mode-number-face)
 
    ;; F-Rule: Brackets
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_brackets.m
    :language 'matlab
    :feature 'bracket
    '((["(" ")" "[" "]" "{" "}"]) @font-lock-bracket-face)
 
    ;; F-Rule: Delimiters, e.g. semicolon
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_delimiters.m
    :language 'matlab
    :feature 'delimiter
    '((["." "," ":" ";"]) @font-lock-delimiter-face)
 
+   ;; F-Rule: factory items that come with MATLAB, Simulink, or add-on products
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m
    :language 'matlab
    :feature 'builtins
    `(((identifier) @font-lock-builtin-face
       (:pred matlab-ts-mode--is-builtin @font-lock-builtin-face)))
 
+   ;; F-Rule: namespaces (the +dir's, class methods, etc.)
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m
    :language 'matlab
    :feature 'namespace-builtins
    :override t
    `((field_expression) @matlab-ts-mode--namespace-builtins-capture)
 
    ;; F-Rule: Syntax errors
-   ;; TODO - This captures too much at times, see
-   ;;        test-matlab-ts-mode-font-lock-files/font_lock_error.m
-   ;;        Can we do better? Should we not activate this by default?
-   ;;        What about narrowing what is shown and if too much, then do nothing?
-   ;;        Play with genBuiltinsHashTable.m adding syntax errors.
+   ;; Some errors span too much of the buffer's text, so one will probably not want this
+   ;; enabled. Perhaps, once https://github.com/acristoffers/tree-sitter-matlab/issues/36
+   ;; is fixed we can enable this, though a lot more testing is needed.
+   ;;
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_error.m
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_error_small.m
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_error_missing_continuation.m
    :language 'matlab
    :feature 'syntax-error
    :override t
    '((ERROR) @font-lock-warning-face)
-
    )
   "The matlab-ts-mode font-lock settings.")
 
@@ -1221,7 +1278,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local treesit-font-lock-level matlab-ts-mode-font-lock-level)
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list
-                '((comment comment-special comment-marker definition)
+                '((comment comment-special comment-marker definition fcn-name-value)
                   (keyword operator string escape-sequence type command-name command-arg)
                   (variable builtins namespace-builtins number bracket delimiter)
                   (syntax-error)))
@@ -1261,18 +1318,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Electric pair mode. See tests/test-matlab-ts-mode-electric-pair.el
     (setq-local electric-pair-inhibit-predicate #'matlab-ts-mode--electric-pair-inhibit-predicate)
 
-    ;; TODO For font-lock reference tests
     ;; TODO Highlight parens OR if/end type blocks
-    ;; TODO face for all built-in functions such as dbstop, quit, sin, etc.
-    ;;   - maintenance/genBuiltinsHashTable.m
-    ;;     Add namespaces
-    ;;     https://stackoverflow.com/questions/51942464/programmatically-return-a-list-of-all-functions/51946257
-    ;; TODO in matlab-ts-mode--builtins, add size to ht definition
-    ;; TODO font-lock param=value pairs
-    ;;      writelines(out, outFile, LineEnding = '\n');
-    ;;      ==>     (arguments argument: (identifier) , argument: (identifier) , (identifier) =
-    ;;               (string ' (escape_sequence) '))
-    ;;
     ;; TODO code folding
 
     (treesit-major-mode-setup)))

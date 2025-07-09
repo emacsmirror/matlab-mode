@@ -1,0 +1,26 @@
+c ccc ccccccccc ccc
+kkkkkkkk fffffffffffffffff
+h hhhh hhhhhhh
+
+    c ccccccc ccccc ccccccccccc
+    kkkkkkkkkk
+        PPPPPPPPPP tttttt o nD c cccccc cccccccc cccc c ccccccc ccccc
+    kkk
+
+    kkkkkkk
+        kkkkkkkk vvv o fffffffbvvvvvvvvvvvvb
+        h hhhhhhhhhhh hhhhhh
+            dddDdddddddddd o ddddddddddddD
+        kkk
+
+        kkkkkkkk vvvvvvvv o fffffffffffffbvvvb
+        h hhhhhh hhhhhh
+            vvvvvvvv o dddDddddddddddD
+        kkk
+
+        kkkkkkkk vvv o fffffffffffffbvvvD vvvvvvvvb
+        h hhhhhh hhhhhh
+            dddDdddddddddd o ddddddddD
+        kkk
+    kkk
+kkk

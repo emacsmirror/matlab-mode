@@ -46,7 +46,8 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-font-lock-files/NAME_expected.m"
 
-  (let ((test-name "test-matlab-ts-mode-font-lock"))
+  (let ((test-name "test-matlab-ts-mode-font-lock")
+        (matlab-ts-mode-font-lock-level 4))
     (when (not (t-utils-is-treesit-available 'matlab test-name))
       (cl-return-from test-matlab-ts-mode-font-lock))
 
@@ -64,10 +65,10 @@ after validating it, rename it to
                            ("f" . font-lock-function-name-face)
                            ("F" . font-lock-function-call-face)
                            ("h" . font-lock-doc-face) ;; function doc help comment
-                           ("H" . matlab-ts-mode-comment-heading-face) ;; %% comment heading
+                           ("H" . matlab-ts-mode-comment-heading-face)
                            ("k" . font-lock-keyword-face)
                            ("M" . matlab-ts-mode-comment-to-do-marker-face)
-                           ("n" . font-lock-constant-face) ;; numbers
+                           ("n" . matlab-ts-mode-number-face)
                            ("s" . font-lock-string-face)
                            ("S" . matlab-ts-mode-string-delimiter-face)
                            ("o" . matlab-ts-mode-operator-face)

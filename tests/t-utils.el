@@ -498,9 +498,6 @@ where int and void are keywords, etc. and CODE-TO-FACE contains:
 
 xxx give example calling test-name.el (and for others)"
 
-  (when (boundp 'treesit-font-lock-level)
-    (setq treesit-font-lock-level 4))
-
   (let ((face-to-code (mapcar (lambda (pair)
                                 (cons (cdr pair) (car pair)))
                               code-to-face)))
