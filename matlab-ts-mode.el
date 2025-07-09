@@ -1306,6 +1306,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; I think we need (setq-local lsp-enable-imenu nil) when lsp-mode is used.  Can we find a
     ;; automatic way to do this? See:
     ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist/
+    ;; At minimum we should doc this.
     (setq-local imenu-create-index-function #'matlab-ts-mode--imenu-create-index)
 
     ;; M-x outline-minor-mode
@@ -1319,7 +1320,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local electric-pair-inhibit-predicate #'matlab-ts-mode--electric-pair-inhibit-predicate)
 
     ;; TODO Highlight parens OR if/end type blocks
-    ;; TODO code folding
+    ;; TODO double check indent of function args when continuations are present
+    ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
 
     (treesit-major-mode-setup)))
 

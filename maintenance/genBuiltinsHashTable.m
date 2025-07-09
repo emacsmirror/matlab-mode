@@ -102,6 +102,9 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
 
         if ~isempty(m)
             fcn = m{1}{1};
+            if isequal(fcn, mfilename)
+                continue; % skip ourself
+            end
             desc = strtrim(m{1}{2});
             entryType = m{1}{3};
             switch entryType
