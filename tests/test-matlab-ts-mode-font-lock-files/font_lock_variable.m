@@ -10,4 +10,12 @@ function font_lock_variable
     for idx = 1:10
         total = total + idx;
     end
+
+    [a, b] = fcn1();
 end
+
+function [a, b] = fcn1
+    a = 1;
+    b = 2;
+end
+

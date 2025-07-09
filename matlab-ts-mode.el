@@ -623,6 +623,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    :language 'matlab
    :feature 'variable
    '((assignment left: (identifier) @font-lock-variable-name-face)
+     (multioutput_variable (identifier) @font-lock-variable-name-face)
      (global_operator (identifier) @font-lock-variable-name-face)
      (persistent_operator (identifier) @font-lock-variable-name-face)
      (for_statement (iterator (identifier) @font-lock-variable-name-face)))
@@ -1483,6 +1484,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;            West  (270)
     ;;         end
     ;;      end
+    ;;
+    ;; TODO add sweep font-lock and indent tests
     ;;
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
     ;;
