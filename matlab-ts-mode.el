@@ -894,10 +894,6 @@ expression."
      ((node-is ,(rx bol (or "case_clause" "otherwise_clause") eol))
       parent ,matlab-ts-mode--switch-indent-level)
 
-     ;; I-Rule: first line of code witin a switch case or otherwise statement, node is block
-     ((parent-is ,(rx bol (or "case_clause" "otherwise_clause") eol))
-      parent ,matlab-ts-mode--switch-indent-level)
-
      ;; I-Rule: nested functions
      ((n-p-gp ,(rx bol "function_definition" eol)
               ,(rx bol "block" eol)
@@ -906,6 +902,10 @@ expression."
 
      ;; I-Rule: elseif, else, catch, end statements go back to parent level
      ((node-is ,(rx bol (or "elseif_clause" "else_clause" "catch_clause" "end") eol)) parent 0)
+
+     ;; I-Rule: first line of code witin a switch case or otherwise statement, node is block
+     ((parent-is ,(rx bol (or "switch_statement" "case_clause" "otherwise_clause") eol))
+      parent ,matlab-ts-mode--switch-indent-level)
 
      ;; I-Rule: function's
      ((parent-is ,(rx bol "function_definition" eol))
@@ -917,10 +917,19 @@ expression."
                     eol))
       parent ,matlab-ts-mode--indent-level)
 
+     ;; I-Rule: items in blocks
+     ((n-p-gp nil ,(rx bol "property" eol) ,(rx bol "properties" eol))
+      grand-parent ,matlab-ts-mode--indent-level)
+
+     ;; I-Rule: continuation of properties
+     ((n-p-gp nil nil ,(rx bol "property" eol))
+      grand-parent ,matlab-ts-mode--indent-level)
+
      ;; I-Rule: code in if, for, methods, arguments statements, etc.
      ((parent-is ,(rx bol (or "if_statement" "for_statement" "while_statement"
                               "methods" "events" "enumeration"
-                              "function_definition" "arguments_statement")
+                              "function_definition" "arguments_statement"
+                              "properties")
                       eol))
       parent ,matlab-ts-mode--indent-level)
 
@@ -1028,6 +1037,9 @@ expression."
      ;;             disp('11');
      ;; <TAB>
      (no-node ,#'matlab-ts-mode--prev-real-line 0)
+
+     ;; I-Rule: comments in classdef's
+     ((parent-is ,(rx bol "class_definition" eol)) parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: Assert if no rule matched and asserts are enabled.
      ,matlab-ts-mode--indent-assert-rule
@@ -1453,43 +1465,15 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; See: tests/test-matlab-ts-mode-show-paren.el
     (setq-local show-paren-data-function #'matlab-ts-mode--show-paren-or-block)
 
-    ;; TODO double check indent of function args when continuations are present
-    ;;
-    ;; TODO following comment here doesn't indent (same for arguments block and perhaps others)
-    ;;      classdef foo
-    ;;          properties
-    ;;              bar;
-    ;;                 % comment here
-    ;;          end
-    ;;          methods
-    ;;              function foo(a)
-    ;;
-    ;;                  switch a
-    ;;                % comment here
-    ;;                    case 1
-    ;;                % comment here
-    ;;                  end
-    ;;              end
-    ;;          end
-    ;;      end
-    ;;
-    ;; TODO indent of enumeration for comment not working
-    ;;      classdef show_paren_enumeration < uint32
-    ;;
-    ;;      % foo
-    ;;          enumeration
-    ;;            North (0)
-    ;;            East  (90)
-    ;;            South (180)
-    ;;            West  (270)
-    ;;         end
-    ;;      end
-    ;;
     ;; TODO add sweep font-lock and indent tests
     ;;
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
     ;;
     ;; TODO C-M-f when on "function" should jump to "end", currently doesn't
+    ;;
+    ;; TODO font-lock on empty multi-line comment:
+    ;;      %{
+    ;;      %}
 
     (treesit-major-mode-setup)))
 

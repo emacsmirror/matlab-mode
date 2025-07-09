@@ -1,8 +1,16 @@
 % -*- matlab-ts -*-
 classdef indent_keywords
     properties
+        % comment here
         p1 = 0
-        p2 = 0
+        p2 = ...
+            0
+
+        % comment here
+
+        %{
+          foo
+        %}
     end
     methods
         function method1(in)
@@ -29,7 +37,6 @@ classdef indent_keywords
 
                 end
             catch me
-
                 rethrow(me)
             end
 
@@ -67,10 +74,12 @@ classdef indent_keywords
     events
         e1
         e2
+        % comment
     end
 
     enumeration
         one
         two
+        % comment
     end
 end
