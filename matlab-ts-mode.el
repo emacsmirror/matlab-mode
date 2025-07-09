@@ -1470,10 +1470,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
     ;;
     ;; TODO C-M-f when on "function" should jump to "end", currently doesn't
-    ;;
-    ;; TODO font-lock on empty multi-line comment:
-    ;;      %{
-    ;;      %}
 
     (treesit-major-mode-setup)))
 
