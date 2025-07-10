@@ -18,3 +18,9 @@ s3 = "<foo ' bar>";
 
 % (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
 s4 = "<foo ' bar>";
+
+% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+s5 = "<asdf
+
+% (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
+s6 = asdf>"

@@ -227,7 +227,7 @@ You should now be able to use:
 	 (treesit-node-parent (treesit-node-at (point))))
   #+end_example
 
-* Font-lock
+* Setup: Font-lock
 
 TODO - add FIXME, XXX, and TODO marker coloring.
 
@@ -334,7 +334,7 @@ defaults to 3. If you'd like to have your font-lock default to level 4, add:
     )
 #+end_src
 
-** Font-lock Tests
+** Test: Font-lock
 
 It is recommended that you create tests to validate your font-lock set up and commit your tests with
 your code together. This will make it easier for you and others to update your code without causing
@@ -425,7 +425,7 @@ To run your tests in a build system, use
   ;;; test-language-ts-mode-font-lock.el ends here
 #+end_src
 
-* Indent
+* Setup: Indent
 
 Tree-sitter indentation is defined by =treesit-simple-indent-rules=.  We create a variable
 containing our N indent rules and tell tree-sitter about them. Notice that we create debug and
@@ -709,7 +709,7 @@ so we can combine them and also handle handle nested if-statements as shown belo
 Following this process, we complete our our indent engine by adding more rules. As we develop
 the rules, it is good to lockdown expected behavior with tests.
 
-** Indent Tests
+** Test: Indent
 
 We use a similar pattern for our indent tests:
 
@@ -772,7 +772,7 @@ where test-LANGUAGE-ts-mode-indent.el contains:
 
 #+end_src
 
-* Syntax Table
+* Setup: Syntax Table
 
 The Emacs "syntax table" is not related to the syntax tree created by tree-sitter. A syntax tree
 represents the hierarchical structure of your source code, giving a structural blueprint of your
@@ -966,7 +966,7 @@ This is good practice because these are fundamental to Emacs.
   ;;; LANGUAGE-ts-mode.el ends here
 #+end_src
 
-** Syntax Table Tests
+** Test: Syntax Table
 
 We follow a similar pattern for writing syntax table tests.
 
@@ -1010,7 +1010,7 @@ We follow a similar pattern for writing syntax table tests.
 
 #+end_src
 
-* treesit-thing-settings
+* Setup: treesit-thing-settings
 
 Examining treesit-major-mode-setup,
 
@@ -1033,7 +1033,7 @@ forward-sexp.
 'sentence is used by forward-sentance via forward-sentence-function which is set to
 treesit-forward-sentence.
 
-* Fill paragraph, M-q
+* Setup: Fill Paragraph, M-q
 
 =M-q= is bound to =prog-fill-reindent-defun= from =prog-mode=, which when the point is in a comment
 will fill the comment. If the point is in code it will indent the code. If the point is in a string,
@@ -1056,11 +1056,11 @@ e.g. if nodeName1 and nodeName2 should be filled like plain text, use:
 and in defun of LANGUAGE-ts-mode, add =(setq-local treesit-thing-settings
 LANGUAGE-ts-mode--thing-settings)= after you've setup your syntax table.
 
-** Fill paragraph tests
+** Test: Fill Paragraph
 
 TODO
 
-* treesit-defun-name-function
+* Setup: treesit-defun-name-function
 
 Emacs supports the concept of Change Logs for documentating changes.  With version control systems
 like git, there's less need for Change Logs, though the format of the Change Logs.  In Emacs using
@@ -1069,7 +1069,11 @@ defers to the =treesit-defun-name-function= to get information for the entry to 
 
 TODO
 
-* IMenu
+** Test: treesit-defun-name-function
+
+TODO
+
+* Setup: IMenu
 
 Emacs =M-g i= (=M-x imenu=), makes it easy to jump to items in your file. If our mode populates
 imenu with the location of the function definitions, we can quickly jump to them by name. You can
@@ -1103,14 +1107,20 @@ tree-sitter parse tree and generate the index.
 
 TODO
 
-* treesit-outline-predicate
+** Test: IMenu
+
+TODO
+
+* Setup: Outline, treesit-outline-predicate
 
 This needs to be setup if treesit-simple-imenu-settings isn't set and you are using a custom
 imenu-create-index-function as we did above.
 
 TODO
 
-* Verify electric-pair-mode is good
+** Test: Outline
+
+* Setup: Electric Pair, electric-pair-mode
 
 =M-x electric-pair-mode= for most languages will just work. However, if your language
 uses typical characters that are paired, e.g. a single quote for a string delimiter and
@@ -1148,6 +1158,217 @@ also an operator such as a transpose, then you'll need to:
     )
 #+end_src
 
+** Test: Electric Pair.
+
+* Setup: show-paren-mode
+
+show-paren-mode uses =show-paren-data-function= to match "start" with "end" pairs. For example:
+
+ : myfcn(1, 2, 3)                  x = {1, 2, 3, 4}
+ :      ^       ^                      ^          ^
+ :    here     there                  here       there
+
+Your programming lanugage may have other items that should be paired. You can leverage
+show-paren-mode as a general "show pair mode". For example, you can extend show-paren-mode
+to show matching start/end quotes in a string:
+
+ : s = "foo bar"
+ :     ^       ^
+ :    here    there
+
+If your programming lanugage has block-like keywords, we can pair them. For example:
+
+ :  if condition
+ :  ^
+ :      myfcn(1, 2, 3)
+ :  end
+ :  ^
+
+To extend show-paren-mode, we set =show-paren-data-function= for our mode. Below we illustrate
+how to do string matching assuming strings can be created using ='single quotes'= or
+="double quotes"= where the string tree sitter nodes are:
+
+  : (string " (string_content) ")
+  : (string ' (string_content) ')
+
+#+begin_src emacs-lisp
+  (defun LANGUAGE-ts-mode--show-paren-or-block ()
+    "Function to assign to `show-paren-data-function'.
+  Highlight LANGUAGE pairs in addition to standard items paired by
+  `show-paren-mode'.  Returns a list: \\='(HERE-BEGIN HERE-END THERE-BEGIN
+  THERE-END MISMATCH) or nil."
+    (let* (here-begin
+           here-end
+           there-begin
+           there-end
+           mismatch
+           (pt (point))
+           (node (treesit-node-at pt)))
+
+      ;; If point is in whitespace, (treesit-node-at (point)) returns the nearest node. For
+      ;; paired matching we want the point on either a start or end paired item.
+      (let ((node-start (treesit-node-start node))
+            (node-end (treesit-node-end node)))
+        (when (and (>= pt node-start)
+                   (<= pt node-end))
+          (let* ((node-type (treesit-node-type node))
+                 (parent-node (treesit-node-parent node))
+                 (parent-type (treesit-node-type parent-node)))
+
+            (cond
+
+             ;; Case: on a single or double quote for a string.
+             ((and (or (equal "'" node-type)
+                       (equal "\"" node-type))
+                   (equal "string" parent-type))
+              (let (q-start-node
+                    q-end-node)
+                (if (= (treesit-node-start parent-node) (treesit-node-start node))
+                    ;; looking at start quote
+                    (setq q-start-node node
+                          q-end-node parent-node)
+                  ;; else looking at end quote
+                  (setq q-start-node parent-node
+                        q-end-node node))
+
+                (setq here-begin (treesit-node-start q-start-node))
+                (setq here-end (1+ here-begin))
+
+                (let* ((candidate-there-end (treesit-node-end q-end-node))
+                       (candidate-there-begin (1- candidate-there-end)))
+                  (cond
+                   ;; Case: Have starting quote of a string, but no content or closing quote.
+                   ((= here-begin candidate-there-begin)
+                    (setq mismatch t))
+                   ;; Case: Have starting quote, have string content, but no closing quote
+                   ((not (equal (char-after here-begin) (char-after candidate-there-begin)))
+                    (setq mismatch t))
+                   (t
+                    (setq there-begin candidate-there-begin)
+                    (setq there-end candidate-there-end))))))
+
+             ;; Add cases for other pairs.
+             ;; Note set mismatch to t if we have say a start keyword of a pair
+             ;; but are missing the end keyword.
+
+             ))))
+
+      (if (or here-begin here-end)
+          (list here-begin here-end there-begin there-end mismatch)
+       (funcall #'show-paren--default))))
+
+    (define-derived-mode language-ts-mode prog-mode "LANGUAGE:ts"
+      "Major mode for editing LANGUAGE files with tree-sitter."
+      ;; <snip>
+      (setq-local show-paren-data-function #'LANGUAGE-ts-mode--show-paren-or-block)
+    )
+#+end_src
+
+** Test: show-paren-mode
+
+Test file structure:
+
+ : LANGUAGE-ts-mode.el
+ : tests/test-LANUGAGE-ts-mode-show-paren.el
+ : tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM1.EXT
+ : tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM1_expected.org
+ : tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM2.EXT
+ : tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM2_expected.org
+ : ...
+
+where =tests/test-LANUGAGE-ts-mode-show-paren.el= contains:
+
+#+begin_src emacs-lisp
+  (require 't-utils)
+  (require 'LANGUAGE-ts-mode)
+
+  (cl-defun test-LANGUAGE-ts-mode-show-paren (&optional lang-file)
+    "Test defun movement using ./test-LANGUAGE-ts-mode-show-paren-files/NAME.EXT.
+  Using ./test-LANGUAGE-ts-mode-show-paren-files/NAME.EXT, compare defun
+  movement against
+  ./test-LANGUAGE-ts-mode-show-paren-files/NAME_expected.org.  If LANG-FILE is
+  not provided, loop comparing all
+  ./test-LANGUAGE-ts-mode-show-paren-files/NAME.EXT files.
+
+  To add a test, create
+    ./test-LANGUAGE-ts-mode-show-paren-files/NAME.EXT
+  and run this function.  The baseline is saved for you as
+    ./test-LANGUAGE-ts-mode-show-paren-files/NAME_expected.org~
+  after validating it, rename it to
+    ./test-LANGUAGE-ts-mode-show-paren-files/NAME_expected.org"
+
+    (let ((test-name "test-LANGUAGE-ts-mode-show-paren"))
+
+      (when (not (t-utils-is-treesit-available 'LANGUAGE test-name))
+        (cl-return-from test-LANGUAGE-ts-mode-font-lock))
+
+      (let ((lang-files (t-utils-get-files (concat test-name "-files") "\\.EXT$" nil lang-file)))
+        (t-utils-test-xr test-name lang-files)))
+      "success")
+
+  (provide 'test-LANGUAGE-ts-mode-show-paren)
+#+end_src
+
+Each =tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM.EXT= file looks like the
+following assuming we have =% comment=" lines, replace with your language comments.
+
+#+begin_example
+
+  // -*- LANGUAGE-ts -*-
+
+    <snip - code to define string variables>
+
+% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+s1 = '<foo '' bar>';
+
+% (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
+s2 = '<foo '' bar>';
+
+% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+s3 = "<foo ' bar>";
+
+% (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
+s4 = "<foo ' bar>";
+
+% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+s5 = "<asdf
+
+% (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
+s6 = asdf>"
+    
+    <snip>
+
+#+end_example
+
+The tests are using the execute and record function, =t-utils-xr= which runs commands and records
+them into a =*.org= file. We run the test and if
+=tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM_expected.org= doesn't exist,
+=tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM_expected.org~= will be generated and
+after inspection rename the =*.org~= to =*.org=.
+
+For example, the last t-utils-xr result in the *.org file is below. Notice, that standard-output is
+"(910 911 nil nil t)" which indicates we have here-begin and here-end, but no there-begin and no
+there-end with mismatch true (t) because the string is missing the starting quote.
+
+#+begin_src org
+  ,* Executing commands from show_paren_string.lang:25:2:
+
+    (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+  - Invoking      : (re-search-forward ">")
+    Start point   :  899
+    Moved to point:  910
+    : 26:10: s6 = asdf>"
+    :                  ^
+    No buffer modifications
+
+  - Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+    Start point   :  910
+    No point movement
+    standard-output:
+      (910 911 nil nil t)
+    No buffer modifications
+#+end_src
 
 * Final version
 
@@ -1732,7 +1953,7 @@ well worth writing a tree-sitter mode.
   3. There's no longer prompting if you want functions to have end's. This is now computed
      automatically.
 
-  4. Improved fill-paragraph, M-q, which will now fill comments and when not in a comment, indent
+  4. Improved fill-paragraph, =M-q=, which will now fill comments and when not in a comment, indent
      the current function or statement.
 
   5. Accurate type of m-file detection, which improves matlab-sections-minor-mode.

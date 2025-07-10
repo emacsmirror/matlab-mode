@@ -1362,8 +1362,19 @@ THERE-END MISMATCH) or nil."
 
               (setq here-begin (treesit-node-start q-start-node))
               (setq here-end (1+ here-begin))
-              (setq there-end (treesit-node-end q-end-node))
-              (setq there-begin (1- there-end))))
+
+              (let* ((candidate-there-end (treesit-node-end q-end-node))
+                     (candidate-there-begin (1- candidate-there-end)))
+                (cond
+                 ;; Case: Have starting quote of a string, but no content or closing quote.
+                 ((= here-begin candidate-there-begin)
+                  (setq mismatch t))
+                 ;; Case: Have starting quote, have string content, but no closing quote
+                 ((not (equal (char-after here-begin) (char-after candidate-there-begin)))
+                  (setq mismatch t))
+                 (t
+                  (setq there-begin candidate-there-begin)
+                  (setq there-end candidate-there-end))))))
 
            ))))
 
