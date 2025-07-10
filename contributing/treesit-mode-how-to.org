@@ -1192,6 +1192,8 @@ how to do string matching assuming strings can be created using ='single quotes'
   : (string ' (string_content) ')
 
 #+begin_src emacs-lisp
+  (declare-function show-paren--default "paren")
+
   (defun LANGUAGE-ts-mode--show-paren-or-block ()
     "Function to assign to `show-paren-data-function'.
   Highlight LANGUAGE pairs in addition to standard items paired by
