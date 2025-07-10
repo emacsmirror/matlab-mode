@@ -131,6 +131,31 @@ can move point, but it will be restored for them."
   "^[ \t]*\\(%%\\(?:[ \t].+\\)?\\)$"
   "Regexp matching \"%% headings\" lines.")
 
+;;; Utilities
+
+(defun matlab-ts-mode--real-node-at-point ()
+  "Return \\='(pt . node) where node is not a newline.
+The MATLAB tree-sitter grammar includes a newline as a node.
+If we are on a newline, this will backup to a real node.
+The returned point, pt, reflects that location."
+  (let* ((pt (point))
+         (node-at-point (treesit-node-at pt))
+         ;; Handle case at end of a start node, e.g. point just after properties:
+         ;;    properties
+         ;;              ^
+         ;;        foo;
+         ;;    end
+         ;; Likewise for comments
+         ;;    % comment
+         ;;             ^
+         (real-node (if (and (equal "\n" (treesit-node-type node-at-point))
+                             (> pt 1))
+                        (progn
+                          (setq pt (1- pt))
+                          (treesit-node-at pt))
+                      node-at-point)))
+    (cons pt real-node)))
+
 ;;; Syntax table
 
 (defvar matlab-ts-mode--syntax-table
@@ -1046,27 +1071,98 @@ expression."
      ))
   "Tree-sitter indent rules for `matlab-ts-mode'.")
 
-;;; Movement
+;;; Thing settings for movement, etc.
 
 (defvar matlab-ts-mode--thing-settings
   `((matlab
-     (defun ,(rx bol "function_definition" eol)))
-    ;; Future possibility, setup sexp, text, sentance.
-    ;; - Setup sexp, text for C-M-f C-M-b, but how do we define balanced expressions?
-    ;;   Note setting text alters code path for M-; (comment-dwim), but shouldn't
-    ;;   change behavior.
-    ;; - Setup sentance for M-e (forward-sentance), but how do we define a sentance?
-    ;;
-    ;; See Perl's sexp setup, https://hg.sr.ht/~pranshu/perl-ts-mode
-    ;;   Sexp navigation
-    ;;   my $r = join '-', @arr + 2 - 1;
-    ;;   The sexps (circle bracket), and sentence[square bracker] would be:
-    ;;
-    ;;   [((my) ($r)) = ((join) '-', (((@arr) + (2)) - (1)));]
-    ;;   Commands like C-M-b, C-M-f, M-e, M-a will reflect on this.
-    ;;   It makes moving around seem more fun and cool.
-    )
+     (defun ,(rx bol "function_definition" eol))
+     (sexp ,(rx bol (or "function_definition"
+                        "arguments_statement"
+
+                        ;; "property" of "arguments_statement" and "properties"
+                        ;;
+                        ;; TODO: the property node includes a newline, which means C-M-f jumps to
+                        ;; an odd location.  Should the matlab tree sitter grammar be updated or
+                        ;; should we special case this?
+                        ;;     function method1(in1, in2)
+                        ;;         arguments
+                        ;;             in1 (1,1) double
+                        ;;             ^                         % <- point here, C-M-f
+                        ;;             in2 (1,2) double
+                        ;;     ^                                 % -> moves point here.
+                        ;;         end
+                        ;;
+                        ;; Here's the nodes:
+                        ;;     (property name: (identifier)
+                        ;;      (dimensions ( (number) , (number) ))
+                        ;;      (identifier) \n)
+                        ;;     (property name: (identifier)
+                        ;;      (dimensions ( (number) , (number) ))
+                        ;;      (identifier) \n)
+                        "property"
+
+                        "function_arguments"
+                        "function_call"
+
+                        "assignment"
+                        "break_statement"
+                        "cell"
+                        "continue_statement"
+                        "command"
+                        "for_statement"
+                        "global_operator"
+                        "if_statement"
+                        "matrix"
+                        "persistent_operator"
+                        "return_statement"
+                        "switch_statement"
+                        "case"
+                        "otherwise"
+                        "catch"
+                        "try_statement"
+                        "while_statement"
+
+                        "class_definition"
+                        "classdef"
+                        "properties"
+                        "methods"
+                        "events"
+                        "enumeration"
+                        "enum"
+
+                        "identifier")
+                eol))
+
+     (sentence ,(rx bol (or "function_definition"
+                            "assignment"
+                            "arguments_statement"
+                            "for_statement"
+                            "if_statement"
+                            "switch_statement"
+                            "try_statement"
+                            "while_statement"
+                            "class_definition"
+                            "properties"
+                            "methods"
+                            "events"
+                            "enumeration")))
+
+     (text ,(rx bol (or "comment" "string") eol))
+
+     ))
   "Tree-sitter things for movement.")
+
+(defun matlab-ts-mode--forward-sexp (&optional arg)
+  "Use `treesit-forward-sexp' when not in comments.
+ARG is described in the docstring of `forward-sexp-function'.
+When in comments do the normal parenthesis s-expression movement
+by calling `forward-sexp-default-function'."
+  (interactive "^p")
+  (let* ((pt-and-node (matlab-ts-mode--real-node-at-point))
+         (node (cdr pt-and-node)))
+    (if (equal (treesit-node-type node) "comment")
+        (forward-sexp-default-function arg)
+      (treesit-forward-sexp arg))))
 
 ;;; Change Log
 
@@ -1265,19 +1361,9 @@ THERE-END MISMATCH) or nil."
          there-begin
          there-end
          mismatch
-         (pt (point))
-         (node-at-point (treesit-node-at pt))
-         ;; Handle case at end of a start node, e.g. point just after properties:
-         ;;    properties
-         ;;              ^
-         ;;        foo;
-         ;;    end
-         (node (if (and (equal "\n" (treesit-node-type node-at-point))
-                        (> pt 1))
-                   (progn
-                     (setq pt (1- pt))
-                     (treesit-node-at pt))
-                 node-at-point)))
+         (pt-and-node (matlab-ts-mode--real-node-at-point))
+         (pt (car pt-and-node))
+         (node (cdr pt-and-node)))
 
     ;; If point is in whitespace, (treesit-node-at (point)) returns the nearest node. For
     ;; paired matching we want the point on either a start or end paired item.
@@ -1439,8 +1525,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
                                   (cdar matlab-ts-mode--indent-rules)))
                   matlab-ts-mode--indent-rules))
 
-    ;; Movement.
-    ;; See: tests/test-matlab-ts-mode-movement.el
+    ;; Thing settings for movement, etc.
+    ;; See: tests/test-matlab-ts-mode-thing-settings.el
     (setq-local treesit-thing-settings matlab-ts-mode--thing-settings)
 
     ;; Change Logs.
@@ -1477,9 +1563,16 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
     ;;
-    ;; TODO C-M-f when on "function" should jump to "end", currently doesn't
+    ;; TODO in file with: % other stuff (print "hello")
+    ;;      typing the last ")" results in Mismatched parentheses
 
-    (treesit-major-mode-setup)))
+    (treesit-major-mode-setup)
+
+    ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
+    ;; s-expression matching using parenthesis. This fix is need for our tests were we need
+    ;; to evaluate (t-utils-NAME ....) expressions from within comments using C-x C-e.
+    (setq-local forward-sexp-function #'matlab-ts-mode--forward-sexp)
+    ))
 
 (provide 'matlab-ts-mode)
 ;;; matlab-ts-mode.el ends here

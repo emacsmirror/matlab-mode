@@ -1,6 +1,6 @@
 % -*- matlab-ts -*-
 
-function b = move_via_defun(a)
+function b = thing_defun(a)
 
     % (t-utils-xr (beginning-of-defun))
     % (t-utils-xr "C-M-a")

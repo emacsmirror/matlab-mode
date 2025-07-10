@@ -1,0 +1,84 @@
+#+startup: showall
+
+* Executing commands from thing_sentance.m:3:2:
+
+  (t-utils-xr "M-e" "M-a")
+
+- Invoking      : "M-e" = forward-sentence
+  Start point   :   48
+  Moved to point:   72
+  : 4:23: classdef thing_sentance
+  :                              ^
+  No buffer modifications
+
+- Invoking      : "M-a" = backward-sentence
+  Start point   :   72
+  Moved to point:   49
+  : 4:0: classdef thing_sentance
+  :      ^
+  No buffer modifications
+
+* Executing commands from thing_sentance.m:6:6:
+
+  (t-utils-xr "M-e" "M-e")
+
+- Invoking      : "M-e" = forward-sentence
+  Start point   :  104
+  Moved to point:  302
+  : 21:7:     end
+  :              ^
+  No buffer modifications
+
+- Invoking      : "M-e" = forward-sentence
+  Start point   :  302
+  Moved to point: 1557
+  : 89:7:     end
+  :              ^
+  No buffer modifications
+
+* Executing commands from thing_sentance.m:8:10:
+
+  (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a" "M-a" "M-a")
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  184
+  Moved to point:  120
+  : 8:0:         % (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a" "M-a" "M-a")
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  120
+  Moved to point:  185
+  : 9:0: 
+  :      ^
+  No buffer modifications
+
+- Invoking      : "M-m" = back-to-indentation
+  Start point   :  185
+  No point movement
+  No buffer modifications
+
+- Invoking      : "M-a" = backward-sentence
+  Start point   :  185
+  Moved to point:  109
+  : 7:4:     properties
+  :          ^
+  No buffer modifications
+
+- Invoking      : "M-a" = backward-sentence
+  Start point   :  109
+  Moved to point:   49
+  : 4:0: classdef thing_sentance
+  :      ^
+  No buffer modifications
+
+- Invoking      : "M-a" = backward-sentence
+  Start point   :   49
+  No point movement
+  No buffer modifications
+
+- Invoking      : "M-a" = backward-sentence
+  Start point   :   49
+  No point movement
+  No buffer modifications

@@ -148,7 +148,8 @@ navigation via syntactic expressions, etc.
 
  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
-
+ - [[https://archive.casouri.cc/note/2024/emacs-30-tree-sitter/][Notes: Tree-sitter Changes in Emacs 30]]
+   
 * libtree-sitter-LANGUAGE.EXT
 
 Place the tree-sitter language library in =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=
@@ -1018,20 +1019,90 @@ Examining treesit-major-mode-setup,
 
 we see that with Emacs 30.1, there are three items to setup:
 
+ : 'defun
  : 'sexp
  : 'sentence
- : 'defun
  : 'text
 
-You should setup 'defun instead of treesit-defun-type-regexp for a consistent setup and all things
-for navigation are all controlled by treesit-thing-settings.  If you do set
-treesit-defun-type-regexp it overrides 'defun for compatibility.
 
-If you define sexp you should also define text to conver comments and strings. sexp is used by
-forward-sexp.
+='defun= is used by end-of-defun via end-of-defun-function set to treesit-end-of-defun. You should
+setup ='defun= instead of treesit-defun-type-regexp for a consistent setup where all things for
+navigation, etc. are all controlled by treesit-thing-settings.  If you do set
+treesit-defun-type-regexp it overrides ='defun= for compatibility. The defun movement commands
+you should test after setting up ='defun=:
 
-'sentence is used by forward-sentance via forward-sentence-function which is set to
-treesit-forward-sentence.
+#+begin_example
+  C-M-a  Move to beginning of defun, beginning-of-defun
+  C-M-e  Move to end of defun, end-of-defun
+  C-M-h  Marks defun, place point at beginning of defun and mark at the end, mark-defun
+#+end_example
+
+For proper synatic expression movement, you should define ='sexp=. Defining 'sexp requires that you
+also define ='text= to conver comments and strings. ='sexp= and ='text= are used by forward-sexp and
+friends (forward-sexp-function is set treesit-forward-sexp by treesit-major-mode-setup).
+
+Syntatic expressions, s-expressions, or simply sexp commands operate on /balanced
+expressions/. Strings are naturally balanced expressions because they start and end with some type
+of quote character. Likewise brackets =[ items ]= and braces ={ items }= are typically balanced
+expressions because they have open and close characters. Some languages have keywords expressions
+that have a starting keyword and an ending keyword. For example "if" could be paired with a closing
+"end" keyword. s-expressions can span multipe lines. s-expressions can be nested. These commands
+leverage ='sexp= and ='text= things:
+
+#+begin_example
+  C-M-f   Move forward by s-expression, forward-sexp
+          - If point is on the start of an s-expression, move to the end.
+          - If point is on the end of an s-expression, move to the start of the next s-expression
+            at the same level. If there is no next s-expression, no movement occurs.
+  C-M-b   Move backward by s-expression, backward-sexp
+          - If point is on the end of an s-expression, move to the start.
+          - If point is on the start of an s-expression, move to the start of the prior s-expression
+            at the same level. If there is no prior s-expression, no movement occurs.
+  C-M-SPC Mark s-expression, place point at beginning of sexp and mark at the end, mark-sexp
+  C-M-@   Same as C-M-SPC.
+  C-M-k   Kill s-expression, kill-sexp
+  C-M-t   Transpose s-expressions, transpose-sexp
+#+end_example
+
+='sentence= and ='text= are used by forward-sentance via forward-sentence-function which is set to
+treesit-forward-sentence. The following sentance movement commands use forward-sentance:
+
+#+begin_example
+  M-e      Move forward to next end of sentence, forward-sentence
+  M-a      Move backward to start of sentence, backward-sentence
+  M-k      Kill from point to end of sentence, kill-sentence
+  C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
+#+end_example
+
+You can add other items to treesit-thing-settings such as ='comment= and ='string=, though
+treesit.el doesn't currenlty use these, so I'd avoid doing so because the names you choose may not
+matach future items treesit.el will use.
+
+The following commands move via parenthesis, though they are not tree-sitter aware. For example, it
+would be nice if down-list / up-list could be redirected to move up and down the nested
+s-expressions, but you cannot do that. Similar for forward-list, backward-list.
+
+#+begin_example
+  C-M-d   Move down into a list, down-list
+  C-M-u   Move up out of a list, up-list
+  C-M-n   Move forward to the next list expression in the same level, forward-list
+  C-M-p   Move backward to the previous list expression in the same level, backward-list
+#+end_example
+
+TODO - explain you'll need to correct forward-sexp when in comments
+
+#+begin_src emacs-lisp
+    (treesit-major-mode-setup)
+
+    ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
+    ;; s-expression matching using parenthesis. This fix is need for our tests were we need
+    ;; to evaluate (t-utils-NAME ....) expressions from within comments using C-x C-e.
+    (setq-local forward-sexp-function #'matlab-ts-mode--forward-sexp)
+#+end_src
+
+** Test: treesit-thing-settings
+
+TODO
 
 * Setup: Fill Paragraph, M-q
 
@@ -1050,7 +1121,7 @@ e.g. if nodeName1 and nodeName2 should be filled like plain text, use:
  #+begin_src emacs-lisp
  (defvar LANGAUAGE-ts-mode--thing-settings
   `((LANGUAGE
-     (text ,(rx (or "nodeName1" "nodeName2"))))))
+     (text ,(rx (or "nodeName1" "nodeName2" ....))))))
  #+end_src
 
 and in defun of LANGUAGE-ts-mode, add =(setq-local treesit-thing-settings
@@ -1983,3 +2054,31 @@ well worth writing a tree-sitter mode.
 
  10. We now highlight starting and ending string quote when the point is on the start or end single
      or double quote.
+
+ 11. Improved (more predictable) s-expression commands
+
+     #+begin_example
+       C-M-f   Move forward by s-expression, forward-sexp
+               - If point is on the start of an s-expression, move to the end.
+               - If point is on the end of an s-expression, move to the start of the next s-expression
+                 at the same level. If there is no next s-expression, no movement occurs.
+       C-M-b   Move backward by s-expression, backward-sexp
+               - If point is on the end of an s-expression, move to the start.
+               - If point is on the start of an s-expression, move to the start of the prior s-expression
+                 at the same level. If there is no prior s-expression, no movement occurs.
+       C-M-SPC Mark s-expression, place point at beginning of sexp and mark at the end, mark-sexp
+       C-M-@   Same as C-M-SPC.
+       C-M-k   Kill s-expression, kill-sexp
+       C-M-t   Transpose s-expressions, transpose-sexp
+     #+end_example
+     
+ 12. Improved sentance commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
+     "Wrong number of arguments: (0 . 0), 1" and now works in matlab-ts-mode.
+
+     #+begin_example
+       M-e      Move Move forward to next end of sentence, forward-sentence
+       M-a      Move backward to start of sentence, backward-sentence
+       M-k      Kill from point to end of sentence, kill-sentence
+       C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
+     #+end_example
+     
