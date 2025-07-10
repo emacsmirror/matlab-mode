@@ -1257,9 +1257,9 @@ single quote string."
 
 (defun matlab-ts-mode--show-paren-or-block ()
   "Function to assign to `show-paren-data-function'.
-Highlights parens and if/end type blocks.
-Returns a list: \\='(HERE-BEGIN HERE-END THERE-BEGIN THERE-END MISMATCH)
-or nil"
+Highlight MATLAB pairs in addition to standard items paired by
+`show-paren-mode'.  Returns a list: \\='(HERE-BEGIN HERE-END THERE-BEGIN
+THERE-END MISMATCH) or nil."
   (let* (here-begin
          here-end
          there-begin
@@ -1279,8 +1279,8 @@ or nil"
                      (treesit-node-at pt))
                  node-at-point)))
 
-    ;; If point is in whitespace, (treesit-node-at (point)) returns the nearest node, but we don't
-    ;; want that.
+    ;; If point is in whitespace, (treesit-node-at (point)) returns the nearest node. For
+    ;; paired matching we want the point on either a start or end paired item.
     (let ((node-start (treesit-node-start node))
           (node-end (treesit-node-end node)))
       (when (and (>= pt node-start)
@@ -1307,9 +1307,6 @@ or nil"
                (node-type (treesit-node-type node))
                (parent-node (treesit-node-parent node))
                (parent-type (treesit-node-type parent-node)))
-
-          ;; xxx when on inner item, e.g. elseif, else, case, otherwise, catch do same as
-          ;;     matlab-mode
 
           (cond
 
