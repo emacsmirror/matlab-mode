@@ -48,7 +48,7 @@ after validating it, rename it to
   (let ((test-name "test-matlab-ts-mode-treesit-defun-name"))
 
     (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-font-lock))
+      (cl-return-from test-matlab-ts-mode-defun-name))
 
     (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
       (t-utils-test-treesit-defun-name test-name m-files)))

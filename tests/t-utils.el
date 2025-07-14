@@ -100,8 +100,9 @@ files.  The default MATCH is \"^test-.*\\\\.el$\""
 (defvar-local t-utils--buf-file nil
   "Name of file associated with t-utils temporary buffers.")
 
-(defun t-utils--insert-file-for-test (file)
-  "Insert FILE into current temporary buffer for testing."
+(defun t-utils--insert-file-for-test (file &optional file-major-mode)
+  "Insert FILE into current temporary buffer for testing.
+If optional FILE-MAJOR-MODE function is provided, run that, otherwise"
   (insert-file-contents-literally file)
   ;; CRLF -> LF for consistency between Unix and Windows
   (goto-char (point-min))
@@ -109,16 +110,19 @@ files.  The default MATCH is \"^test-.*\\\\.el$\""
     (replace-match ""))
   (goto-char (point-min))
   ;; Set mode
-  (when (and (not (looking-at "^.* -\\*-[ \t]+\\([-a-z0-9]+\\)[ \t]+-\\*-"))
-             (not (looking-at "^.* -\\*-.*mode:[ \t]+\\([-a-z0-9]+\\).*-\\*-")))
-    (error "First line of %s must contain -*- MODE-NAME -*- (or -*- mode: MODE-NAME -*-)" file))
-  (let* ((mode (match-string 1))
-         (mode-cmd (intern (concat mode "-mode"))))
-    (funcall mode-cmd))
-  ;; Stash away the real buffer file for later use.
-  (setq-local t-utils--buf-file file)
+  (if file-major-mode
+      (funcall file-major-mode)
+    ;; else get major mode from the first line of the file.
+    (when (and (not (looking-at "^.* -\\*-[ \t]+\\([-a-z0-9]+\\)[ \t]+-\\*-"))
+               (not (looking-at "^.* -\\*-.*mode:[ \t]+\\([-a-z0-9]+\\).*-\\*-")))
+      (error "First line of %s must contain -*- MODE-NAME -*- (or -*- mode: MODE-NAME -*-)" file))
+    (let* ((mode (match-string 1))
+           (mode-cmd (intern (concat mode "-mode"))))
+      (funcall mode-cmd)))
   ;; Incase the mode moves the point, reset to point-min.
-  (goto-char (point-min)))
+  (goto-char (point-min))
+  ;; Stash away the real buffer file for later use (and return it).
+  (setq-local t-utils--buf-file file))
 
 (defun t-utils--took (start-time)
   "Return \"- took N seconds\".
@@ -402,10 +406,7 @@ my_test.c.  The result is compared against
 test-defun-movement/my_test_expected.org.  If my_test_expected.org does
 not exist or result doesn't match the existing my_test_expected.org,
 my_test_expected.org~ is generated and if it looks correct, you should
-rename it to my_test_expected.org.  The contents of my_test_expected.org
-for this example is:
-
-  TODO xxx contents of my_test_expected.org"
+rename it to my_test_expected.org."
 
   (dolist (lang-file lang-files)
     (with-temp-buffer
@@ -496,7 +497,7 @@ where int and void are keywords, etc. and CODE-TO-FACE contains:
     (\"k\" . font-lock-keyword-face)
     (\"n\" . font-lock-constant-face))
 
-xxx give example calling test-name.el (and for others)"
+TODO give example calling test-name.el (and for others)"
 
   (let ((face-to-code (mapcar (lambda (pair)
                                 (cons (cdr pair) (car pair)))
@@ -634,7 +635,7 @@ and blank lines are inserted by calling `newline'.`"
             (error "Typing %s line-by-line does not match %s, we got %s" lang-file expected-file
                    typing-got-file)))))))
 
-(defun t-utils-test-indent (test-name lang-files &optional line-manipulator)
+(defun t-utils-test-indent (test-name lang-files &optional line-manipulator error-nodes-regexp)
   "Test indent on each file in LANG-FILES list.
 Compare indent of each NAME.EXT in LANG-FILES against NAME_expected.EXT.
 TEST-NAME is used in messages.
@@ -651,11 +652,18 @@ accept the generated baseline after validating it.
 
 Two methods are used to indent each file in LANG-FILES,
  1. (indent-region (point-min) (point-man))
- 2. Simulation of typing lang-file to exercise TAB and RET,
-    see `t-utils--test-indent-typing'.  In tree-sitter modes, TAB and RET
-    need to be handled and this verifies they are handled.
+
+ 2. Indent via typing simulation.  If lang-file has no error nodes in the
+    parse tree, indent is simulated by \"typing lang-file\" to exercise
+    TAB and RET, see `t-utils--test-indent-typing'.  In tree-sitter
+    modes, TAB and RET need to be handled and this verifies they are
+    handled.  Error nodes are identified by using
+    ERROR-NODES-REGEXP which defaults to \"^ERROR$\".
 
 See `t-utils--test-indent-type' for LINE-MANIPULATOR."
+
+  (when (not error-nodes-regexp)
+    (setq error-nodes-regexp (rx bos "ERROR" eos)))
 
   (dolist (lang-file lang-files)
     (let* ((expected-file (replace-regexp-in-string "\\.\\([^.]+\\)$" "_expected.\\1" lang-file))
@@ -663,12 +671,15 @@ See `t-utils--test-indent-type' for LINE-MANIPULATOR."
                        (with-temp-buffer
                          (insert-file-contents-literally expected-file)
                          (buffer-string))))
-           lang-file-major-mode)
+           lang-file-major-mode
+           error-node)
 
       ;; Indent lang-file
       (with-temp-buffer
         (let ((start-time (current-time)))
           (t-utils--insert-file-for-test lang-file)
+          (setq error-node (treesit-search-subtree
+                            (treesit-buffer-root-node) error-nodes-regexp nil t))
           (message "START: %s <indent-region> %s" test-name lang-file)
           (setq lang-file-major-mode major-mode)
           (indent-region (point-min) (point-max))
@@ -689,13 +700,239 @@ See `t-utils--test-indent-type' for LINE-MANIPULATOR."
                    (t-utils--took start-time))))
 
       ;; Now, simulate typing lang-file and indent it (exercise TAB and RET)
-      (let ((start-time (current-time)))
-        (message "START: %s <indent-via-typing> %s" test-name lang-file)
-        (t-utils--test-indent-typing lang-file lang-file-major-mode
-                                     expected expected-file
-                                     line-manipulator)
-        (message "PASS: %s <indent-via-typing> %s %s" test-name lang-file
-                 (t-utils--took start-time))))))
+      (when (not error-node)
+        (let ((start-time (current-time)))
+          (message "START: %s <indent-via-typing> %s" test-name lang-file)
+          (t-utils--test-indent-typing lang-file lang-file-major-mode
+                                       expected expected-file
+                                       line-manipulator)
+          (message "PASS: %s <indent-via-typing> %s %s" test-name lang-file
+                   (t-utils--took start-time)))))))
+
+(defun t-utils--check-parse (lang-file error-nodes-regexp syntax-checker-fun check-valid-parse)
+  "Return (parse-error . invalid-successful-parse) pair of strings.
+See `t-utils-sweep-test-indent' for a description of
+LANG-FILE ERROR-NODES-REGEXP SYNTAX-CHECKER-FUN CHECK-VALID-PARSE."
+
+  (when (and check-valid-parse
+             (not syntax-checker-fun))
+    (error "SYNTAX-CHECKER-FUN must be provided when CHECK-VALID-PARSE is t"))
+
+  (let* ((root (treesit-buffer-root-node))
+         (error-node (treesit-search-subtree root error-nodes-regexp nil t))
+         (check-pair (when (and syntax-checker-fun
+                                (or error-node
+                                    check-valid-parse))
+                       (funcall syntax-checker-fun lang-file)))
+         (check-valid (when check-pair (car check-pair)))
+         (check-result (if check-pair
+                           (concat
+                            (string-trim (replace-regexp-in-string "^" "    " (cdr check-pair)))
+                            "\n")
+                         ""))
+         (parse-error "")
+         (invalid-successful-parse ""))
+
+    (if error-node
+        (when (or (eq check-pair nil) ;; no syntax checker
+                  check-valid)        ;; or we passed syntax checker
+          (setq parse-error
+                (format "%s:%d:%d: error: parse tree contains error node %S\n%s"
+                        lang-file
+                        (line-number-at-pos (treesit-node-start error-node))
+                        (save-excursion (goto-char (treesit-node-start error-node))
+                                        (current-column))
+                        error-node
+                        check-result)))
+      ;; else if we have a valid parse, very syntax-checker-fun also says its valid
+      (when (and check-valid-parse (not check-valid)) ;; syntax checker reports an error
+        (setq invalid-successful-parse
+              (format "%s:1: error: tree-sitter parsed without error, yet file has \
+errors according to the syntax-checker-fun\n%s" lang-file check-result))))
+
+    (cons parse-error invalid-successful-parse)))
+
+(defun t-utils-sweep-test-indent (test-name directory lang-file-regexp major-mode-fun
+                                            &optional syntax-checker-fun check-valid-parse
+                                            error-nodes-regexp)
+  "Sweep test indent on files under DIRECTORY recursively.
+File basenames matching matching LANG-FILE-REGEXP are tested.
+TEST-NAME is used in messages.
+
+Each matching file is read into a temporary buffer and then
+MAJOR-MODE-FUN is called.
+
+ERROR-NODES-REGEXP, defaulting to (rx box \"ERROR\" eos), is provided to
+`treesit-search-subtree' to look for syntax errors in the parse tree.
+SYNTAX-CHECKER-FUN is a function that should take one arument, the
+current file being sweep tested, and should return cons pair
+  (VALID . CHECK-RESULT)
+VALID is t there are no syntax errors, otherwise nil.  String
+CHECK-RESULT is the what the checker produced.  Optional
+CHECK-VALID-PARSE if t, will call SYNTAX-CHECKER-FUN on all files being
+processed to verify that the a successful tree-sitter parse also has no
+errors according to SYNTAX-CHECKER-FUN.
+
+If the tree-sitter parse tree contains a node matching ERROR-NODES-REGEXP,
+SYNTAX-CHECKER-FUN is called and if the file does not have syntax error,
+it is reported because the tree-sitter parser says it has erorrs and
+the SYNTAX-CHECKER-FUN says it does not.
+
+Next, the buffer is indented using `indent-region' and if this fails it
+is reported.  In addition, the slowest indents are reported.
+
+Callers of this function should activate any assertions prior to calling
+this function.  For example, the last rule of the tree-sitter mode may
+be an assert rule and this should be activated:
+
+  (defvar LANGUAGE-ts-mode--indent-assert nil
+    \"Tests set this to t to identify when indent rules are missing.\")
+
+  (defvar LANGUAGE-ts-mode--indent-assert-rule
+    \\='((lambda (node parent bol)
+        (when LANGUAGE-ts-mode--indent-assert
+          (error \"Assert no rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S\"
+                 node parent bol
+                 (treesit-node-parent parent)
+                 (treesit-node-prev-sibling node)
+                 (buffer-name))))
+      nil
+      0))
+
+  (defvar LANGUAGE-ts-mode--indent-rules
+    `((LANGUAGE
+       ;; <snip>
+       ,LANGUAGE-ts-mode--indent-assert-rule
+      )))
+
+  (define-derived-mode LANGUAGE-ts-mode prog-mode \"LANGUAGE:ts\"
+     ;; <snip>
+     (setq-local treesit-simple-indent-rules LANUGAGE-ts-mode--indent-rules)
+     ;; <snip>
+     )
+
+Example usage:
+
+  (defun sweep-LANGUAGE-ts-mode-indent (&optional directory)
+    (let ((LANGUAGE-ts-mode--indent-assert t))
+      (t-utils-sweep-test-indent \"sweep-LANGUAGE-ts-mode-indent\"
+                                 (or directory default-directory)
+                                 \"\\\\.EXT\\\\\\='\"
+                                 #\\='LANGUAGE-ts-mode)))
+
+The result is:
+
+    Files-with-parse-error-nodes[-but-pass-syntax-checker-fun]:
+      <files with error nodes>
+    Files-that-parsed-succesfully-but-failed-syntax-checker-fun:
+      <files that tree-sitter parsed successfully but fail syntax-checker-fun>
+    Indent-errors:
+      <files that generated an indent error>
+    Slowest-indents:
+      <files where indent was slowest>
+
+When run in an interacive Emacs session, e.g.
+   M-: (sweep-LANGUAGE-ts-mode-indent)
+the result is shown in \"*t-utils-sweep-indent*\" buffer, otherwise it
+is displayed on stdout.
+
+After running this, you examine the results to see if there are issues.
+For example, the files with parse error nodes may be identifying issues
+with your LANGUAGE tree-sitter where it is failing to parse or the files
+may have syntax errors in them and the tree-sitter parse tree with error
+nodes is correct.  Any files that generated errors during
+`indent-region' are are likely bugs that should be addressed because
+this will only call `indent-region' on files when the tree-sitter parse
+tree has no error nodes.  You should also look at the files where
+`indent-region' was slow.  Very slow indents could be bugs in the
+LANGUAGE tree-sitter that need addressing or some other issue."
+
+  (when (not error-nodes-regexp)
+    (setq error-nodes-regexp (rx bos "ERROR" eos)))
+
+  (let ((lang-files (directory-files-recursively directory lang-file-regexp))
+        (start-time (current-time))
+        (parse-errors "")
+        (invalid-successful-parse "")
+        (indent-errors "")
+        (took-ht (make-hash-table :test 'equal)))
+
+    (message "START: %s, indenting %d files" test-name (length lang-files))
+
+    (dolist (lang-file lang-files)
+      (with-temp-buffer
+
+        (t-utils--insert-file-for-test lang-file major-mode-fun)
+
+        ;; Check for bad tree-sitter parse
+        (let ((pair (t-utils--check-parse lang-file error-nodes-regexp
+                                          syntax-checker-fun check-valid-parse)))
+          (setq parse-errors (concat parse-errors (car pair))
+                invalid-successful-parse (concat invalid-successful-parse (car pair))))
+
+        ;; Check indent
+        (condition-case err
+            (let ((indent-start (current-time)))
+              (indent-region (point-min) (point-max))
+              (puthash lang-file (float-time (time-subtract (current-time) indent-start)) took-ht))
+          (error (setq indent-errors
+                       (concat indent-errors (format "%s:1: error: failed to indent, %s\n"
+                                                     lang-file (error-message-string err))))))))
+
+    (let* ((slow-files (let ((files '()))
+                         (maphash (lambda (file _took-time)
+                                    (push file files))
+                                  took-ht)
+                         (sort files
+                               :lessp (lambda (f1 f2)
+                                        (> (gethash f1 took-ht)
+                                           (gethash f2 took-ht)))
+                               :in-place t)
+                         (let* ((max-to-show 100)
+                                (n-entries-to-rm (- (length files) max-to-show)))
+                           (when (> n-entries-to-rm 0)
+                             (nbutlast files n-entries-to-rm)))
+                         (mapconcat #'identity
+                                    (mapcar (lambda (file)
+                                              (format "%s:1: note: indent took %.3f seconds\n"
+                                                      file (gethash file took-ht)))
+                                            files))))
+           (result (concat "# -*- compilation-minor-mode -*-\n"
+                           "\n"
+                           (format "Files-with-parse-error-nodes%s:\n"
+                                   (if syntax-checker-fun
+                                       "-but-pass-syntax-checker-fun"
+                                     ""))
+                           parse-errors
+                           "\n"
+                           (when check-valid-parse
+                             (concat
+                              "Files-that-parsed-succesfully-but-failed-syntax-checker-fun:\n"
+                              invalid-successful-parse
+                              "\n"))
+                           "Indent-errors:\n"
+                           indent-errors
+                           "\n"
+                           "Slowest-indents:\n"
+                           slow-files)))
+
+      (if noninteractive
+          (message "%s" result)
+        (let ((dir default-directory)
+              (result-buf (get-buffer-create "*t-utils-sweep-indent*")))
+          (with-current-buffer result-buf
+            (setq-local default-directory dir)
+            (read-only-mode -1)
+            (erase-buffer)
+            (buffer-disable-undo)
+            (insert result)
+            (goto-char (point-min))
+            (text-mode) ;; so we can enable compilation-minor-mode
+            (compilation-minor-mode)
+            (read-only-mode 1))
+          (display-buffer result-buf))))
+
+    (message "FINISHED: %s %s" test-name (t-utils--took start-time))))
 
 (defun t-utils-test-syntax-table (test-name lang-files)
   "Test syntax-table on each file in LANG-FILES list.

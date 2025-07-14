@@ -463,7 +463,10 @@ the tests.
   (defvar LANGUAGE-ts-mode--indent-rules
       `((LANGUAGE
          (MATCHER-1 ANCHOR-1 OFFSET-1)
-         (MATCHER-N ANCHOR-N OFFSET-N)))
+         (MATCHER-N ANCHOR-N OFFSET-N))
+
+        ;; I-Rule: Assert if no rule matched and asserts are enabled.
+        ,LANGUAGE-ts-mode--indent-assert-rule)
       "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
 
   ;;;###autoload
@@ -670,7 +673,8 @@ so we can combine them and also handle handle nested if-statements as shown belo
        ;;         <TAB> else
        ;;         <TAB> end
        ((node-is ,(rx bol (or "if_statement" "else_clause" "end") eol)) parent 0)
-       ;; I-Rule: Assert if no rule hit
+
+       ;; I-Rule: Assert if no rule matched and asserts are enabled.
        ,LANGUAGE-ts-mode--indent-assert-rule
        ))
     "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
@@ -686,14 +690,14 @@ so we can combine them and also handle handle nested if-statements as shown belo
     (when (treesit-ready-p 'LANGUAGE)
       (treesit-parser-create 'LANGUAGE)
 
-      ;; Font-lock. See: ./tests/test-matlab-ts-mode-font-lock.el
+      ;; Font-lock. See: ./tests/test-LANGUAGE-ts-mode-font-lock.el
       (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
       (setq-local treesit-font-lock-feature-list '((comment definition)
   						 (keyword string type)
   						 (number bracket delimiter)
   						 (syntax-error)))
 
-      ;; Indent. See: ./tests/test-matlab-ts-mode-indent.el
+      ;; Indent. See: ./tests/test-LANGUAGE-ts-mode-indent.el
       (setq-local treesit-simple-indent-rules
                   (if treesit--indent-verbose ;; add debugging print as first rule?
                       (list (append `,(list (caar LANGUAGE-ts-mode--indent-rules))
@@ -772,6 +776,103 @@ where test-LANGUAGE-ts-mode-indent.el contains:
     "success")
 
 #+end_src
+
+** Sweep test: Indent
+
+We define a sweep test to be a test that tries an action on a large number of files and reports
+issues it finds.  Classic tests such as the above where we run code and check the result for
+correctness.  A sweep test of indent on many thousands of LANGUAGE files cannot check the result of
+each individual indent because there is no baseline result for each file. However, a sweep test can
+check for asserts, unexpected errors, and slow indents. It can also check for invalid parse trees
+reported by the LANGUAGE tree-sitter if you have an external command that can check for syntax
+errors in your LANGUAGE files.
+
+Our indent sweep test takes a directory and runs indent-region all LANUGAGE files under the
+directory recursively.
+
+ - If the parse tree indicates an error, we call the external syntax checker to double
+   check that the file does indeed have a syntax error. If the external checker says the
+   file does not have a syntax error, we report the file and this is likely a bug in
+   the LANGUAGE tree-sitter parser.
+ 
+ - If check-valid-parse below is t the test will call syntax checker on all files being
+   processed to verify that the a successful tree-sitter parse also has no errors according to
+   syntax checker. Any inconsistent parses are reported which is likely a bug in the
+   tree-sitter parser.
+
+ - Next, =indent-region= is run on the file in a temporary buffer. The time it takes is
+   recorded in a table.  The slowest indents are reported.  If you see slow indents, there
+   could be bugs in your tree-sitter parser.
+
+ - If =indent-region= errors out, then that is also reported.  For example, suppose we write a
+   lambda indent MATCHER that contains
+
+    : (string-match-p my-node-regexp (treesit-node-type (treesit-node-prev-sibling parent))
+
+   In our classic test things work fine because our test has a parent with a previous
+   sibling. However, we may have missed that parent may not have a previous sibling. A sweep of a
+   large number of LANGUAGE files has good probablity of hitting this. If parent doesn't have a
+   previous sibling, we'll get "error (void-function stirng-match-p)."
+
+Here's our sweep test:
+
+#+begin_src emacs-lisp
+  (require 't-utils)
+
+  (defun sweep-test-LANGUAGE-ts-mode-indent--syntax-checkder (file)
+    "Syntax check FILE, return pair (VALID . CHECK-RESULT).
+  Where VALID is t if the file has valid syntax, nil otherwise.
+  String CHECK-RESULT is what the syntax checker command returned."
+    (let ((out (shell-command-to-string
+                (concat (shell-quote-argument your-syntax-checker-command)
+                        " "
+                        (shell-quote-argument file))))
+          valid)
+
+      (setq valid
+            (not
+             (string-match-p
+              (rx
+               (or
+  	      "error:"
+  	      "fatal error:"))
+              out)))
+      (cons valid out)))
+    
+
+
+  (defun sweep-test-LANGUAGE-ts-mode-indent (&optional directory check-valid-parse)
+    "Use `LANGUAGE-ts-mode' to indent each language file in DIRECTORY.
+
+  If DIRECTORY isn't specified, it defaults to the current directory.
+
+  CHECK-VALID-PARSE if t, will call SYNTAX-CHECKER-FUN on all files being
+  processed to verify that the a successful tree-sitter parse also has no
+  errors according to SYNTAX-CHECKER-FUN.  Any inconsistent parses are
+  reported which is likely a bug in the tree-sitter parser.
+
+  This calls `t-utils-sweep-test-indent' with does a number of
+  checks to validate the ident rules.  When run interactively,
+  displays the result in a *t-utils-seep-indent* buffer, otherwise
+  the results are displayed on stdout."
+
+    (let ((test-name "sweep-test-LANGUAGE-ts-mode-indent")
+          (LANGUAGE-ts-mode--indent-assert t))
+
+      (t-utils-sweep-test-indent test-name
+                                 (or directory default-directory)
+                                 "\\.lang\\'"   ;; our language files
+                                 #'LANGUAGE-ts-mode
+                                 #'sweep-test-LANGUAGE-ts-mode-indent--syntax-checker
+                                 check-valid-parse
+                                 (rx bos "ERROR" eos))))
+#+end_src
+
+We can run our sweep test via
+
+ : C-x C-f RET /path/to/directory/root/containing/language/files RET
+ : M-: (sweep-test-LANGUAGE-ts-mode-indent)
+ : M-: (sweep-test-LANGUAGE-ts-mode-indent nil t)  ;; more checking but slower
 
 * Setup: Syntax Table
 
@@ -2082,3 +2183,17 @@ well worth writing a tree-sitter mode.
        C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
      #+end_example
      
+ 13. Many older matlab-mode menu items and keybindings have been removed because there are
+     standard replacements. Examples:
+
+     - To comment or uncomment code use select the code and type =M-;= which is the standard
+       way to do this in Emacs. The older =C-c ;= and =C-c :" matlab only comment and uncomment
+       commands no longer exist.
+
+     - Completion - we used to have =M-TAB= to complete symbol and this has been replaced by
+       using LSP mode.
+
+       TODO - show how to do in lsp-mode and update lsp-mode org on this.
+
+     - 
+      

@@ -375,12 +375,15 @@ help doc comment."
                                       eol)
                                   prev-type)
 	          (and (string= prev-type "identifier")           ;; id could be a fcn or class id
-	               (string-match-p (rx bol
-                                           (or "function"         ;; fcn wihtout in and out args
-                                               "function_output"  ;; fcn w/out args and no in args
-                                               "classdef")        ;; base class
-                                           eol)
-                                       (treesit-node-type (treesit-node-prev-sibling prev-node)))))
+                       (let ((prev-sibling (treesit-node-prev-sibling prev-node)))
+                         (and prev-sibling
+	                      (string-match-p
+                               (rx bol
+                                   (or "function"         ;; fcn wihtout in and out args
+                                       "function_output"  ;; fcn w/out args and no in args
+                                       "classdef")        ;; base class
+                                   eol)
+                               (treesit-node-type prev-sibling))))))
           comment-node)))))
 
 (defun matlab-ts-mode--is-doc-comment (comment-node parent)
@@ -1052,7 +1055,7 @@ expression."
      ;;         function b                         |   end
      ;;         end                                |
      ((lambda (node parent bol)
-        (and (not node)
+        (and (not parent)
              (string= (treesit-node-type parent) "\n")))
       grand-parent 0)
 
@@ -1065,6 +1068,37 @@ expression."
 
      ;; I-Rule: comments in classdef's
      ((parent-is ,(rx bol "class_definition" eol)) parent ,matlab-ts-mode--indent-level)
+
+     ;; I-Rule: comment after property:
+     ;;         arguments
+     ;;             a
+     ;;    TAB>     % comment
+     ;;         end
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_comment_after_prop.m
+     ((node-is "comment") parent 0)
+
+     ;; I-Rule: line continuation
+     ;;         arguments
+     ;;             a (1,1) ... asdf
+     ;;    TAB>        double
+     ;;         end
+     ;; See: test-matlab-ts-mode-indent-files/indent_line_continuation.m
+     ((lambda (node parent bol)
+        (let ((prev-sibling (treesit-node-prev-sibling node)))
+          (and prev-sibling
+               (string= (treesit-node-type prev-sibling) "line_continuation"))))
+      parent ,matlab-ts-mode--indent-level)
+
+     ;; I-Rule: handle syntax errors by not indenting
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_nested_error.m
+     ((lambda (node &rest _)
+        (let (in-error-node)
+          (while (and node (not in-error-node))
+            (if (equal "ERROR" (treesit-node-type node))
+                (setq in-error-node t)
+              (setq node (treesit-node-parent node))))
+          in-error-node))
+      no-indent 0)
 
      ;; I-Rule: Assert if no rule matched and asserts are enabled.
      ,matlab-ts-mode--indent-assert-rule
@@ -1468,6 +1502,45 @@ THERE-END MISMATCH) or nil."
         (list here-begin here-end there-begin there-end mismatch)
      (funcall #'show-paren--default))))
 
+;;; Key bindings
+
+;; TODO - update matlab-shell to use matlab-mode (matlab.el) or matlab-ts-mode.el functions
+;;        then enable following. Double check against matlab.el key bindings to see if we
+;;        want others.
+;;
+;; (defvar matlab-ts-mode--help-map
+;;   (let ((km (make-sparse-keymap)))
+;;     (define-key km "r" #'matlab-shell-run-command)
+;;     (define-key km "f" #'matlab-shell-describe-command)
+;;     (define-key km "a" #'matlab-shell-apropos)
+;;     (define-key km "v" #'matlab-shell-describe-variable)
+;;     km)
+;;   "The help key map for `matlab-ts-mode' and `matlab-shell-mode'.")
+;;
+;; (defvar matlab-ts-mode--map
+;;   (let ((km (make-sparse-keymap)))
+;;
+;;     ;; TODO - keep? Insert, Fill stuff
+;;     ;; (define-key km [(control c) (control c)] 'matlab-insert-map-fcn)
+;;     ;; (define-key km [(control c) (control j)] 'matlab-justify-line)
+;;
+;;     ;; Connecting to MATLAB Shell
+;;     (define-key km [(control c) (control s)] #'matlab-shell-save-and-go)
+;;     (define-key km [(control c) (control r)] #'matlab-shell-run-region)
+;;     (define-key km [(meta control return)] #'matlab-shell-run-code-section)
+;;     (define-key km [(control return)] #'matlab-shell-run-region-or-line)
+;;     (define-key km [(control c) (control t)] #'matlab-show-line-info)
+;;     (define-key km [(control c) ?. ] #'matlab-shell-locate-fcn)
+;;     (define-key km [(control h) (control m)] matlab-ts-mode--help-map)
+;;     (define-key km [(meta s)] #'matlab-show-matlab-shell-buffer)
+;;     (define-key km [(control meta mouse-2)] #'matlab-find-file-click)
+;;
+;;     ;; Debugger interconnect
+;;     (substitute-key-definition 'read-only-mode 'matlab-toggle-read-only km global-map)
+;;
+;;     km)
+;;   "The keymap used in `matlab-ts-mode'.")
+
 ;;; matlab-ts-mode
 
 ;;;###autoload
@@ -1559,18 +1632,31 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; See: tests/test-matlab-ts-mode-show-paren.el
     (setq-local show-paren-data-function #'matlab-ts-mode--show-paren-or-block)
 
-    ;; TODO add sweep font-lock and indent tests
-    ;;
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
+    ;;      - will need to update matlab-shell.el to either use matlab.el or matlab-ts-mode.el
     ;;
-    ;; TODO in file with: % other stuff (print "hello")
-    ;;      typing the last ")" results in Mismatched parentheses
+    ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
+    ;;      think it was missing a few toolboxes.
+    ;; 
+    ;; TODO double check t-utils.el help, extract the help and put in treesit how to
+    ;;
+    ;; TODO rx use bos eos also in tests
+    ;;
+    ;; TODO builtin face for nargin, nargout
+    ;;      function [o1,o2]=foo_nargin(i1,i2)
+    ;;          nargin
+    ;;          nargout
+    ;;      end
+    ;;
+    ;; TODO double check indent rules to see if they can be simplified
+    ;; TODO update --indent-rules to have See: test file comments.
 
     (treesit-major-mode-setup)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
-    ;; s-expression matching using parenthesis. This fix is need for our tests were we need
-    ;; to evaluate (t-utils-NAME ....) expressions from within comments using C-x C-e.
+    ;; s-expression matching using parenthesis. This fix is need for our tests work. We need
+    ;; to evaluate (t-utils-NAME ....) expressions from within comments using C-x C-e and this
+    ;; leverages forward-sexp to match up the parentheses.
     (setq-local forward-sexp-function #'matlab-ts-mode--forward-sexp)
     ))
 

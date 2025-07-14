@@ -48,7 +48,7 @@ after validating it, rename it to
         (matlab-ts-mode--indent-assert t))
 
     (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-font-lock))
+      (cl-return-from test-matlab-ts-mode-indent))
 
     (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$"
                                       "_expected\\.m$" ;; skip our *_expected.m baselines
