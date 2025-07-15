@@ -59,7 +59,7 @@ after validating it, rename it to
     (when (not (t-utils-is-treesit-available 'matlab test-name))
       (cl-return-from test-matlab-ts-mode-fill-paragraph))
 
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+    (let ((m-files (t-utils-get-files test-name "\\.m\\'" nil
                                       test-matlab-ts-mode-fill-paragraph--file)))
       (t-utils-test-xr test-name m-files))))
 

@@ -55,7 +55,8 @@ after validating it, rename it to
 
   (let ((test-name "test-matlab-ts-mode-indent"))
     (when (t-utils-is-treesit-available 'matlab test-name)
-      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'"
+      (let ((m-files (t-utils-get-files test-name
+                                        "\\.m\\'"
                                         "_expected\\.m\\'" ;; skip our *_expected.m baselines
                                         test-matlab-ts-mode-indent--file))
             (line-manipulator (lambda ()

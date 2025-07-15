@@ -54,7 +54,7 @@ after validating it, rename it to
 
   (let ((test-name "test-matlab-ts-mode-syntax-table"))
     (when (t-utils-is-treesit-available 'matlab test-name)
-      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+      (let ((m-files (t-utils-get-files test-name "\\.m\\'" nil
                                         test-matlab-ts-mode-syntax-table--file)))
         (t-utils-test-syntax-table test-name m-files)))))
 

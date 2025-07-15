@@ -57,7 +57,7 @@ after validating it, rename it to
   (let ((test-name "test-matlab-ts-mode-font-lock"))
     (when (t-utils-is-treesit-available 'matlab test-name)
       (let* ((matlab-ts-mode-font-lock-level 4)
-             (m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+             (m-files (t-utils-get-files test-name "\\.m\\'" nil
                                          test-matlab-ts-mode-font-lock--file))
              (code-to-face '(
                              ("!" . matlab-ts-mode-system-command-face)

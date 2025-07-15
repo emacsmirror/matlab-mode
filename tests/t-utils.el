@@ -55,24 +55,30 @@
   (let ((delete-trailing-lines t))
     (delete-trailing-whitespace (point-min) (point-max))))
 
-(defun t-utils-get-files (subdir base-regexp &optional skip-regexp file-to-use)
-  "Return list of full paths, /path/to/SUBDIR/FILE.
-The FILE basenames returned match BASE-REGEXP.
-Files matching optional SKIP-REGEXP are ignored.
-Optional FILE-TO-USE narrow the list of full paths to that file
-and the result is a list of one file.
+(defun t-utils-get-files (test-name base-regexp &optional skip-regexp file-to-use)
+  "Return list of full paths, /path/to/TEST-NAME-files/FILE.
+The basename of each returned file matches BASE-REGEXP and not optional
+SKIP-REGEXP.  Optional FILE-TO-USE narrow the list of full paths to that
+file and the result is a list of one file.
+
+TEST-NAME is used to locate the TEST-NAME-files directory.
 
 For example,
-  (t-utils-get-files \"test-LANGUAGE-ts-mode-files\"
-                     \"\\\\.lang\\\\\\='\" \"_expected\\\\.lang\\\\\\='\" file-to-use)
-will return a list of /path/to/test-NAME/*.lang files, skipping
-all *_expected.lang files when file-to-use is nil."
+  (t-utils-get-files \"test-LANGUAGE-ts-mode-indent\"
+                     \"\\\\.lang\\\\\\='\" \"_expected\\\\.lang\\\\\\='\" nil)
+will return a list of files matching glob
+   /abs/path/to/test-LANGUAGE-ts-mode-indent-files/*.lang
+skipping all *_expected.lang files."
 
-  (let ((files (cl-delete-if (lambda (file)
-                               (and skip-regexp
-                                    (string-match skip-regexp file)))
-                             (directory-files subdir t base-regexp))))
+  (let* ((test-file (or (symbol-file (intern test-name))
+                        (error "Failed to locate test file for test-name, %s" test-name)))
+         (files-dir (replace-regexp-in-string "\\.el\\'" "-files" test-file))
+         (files (cl-delete-if (lambda (file)
+                                (and skip-regexp
+                                     (string-match skip-regexp file)))
+                              (directory-files files-dir t base-regexp))))
     (when file-to-use
+      ;; Narrow result to (list (file-truename (file-to-use)))
       (let ((true-file-to-use (file-truename file-to-use)))
         (when (not (member true-file-to-use files))
           (if (file-exists-p true-file-to-use)
@@ -80,7 +86,8 @@ all *_expected.lang files when file-to-use is nil."
 It should be one of %S" file-to-use true-file-to-use files)
             (error "File %s does not exist" file-to-use)))
         (setq files (list true-file-to-use))))
-    files))
+    ;; Sorted result
+    (sort files)))
 
 (defun t-utils-is-treesit-available (language test-name)
   "Is tree-sitter ready for LANGUAGE?
@@ -110,7 +117,7 @@ name as the test file.  These test names are then run using `ert'."
     (setq match "^test-.*\\.el\\'"))
 
   (let ((tests '()))
-    
+
     (dolist (test-file (directory-files "." t match))
       (when (not (load-file test-file))
         (error "Failed to load %s" test-file))
@@ -515,7 +522,7 @@ TODO should example test setup, see t-utils-test-font-lock."
                         ;; elisp--eval-last-sexp-print-value locally during this eval.
                         (advice-add #'elisp--eval-last-sexp-print-value :override
                                     #'t-utils--eval-sexp-print-advice)
-                        
+
                         (eval-last-sexp nil)
                         (setq got (concat got t-utils--xr-impl-result)
                               t-utils--xr-impl-result-active nil
@@ -525,7 +532,7 @@ TODO should example test setup, see t-utils-test-font-lock."
                             t-utils--xr-impl-result nil)
                       (advice-remove #'elisp--eval-last-sexp-print-value
                                      #'t-utils--eval-sexp-print-advice)))
-                  
+
                   ;; look for next (t-utils-xr COMMANDS)
                   (goto-char xr-end-point)))
             (error
@@ -545,6 +552,27 @@ TODO should example test setup, see t-utils-test-font-lock."
     ;; Validate t-utils-test-xr result
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
+
+(defun t-utils--test-font-lock-error-at-pos (lang-file
+                                             got got-file expected expected-file code-to-face)
+  "Get error that includes the the position of the first font face difference.
+See `t-utils-test-font-lock' for
+LANG-FILE GOT GOT-FILE EXPECTED EXPECTED-FILE CODE-TO-FACE."
+
+  (let* ((diff-idx (1- (compare-strings got nil nil expected
+                                        nil nil)))
+         (got-code (substring got diff-idx (1+ diff-idx)))
+         (got-face (cdr (assoc got-code code-to-face)))
+         (expected-code (substring expected diff-idx (1+ diff-idx)))
+         (expected-face (cdr (assoc expected-code code-to-face))))
+    (list (format "Baseline for %s does not match" lang-file)
+          (format "Got: %s" got-file)
+          (format "Expected: %s" expected-file)
+          (format "Difference at column %d: \
+got code-to-face (\"%s\" . %S), expected code-to-face (\"%s\" . %S)"
+                  diff-idx
+                  got-code got-face
+                  expected-code expected-face))))
 
 (defun t-utils-test-font-lock (test-name lang-files code-to-face)
   "Test font-lock using on each lang-file in LANG-FILES list.
@@ -667,22 +695,11 @@ To debug a specific font-lock test file
                     lang-file got got-file expected expected-file
                     (lambda (lang-file got got-file expected expected-file)
                       (when (= (length got) (length expected))
-                        (let* ((diff-idx (1- (compare-strings got nil nil expected
-                                                              nil nil)))
-                               (got-code (substring got diff-idx (1+ diff-idx)))
-                               (got-face (cdr (assoc got-code code-to-face)))
-                               (expected-code (substring expected diff-idx (1+ diff-idx)))
-                               (expected-face (cdr (assoc expected-code code-to-face))))
-                          (list (format "Baseline for %s does not match" lang-file)
-                                (format "Got: %s" got-file)
-                                (format "Expected: %s" expected-file)
-                                (format "Difference at column %d: \
-got code-to-face (\"%s\" . %S), expected code-to-face (\"%s\" . %S)"
-                                        diff-idx
-                                        got-code got-face
-                                        expected-code expected-face))))))))
+                        (t-utils--test-font-lock-error-at-pos
+                         lang-file got got-file expected expected-file code-to-face))))))
               (when error-msg
                 (push error-msg error-msgs)))))))
+
     ;; Validate t-utils-test-font-lock result
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
@@ -795,7 +812,7 @@ Two methods are used to indent each file in LANG-FILES,
     In the typing buffer, each line is indented via
     `indent-for-tab-command' and blank lines are inserted by calling
     `newline'.`
-    
+
 Example test setup:
 
   ./LANGUAGE-ts-mode.el
