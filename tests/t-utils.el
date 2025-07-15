@@ -559,16 +559,16 @@ TODO should example test setup, see t-utils-test-font-lock."
 See `t-utils-test-font-lock' for
 LANG-FILE GOT GOT-FILE EXPECTED EXPECTED-FILE CODE-TO-FACE."
 
-  (let* ((diff-idx (1- (compare-strings got nil nil expected
-                                        nil nil)))
-         (got-code (substring got diff-idx (1+ diff-idx)))
+  (let* ((diff-idx (abs (compare-strings got nil nil
+                                         expected nil nil)))
+         (got-code (substring got (1- diff-idx) diff-idx))
          (got-face (cdr (assoc got-code code-to-face)))
-         (expected-code (substring expected diff-idx (1+ diff-idx)))
+         (expected-code (substring expected (1- diff-idx) diff-idx))
          (expected-face (cdr (assoc expected-code code-to-face))))
     (list (format "Baseline for %s does not match" lang-file)
           (format "Got: %s" got-file)
           (format "Expected: %s" expected-file)
-          (format "Difference at column %d: \
+          (format "Difference at point %d: \
 got code-to-face (\"%s\" . %S), expected code-to-face (\"%s\" . %S)"
                   diff-idx
                   got-code got-face
