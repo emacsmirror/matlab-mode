@@ -30,13 +30,22 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-on-save-fixes (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-on-save-fixes-files/NAME.m.
-Using ./test-matlab-ts-mode-on-save-fixes-files/NAME.m, compare defun
-movement against
-./test-matlab-ts-mode-on-save-fixes-files/NAME_expected.org.  If M-FILE is
-not provided, loop comparing all
-./test-matlab-ts-mode-on-save-fixes-files/NAME.m files.
+(defvar test-matlab-ts-mode-on-save-fixes--file nil)
+
+(defun test-matlab-ts-mode-on-save-fixes--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-on-save-fixes--file \"test-matlab-ts-mode-on-save-fixes-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-on-save-fixes--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-on-save-fixes")))
+
+(ert-deftest test-matlab-ts-mode-on-save-fixes ()
+  "Test fix of fcn name using ./test-matlab-ts-mode-on-save-fixes-files/NAME.m.
+Using ./test-matlab-ts-mode-on-save-fixes-files/NAME.m, set the
+buffer name to \"tmp__NAME.m\" and validate
+`matlab-ts-mode-on-save-fix-name' returns expected result found in
+./test-matlab-ts-mode-on-save-fixes-files/NAME_expected.org.  This loops
+on all ./test-matlab-ts-mode-on-save-fixes-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-on-save-fixes-files/NAME.m
@@ -46,13 +55,10 @@ after validating it, rename it to
   ./test-matlab-ts-mode-on-save-fixes-files/NAME_expected.org"
 
   (let ((test-name "test-matlab-ts-mode-on-save-fixes"))
-
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-on-save-fixes))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-xr test-name m-files)))
-    "success")
+    (when (t-utils-is-treesit-available 'matlab test-name)
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                        test-matlab-ts-mode-on-save-fixes--file)))
+        (t-utils-test-xr test-name m-files)))))
 
 (provide 'test-matlab-ts-mode-on-save-fixes)
 ;;; test-matlab-ts-mode-on-save-fixes.el ends here

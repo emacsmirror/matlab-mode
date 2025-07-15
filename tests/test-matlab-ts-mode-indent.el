@@ -30,12 +30,21 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-indent (&optional m-file)
+(defvar test-matlab-ts-mode-indent--file nil)
+
+(defun test-matlab-ts-mode-indent--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-indent--file \"test-matlab-ts-mode-indent-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-indent--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-indent")))
+
+(ert-deftest test-matlab-ts-mode-indent ()
   "Test indent using ./test-matlab-ts-mode-indent-files/NAME.m.
 Compare indent of ./test-matlab-ts-mode-indent-files/NAME.m against
 ./test-matlab-ts-mode-indent-files/NAME_expected.m.  Indent is done two
-ways as described in `t-utils-test-indent'.  If M-FILE is not provided,
-loop comparing all ./test-matlab-ts-mode-indent-files/NAME.m files.
+ways as described in `t-utils-test-indent'.  This loops
+on all ./test-matlab-ts-mode-indent-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-indent-files/NAME.m
@@ -44,28 +53,23 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-indent-files/NAME_expected.m"
 
-  (let ((test-name "test-matlab-ts-mode-indent")
-        (matlab-ts-mode--indent-assert t))
+  (let ((test-name "test-matlab-ts-mode-indent"))
+    (when (t-utils-is-treesit-available 'matlab test-name)
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'"
+                                        "_expected\\.m\\'" ;; skip our *_expected.m baselines
+                                        test-matlab-ts-mode-indent--file))
+            (line-manipulator (lambda ()
+                                ;; Workaround
+                                ;; https://github.com/acristoffers/tree-sitter-matlab/issues/32
+                                (goto-char (point-min))
+                                (while (not (eobp))
+                                  (let* ((node   (treesit-node-at (point)))
+                                         (parent (and node (treesit-node-parent node))))
+                                    (when (string= (treesit-node-type parent) "ERROR")
+                                      (insert " ")))
+                                  (forward-line)))))
 
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-indent))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$"
-                                      "_expected\\.m$" ;; skip our *_expected.m baselines
-                                      m-file))
-          (line-manipulator (lambda ()
-                              ;; Workaround
-                              ;; https://github.com/acristoffers/tree-sitter-matlab/issues/32
-                              (goto-char (point-min))
-                              (while (not (eobp))
-                                (let* ((node   (treesit-node-at (point)))
-                                       (parent (and node (treesit-node-parent node))))
-                                  (when (string= (treesit-node-type parent) "ERROR")
-                                    (insert " ")))
-                                (forward-line)))))
-
-      (t-utils-test-indent test-name m-files line-manipulator)))
-    "success")
+        (t-utils-test-indent test-name m-files line-manipulator)))))
 
 (provide 'test-matlab-ts-mode-indent)
 ;;; test-matlab-ts-mode-indent.el ends here

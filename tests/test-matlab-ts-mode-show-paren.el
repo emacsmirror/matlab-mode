@@ -30,10 +30,19 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-show-paren (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-show-paren-files/NAME.m.
-Using ./test-matlab-ts-mode-show-paren-files/NAME.m, compare defun
-movement against
+(defvar test-matlab-ts-mode-show-paren--file nil)
+
+(defun test-matlab-ts-mode-show-paren--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-show-paren--file \"test-matlab-ts-mode-show-paren-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-show-paren--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-show-paren")))
+
+(ert-deftest test-matlab-ts-mode-show-paren ()
+  "Test show paren mode using ./test-matlab-ts-mode-show-paren-files/NAME.m.
+Using ./test-matlab-ts-mode-show-paren-files/NAME.m, result of
+`matlab-ts-mode--show-paren-or-block' for `show-paren-mode' against
 ./test-matlab-ts-mode-show-paren-files/NAME_expected.org.  If M-FILE is
 not provided, loop comparing all
 ./test-matlab-ts-mode-show-paren-files/NAME.m files.
@@ -46,13 +55,11 @@ after validating it, rename it to
   ./test-matlab-ts-mode-show-paren-files/NAME_expected.org"
 
   (let ((test-name "test-matlab-ts-mode-show-paren"))
+    (when (t-utils-is-treesit-available 'matlab test-name)
 
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-show-paren))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-xr test-name m-files)))
-    "success")
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                        test-matlab-ts-mode-show-paren--file)))
+        (t-utils-test-xr test-name m-files)))))
 
 (provide 'test-matlab-ts-mode-show-paren)
 ;;; test-matlab-ts-mode-show-paren.el ends here

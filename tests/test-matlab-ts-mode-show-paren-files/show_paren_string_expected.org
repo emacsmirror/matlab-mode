@@ -180,50 +180,75 @@
 
 * Executing commands from show_paren_string.m:22:2:
 
-  (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)))
+  (t-utils-xr (re-search-forward "-end-quote") (kill-line) (re-search-backward "<") "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)) "C-e" (insert (char-to-string 34)))
 
-- Invoking      : (re-search-forward "<")
-  Start point   :  801
-  Moved to point:  809
-  : 23:7: s5 = "<asdf
-  :              ^
+- Invoking      : (re-search-forward "-end-quote")
+  Start point   :  876
+  Moved to point:  898
+  : 23:21: s5 = "<asdf-end-quote"
+  :                             ^
   No buffer modifications
 
-- Invoking      : "C-b" = backward-char
-  Start point   :  809
-  Moved to point:  808
-  : 23:6: s5 = "<asdf
+- Invoking      : (kill-line)
+  Start point   :  898
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -20,6 +20,6 @@
+ s4 = "<foo ' bar>";
+ 
+ % (t-utils-xr (re-search-forward "-end-quote") (kill-line) (re-search-backward "<") "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)) "C-e" (insert (char-to-string 34)))
+-s5 = "<asdf-end-quote"
++s5 = "<asdf-end-quote
+ 
+ % comment with a (") for s5.
+  #+end_src diff
+
+- Invoking      : (re-search-backward "<")
+  Start point   :  898
+  Moved to point:  883
+  : 23:6: s5 = "<asdf-end-quote
   :             ^
   No buffer modifications
 
 - Invoking      : "C-b" = backward-char
-  Start point   :  808
-  Moved to point:  807
-  : 23:5: s5 = "<asdf
+  Start point   :  883
+  Moved to point:  882
+  : 23:5: s5 = "<asdf-end-quote
   :            ^
   No buffer modifications
 
 - Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
-  Start point   :  807
+  Start point   :  882
   No point movement
   standard-output:
-    (807 808 nil nil t)
+    (882 883 nil nil t)
   No buffer modifications
 
-* Executing commands from show_paren_string.m:25:2:
-
-  (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
-
-- Invoking      : (re-search-forward ">")
-  Start point   :  899
-  Moved to point:  910
-  : 26:10: s6 = asdf>"
-  :                  ^
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  882
+  Moved to point:  898
+  : 23:21: s5 = "<asdf-end-quote
+  :                             ^
   No buffer modifications
 
-- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
-  Start point   :  910
-  No point movement
-  standard-output:
-    (910 911 nil nil t)
-  No buffer modifications
+- Invoking      : (insert (char-to-string 34))
+  Start point   :  898
+  Moved to point:  899
+  : 23:22: s5 = "<asdf-end-quote"
+  :                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -20,6 +20,6 @@
+ s4 = "<foo ' bar>";
+ 
+ % (t-utils-xr (re-search-forward "-end-quote") (kill-line) (re-search-backward "<") "C-b" (prin1 (matlab-ts-mode--show-paren-or-block)) "C-e" (insert (char-to-string 34)))
+-s5 = "<asdf-end-quote
++s5 = "<asdf-end-quote"
+ 
+ % comment with a (") for s5.
+  #+end_src diff

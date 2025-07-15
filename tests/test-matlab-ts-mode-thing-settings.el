@@ -30,13 +30,22 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-thing-settings (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-thing-settings-files/NAME.m.
-Using ./test-matlab-ts-mode-thing-settings-files/NAME.m, compare defun
-movement against
-./test-matlab-ts-mode-thing-settings-files/NAME_expected.org.  If M-FILE is
-not provided, loop comparing all
-./test-matlab-ts-mode-thing-settings-files/NAME.m files.
+(defvar test-matlab-ts-mode-thing-settings--file nil)
+
+(defun test-matlab-ts-mode-thing-settings--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-thing-settings--file
+      \"test-matlab-ts-mode-thing-settings-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-thing-settings--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-thing-settings")))
+
+(ert-deftest test-matlab-ts-mode-thing-settings ()
+  "Test thing settings using ./test-matlab-ts-mode-thing-settings-files/NAME.m.
+Using ./test-matlab-ts-mode-thing-settings-files/NAME.m, compare
+movement commands, e.g. `forward-sentace' that use treesit thing
+settings.  ./test-matlab-ts-mode-thing-settings-files/NAME_expected.org.
+This loops on all ./test-matlab-ts-mode-thing-settings-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-thing-settings-files/NAME.m
@@ -46,13 +55,10 @@ after validating it, rename it to
   ./test-matlab-ts-mode-thing-settings-files/NAME_expected.org"
 
   (let ((test-name "test-matlab-ts-mode-thing-settings"))
-
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-thing-settings))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-xr test-name m-files)))
-    "success")
+    (when (t-utils-is-treesit-available 'matlab test-name)
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                        test-matlab-ts-mode-thing-settings--file)))
+        (t-utils-test-xr test-name m-files)))))
 
 (provide 'test-matlab-ts-mode-thing-settings)
 ;;; test-matlab-ts-mode-thing-settings.el ends here

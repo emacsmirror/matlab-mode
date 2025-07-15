@@ -30,12 +30,20 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-imenu (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-imenu-files/NAME.m.
+(defvar test-matlab-ts-mode-imenu--file nil)
+
+(defun test-matlab-ts-mode-imenu--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-imenu--file \"test-matlab-ts-mode-imenu-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-imenu--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-imenu")))
+
+(ert-deftest test-matlab-ts-mode-imenu ()
+  "Test imenu using ./test-matlab-ts-mode-imenu-files/NAME.m.
 Using ./test-matlab-ts-mode-imenu-files/NAME.m, compare imenu results
-against ./test-matlab-ts-mode-imenu-files/NAME_expected.txt.  If M-FILE
-is not provided, loop comparing all
-./test-matlab-ts-mode-imenu-files/NAME.m files.
+against ./test-matlab-ts-mode-imenu-files/NAME_expected.txt.  This loops
+on all ./test-matlab-ts-mode-imenu-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-imenu-files/NAME.m
@@ -45,13 +53,10 @@ after validating it, rename it to
   ./test-matlab-ts-mode-imenu-files/NAME_expected.txt"
 
   (let ((test-name "test-matlab-ts-mode-imenu"))
-
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-imenu))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-imenu test-name m-files)))
-    "success")
+    (when (t-utils-is-treesit-available 'matlab test-name)
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                        test-matlab-ts-mode-imenu--file)))
+        (t-utils-test-imenu test-name m-files)))))
 
 (provide 'test-matlab-ts-mode-imenu)
 ;;; test-matlab-ts-mode-imenu.el ends here

@@ -1336,6 +1336,7 @@ Enable/disable `matlab-sections-minor-mode' based on file content."
 ;;; Electric Pair Mode, M-x electric-pair-mode
 
 (declare-function electric-pair-default-inhibit "elec-pair")
+
 (defun matlab-ts-mode--electric-pair-inhibit-predicate (char)
   "Return non-nil if `electric-pair-mode' should not pair this CHAR.
 Do not pair the transpose operator, (\\='), but pair it when used as a
@@ -1362,8 +1363,14 @@ single quote string."
 
        ;; Case: string delimiter
        ;;    double up if starting a new string => return nil
-       ((string= "'" type-back1)
-        (not (string= "string" (treesit-node-type (treesit-node-parent node-back1)))))
+       ((string= "'" type-back1 )
+        (let ((parent-back1-type (treesit-node-type (treesit-node-parent node-back1))))
+          ;; When we type
+          ;;   s = '
+          ;; we'll get a syntax error from the parse-tree.  Older versions of the
+          ;; matlab tree-sitter would return string so we keep that condition.
+          (not (or (string= "ERROR" parent-back1-type)
+                   (string= "string" parent-back1-type)))))
 
        ;; Case: inside a single quote string
        ;;    s = 'foobar'

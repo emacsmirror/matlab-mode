@@ -83,7 +83,7 @@
   (when (not (eq system-type 'windows-nt))
     (metest-fill-paragraph))
 
-  ;; test-*.el
+  ;; Run test-*.el. t-utils-run must be last because it will exit emacs when noninteractive.
   (when (>= emacs-major-version 30) ;; TODO - should we eliminate this version check?
     (t-utils-run)))
 

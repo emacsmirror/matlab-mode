@@ -30,13 +30,21 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-page (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-page-files/NAME.m.
-Using ./test-matlab-ts-mode-page-files/NAME.m, compare comment
-keybindings against
-./test-matlab-ts-mode-page-files/NAME_expected.org.  If M-FILE is
-not provided, loop comparing all
-./test-matlab-ts-mode-page-files/NAME.m files.
+(defvar test-matlab-ts-mode-page--file nil)
+
+(defun test-matlab-ts-mode-page--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-page--file \"test-matlab-ts-mode-page-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-page--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-page")))
+
+(ert-deftest test-matlab-ts-mode-page ()
+  "Test page movement using ./test-matlab-ts-mode-page-files/NAME.m.
+Using ./test-matlab-ts-mode-page-files/NAME.m, compare `forward-page'
+and `backward-page' against
+./test-matlab-ts-mode-page-files/NAME_expected.org.  This loops
+on all ./test-matlab-ts-mode-page-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-page-files/NAME.m
@@ -46,13 +54,10 @@ after validating it, rename it to
   ./test-matlab-ts-mode-page-files/NAME_expected.org"
 
   (let ((test-name "test-matlab-ts-mode-page"))
-
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-page))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-xr test-name m-files)))
-    "success")
+    (when (t-utils-is-treesit-available 'matlab test-name)
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                        test-matlab-ts-mode-page--file)))
+        (t-utils-test-xr test-name m-files)))))
 
 (provide 'test-matlab-ts-mode-page)
 ;;; test-matlab-ts-mode-page.el ends here

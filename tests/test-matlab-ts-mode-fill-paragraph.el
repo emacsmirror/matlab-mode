@@ -30,13 +30,22 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-fill-paragraph (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-fill-paragraph-files/NAME.m.
-Using ./test-matlab-ts-mode-fill-paragraph-files/NAME.m, compare comment
-keybindings against
-./test-matlab-ts-mode-fill-paragraph-files/NAME_expected.org.  If M-FILE is
-not provided, loop comparing all
-./test-matlab-ts-mode-fill-paragraph-files/NAME.m files.
+(defvar test-matlab-ts-mode-fill-paragraph--file nil)
+
+(defun test-matlab-ts-mode-fill-paragraph--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-fill-paragraph--file
+       \"test-matlab-ts-mode-fill-paragraph-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-fill-paragraph--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-fill-paragraph")))
+
+(ert-deftest test-matlab-ts-mode-fill-paragraph ()
+  "Test fill paragraph using ./test-matlab-ts-mode-fill-paragraph-files/NAME.m.
+Using ./test-matlab-ts-mode-fill-paragraph-files/NAME.m, run
+`fill-paragraph' and compare result against
+./test-matlab-ts-mode-fill-paragraph-files/NAME_expected.org.  This loops
+on all ./test-matlab-ts-mode-comments-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-fill-paragraph-files/NAME.m
@@ -50,9 +59,9 @@ after validating it, rename it to
     (when (not (t-utils-is-treesit-available 'matlab test-name))
       (cl-return-from test-matlab-ts-mode-fill-paragraph))
 
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-xr test-name m-files)))
-    "success")
+    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                      test-matlab-ts-mode-fill-paragraph--file)))
+      (t-utils-test-xr test-name m-files))))
 
 (provide 'test-matlab-ts-mode-fill-paragraph)
 ;;; test-matlab-ts-mode-fill-paragraph.el ends here

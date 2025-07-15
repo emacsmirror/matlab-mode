@@ -28,13 +28,22 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-syntax-table (&optional m-file)
+(defvar test-matlab-ts-mode-syntax-table--file nil)
+
+(defun test-matlab-ts-mode-syntax-table--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-syntax-table--file \"test-matlab-ts-mode-syntax-table-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-syntax-table--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-syntax-table")))
+
+(ert-deftest test-matlab-ts-mode-syntax-table ()
   "Test syntax-table using ./test-matlab-ts-mode-syntax-table-files/NAME.m.
 Compare ./test-matlab-ts-mode-syntax-table-files/NAME.m against
 ./test-matlab-ts-mode-syntax-table-files/NAME_expected.txt, where
-NAME_expected.txt gives the `syntax-ppss` value of each character in
-NAME.m.  If M-FILE is not provided, loop comparing all
-./test-matlab-ts-mode-indent-files/NAME.m files.
+NAME_expected.txt gives the `syntax-ppss' value of each character in
+NAME.m.  This loops on all ./test-matlab-ts-mode-syntax-table-files/NAME.m
+files.
 
 To add a test, create
   ./test-matlab-ts-mode-syntax-table-files/NAME.m
@@ -44,13 +53,10 @@ after validating it, rename it to
   ./test-matlab-ts-mode-syntax-table-files/NAME_expected.m"
 
   (let ((test-name "test-matlab-ts-mode-syntax-table"))
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-syntax-table))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-syntax-table test-name m-files)))
-
-  "success")
+    (when (t-utils-is-treesit-available 'matlab test-name)
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                        test-matlab-ts-mode-syntax-table--file)))
+        (t-utils-test-syntax-table test-name m-files)))))
 
 (provide 'test-matlab-ts-mode-syntax-table)
 ;;; test-matlab-ts-mode-syntax-table.el ends here

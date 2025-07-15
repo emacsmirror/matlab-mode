@@ -30,13 +30,21 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-electric-pair (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-electric-pair-files/NAME.m.
-Using ./test-matlab-ts-mode-electric-pair-files/NAME.m, compare defun
-movement against
-./test-matlab-ts-mode-electric-pair-files/NAME_expected.org.  If M-FILE is
-not provided, loop comparing all
-./test-matlab-ts-mode-electric-pair-files/NAME.m files.
+(defvar test-matlab-ts-mode-electric-pair--file nil)
+
+(defun test-matlab-ts-mode-electric-pair--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-electric-pair--file \"test-matlab-ts-mode-electric-pair-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-electric-pair--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-electric-pair")))
+
+(ert-deftest test-matlab-ts-mode-electric-pair ()
+  "Test electric pair using ./test-matlab-ts-mode-electric-pair-files/NAME.m.
+Using ./test-matlab-ts-mode-electric-pair-files/NAME.m, run
+`matlab-ts-mode--electric-pair-inhibit-predicate' compare result against
+./test-matlab-ts-mode-electric-pair-files/NAME_expected.org.  This loops
+on all ./test-matlab-ts-mode-comments-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-electric-pair-files/NAME.m
@@ -46,13 +54,10 @@ after validating it, rename it to
   ./test-matlab-ts-mode-electric-pair-files/NAME_expected.org"
 
   (let ((test-name "test-matlab-ts-mode-electric-pair"))
-
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-electric-pair))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-xr test-name m-files)))
-    "success")
+    (when (t-utils-is-treesit-available 'matlab test-name)
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                        test-matlab-ts-mode-electric-pair--file)))
+        (t-utils-test-xr test-name m-files)))))
 
 (provide 'test-matlab-ts-mode-electric-pair)
 ;;; test-matlab-ts-mode-electric-pair.el ends here

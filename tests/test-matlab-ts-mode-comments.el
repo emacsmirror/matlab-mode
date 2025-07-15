@@ -30,13 +30,21 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
-(cl-defun test-matlab-ts-mode-comments (&optional m-file)
-  "Test defun movement using ./test-matlab-ts-mode-comments-files/NAME.m.
+(defvar test-matlab-ts-mode-comments--file nil)
+
+(defun test-matlab-ts-mode-comments--file (m-file)
+  "Test an individual M-FILE.
+This is provided for debugging.
+  M-: (test-matlab-ts-mode-comments--file \"test-matlab-ts-mode-comments-files/M-FILE\")"
+  (let ((test-matlab-ts-mode-comments--file m-file))
+    (ert-run-tests-interactively "test-matlab-ts-mode-comments")))
+
+(ert-deftest test-matlab-ts-mode-comments ()
+  "Test comments using ./test-matlab-ts-mode-comments-files/NAME.m.
 Using ./test-matlab-ts-mode-comments-files/NAME.m, compare comment
-keybindings against
-./test-matlab-ts-mode-comments-files/NAME_expected.org.  If M-FILE is
-not provided, loop comparing all
-./test-matlab-ts-mode-comments-files/NAME.m files.
+key bindings against
+./test-matlab-ts-mode-comments-files/NAME_expected.org.  This loops
+on all ./test-matlab-ts-mode-comments-files/NAME.m files.
 
 To add a test, create
   ./test-matlab-ts-mode-comments-files/NAME.m
@@ -46,13 +54,10 @@ after validating it, rename it to
   ./test-matlab-ts-mode-comments-files/NAME_expected.org"
 
   (let ((test-name "test-matlab-ts-mode-comments"))
-
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from test-matlab-ts-mode-comments))
-
-    (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m$" nil m-file)))
-      (t-utils-test-xr test-name m-files)))
-    "success")
+    (when (t-utils-is-treesit-available 'matlab test-name)
+      (let ((m-files (t-utils-get-files (concat test-name "-files") "\\.m\\'" nil
+                                        test-matlab-ts-mode-comments--file)))
+        (t-utils-test-xr test-name m-files)))))
 
 (provide 'test-matlab-ts-mode-comments)
 ;;; test-matlab-ts-mode-comments.el ends here
