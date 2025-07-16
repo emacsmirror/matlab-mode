@@ -246,7 +246,7 @@ as comments which is how they are treated by MATLAB."
       ;; Tell Emacs that ellipsis (...) line continuations are comments.
       (while (and (not (>= (point) (or end (point-max)))) (not (eobp)))
         (if (treesit-search-forward-goto (treesit-node-at (point))
-                                         (rx bol "line_continuation" eol)
+                                         (rx bos "line_continuation" eos)
                                          t) ;; goto start of: ... optional text
 	    (matlab-ts-mode--put-char-category (point) 'matlab-ts-mode--ellipsis-syntax)
           (goto-char (point-max)))))))
@@ -359,7 +359,7 @@ help doc comment."
 
   (let ((prev-node (treesit-node-prev-sibling comment-node)))
     (when prev-node
-      (while (string-match-p (rx bol "line_continuation" eol)
+      (while (string-match-p (rx bos "line_continuation" eos)
 			     (treesit-node-type prev-node))
         (setq prev-node (treesit-node-prev-sibling prev-node)))
       (let ((prev-type (treesit-node-type prev-node)))
@@ -367,20 +367,20 @@ help doc comment."
         ;;    function foo          function foo(a)
         ;;    % doc comment         % doc comment
         ;;    end                   end
-        (when (or (string-match-p (rx bol (or
+        (when (or (string-match-p (rx bos (or
                                            "function_arguments" ;; function input args?
                                            "superclasses")      ;; subclass
-                                      eol)
+                                      eos)
                                   prev-type)
 	          (and (string= prev-type "identifier")           ;; id could be a fcn or class id
                        (let ((prev-sibling (treesit-node-prev-sibling prev-node)))
                          (and prev-sibling
 	                      (string-match-p
-                               (rx bol
+                               (rx bos
                                    (or "function"         ;; fcn wihtout in and out args
                                        "function_output"  ;; fcn w/out args and no in args
                                        "classdef")        ;; base class
-                                   eol)
+                                   eos)
                                (treesit-node-type prev-sibling))))))
           comment-node)))))
 
@@ -416,7 +416,7 @@ Similar behavior for classdef's."
 
   (setq comment-node (matlab-ts-mode--get-doc-comment-candidate comment-node))
   (when (and comment-node
-             (string-match-p (rx bol (or "function_definition" "class_definition") eol)
+             (string-match-p (rx bos (or "function_definition" "class_definition") eos)
                              (treesit-node-type parent)))
     (let ((definition-point (treesit-node-start parent)))
       (save-excursion
@@ -807,7 +807,7 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
         ;; matlab-ts-mode, otherwise leave matlab-ts--function-indent-level unchanged.
         (when (equal matlab-ts-mode--function-indent-level 'unset)
           (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level))
-      (let ((first-fcn (treesit-search-subtree root (rx bol "function_definition" eol))))
+      (let ((first-fcn (treesit-search-subtree root (rx bos "function_definition" eos))))
         (if (not first-fcn)
             ;; assume that if functions are added they will have ends
             (setq-local matlab-ts--function-indent-level t)
@@ -878,7 +878,7 @@ expression."
   `((matlab
 
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
-     ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+     ((parent-is ,(rx bos "source_file" eos)) column-0 0)
 
      ;; I-Rule: within a function/classdef doc block comment "%{ ... %}"?
      ((lambda (node parent bol &rest _)
@@ -917,135 +917,135 @@ expression."
       0)
 
      ;; I-Rule: switch case and otherwise statements
-     ((node-is ,(rx bol (or "case_clause" "otherwise_clause") eol))
+     ((node-is ,(rx bos (or "case_clause" "otherwise_clause") eos))
       parent ,matlab-ts-mode--switch-indent-level)
 
      ;; I-Rule: nested functions
-     ((n-p-gp ,(rx bol "function_definition" eol)
-              ,(rx bol "block" eol)
-              ,(rx bol "function_definition" eol))
+     ((n-p-gp ,(rx bos "function_definition" eos)
+              ,(rx bos "block" eos)
+              ,(rx bos "function_definition" eos))
       parent 0)
 
      ;; I-Rule: elseif, else, catch, end statements go back to parent level
-     ((node-is ,(rx bol (or "elseif_clause" "else_clause" "catch_clause" "end") eol)) parent 0)
+     ((node-is ,(rx bos (or "elseif_clause" "else_clause" "catch_clause" "end") eos)) parent 0)
 
      ;; I-Rule: first line of code witin a switch case or otherwise statement, node is block
-     ((parent-is ,(rx bol (or "switch_statement" "case_clause" "otherwise_clause") eol))
+     ((parent-is ,(rx bos (or "switch_statement" "case_clause" "otherwise_clause") eos))
       parent ,matlab-ts-mode--switch-indent-level)
 
      ;; I-Rule: function's
-     ((parent-is ,(rx bol "function_definition" eol))
+     ((parent-is ,(rx bos "function_definition" eos))
       parent ,#'matlab-ts-mode--set-function-indent-level)
 
      ;; I-Rule: constructs within classdef or function's.
-     ((node-is ,(rx bol (or "arguments_statement" "block" "enumeration" "enum" "methods" "events"
+     ((node-is ,(rx bos (or "arguments_statement" "block" "enumeration" "enum" "methods" "events"
                             "function_definition" "property" "properties")
-                    eol))
+                    eos))
       parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: items in blocks
-     ((n-p-gp nil ,(rx bol "property" eol) ,(rx bol "properties" eol))
+     ((n-p-gp nil ,(rx bos "property" eos) ,(rx bos "properties" eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: continuation of properties
-     ((n-p-gp nil nil ,(rx bol "property" eol))
+     ((n-p-gp nil nil ,(rx bos "property" eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: code in if, for, methods, arguments statements, etc.
-     ((parent-is ,(rx bol (or "if_statement" "for_statement" "while_statement"
+     ((parent-is ,(rx bos (or "if_statement" "for_statement" "while_statement"
                               "methods" "events" "enumeration"
                               "function_definition" "arguments_statement"
                               "properties")
-                      eol))
+                      eos))
       parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: function a<RET>
      ;;         end
-     ((n-p-gp nil ,(rx bol "\n" eol) ,(rx bol (or "function_definition") eol))
+     ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos (or "function_definition") eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: case 10<RET>
-     ((n-p-gp nil ,(rx bol "\n" eol) ,(rx bol (or "switch_statement" "case_clause"
+     ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos (or "switch_statement" "case_clause"
                                                   "otherwise_clause")
-                                          eol))
+                                          eos))
       grand-parent ,matlab-ts-mode--switch-indent-level)
 
      ;; I-Rule:  if condition1 || ...     |      if condition1 + condition2 == ...
      ;; <TAB>       condition2 || ...     |         2770000 ...
-     ((parent-is ,(rx bol (or "boolean_operator" "comparison_operator") eol)) parent 0)
+     ((parent-is ,(rx bos (or "boolean_operator" "comparison_operator") eos)) parent 0)
 
      ;; I-Rule:  elseif ...
      ;; <TAB>        condition2 || ...
-     ((parent-is ,(rx bol (or "else_clause" "elseif_clause") eol))
+     ((parent-is ,(rx bos (or "else_clause" "elseif_clause") eos))
       parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: if a ...
      ;; <TAB>
-     ((n-p-gp nil ,(rx bol "\n" eol)
-              ,(rx bol (or "if_statement" "else_clause" "elseif_clause" ) eol))
+     ((n-p-gp nil ,(rx bos "\n" eos)
+              ,(rx bos (or "if_statement" "else_clause" "elseif_clause" ) eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: disp(myMatrix(1:  ...
      ;; <TAB>                 end));
-     ((parent-is ,(rx bol "range" eol)) parent 0)
+     ((parent-is ,(rx bos "range" eos)) parent 0)
 
      ;; I-Rule: try<RET>    |   catch<RET>
-     ((parent-is ,(rx bol (or "try_statement" "catch_clause") eol))
+     ((parent-is ,(rx bos (or "try_statement" "catch_clause") eos))
       parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: function a
      ;;             x = 1;
      ;; <TAB>       y = 2;
-     ((parent-is ,(rx bol "block" eol)) parent 0)
+     ((parent-is ,(rx bos "block" eos)) parent 0)
 
      ;; I-Rule: "switch var" and we type RET after the var
-     (,(matlab-ts-mode--prev-real-line-is (rx bol "\n" eol) (rx bol "switch" eol))
+     (,(matlab-ts-mode--prev-real-line-is (rx bos "\n" eos) (rx bos "switch" eos))
       ,#'matlab-ts-mode--prev-real-line ,matlab-ts-mode--switch-indent-level)
 
      ;; I-Rule: "function foo()" and we type RET after the ")"
-     (,(matlab-ts-mode--prev-real-line-is nil (rx bol "function" eol))
+     (,(matlab-ts-mode--prev-real-line-is nil (rx bos "function" eos))
       ,#'matlab-ts-mode--prev-real-line ,matlab-ts-mode--indent-level)
 
      ;; I-Rule:  a = ...
      ;; <TAB>        1;
-     ((parent-is ,(rx bol "assignment" eol)) parent ,matlab-ts-mode--indent-level)
+     ((parent-is ,(rx bos "assignment" eos)) parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule:  a = 2 * ...
      ;; <TAB>        1;
-     ((parent-is ,(rx bol "binary_operator" eol)) parent 0)
+     ((parent-is ,(rx bos "binary_operator" eos)) parent 0)
 
      ;; I-Rule:  a = ( ...       |     a = [  ...     |     a = {    ...
      ;;               1 ...      |          1 ...     |            1 ...
      ;; <TAB>        );          |         ];         |         };
-     ((node-is ,(rx bol (or ")" "]" "}") eol)) parent 0)
+     ((node-is ,(rx bos (or ")" "]" "}") eos)) parent 0)
 
      ;; I-Rule:  a = ( ...
      ;; <TAB>         1 ...
-     ((parent-is ,(rx bol "parenthesis" eol)) parent 1)
+     ((parent-is ,(rx bos "parenthesis" eos)) parent 1)
 
      ;; I-Rule:  a = [   ...    |    a = { ...
      ;; <TAB>          2 ...    |          2 ...
-     ((parent-is ,(rx bol (or "matrix" "cell") eol)) parent ,matlab-ts-mode--array-indent-level)
+     ((parent-is ,(rx bos (or "matrix" "cell") eos)) parent ,matlab-ts-mode--array-indent-level)
 
      ;; I-Rule:  function [   ...              |    function name (   ...
      ;; <TAB>              a, ... % comment    |                   a, ... % comment
-     ((parent-is ,(rx bol (or "multioutput_variable" "function_arguments") eol)) parent 1)
+     ((parent-is ,(rx bos (or "multioutput_variable" "function_arguments") eos)) parent 1)
 
      ;; I-Rule:  a = [    2 ...       |   function a ...
      ;; <TAB>             1 ...       |            = fcn
-     ((parent-is ,(rx bol (or "row" "function_output") eol)) parent 0)
+     ((parent-is ,(rx bos (or "row" "function_output") eos)) parent 0)
 
      ;; I-Rule:  a = ...
      ;; <TAB>        1;
-     ((n-p-gp nil nil ,(rx bol "assignment" eol)) grand-parent ,matlab-ts-mode--indent-level)
+     ((n-p-gp nil nil ,(rx bos "assignment" eos)) grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule:  a = my_function(1, ...
      ;; <TAB>                    2, ...
-     ((parent-is ,(rx bol "arguments" eol)) parent 0)
+     ((parent-is ,(rx bos "arguments" eos)) parent 0)
 
      ;; I-Rule:  my_function( ...
      ;; <TAB>        1, ...
-     ((node-is ,(rx bol "arguments" eol)) parent ,matlab-ts-mode--indent-level)
+     ((node-is ,(rx bos "arguments" eos)) parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: function indent_tab_between_fcns   |   function indent_tab_in_fcn
      ;;         end                                |      disp('here')
@@ -1065,7 +1065,7 @@ expression."
      (no-node ,#'matlab-ts-mode--prev-real-line 0)
 
      ;; I-Rule: comments in classdef's
-     ((parent-is ,(rx bol "class_definition" eol)) parent ,matlab-ts-mode--indent-level)
+     ((parent-is ,(rx bos "class_definition" eos)) parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: comment after property:
      ;;         arguments
@@ -1107,8 +1107,8 @@ expression."
 
 (defvar matlab-ts-mode--thing-settings
   `((matlab
-     (defun ,(rx bol "function_definition" eol))
-     (sexp ,(rx bol (or "function_definition"
+     (defun ,(rx bos "function_definition" eos))
+     (sexp ,(rx bos (or "function_definition"
                         "arguments_statement"
 
                         ;; "property" of "arguments_statement" and "properties"
@@ -1163,9 +1163,9 @@ expression."
                         "enum"
 
                         "identifier")
-                eol))
+                eos))
 
-     (sentence ,(rx bol (or "function_definition"
+     (sentence ,(rx bos (or "function_definition"
                             "assignment"
                             "arguments_statement"
                             "for_statement"
@@ -1179,7 +1179,7 @@ expression."
                             "events"
                             "enumeration")))
 
-     (text ,(rx bol (or "comment" "string") eol))
+     (text ,(rx bos (or "comment" "string") eos))
 
      ))
   "Tree-sitter things for movement.")
@@ -1201,7 +1201,7 @@ by calling `forward-sexp-default-function'."
 (defun matlab-ts-mode--defun-name (node)
   "Return the defun name of NODE for Change Log entries."
     (when (string-match-p
-           (rx bol (or "function_definition" "class_definition") eol)
+           (rx bos (or "function_definition" "class_definition") eos)
            (treesit-node-type node))
       (treesit-node-text (treesit-node-child-by-field-name node "name"))))
 
@@ -1236,7 +1236,7 @@ This will return alist of functions and classes in the current buffer:
 
               ;; classdef get.propName or set.propName
               (when (and prev-type
-                         (string-match-p (rx bol (or "get." "set.") eol) prev-type))
+                         (string-match-p (rx bos (or "get." "set.") eos) prev-type))
                 (setq name (concat prev-type name)))
 
               ;; If nested function prefix with that by looking to parent
@@ -1256,7 +1256,7 @@ This will return alist of functions and classes in the current buffer:
   "Outline headings for `outline-minor-mode' with MATLAB.
 Returns t if tree-sitter NODE defines an outline heading."
   (let ((node-type (treesit-node-type node)))
-    (or (string-match-p (rx bol (or "function_definition" "class_definition") eol) node-type)
+    (or (string-match-p (rx bos (or "function_definition" "class_definition") eos) node-type)
         (and (string= "comment" node-type)
              (save-excursion
                (goto-char (treesit-node-start node))
@@ -1290,7 +1290,7 @@ If optional NO-PROMPT is t, fix the name if needed without prompting."
                (let ((child-type (treesit-node-type child)))
                  (cond
                   ;; Case: function_definition or class_definition
-                  ((string-match-p (rx bol (or "function_definition" "class_definition") eol)
+                  ((string-match-p (rx bos (or "function_definition" "class_definition") eos)
                                    child-type)
                    (let* ((def-name-node (treesit-node-child-by-field-name child "name"))
                           (def-name (treesit-node-text def-name-node))
@@ -1354,7 +1354,7 @@ single quote string."
            (type-back1 (treesit-node-type node-back1)))
       (cond
        ;; Case: in comment, return t if it looks like a transpose, e.g. A' or similar.
-       ((string-match-p (rx bol (or "comment" "line_continuation") eol) type-back1)
+       ((string-match-p (rx bos (or "comment" "line_continuation") eos) type-back1)
         (save-excursion
           (forward-char -1)
           (looking-at "\\w\\|\\s_\\|\\.")))
@@ -1451,7 +1451,7 @@ THERE-END MISMATCH) or nil."
                 (setq mismatch t))))
 
            ;; Case: on a "end" node or an inner block that should be matcheed with parent
-           ((and (string-match-p (rx bol (or "end" "elseif" "else" "case" "otherwise" "catch") eol)
+           ((and (string-match-p (rx bos (or "end" "elseif" "else" "case" "otherwise" "catch") eos)
                                  node-type)
                  ;; and we have a matching parent node
                  (progn

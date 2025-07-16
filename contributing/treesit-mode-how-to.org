@@ -531,11 +531,27 @@ We start with
 #+begin_src emacs-lisp
   (defvar LANGUAGE-ts-mode--indent-rules
     `((LANGUAGE
-       ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+       ((parent-is ,(rx bos "source_file" eos)) column-0 0)
        ,LANGUAGE-ts-mode--indent-assert-rule
        ))
     "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
 #+end_src
+
+Notice that we are using =(rx bos "source_file" eos)= instead of just "source_file" for our regular
+expression that is matched against the parent node.  If you use =M-x ielm= and type =(rx bos
+"source_file" eos)=, you see this results in the compiled regular expression ="\\`source_file\\'"=
+with the start of string and end of string specifiers. We could have typed that directly, but it is
+better to use the =rx= notation because it can produce more optimal regular expressions when you
+have more complex regular expressions.
+
+If you look at the definition of parent-is, you'll see it leverages =string-match-p= to do the
+matching against =(treesit-node-type parent-node)=.  Therefore, to be precise, we match using the
+start of the string, =bos=, and end of string, =eos=.  If your nodes are unique enough, you can
+leave off the =bos= and =eos=, but that could be troublesome if the grammar is updated. For example,
+suppose you have a "function" node and you match using =(parent-is "function")=, then the grammar is
+updated to have regular "function" nodes and "function2" nodes where you want to different font for
+"function2".  The =(parent-is "function")= will match both. Therefore, we recommend being precise
+when matching which will also give a slight boost in performance.
 
 We set
 
@@ -555,8 +571,8 @@ If we type =TAB= on the if a > 1 we'll see
 
  : -->N:#<treesit-node if_statement in 1-48> P:#<treesit-node source_file in 1-49> BOL:1 GP:nil NPS:nil
 
-This gives us our first rule, =((parent-is "source_file") column-0 0)= is the rule for the root
-node, which in our LANGUAGE is "source_file" and says to sart on column 0.
+This gives us our first rule, =((parent-is ,(rx bos "source_file" eos)) column-0 0)= is the rule for
+the root node, which in our LANGUAGE is "source_file" and says to sart on column 0.
 
 If we type  =TAB= on the "b = a * 2" line in the following =if_else.lang= file.
 we'll see in the =*Messages*= buffer we'll see in the =*Messages*= buffer:
@@ -564,22 +580,23 @@ we'll see in the =*Messages*= buffer we'll see in the =*Messages*= buffer:
  : -->N:#<treesit-node block in 14-24> P:#<treesit-node if_statement in 1-48> BOL:14 GP:#<treesit-node source_file in 1-49> NPS:#<treesit-node "
 
 where point 14-24 is "b = a * 2" and we see it has a node named "block". Thus, we update we add to
-our indent rules, =((node-is "block") parent 4)= and a couple more rules as shown below. Notice we
-included a comment before each rule, which will aid in the long-term maintance of the code. If the
-font-lock rules are complex, you may also want to add ";; F-Rule: description" comments to them.
+our indent rules, =((node-is ,(rx bos "block" eos)) parent 4)= and a couple more rules as shown
+below. Notice we included a comment before each rule, which will aid in the long-term maintance of
+the code. If the font-lock rules are complex, you may also want to add ";; F-Rule: description"
+comments to them.  I like using a commen prefix in the comments to make the standout and searchable.
 
 #+begin_src emacs-lisp
   (defvar LANGUAGE-ts-mode--indent-rules
     `((LANGUAGE
        ;; I-Rule: code at start of file is located at column 0
-       ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+       ((parent-is ,(rx bos "source_file" eos)) column-0 0)
        ;; I-Rule: if a > 1
        ;;   <TAB>    b = a * 2;
-       ((node-is ,(rx bol "block" eol)) parent 4)
+       ((node-is ,(rx bos "block" eos)) parent 4)
        ;; I-Rule: <TAB> else
-       ((node-is ,(rx bol "else_clause" eol)) parent 0)
+       ((node-is ,(rx bos "else_clause" eos)) parent 0)
        ;; I-Rule: <TAB> end
-       ((node-is ,(rx bol "end" eol)) parent 0)
+       ((node-is ,(rx bos "end" eos)) parent 0)
        ;; I-Rule: Assert if no rule hit
        ,LANGUAGE-ts-mode--indent-assert-rule
        ))
@@ -660,14 +677,14 @@ so we can combine them and also handle handle nested if-statements as shown belo
   (defvar LANGUAGE-ts-mode--indent-rules
     `((LANGUAGE
        ;; I-Rule: code at start of file is located at column 0
-       ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+       ((parent-is ,(rx bos "source_file" eos)) column-0 0)
        ;; I-Rule: if a > 1
        ;;   <TAB>    b = a * 2;
-       ((node-is ,(rx bol "block" eol)) parent 4)
+       ((node-is ,(rx bos "block" eos)) parent 4)
        ;; I-Rule: <TAB> if condition
        ;;         <TAB> else
        ;;         <TAB> end
-       ((node-is ,(rx bol (or "if_statement" "else_clause" "end") eol)) parent 0)
+       ((node-is ,(rx bos (or "if_statement" "else_clause" "end") eos)) parent 0)
 
        ;; I-Rule: Assert if no rule matched and asserts are enabled.
        ,LANGUAGE-ts-mode--indent-assert-rule
@@ -998,14 +1015,14 @@ This is good practice because these are fundamental to Emacs.
   (defvar LANGUAGE-ts-mode--indent-rules
     `((LANGUAGE
        ;; I-Rule: code at start of file is located at column 0
-       ((parent-is ,(rx bol "source_file" eol)) column-0 0)
+       ((parent-is ,(rx bos "source_file" eos)) column-0 0)
        ;; I-Rule: if a > 1
        ;;   <TAB>    b = a * 2;
-       ((node-is ,(rx bol "block" eol)) parent 4)
+       ((node-is ,(rx bos "block" eos)) parent 4)
        ;; I-Rule: <TAB> if condition
        ;;         <TAB> else
        ;;         <TAB> end
-       ((node-is ,(rx bol (or "if_statement" "else_clause" "end") eol)) parent 0)
+       ((node-is ,(rx bos (or "if_statement" "else_clause" "end") eos)) parent 0)
        ;; I-Rule: Assert if no rule hit
        ,LANGUAGE-ts-mode--indent-assert-rule
        ))
@@ -1236,8 +1253,8 @@ first two elements.  When name-fcn is nil the imenu names are generated the
 
 #+begin_src emacs-lisp
   (defvar LANGUAGE-ts-mode--imenu-settings
-    `(("Class" ,(rx bol "class_definition" eol))
-      ("Function" ,(rx bol "function_definition" eol)))
+    `(("Class" ,(rx bos "class_definition" eos))
+      ("Function" ,(rx bos "function_definition" eos)))
     "Tree-sitter imenu setttings.")
 
   ;; <snip>
