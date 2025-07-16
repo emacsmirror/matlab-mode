@@ -76,7 +76,7 @@ String CHECK-RESULT is what the MLint returned."
             mlint-out)))
     (cons valid mlint-out)))
 
-(cl-defun sweep-test-matlab-ts-mode-indent (&optional directory check-valid-parse)
+(defun sweep-test-matlab-ts-mode-indent (&optional directory check-valid-parse)
   "Use `matlab-ts-mode' to indent each *.m file in DIRECTORY.
 
 If DIRECTORY isn't specified, it defaults to the current directory.
@@ -94,12 +94,9 @@ the results are displayed on stdout."
   (let ((test-name "sweep-test-matlab-ts-mode-indent")
         (matlab-ts-mode--indent-assert t))
 
-    (when (not (t-utils-is-treesit-available 'matlab test-name))
-      (cl-return-from sweep-test-matlab-ts-mode-indent))
-
     (t-utils-sweep-test-indent test-name
                                (or directory default-directory)
-                               "\\.m\\'"
+                               (rx ".m" eos)
                                #'matlab-ts-mode
                                #'sweep-test-matlab-ts-mode-indent--syntax-checker
                                check-valid-parse

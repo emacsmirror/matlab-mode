@@ -54,38 +54,41 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-font-lock-files/NAME_expected.txt"
 
-  (let ((test-name "test-matlab-ts-mode-font-lock"))
-    (when (t-utils-is-treesit-available 'matlab test-name)
-      (let* ((matlab-ts-mode-font-lock-level 4)
-             (m-files (t-utils-get-files test-name "\\.m\\'" nil
-                                         test-matlab-ts-mode-font-lock--file))
-             (code-to-face '(
-                             ("!" . matlab-ts-mode-system-command-face)
-                             ("a" . matlab-ts-mode-command-arg-face)
-                             ("b" . font-lock-bracket-face)
-                             ("B" . font-lock-builtin-face)
-                             ("c" . font-lock-comment-face)
-                             ("C" . font-lock-comment-delimiter-face)
-                             ("d" . default)
-                             ("D" . font-lock-delimiter-face)
-                             ("E" . font-lock-escape-face)
-                             ("f" . font-lock-function-name-face)
-                             ("F" . font-lock-function-call-face)
-                             ("h" . font-lock-doc-face) ;; function doc help comment
-                             ("H" . matlab-ts-mode-comment-heading-face)
-                             ("k" . font-lock-keyword-face)
-                             ("M" . matlab-ts-mode-comment-to-do-marker-face)
-                             ("n" . matlab-ts-mode-number-face)
-                             ("s" . font-lock-string-face)
-                             ("S" . matlab-ts-mode-string-delimiter-face)
-                             ("o" . matlab-ts-mode-operator-face)
-                             ("p" . matlab-ts-mode-pragma-face)
-                             ("P" . matlab-ts-mode-property-face)
-                             ("t" . font-lock-type-face)
-                             ("v" . font-lock-variable-name-face)
-                             ("w" . font-lock-warning-face)
-                             )))
-        (t-utils-test-font-lock test-name m-files code-to-face)))))
+  (let* ((test-name "test-matlab-ts-mode-font-lock")
+         (matlab-ts-mode-font-lock-level 4)
+         (m-files (t-utils-get-files
+                   test-name
+                   (rx ".m" eos)
+                   nil
+                   test-matlab-ts-mode-font-lock--file))
+         (code-to-face '(
+                         ("!" . matlab-ts-mode-system-command-face)
+                         ("a" . matlab-ts-mode-command-arg-face)
+                         ("b" . font-lock-bracket-face)
+                         ("B" . font-lock-builtin-face)
+                         ("c" . font-lock-comment-face)
+                         ("C" . font-lock-comment-delimiter-face)
+                         ("d" . default)
+                         ("D" . font-lock-delimiter-face)
+                         ("E" . font-lock-escape-face)
+                         ("f" . font-lock-function-name-face)
+                         ("F" . font-lock-function-call-face)
+                         ("h" . font-lock-doc-face) ;; function doc help comment
+                         ("H" . matlab-ts-mode-comment-heading-face)
+                         ("k" . font-lock-keyword-face)
+                         ("M" . matlab-ts-mode-comment-to-do-marker-face)
+                         ("n" . matlab-ts-mode-number-face)
+                         ("s" . font-lock-string-face)
+                         ("S" . matlab-ts-mode-string-delimiter-face)
+                         ("o" . matlab-ts-mode-operator-face)
+                         ("p" . matlab-ts-mode-pragma-face)
+                         ("P" . matlab-ts-mode-property-face)
+                         ("t" . font-lock-type-face)
+                         ("v" . font-lock-variable-name-face)
+                         ("w" . font-lock-warning-face)
+                         )))
+    (t-utils-error-if-no-treesit-for 'matlab test-name)
+    (t-utils-test-font-lock test-name m-files code-to-face)))
 
 (provide 'test-matlab-ts-mode-font-lock)
 ;;; test-matlab-ts-mode-font-lock.el ends here

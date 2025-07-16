@@ -35,7 +35,8 @@
 (defun test-matlab-ts-mode-on-save-fixes--file (m-file)
   "Test an individual M-FILE.
 This is provided for debugging.
-  M-: (test-matlab-ts-mode-on-save-fixes--file \"test-matlab-ts-mode-on-save-fixes-files/M-FILE\")"
+  M-: (test-matlab-ts-mode-on-save-fixes--file
+      \"test-matlab-ts-mode-on-save-fixes-files/M-FILE\")"
   (let ((test-matlab-ts-mode-on-save-fixes--file m-file))
     (ert-run-tests-interactively "test-matlab-ts-mode-on-save-fixes")))
 
@@ -54,11 +55,14 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-on-save-fixes-files/NAME_expected.org"
 
-  (let ((test-name "test-matlab-ts-mode-on-save-fixes"))
-    (when (t-utils-is-treesit-available 'matlab test-name)
-      (let ((m-files (t-utils-get-files test-name "\\.m\\'" nil
-                                        test-matlab-ts-mode-on-save-fixes--file)))
-        (t-utils-test-xr test-name m-files)))))
+  (let* ((test-name "test-matlab-ts-mode-on-save-fixes")
+         (m-files (t-utils-get-files
+                   test-name
+                   (rx ".m" eos)
+                   nil
+                   test-matlab-ts-mode-on-save-fixes--file)))
+    (t-utils-error-if-no-treesit-for 'matlab test-name)
+    (t-utils-test-xr test-name m-files)))
 
 (provide 'test-matlab-ts-mode-on-save-fixes)
 ;;; test-matlab-ts-mode-on-save-fixes.el ends here

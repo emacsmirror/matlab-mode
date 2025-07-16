@@ -91,19 +91,21 @@
 ;; after validating it, rename it to
 ;;   ./test-LANGUAGE-ts-mode-font-lock-files/NAME_expected.txt"
 ;;
-;;   (let ((test-name "test-LANGUAGE-ts-mode-font-lock"))
-;;     (when (t-utils-is-treesit-available 'LANGUAGE test-name)
-;;       (let* ((LANGUAGE-ts-mode-font-lock-level 4)
-;;              (lang-files (t-utils-get-files test-name "\\.lang\\'" nil
-;;                                             test-LANGUAGE-ts-mode-font-lock--file))
-;;              (code-to-face '(
-;;                              ("b" . font-lock-bracket-face)
-;;                              ("B" . font-lock-builtin-face)
-;;                              ("c" . font-lock-comment-face)
-;; 			     ;; <add more as needed>
-;;                              )))
-;;         (t-utils-test-font-lock test-name lang-files code-to-face)))))
-;;
+;;   (let* ((test-name "test-LANGUAGE-ts-mode-font-lock")
+;;          (LANGUAGE-ts-mode-font-lock-level 4)
+;;          (lang-files (t-utils-get-files
+;;                    test-name
+;;                    (rx ".lang" eos)
+;;                    nil
+;;                    test-LANGUAGE-ts-mode-font-lock--file))
+;;          (code-to-face '(
+;;                          ("b" . font-lock-bracket-face)
+;;                          ("B" . font-lock-builtin-face)
+;;                          ("c" . font-lock-comment-face)
+;;                          ;; <add-more-as-needed>
+;;                          )))
+;;     (t-utils-error-if-no-treesit-for 'LANGUAGE test-name)
+;;     (t-utils-test-font-lock test-name lang-files code-to-face)))
 ;;
 ;; ------------------
 ;; | Skipping tests |
@@ -230,18 +232,11 @@ skipping all *_expected.lang files."
       ;; Sorted result
       (sort files-not-skipped))))
 
-(defun t-utils-is-treesit-available (language test-name)
-  "Is tree-sitter ready for LANGUAGE?
-If not available a message saying skipping TEST-NAME is displayed
-and nil is returned."
-  (let ((available (and (>= emacs-major-version 30) ;; treesit package comes with Emacs 30
-                        (progn
-                          (require 'treesit)
-                          (when (fboundp 'treesit-ready-p)
-                            (treesit-ready-p language t))))))
-    (when (not available)
-      (message "skipping-test: %s - %S tree sitter not available." test-name language))
-    available))
+(defun t-utils-error-if-no-treesit-for (language test-name)
+  "Error if tree-sitter for LANGUAGE is not available.
+If not available an error containing TEST-NAME is generated."
+  (when (not (treesit-ready-p language t))
+    (error "Test %s requires treesit for lanugage %s and it's not available" test-name language)))
 
 (defun t-utils-run (&optional match)
   "Run test files in current directory matching regexp, MATCH.
@@ -765,17 +760,20 @@ Where ./tests/test-LANUGAGE-ts-mode-font-lock.el contains:
       (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-font-lock\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-font-lock ()
-
-    (let* ((lang-files (t-utils-get-files
-                        (concat test-name \"-files\")
-                                \"\\.EXT\\\\\\='\" nil
-                                test-LANGUAGE-ts-mode-font-lock--file))
+    (let* ((test-name \"test-LANGUAGE-ts-mode-font-lock\")
+           (LANGUAGE-ts-mode-font-lock-level 4)
+           (lang-files (t-utils-get-files
+                     test-name
+                     (rx \".lang\" eos)
+                     nil
+                     test-LANGUAGE-ts-mode-font-lock--file))
            (code-to-face \\='(
                            (\"b\" . font-lock-bracket-face)
                            (\"B\" . font-lock-builtin-face)
                            (\"c\" . font-lock-comment-face)
-                           ....
+                           ;; <add-more-as-needed>
                            )))
+      (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-font-lock test-name lang-files code-to-face)))
 
 To loop over all NAME*.EXT font-lock test files, interactively
@@ -915,17 +913,17 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
 
 (defun t-utils-test-indent (test-name lang-files &optional line-manipulator error-nodes-regexp)
   "Test indent on each file in LANG-FILES list.
-Compare indent of each NAME.EXT in LANG-FILES against NAME_expected.EXT.
+Compare indent of each NAME.LANG in LANG-FILES against NAME_expected.LANG.
 TEST-NAME is used in messages.
 
-If NAME_expected.EXT does not exist or the indent of NAME.EXT doesn't
-match NAME_expected.txt, NAME_expected.EXT~ will be created.  You are
-then instructured to validate the indent and rename NAME_expected.EXT~
-to NAME_expected.EXT.
+If NAME_expected.LANG does not exist or the indent of NAME.LANG doesn't
+match NAME_expected.txt, NAME_expected.LANG~ will be created.  You are
+then instructured to validate the indent and rename NAME_expected.LANG~
+to NAME_expected.LANG.
 
 To add a test for TEST-NAME.el which calls this function, in the
 corresponding TEST-NAME-files/ directory, create
-TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
 Two methods are used to indent each file in LANG-FILES,
@@ -937,10 +935,10 @@ Two methods are used to indent each file in LANG-FILES,
     TAB and RET, see `t-utils--test-indent-typing'.  In tree-sitter
     modes, TAB and RET need to be handled and this verifies they are
     handled.  Error nodes are identified by using
-    ERROR-NODES-REGEXP which defaults to \"\\\\`ERROR\\\\\\='\".
+    ERROR-NODES-REGEXP which defaults to (rx bos \"ERROR\" eos).
 
     The typing occurs in a temporary buffer partially named
-    \"typing__NAME.EXT\" where NAME.EXT is the basename of LANG-FILE.
+    \"typing__NAME.LANG\" where NAME.LANG is the basename of LANG-FILE.
 
     The typing buffer is initialized with the string-trim'd version of
     the non-empty lines of LANG-FILE.  If optional LINE-MANIPULATOR
@@ -958,10 +956,10 @@ Example test setup:
 
   ./LANGUAGE-ts-mode.el
   ./tests/test-LANUGAGE-ts-mode-indent.el
-  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME1.EXT
-  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME1_expected.EXT
-  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME2.EXT
-  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME2_expected.EXT
+  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME1.LANG
+  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME1_expected.LANG
+  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME2.LANG
+  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME2_expected.LANG
 
 Where ./tests/test-LANUGAGE-ts-mode-indent.el contains:
 
@@ -973,15 +971,16 @@ Where ./tests/test-LANUGAGE-ts-mode-indent.el contains:
       (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-indent\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-indent ()
-    (let ((test-name \"test-LANGUAGE-ts-mode-indent\"))
-      (when (t-utils-is-treesit-available \\='LANGUAGE test-name)
-        (let ((lang-files (t-utils-get-files (concat test-name \"-files\") \"\\.EXT\\\\\\='\"
-                                          \"_expected\\.EXT\\\\\\='\" ;; skip our *_expected.EXT baselines
-                                          test-LANGUAGE-ts-mode-indent--file))
-              (line-manipulator nil))
-          (t-utils-test-indent test-name lang-files line-manipulator)))))
+    (let* ((test-name \"test-LANGUAGE-ts-mode-indent\")
+           (lang-files (t-utils-get-files
+                        test-name
+                        (rx \".lang\" eos)
+                        (rx \"_expected.lang\" eos) ;; skip our *_expected.lang baselines
+                        test-LANGUAGE-ts-mode-indent--file)))
+      (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
+      (t-utils-test-indent test-name lang-files)))
 
-To loop over all NAME*.EXT indent test files, interactively
+To loop over all NAME*.LANG indent test files, interactively
 
   \\[ert] RET test-LANGUAGE-ts-mode-indent RET
 
@@ -991,7 +990,7 @@ the color marker is) to see messages that were displayed by your test.
 To debug a specific indent test file
 
  M-: (test-LANGUAGE-ts-mode-indent--file \
-\"test-LANUGAGE-ts-mode-indent-files/NAME.EXT\")"
+\"test-LANUGAGE-ts-mode-indent-files/NAME.LANG\")"
 
 
   (when (not error-nodes-regexp)
@@ -1156,7 +1155,7 @@ Example usage:
     (let ((LANGUAGE-ts-mode--indent-assert t))
       (t-utils-sweep-test-indent \"sweep-LANGUAGE-ts-mode-indent\"
                                  (or directory default-directory)
-                                 \"\\\\.EXT\\\\\\='\"
+                                 (rx \".lang\" eos)
                                  #\\='LANGUAGE-ts-mode)))
 
 The result is:
@@ -1275,7 +1274,7 @@ LANGUAGE tree-sitter that need addressing or some other issue."
 
 (defun t-utils-test-syntax-table (test-name lang-files)
   "Test syntax-table on each file in LANG-FILES list.
-Compare syntax-table of each NAME.EXT in LANG-FILES against NAME_expected.txt.
+Compare syntax-table of each NAME.LANG in LANG-FILES against NAME_expected.txt.
 TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result of NAME.ext doesn't
@@ -1285,7 +1284,7 @@ to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which call this function, in the
 corresponding TEST-NAME-files/ directory, create
-TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
 TODO should example test setup, see t-utils-test-font-lock."
@@ -1336,7 +1335,7 @@ TODO should example test setup, see t-utils-test-font-lock."
 (defun t-utils-test-treesit-defun-name (test-name lang-files)
   "Test `treesit-defun-name-function' setup.
 Compare the result of `treesit-defun-name-function' against each
-tree-sitter node in each NAME.EXT of LANG-FILES against
+tree-sitter node in each NAME.LANG of LANG-FILES against
 NAME_expected.txt.  TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
@@ -1346,7 +1345,7 @@ to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which call this function, in the
 corresponding TEST-NAME-files/ directory, create
-TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
 TODO should example test setup, see t-utils-test-font-lock."
@@ -1397,7 +1396,7 @@ TODO should example test setup, see t-utils-test-font-lock."
 
 (defun t-utils-test-imenu (test-name lang-files)
   "Test imenu support.
-Compare the result of `imenu-create-index-function' on each NAME.EXT in
+Compare the result of `imenu-create-index-function' on each NAME.LANG in
 LANG-FILES against NAME_expected.txt.  TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
@@ -1407,7 +1406,7 @@ to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which call this function, in the
 corresponding TEST-NAME-files/ directory, create
-TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
 TODO should example test setup, see t-utils-test-font-lock."
@@ -1445,7 +1444,7 @@ TODO should example test setup, see t-utils-test-font-lock."
 
 (defun t-utils-test-outline-search-function (test-name lang-files)
   "Test setup for `outline-minor-mode'.
-Compare the result of `outline-search-function' on each NAME.EXT in
+Compare the result of `outline-search-function' on each NAME.LANG in
 LANG-FILES against NAME_expected.txt.  TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
@@ -1455,7 +1454,7 @@ to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which call this function, in the
 corresponding TEST-NAME-files/ directory, create
-TEST-NAME-files/NAME.EXT, then run the test.  Follow the messages to
+TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
 TODO should example test setup, see t-utils-test-font-lock."

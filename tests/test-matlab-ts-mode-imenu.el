@@ -52,11 +52,14 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-imenu-files/NAME_expected.txt"
 
-  (let ((test-name "test-matlab-ts-mode-imenu"))
-    (when (t-utils-is-treesit-available 'matlab test-name)
-      (let ((m-files (t-utils-get-files test-name "\\.m\\'" nil
-                                        test-matlab-ts-mode-imenu--file)))
-        (t-utils-test-imenu test-name m-files)))))
+  (let* ((test-name "test-matlab-ts-mode-imenu")
+         (m-files (t-utils-get-files
+                   test-name
+                   (rx ".m" eos)
+                   nil
+                   test-matlab-ts-mode-imenu--file)))
+    (t-utils-error-if-no-treesit-for 'matlab test-name)
+    (t-utils-test-imenu test-name m-files)))
 
 (provide 'test-matlab-ts-mode-imenu)
 ;;; test-matlab-ts-mode-imenu.el ends here

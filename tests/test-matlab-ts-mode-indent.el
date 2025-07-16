@@ -53,24 +53,24 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-indent-files/NAME_expected.m"
 
-  (let ((test-name "test-matlab-ts-mode-indent"))
-    (when (t-utils-is-treesit-available 'matlab test-name)
-      (let ((m-files (t-utils-get-files test-name
-                                        "\\.m\\'"
-                                        "_expected\\.m\\'" ;; skip our *_expected.m baselines
-                                        test-matlab-ts-mode-indent--file))
-            (line-manipulator (lambda ()
-                                ;; Workaround
-                                ;; https://github.com/acristoffers/tree-sitter-matlab/issues/32
-                                (goto-char (point-min))
-                                (while (not (eobp))
-                                  (let* ((node   (treesit-node-at (point)))
-                                         (parent (and node (treesit-node-parent node))))
-                                    (when (string= (treesit-node-type parent) "ERROR")
-                                      (insert " ")))
-                                  (forward-line)))))
-
-        (t-utils-test-indent test-name m-files line-manipulator)))))
+  (let* ((test-name "test-matlab-ts-mode-indent")
+         (m-files (t-utils-get-files
+                   test-name
+                   (rx ".m" eos)
+                   (rx "_expected.m" eos) ;; skip our *_expected.m baselines
+                   test-matlab-ts-mode-indent--file))
+         (line-manipulator (lambda ()
+                             ;; Workaround
+                             ;; https://github.com/acristoffers/tree-sitter-matlab/issues/32
+                             (goto-char (point-min))
+                             (while (not (eobp))
+                               (let* ((node   (treesit-node-at (point)))
+                                      (parent (and node (treesit-node-parent node))))
+                                 (when (string= (treesit-node-type parent) "ERROR")
+                                   (insert " ")))
+                               (forward-line)))))
+    (t-utils-error-if-no-treesit-for 'matlab test-name)
+    (t-utils-test-indent test-name m-files line-manipulator)))
 
 (provide 'test-matlab-ts-mode-indent)
 ;;; test-matlab-ts-mode-indent.el ends here

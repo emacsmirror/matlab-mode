@@ -53,11 +53,14 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-outline-files/NAME_expected.txt"
 
-  (let ((test-name "test-matlab-ts-mode-outline"))
-    (when (t-utils-is-treesit-available 'matlab test-name)
-      (let ((m-files (t-utils-get-files test-name "\\.m\\'" nil
-                                        test-matlab-ts-mode-outline--file)))
-        (t-utils-test-outline-search-function test-name m-files)))))
+  (let* ((test-name "test-matlab-ts-mode-outline")
+         (m-files (t-utils-get-files
+                   test-name
+                   (rx ".m" eos)
+                   nil
+                   test-matlab-ts-mode-outline--file)))
+    (t-utils-error-if-no-treesit-for 'matlab test-name)
+    (t-utils-test-outline-search-function test-name m-files)))
 
 (provide 'test-matlab-ts-mode-outline)
 ;;; test-matlab-ts-mode-outline.el ends here

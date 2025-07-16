@@ -53,11 +53,14 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-electric-pair-files/NAME_expected.org"
 
-  (let ((test-name "test-matlab-ts-mode-electric-pair"))
-    (when (t-utils-is-treesit-available 'matlab test-name)
-      (let ((m-files (t-utils-get-files test-name "\\.m\\'" nil
-                                        test-matlab-ts-mode-electric-pair--file)))
-        (t-utils-test-xr test-name m-files)))))
+  (let* ((test-name "test-matlab-ts-mode-electric-pair")
+         (m-files (t-utils-get-files
+                   test-name
+                   (rx ".m" eos)
+                   nil
+                   test-matlab-ts-mode-electric-pair--file)))
+    (t-utils-error-if-no-treesit-for 'matlab test-name)
+    (t-utils-test-xr test-name m-files)))
 
 (provide 'test-matlab-ts-mode-electric-pair)
 ;;; test-matlab-ts-mode-electric-pair.el ends here

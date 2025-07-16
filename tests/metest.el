@@ -84,7 +84,7 @@
     (metest-fill-paragraph))
 
   ;; Run test-*.el. t-utils-run must be last because it will exit emacs when noninteractive.
-  (when (>= emacs-major-version 30) ;; TODO - should we eliminate this version check?
+  (when (>= emacs-major-version 30)
     (t-utils-run)))
 
 (defun metest-run (test)

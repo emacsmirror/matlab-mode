@@ -54,11 +54,14 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-thing-settings-files/NAME_expected.org"
 
-  (let ((test-name "test-matlab-ts-mode-thing-settings"))
-    (when (t-utils-is-treesit-available 'matlab test-name)
-      (let ((m-files (t-utils-get-files test-name "\\.m\\'" nil
-                                        test-matlab-ts-mode-thing-settings--file)))
-        (t-utils-test-xr test-name m-files)))))
+  (let* ((test-name "test-matlab-ts-mode-thing-settings")
+         (m-files (t-utils-get-files
+                   test-name
+                   (rx ".m" eos)
+                   nil
+                   test-matlab-ts-mode-thing-settings--file)))
+    (t-utils-error-if-no-treesit-for 'matlab test-name)
+    (t-utils-test-xr test-name m-files)))
 
 (provide 'test-matlab-ts-mode-thing-settings)
 ;;; test-matlab-ts-mode-thing-settings.el ends here
