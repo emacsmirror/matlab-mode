@@ -529,7 +529,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
     (and next-sibling
          (string= (treesit-node-text next-sibling) "="))))
 
-(defun matlab-ts-mode--is-builtin (identifier-node)
+(defun matlab-ts-mode--is-identifier-builtin (identifier-node)
   "Return t if IDENTIFIER-NODE is a function provided with MATLAB."
   (let ((parent (treesit-node-parent identifier-node)))
     ;; Consider
@@ -539,6 +539,11 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
                (not (equal (treesit-node-type (treesit-node-parent parent)) "field_expression")))
       (let ((id (treesit-node-text identifier-node)))
         (gethash id matlab-ts-mode--builtins-ht)))))
+
+(defun matlab-ts-mode--is-command-builtin (command-node)
+  "Return t if COMMAND-NODE is a function provided with MATLAB."
+  (let ((command (treesit-node-text command-node)))
+    (gethash command matlab-ts-mode--builtins-ht)))
 
 (defvar matlab-ts-mode--font-lock-settings
   (treesit-font-lock-rules
@@ -725,11 +730,13 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    '((["." "," ":" ";"]) @font-lock-delimiter-face)
 
    ;; F-Rule: factory items that come with MATLAB, Simulink, or add-on products
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_builtins.m
    :language 'matlab
    :feature 'builtins
    `(((identifier) @font-lock-builtin-face
-      (:pred matlab-ts-mode--is-builtin @font-lock-builtin-face)))
+      (:pred matlab-ts-mode--is-identifier-builtin @font-lock-builtin-face))
+     ((command_name) @font-lock-builtin-face
+      (:pred matlab-ts-mode--is-command-builtin @font-lock-builtin-face)))
 
    ;; F-Rule: namespaces (the +dir's, class methods, etc.)
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m
@@ -1665,15 +1672,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; 
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
-    ;; TODO builtin face for nargin, nargout
-    ;;      function [o1,o2]=foo_nargin(i1,i2)
-    ;;          nargin
-    ;;          nargout
-    ;;      end
-    ;;
     ;; TODO double check indent rules to see if they can be simplified
     ;; TODO update --indent-rules to have See: test file comments.
-    ;;
 
     (treesit-major-mode-setup)
 

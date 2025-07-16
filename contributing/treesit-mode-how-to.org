@@ -39,9 +39,6 @@
 
 - [ ] Clean up flow of doc.
 - [ ] Clean up the testing. This is a work in progress and needs many fixes.
-- [ ] Font-lock
-  (setq treesit--font-lock-verbose t)
-  Fontifying text from START-POINT to END-POINT, Face: FACE, Node: TYPE
 - [ ] Add sweep test for indent
       - (directory-files-recursively DIR "\\.m$")
       - On each file, check parse tree for ERROR nodes and see if it really has an error by running
@@ -265,6 +262,11 @@ This will display messages of the following form which can be helpful in debuggi
 
  : Fontifying text from START-POINT to END-POINT, Face: FACE, Node: TYPE
 
+Another debugging tip, is to use the =%S= format specifier in calls to message which displays the
+lisp object representation.  For example, in our defun LANGUAGE-ts-mode--comment-to-do-capture, we
+could add =(message "debug comment-node: %S" comment-node)= which will show what it's processing.
+Using EDebug on font-lock functions can be tricky because they get called on display updates.
+
 #+begin_src emacs-lisp
   ;;; LANGUAGE-ts-mode.el --- comment -*- lexical-binding: t -*-
 
@@ -283,7 +285,7 @@ This will display messages of the following form which can be helpful in debuggi
       )
     "The LANGUAGE-ts-mode font-lock keywords.")
 
-  (defun LANGUAGEts-mode--comment-to-do-capture (comment-node override start end &rest _)
+  (defun LANGUAGE-ts-mode--comment-to-do-capture (comment-node override start end &rest _)
     "Fontify comment to do, fix me, and triple-x markers.
   COMMENT-NODE is the tree-sitter comment node from a
   treesit-font-lock-rules rule and OVERRIDE is from that rule.  START and
@@ -303,7 +305,7 @@ This will display messages of the following form which can be helpful in debuggi
               (let ((keyword-start (match-beginning 1))
                     (keyword-end (match-end 1)))
                 (treesit-fontify-with-override keyword-start keyword-end
-                                               'LANGUAGEts-mode-comment-to-do-marker-face
+                                               'LANGUAGE-ts-mode-comment-to-do-marker-face
                                                override start end))
             (goto-char comment-end))))))
 
@@ -338,7 +340,7 @@ This will display messages of the following form which can be helpful in debuggi
       (treesit-parser-create 'LANGUAGE)
 
       ;; Font-lock.
-      ;; See: ./tests/test-LANGUAGEts-mode-font-lock.el
+      ;; See: ./tests/test-LANGUAGE-ts-mode-font-lock.el
       (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
       (setq-local treesit-font-lock-feature-list '((comment definition)
                                                    (keyword string type)
@@ -409,7 +411,7 @@ To add tests, create files of form
 =./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1.lang= and then
 
  : M-x ert
- : Run tests: test-LANGUAGEts-mode-font-lock
+ : Run tests: test-LANGUAGE-ts-mode-font-lock
 
 This will create =./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt~= and
 after examining it, rename it to
@@ -527,7 +529,7 @@ the tests.
       (treesit-parser-create 'LANGUAGE)
 
       ;; Font-lock.
-      ;; See: ./tests/test-LANGUAGEts-mode-font-lock.el
+      ;; See: ./tests/test-LANGUAGE-ts-mode-font-lock.el
       (setq-local treesit-font-lock-settings LANGUAGE-ts-mode--font-lock-settings)
       (setq-local treesit-font-lock-feature-list '((comment definition)
   						 (keyword string type)
@@ -535,7 +537,7 @@ the tests.
   						 (syntax-error)))
 
       ;; Indent.
-      ;; See: ./tests/test-LANGUAGEts-mode-indent.el
+      ;; See: ./tests/test-LANGUAGE-ts-mode-indent.el
       (setq-local treesit-simple-indent-rules
                   (if treesit--indent-verbose ;; add debugging print as first rule?
                       (list (append `,(list (caar LANGUAGE-ts-mode--indent-rules))
@@ -1105,7 +1107,7 @@ TODO - explain you'll need to correct forward-sexp when in comments
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
     ;; s-expression matching using parenthesis. This fix is need for our tests were we need
     ;; to evaluate (t-utils-NAME ....) expressions from within comments using C-x C-e.
-    (setq-local forward-sexp-function #'LANGUAGEts-mode--forward-sexp)
+    (setq-local forward-sexp-function #'LANGUAGE-ts-mode--forward-sexp)
 #+end_src
 
 ** Test: treesit-thing-settings
@@ -1233,7 +1235,7 @@ also an operator such as a transpose, then you'll need to:
     ;; <snip>
 
     ;; Electric pair mode
-    (setq-local electric-pair-inhibit-predicate #'LANGUAGEts-mode--electric-pair-inhibit-predicate)
+    (setq-local electric-pair-inhibit-predicate #'LANGUAGE-ts-mode--electric-pair-inhibit-predicate)
     )
 #+end_src
 
@@ -1406,22 +1408,22 @@ following assuming we have =% comment=" lines, replace with your language commen
 
     <snip - code to define string variables>
 
-% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (LANGUAGEts-mode--show-paren-or-block)))
+% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (LANGUAGE-ts-mode--show-paren-or-block)))
 s1 = '<foo '' bar>';
 
-% (t-utils-xr (re-search-forward ">") (prin1 (LANGUAGEts-mode--show-paren-or-block)))
+% (t-utils-xr (re-search-forward ">") (prin1 (LANGUAGE-ts-mode--show-paren-or-block)))
 s2 = '<foo '' bar>';
 
-% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (LANGUAGEts-mode--show-paren-or-block)))
+% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (LANGUAGE-ts-mode--show-paren-or-block)))
 s3 = "<foo ' bar>";
 
-% (t-utils-xr (re-search-forward ">") (prin1 (LANGUAGEts-mode--show-paren-or-block)))
+% (t-utils-xr (re-search-forward ">") (prin1 (LANGUAGE-ts-mode--show-paren-or-block)))
 s4 = "<foo ' bar>";
 
-% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (LANGUAGEts-mode--show-paren-or-block)))
+% (t-utils-xr (re-search-forward "<") "C-b" "C-b" (prin1 (LANGUAGE-ts-mode--show-paren-or-block)))
 s5 = "<asdf
 
-% (t-utils-xr (re-search-forward ">") (prin1 (LANGUAGEts-mode--show-paren-or-block)))
+% (t-utils-xr (re-search-forward ">") (prin1 (LANGUAGE-ts-mode--show-paren-or-block)))
 s6 = asdf>"
 
     <snip>
@@ -1441,7 +1443,7 @@ there-end with mismatch true (t) because the string is missing the starting quot
 #+begin_src org
   ,* Executing commands from show_paren_string.lang:25:2:
 
-    (t-utils-xr (re-search-forward ">") (prin1 (LANGUAGEts-mode--show-paren-or-block)))
+    (t-utils-xr (re-search-forward ">") (prin1 (LANGUAGE-ts-mode--show-paren-or-block)))
 
   - Invoking      : (re-search-forward ">")
     Start point   :  899
@@ -1450,7 +1452,7 @@ there-end with mismatch true (t) because the string is missing the starting quot
     :                  ^
     No buffer modifications
 
-  - Invoking      : (prin1 (LANGUAGEts-mode--show-paren-or-block))
+  - Invoking      : (prin1 (LANGUAGE-ts-mode--show-paren-or-block))
     Start point   :  910
     No point movement
     standard-output:
