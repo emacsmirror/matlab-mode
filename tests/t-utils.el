@@ -264,7 +264,7 @@ name as the test file.  These test names are then run using `ert'."
         (error "Failed to load %s" test-file))
       (push (replace-regexp-in-string "\\.el" "" (file-name-nondirectory test-file)) tests))
 
-    (let ((test-selector (rx-to-string `(seq bos (or ,@tests) eos))))
+    (let ((test-selector (rx-to-string `(seq bos (or ,@tests) eos) t)))
       (if noninteractive
           (ert-run-tests-batch-and-exit test-selector)
         (ert-run-tests-interactively test-selector)))))

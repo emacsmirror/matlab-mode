@@ -510,7 +510,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
           (if (eq builtin-type t)
               (setq builtin-end (+ builtin-start (length path)))
             ;; builtin-type is 'property or 'enumeration
-            (when (not (string-match "^\\(.+\\.\\)\\([^.]+\\)$" path))
+            (when (not (string-match "\\`\\(.+\\.\\)\\([^.]+\\)\\'" path))
               (error "Assert: failed to parse path, %s" path))
             (setq builtin-end (+ builtin-start (- (length (match-string 1 path)) 2)))
             ;; We give the "." before the property or enum font-lock-delimiter-face, hence the +2.
@@ -561,7 +561,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    :override t
    '(;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_pragma_in_fcn.m
      ((comment) @matlab-ts-mode-pragma-face
-      (:match "^%#.+$" @matlab-ts-mode-pragma-face)) ;; %#pragma's
+      (:match "\\`%#.+\\'" @matlab-ts-mode-pragma-face)) ;; %#pragma's
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_heading.m
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_sections.m
      ((comment) @matlab-ts-mode--comment-heading-capture) ;; %% comment heading
@@ -697,10 +697,10 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    :feature 'type
    `((function_call name: (identifier)
                     @font-lock-type-face
-                    (:match ,(rx-to-string
-                              `(seq bol
-                                    (or ,@matlab-ts-mode--type-functions)
-                                    eol))
+                    (:match ,(rx-to-string `(seq bos
+                                                 (or ,@matlab-ts-mode--type-functions)
+                                                 eos)
+                                           t)
                             @font-lock-type-face)))
 
    ;; F-Rule: Constant literal numbers, e.g. 1234, 12.34, 10e10
@@ -802,7 +802,7 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
   (let ((root (if (and parent (string= (treesit-node-type parent) "function_definition"))
                   parent
                 (treesit-buffer-root-node))))
-    (if (treesit-search-subtree (treesit-buffer-root-node) "^ERROR$")
+    (if (treesit-search-subtree (treesit-buffer-root-node) "\\`ERROR\\'")
         ;; If we have syntax errors, assume that functions will have ends when entering
         ;; matlab-ts-mode, otherwise leave matlab-ts--function-indent-level unchanged.
         (when (equal matlab-ts-mode--function-indent-level 'unset)
@@ -1428,7 +1428,7 @@ THERE-END MISMATCH) or nil."
                                   ("spmd"        . "spmd_statement")
                                   ))
                (start-node-types (mapcar (lambda (pair) (car pair)) start-to-parent))
-               (start-re (concat "^" (rx-to-string `(or ,@start-node-types)) "$"))
+               (start-re (rx-to-string `(seq bos (or ,@start-node-types) eos) t))
                (node-type (treesit-node-type node))
                (parent-node (treesit-node-parent node))
                (parent-type (treesit-node-type parent-node)))
@@ -1664,8 +1664,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      think it was missing a few toolboxes.
     ;; 
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
-    ;;
-    ;; TODO rx use bos eos also in tests
     ;;
     ;; TODO builtin face for nargin, nargout
     ;;      function [o1,o2]=foo_nargin(i1,i2)
