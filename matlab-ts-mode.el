@@ -288,8 +288,7 @@ as comments which is how they are treated by MATLAB."
     "properties"
     (return_statement)
     "set." ;; when used in a classdef method, e.g. function obj = set.propName(obj, val)
-    ;; TODO "spmd" should be here - currently not supported by matlab tree-sitter, see
-    ;; https://github.com/acristoffers/tree-sitter-matlab/issues/25
+    "spmd"
     "switch"
     "try"
     "while")
@@ -326,11 +325,10 @@ as comments which is how they are treated by MATLAB."
     "~"         ;; Represent logical NOT, suppress specific input or output arguments.
     "="         ;; Variable creation and indexing assignment.
     "<" "&"     ;; Specify one or more superclasses in a class definition.
-
-    ;; ".?"     ;; Specify the fields of a name-value structure as the names of all
-    ;;          ;    writable properties of the class.
-    ;;          ;    However, this isn't parsed correctly by matlab tree-sitter, see
-    ;;          ;    https://github.com/acristoffers/tree-sitter-matlab/issues/35
+    ".?"        ;; Specify the fields of a name-value structure as the names of all
+    ;;           ;   writable properties of the class.
+    ;;           ;   However, this isn't parsed correctly by matlab tree-sitter, see
+    ;;           ;   https://github.com/acristoffers/tree-sitter-matlab/issues/35
     )
   "The matlab-ts-mode font-lock operators.")
 
@@ -1390,6 +1388,8 @@ single quote string."
    (t
     (funcall #'electric-pair-default-inhibit char))))
 
+;;; show-paren-mode
+
 (declare-function show-paren--default "paren")
 
 (defun matlab-ts-mode--show-paren-or-block ()
@@ -1425,9 +1425,7 @@ THERE-END MISMATCH) or nil."
                                   ("parfor"      . "for_statement")
                                   ("while"       . "while_statement")
                                   ("try"         . "try_statement")
-                                  ;; TODO "spmd" should be here - currently not supported by matlab
-                                  ;; tree-sitter, see
-                                  ;; https://github.com/acristoffers/tree-sitter-matlab/issues/25
+                                  ("spmd"        . "spmd_statement")
                                   ))
                (start-node-types (mapcar (lambda (pair) (car pair)) start-to-parent))
                (start-re (concat "^" (rx-to-string `(or ,@start-node-types)) "$"))
@@ -1508,6 +1506,19 @@ THERE-END MISMATCH) or nil."
     (if (or here-begin here-end)
         (list here-begin here-end there-begin there-end mismatch)
      (funcall #'show-paren--default))))
+
+;;; post-command-hook
+
+(defun matlab-ts-mode--post-command-newline ()
+  "Ensure buffer always has a newline.
+The matlab tree-sitter requires a newline, see
+https://github.com/acristoffers/tree-sitter-matlab/issues/34"
+  (when (and (eq this-command 'self-insert-command)
+             (eq major-mode 'matlab-ts-mode))
+    (save-excursion
+      (goto-char (point-max))
+      (when (not (= (char-before) ?\n))
+        (insert "\n")))))
 
 ;;; Key bindings
 
@@ -1629,16 +1640,23 @@ is t, add the following to an Init File (e.g. `user-init-file' or
 
     ;; Save hook.
     ;; See: ./tests/test-matlab-ts-mode-on-save-fixes.el
-    (add-hook 'write-contents-functions #'matlab-ts-mode--write-file-callback)
+    (add-hook 'write-contents-functions #'matlab-ts-mode--write-file-callback -99 t)
 
     ;; Electric pair mode.
     ;; See tests/test-matlab-ts-mode-electric-pair.el
     (setq-local electric-pair-inhibit-predicate #'matlab-ts-mode--electric-pair-inhibit-predicate)
 
-    ;; Highlight parens OR function/end, if/end, etc. type blocks
+    ;; show-paren-mode. Highlight parens OR function/end, if/end, etc. type blocks.
     ;; See: tests/test-matlab-ts-mode-show-paren.el
     (setq-local show-paren-data-function #'matlab-ts-mode--show-paren-or-block)
 
+    ;; Final newline.  The matlab tree-sitter requires a final newline, see
+    ;;    https://github.com/acristoffers/tree-sitter-matlab/issues/34
+    ;; Setting require-final-newline to 'visit-save doesn't guarantee we have a newline when typing
+    ;; (inserting text), so we also setup a post-command-hook to insert a newline if needed.
+    (setq-local require-final-newline 'visit-save)
+    (add-hook 'post-command-hook #'matlab-ts-mode--post-command-newline -99 t)
+    
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
     ;;      - will need to update matlab-shell.el to either use matlab.el or matlab-ts-mode.el
     ;;
@@ -1657,6 +1675,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO double check indent rules to see if they can be simplified
     ;; TODO update --indent-rules to have See: test file comments.
+    ;;
 
     (treesit-major-mode-setup)
 

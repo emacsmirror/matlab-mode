@@ -149,7 +149,7 @@ navigation via syntactic expressions, etc.
  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-Program-Source.html][Emacs manual: Parsing Program Source]]
  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Emacs manual: Parser-based Indentation]]
  - [[https://archive.casouri.cc/note/2024/emacs-30-tree-sitter/][Notes: Tree-sitter Changes in Emacs 30]]
-   
+
 * libtree-sitter-LANGUAGE.EXT
 
 Place the tree-sitter language library in =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.EXT=
@@ -356,16 +356,25 @@ update this table to meet your needs.
 To add tests, create files of form
 =./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1.lang= and then
 
- : M-: (test-LANGUAGE-ts-mode-font-lock)
+ : M-x ert
+ : Run tests: test-matlab-ts-mode-font-lock
 
 This will create =./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt~= and
 after examining it, rename it to
 =./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt=.
 
+When you run ert interactively, you'll be presented with a =*ert*= buffer. You can
+type "m" on the colored dots in the =*ert*= buffer to see the messages for that ert test
+and the messages contain the sub-tests from the test loop for that ert test.  This will bring
+up an =*ERT Messages*= buffer.  In this buffer, type
+  : M-x compilation-minor-mode
+to view the and navigate errors.  The default error viewing in the =*ert*= buffer is a bit dense
+due to the looping nature of the t-utils tests.
+
 To run your tests in a build system, use
 
 #+begin_src bash
-  emacs --batch -Q --eval "(setq debug-on-error t)" -l test-runner.el -eval t-utils-run
+  emacs --batch -Q -l t-utils -eval t-utils-run
 #+end_src
 
 #+begin_src emacs-lisp
@@ -410,9 +419,6 @@ To run your tests in a build system, use
   			     ;; <add more as needed>
                                )))
           (t-utils-test-font-lock test-name lang-files code-to-face)))))
-
-  (provide 'test-language-ts-mode-font-lock)
-  ;;; test-language-ts-mode-font-lock.el ends here
 #+end_src
 
 * Setup: Indent
@@ -770,7 +776,7 @@ directory recursively.
    check that the file does indeed have a syntax error. If the external checker says the
    file does not have a syntax error, we report the file and this is likely a bug in
    the LANGUAGE tree-sitter parser.
- 
+
  - If check-valid-parse below is t the test will call syntax checker on all files being
    processed to verify that the a successful tree-sitter parse also has no errors according to
    syntax checker. Any inconsistent parses are reported which is likely a bug in the
@@ -814,7 +820,7 @@ Our indent sweep test:
   	      "fatal error:"))
               out)))
       (cons valid out)))
-    
+
 
 
   (defun sweep-test-LANGUAGE-ts-mode-indent (&optional directory check-valid-parse)
@@ -1485,7 +1491,7 @@ s5 = "<asdf
 
 % (t-utils-xr (re-search-forward ">") (prin1 (matlab-ts-mode--show-paren-or-block)))
 s6 = asdf>"
-    
+
     <snip>
 
 #+end_example
@@ -1693,13 +1699,13 @@ TODO extract help from t-utils.el and place here.
        on their own line.
 
      - Variable creation/assignment will be semantically colored.
-  
+
      - Now fontify all MATLAB/Simulink factory builtin provided functions, class
        methods/properities, enums, etc. Note, if you override a builtin function with a variable,
        the variable creation/assignment will be colored as a variable, but the use will continue to
        be a function.  To avoid this confusing state, use variable names that collide with builtin
        items.
-       
+
   2. Improved indent
 
      - Simplfiied the semantics for indent. The indent rules are:
@@ -1764,7 +1770,7 @@ TODO extract help from t-utils.el and place here.
        C-M-k   Kill s-expression, kill-sexp
        C-M-t   Transpose s-expressions, transpose-sexp
      #+end_example
-     
+
  12. Improved sentance commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
      "Wrong number of arguments: (0 . 0), 1" and now works in matlab-ts-mode.
 
@@ -1774,7 +1780,7 @@ TODO extract help from t-utils.el and place here.
        M-k      Kill from point to end of sentence, kill-sentence
        C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
      #+end_example
-     
+
  13. Many older matlab-mode menu items and keybindings have been removed because there are
      standard replacements. Examples:
 
@@ -1786,6 +1792,3 @@ TODO extract help from t-utils.el and place here.
        using LSP mode.
 
        TODO - show how to do in lsp-mode and update lsp-mode org on this.
-
-     - 
-      

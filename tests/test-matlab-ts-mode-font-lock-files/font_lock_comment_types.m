@@ -15,3 +15,7 @@ myVar = 1 %{single line comment %} + 1;
 % This is also a single line comment:
 
 %{ single line comment
+
+% https://github.com/acristoffers/tree-sitter-matlab/issues/37
+%{
+%}

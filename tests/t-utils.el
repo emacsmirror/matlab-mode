@@ -21,16 +21,138 @@
 ;;
 ;; Test utilities used by test-*.el files.
 ;;
+;; Most of the test utilities provided by t-utils are "looping tests".  For example, let's suppose
+;; we wish to test the font-lock of LANGUAGE-ts-mode.el for *.lang files.  We create these files:
+;;
+;;    ./LANGUAGE-ts-mode.el
+;;    ./tests/t-utils.el
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock.el
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1.lang
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test2.lang
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test2_expected.txt
+;;    <snip>
+;;
+;; ./tests/test-LANGUAGE-ts-mode-font-lock.el is shown below.  You write this and it loops
+;; over all ./tests/test-LANGUAGE-ts-mode-font-lock-files/*.lang files.
+;;
+;; To add tests, create files of form
+;;   ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1.lang
+;; and then
+;;
+;;   M-x ert
+;;   Run tests: test-LANGUAGE-ts-mode-font-lock
+;;
+;; This will create ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt~ and
+;; after examining it, rename it to
+;; ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt.
+;;
+;; When you run ert interactively, you'll be presented with a *ert* buffer.  You can
+;; type "m" on the colored dots in the *ert* buffer to see the messages for that ert test
+;; and the messages contain the sub-tests from the test loop for that ert test.  This will bring
+;; up an *ERT Messages* buffer.  In this buffer, type
+;;   M-x compilation-minor-mode
+;; to view the and navigate errors.  The default error viewing in the *ert* buffer is a bit dense
+;; due to the looping nature of the t-utils tests.
+;;
+;; To run your tests in a build system, use
+;;
+;;   Emacs --batch -Q -l t-utils -eval t-utils-run
+;;
+;; ----------------------------------------------
+;; | ./tests/test-LANGUAGE-ts-mode-font-lock.el |
+;; ----------------------------------------------
+;; (require 't-utils)
+;; (require 'language-ts-mode)
+;;
+;; (defvar test-LANGUAGE-ts-mode-font-lock--file nil)
+;;
+;; (defun test-LANGUAGE-ts-mode-font-lock--file (lang-file)
+;;   "Test an individual LANG-FILE.
+;; This is provided for debugging.
+;;   M-: (test-LANGUAGE-ts-mode-font-lock--file "test-LANGUAGE-ts-mode-font-lock-files/LANG-FILE")"
+;;   (let ((test-LANGUAGE-ts-mode-font-lock--file lang-file))
+;;     (ert-run-tests-interactively "test-LANGUAGE-ts-mode-font-lock")))
+;;
+;; (ert-deftest test-LANGUAGE-ts-mode-font-lock ()
+;;   "Test font-lock using ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang.
+;; Compare font of ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang against
+;; ./test-LANGUAGE-ts-mode-font-lock-files/NAME_expected.txt, where
+;; NAME_expected.txt is of same length as NAME.lang where each source
+;; character in NAME.lang is replaced with a character code representing the
+;; font-lock face used for said source character.  The mapping is defined
+;; by the code-to-face alist setup by this function.  This loops
+;; on all ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang files.
+;;
+;; To add a test, createp
+;;   ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang
+;; and run this function.  The baseline is saved for you as
+;;   ./test-LANGUAGE-ts-mode-font-lock-files/NAME_expected.txt~
+;; after validating it, rename it to
+;;   ./test-LANGUAGE-ts-mode-font-lock-files/NAME_expected.txt"
+;;
+;;   (let ((test-name "test-LANGUAGE-ts-mode-font-lock"))
+;;     (when (t-utils-is-treesit-available 'LANGUAGE test-name)
+;;       (let* ((LANGUAGE-ts-mode-font-lock-level 4)
+;;              (lang-files (t-utils-get-files test-name "\\.lang\\'" nil
+;;                                             test-LANGUAGE-ts-mode-font-lock--file))
+;;              (code-to-face '(
+;;                              ("b" . font-lock-bracket-face)
+;;                              ("B" . font-lock-builtin-face)
+;;                              ("c" . font-lock-comment-face)
+;; 			     ;; <add more as needed>
+;;                              )))
+;;         (t-utils-test-font-lock test-name lang-files code-to-face)))))
+;;
+;;
+;; ------------------
+;; | Skipping tests |
+;; ------------------
+;; Since the ert package doesn't provide a looping facility and t-utils.el tests are mostly
+;; looping, to skip tests we cannot use the ert facilities to skip a test because that would
+;; disable testing when we want to run the test but skip a few of the input files.  Therefore,
+;; to skip tests you should create *.skip.txt files.  For example, consider the font-lock looping
+;; test above where it has three ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test*.lang
+;; input files.  Suppose there's an issue with the 2nd input file.  We create a
+;;   ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test2.skip.txt
+;; containing the reason for skipping the test, e.g.
+;; "see issue 123, when resolved delete this *.skip.txt file".
+;;
+;;    ./LANGUAGE-ts-mode.el
+;;    ./tests/t-utils.el
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock.el
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1.lang
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test2.lang
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test2.skip.txt
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test2_expected.txt
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test3.lang
+;;    ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test3_expected.txt
+;;
+;; When we
+;;   M-x ert
+;;   Run tests: test-LANGUAGE-ts-mode-font-lock
+;;
+;; and examine the *Messages* buffer for the test, we'll a message that
+;; ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test2.lang was skipped.
+;;
+;; ---------------
+;; | Sweep tests |
+;; ---------------
+;; Another type of test is a sweep test that takes a directory tree and runs actions on every
+;; file matching a pattern.  The actions look for errors signal, etc.  See
+;; `t-utils-sweep-test-indent' for an example.
+;;
+;; ----------
+;; | Issues |
+;; ----------
 ;; t-utils.el uses the ert package.  Many of t-utils functions operate on a set of input files and
 ;; compare them against baselines.  For example, `t-utils-test-font-lock' loops over a set of files,
 ;; NAME.EXT, and compares them against NAME_expected.EXT.  The ert package does not provide a
 ;; looping facility.  Therefore, t-utils internally performs the looping.  This makes reporting a
 ;; little off.  One test is really a number of tests defined by the test input files.  To debug a
 ;; specifice input file, the caller of the t-utils needs to setup for debugging.  See
-;; `t-utils-test-font-lock' below for this setup.
-;;
-;; Tip: type \"m\" on the colored dots in the *ert* buffer to see the messages for that ert test
-;; and the messages contain the sub-tests from the test loop for that ert test.
+;; `t-utils-test-font-lock' above for this setup.
 ;;
 
 
@@ -56,10 +178,14 @@
     (delete-trailing-whitespace (point-min) (point-max))))
 
 (defun t-utils-get-files (test-name base-regexp &optional skip-regexp file-to-use)
-  "Return list of full paths, /path/to/TEST-NAME-files/FILE.
+  "Return list of test input files, /abs/path/to/TEST-NAME-files/FILE.EXT.
 The basename of each returned file matches BASE-REGEXP and not optional
 SKIP-REGEXP.  Optional FILE-TO-USE narrow the list of full paths to that
 file and the result is a list of one file.
+
+For each:   /abs/path/to/TEST-NAME-files/FILE.EXT
+if exists:  /abs/path/to/TEST-NAME-files/FILE.skip.txt
+then this test input file is skipped.
 
 TEST-NAME is used to locate the TEST-NAME-files directory.
 
@@ -82,12 +208,27 @@ skipping all *_expected.lang files."
       (let ((true-file-to-use (file-truename file-to-use)))
         (when (not (member true-file-to-use files))
           (if (file-exists-p true-file-to-use)
-              (error "File %s, resolved to %s, is not a valid selection.
-It should be one of %S" file-to-use true-file-to-use files)
+              (error (concat "File %s, resolved to %s, is not a valid selection.\n"
+                             "It should be one of %S" file-to-use true-file-to-use files))
             (error "File %s does not exist" file-to-use)))
         (setq files (list true-file-to-use))))
-    ;; Sorted result
-    (sort files)))
+
+    ;; File each FILE.ext in files, remove it when a corresponding FILE.skip.txt exists.
+    (let ((files-not-skipped '()))
+      (dolist (file files)
+        (let ((skip-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.txt" file)))
+          (if (file-exists-p skip-file)
+              (let ((skip-file-contents (with-temp-buffer
+                                          (insert-file-contents-literally skip-file)
+                                          (string-trim-right
+                                           (replace-regexp-in-string "^" "    "
+                                                                     (buffer-string))))))
+                (message "%s:1: warning: skipping this test input because %s exists\n%s"
+                         file skip-file skip-file-contents))
+            (push file files-not-skipped))))
+
+      ;; Sorted result
+      (sort files-not-skipped))))
 
 (defun t-utils-is-treesit-available (language test-name)
   "Is tree-sitter ready for LANGUAGE?

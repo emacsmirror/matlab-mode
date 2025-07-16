@@ -39,7 +39,7 @@ classdef thing_sexp
                   case 10
                     disp('10');
 
-                  case 11:
+                  case 11
                     disp('11');
                        
                   otherwise

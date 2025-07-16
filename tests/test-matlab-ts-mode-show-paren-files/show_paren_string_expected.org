@@ -224,7 +224,7 @@
   Start point   :  882
   No point movement
   standard-output:
-    (882 883 nil nil t)
+    (882 883 918 919 nil)
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
