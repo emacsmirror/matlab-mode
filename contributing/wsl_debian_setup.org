@@ -73,9 +73,10 @@ me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
 
    We need a bunch of packages to be able to install MATLAB. See this [[https://www.mathworks.com/matlabcentral/answers/2018166-what-dependencies-are-needed-to-install-matlab-on-minimal-or-core-linux-installations][MATLAB Answers post]]. The
    packages we need for R2025a are listed in [[https://github.com/mathworks-ref-arch/container-images/tree/main/matlab-deps][matlab-deps]] navigate to [[https://github.com/mathworks-ref-arch/container-images/blob/main/matlab-deps/r2025a/ubuntu24.04/base-dependencies.txt][base-dependencies.txt]] then
-   create an apt install command.  I used this [[https://askubuntu.com/questions/445487/what-debian-version-are-the-different-ubuntu-versions-based-on][site]] to map Debain 12 to Ubuntu 22 which for the
-   base_dependencies.txt. Alternatively, I suppose I could have used wsl to install Ubuntu, but I
-   have familiarity with Debian, so choose Debian.
+   create an apt install command.  I used this [[https://askubuntu.com/questions/445487/what-debian-version-are-the-different-ubuntu-versions-based-on][site]] to map Debain 12 to Ubuntu 22 to determine which
+   base_dependencies.txt to use (there was one for R2025a with Ubuntu 22 and another for
+   24). Alternatively, I suppose I could have used wsl to install Ubuntu, but I have familiarity
+   with Debian, so choose Debian.
 
    #+begin_src bash
      sudo apt install ca-certificates ibverbs-providers libasound2 libatomic1 libc6 libcairo-gobject2 libcairo2 libcap2 libcrypt1 libcups2 libdrm2 libfontconfig1 libfribidi0 libgbm1 libgdk-pixbuf-2.0-0 libgl1 libglib2.0-0 libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libgtk-3-0 libibverbs1 libice6 libltdl7 libnspr4 libnss3 libnuma1 libpam0g libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpixman-1-0 libpsm2-2 librdmacm1 libsndfile1 libtirpc3 libucx0 libuuid1 libwayland-client0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxfont2 libxft2 libxinerama1 libxrandr2 libxt6 libxtst6 libxxf86vm1 locales locales-all make net-tools procps sudo unzip wget x11-xkb-utils zlib1g
@@ -190,6 +191,43 @@ me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
    #+begin_src emacs-lisp
      (add-to-list 'load-path (concat "HOME" "emacs-projects/Emacs-MATLAB-mode"))
      (load-library "matlab-autoload")
+   #+end_src
+
+   Also install magit and flycheck (flycheck is needed to see compiler warnings in lisp files).
+   In your ~/.emacs:
+
+   #+begin_src emacs-lisp
+     (require 'package)
+     (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+   #+end_src
+
+   In Emacs
+
+   : M-x package-install
+
+   and install from melpa both magit and flycheck, and then update your ~/.emacs to contain
+
+   #+begin_src emacs-lisp
+     (global-flycheck-mode)
+
+     (put 'flycheck-emacs-lisp-load-path 'safe-local-variable #'listp)
+   #+end_src
+
+   In the lisp files, we've been using a fill-column of 100:
+
+   : M-x customize-variable RET fill-column RET
+   : and set to 100
+
+   Add the w100 command to your ~/.emacs:
+
+   #+begin_src emacs-lisp
+     (defun w100 ()
+       "Set selected frame width to 100 and height to 49."
+       (interactive)
+       (set-frame-size (selected-frame) 100 49))
+
+     (when window-system
+       (w100))
    #+end_src
 
 10. Run MATLAB in Emacs:
