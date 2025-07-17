@@ -142,6 +142,8 @@ See [[file:doc/faq.org][doc/faq.org]]
 
 * Mailing list
 
+[[mailto:matlab-emacs-discuss@lists.sourceforge.net]]
+
 https://sourceforge.net/projects/matlab-emacs/
 
 * Releases
