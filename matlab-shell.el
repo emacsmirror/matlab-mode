@@ -25,8 +25,11 @@
 ;;
 
 ;;; Code:
+
 (require 'matlab)
 (require 'matlab-compat)
+(eval-and-compile
+  (require 'matlab--access))
 
 (require 'comint)
 (require 'server)
@@ -54,27 +57,10 @@
 
 ;;
 ;; Shell Startup
+;;
 (defcustom matlab-shell-mode-hook nil
   "List of functions to call on entry to MATLAB shell mode."
   :type 'hook)
-
-(defvar matlab-shell--default-command
-  '((gnu/linux  . "/usr/local/MATLAB/R*/bin/matlab")
-    (darwin     . "/Applications/MATLAB_R*.app/bin/matlab")
-    (windows-nt . "C:/Program Files/MATLAB/R*/bin/matlab.exe"))
-  "Standard MATLAB command installation locations, SYSTEM => GLOB.")
-
-(defcustom matlab-shell-command "matlab"
-  "The MATLAB command executable used to start MATLAB.
-This can be:
- - the name of the MATLAB command (e.g. \"matlab\") which is
-   found on the system PATH.
- - an absolute path to the matlab executable.  For example,
-   \"/<path-to-MATLAB-install-dir>/bin/matlab\"
-If matlab-shell-command is set to \"matlab\" and \"matlab\" is not
-on the system PATH, `matlab-shell' will look for the matlab
-command executable in the default MATLAB installation locations."
-  :type 'string)
 
 (defcustom matlab-shell-command-switches '("-nodesktop")
   "Command line parameters run with `matlab-shell-command'.
@@ -116,7 +102,7 @@ that ends in 2 or more %%, added to automatic commands."
 ;;
 ;; Edit from MATLAB
 (defcustom matlab-shell-emacsclient-command
-  (matlab-find-emacsclient)
+  (matlab--find-emacsclient)
   "The command to use as an external editor for MATLAB.
 Using emacsclient allows the currently running Emacs to also be the
 external editor for MATLAB.  Setting this to the empty string
@@ -266,111 +252,6 @@ mode.")
   (append matlab-shell-font-lock-keywords-2
           matlab-really-gaudy-font-lock-keywords)
   "Keyword symbol used for really gaudy font-lock for MATLAB shell.")
-
-(defun matlab-shell--matlab-not-found (no-help-window &optional default-loc)
-  "Signal error, MATLAB command not on system PATH or in optional DEFAULT-LOC.
-If NO-HELP-WINDOW is t, do not show the help window"
-  (let ((msg (format "Unable to locate \"%s\" on the system PATH%s"
-                     matlab-shell-command
-                     (if default-loc
-                         (format " or in the default installation location, %s"
-                                 default-loc)
-                       ""))))
-    (when (not no-help-window)
-      (let ((help-buf-name "*matlab-shell-help*"))
-        (with-current-buffer (get-buffer-create help-buf-name)
-          (with-help-window help-buf-name
-            (insert msg "
-
-To fix, update your system PATH to include
-  \"/<path-to-MATLAB-install>/bin\"
-To verify matlab is on your path, run \"matlab -h\" in a terminal.
-
-Alternatively, you can provide the full path to the
-MATLAB command executable by customizing option
-`matlab-shell-command'\n")))))
-
-    (user-error "%s" msg)))
-
-(cl-defun matlab-shell--abs-matlab-exe (&optional no-error)
-  "Absolute path to the MATLAB command executable.
-When `matlab-shell-command' is an absolute path, then this will
-be resolved to its true name.  Otherwise, `matlab-shell-command'
-is found using `executable-find'.  If `matlab-shell-command' is
-\"matlab\" and not the system PATH, this will return the latest
-MATLAB installed command found using
-`matlab-shell--default-command'.
-
-If NO-ERROR is t, and matlab command is not found, nil is return,
-otherwise an error is signaled."
-  (condition-case err
-      (let (abs-matlab-exe)
-        (cond
-
-         ;;Case: the path to the matlab executable was provided, validate it exists and
-         ;;      return it.
-         ((file-name-absolute-p matlab-shell-command)
-          (when (not (file-exists-p matlab-shell-command))
-            (user-error "Invalid setting for `matlab-shell-command', %s does not exist"
-                        matlab-shell-command))
-          (when (not (file-executable-p matlab-shell-command))
-            (user-error "Invalid setting for `matlab-shell-command', %s is not executable"
-                        matlab-shell-command))
-          ;; Use the path provided. Consider the case where a launcher script is provided and the
-          ;; launcher script is symlink'd. In this case, we shouldn't resolve the symlinks, i.e.
-          ;; using file-truename would break this case.
-          (setq abs-matlab-exe matlab-shell-command))
-
-         ;; Case: set to a relative path
-         ;;
-         ((when (file-name-directory matlab-shell-command)
-            (user-error "Relative paths are not supported for `matlab-shell-command', %s"
-                        matlab-shell-command)))
-
-         ;; Case: "matlab" (or something similar), locate it on the executable path
-         ;;       else locate in standard install locations.
-         (t
-          (let ((remote (file-remote-p default-directory)))
-            (if remote
-                (if (setq abs-matlab-exe (executable-find matlab-shell-command t))
-                    (setq abs-matlab-exe (concat remote abs-matlab-exe))
-                  (user-error "Unable to locate matlab executable on %s
-See https://github.com/mathworks/Emacs-MATLAB-Mode/doc/remote-matlab-emacs.org for tips" remote))
-            ;; else look local
-            (setq abs-matlab-exe (executable-find matlab-shell-command))
-            (when (not abs-matlab-exe)
-              (if (string= matlab-shell-command "matlab")
-                  ;; Get latest matlab command exe from the default installation location.
-                  (let* ((default-loc (cdr (assoc system-type matlab-shell--default-command)))
-                         (default-matlab (when default-loc
-                                           (car (last (sort
-                                                       (file-expand-wildcards default-loc)
-                                                       #'string<))))))
-                    (when (not default-matlab)
-                      (matlab-shell--matlab-not-found no-error default-loc))
-                    (when (not (file-executable-p default-matlab))
-                      (user-error "%s is not executable" default-matlab))
-                    (setq abs-matlab-exe default-matlab))
-                ;; else unable to locate it
-                (matlab-shell--matlab-not-found no-error)))))))
-
-        ;; Return existing absolute path to the MATLAB command executable
-        abs-matlab-exe)
-    (error (when (not no-error) (error "%s" (error-message-string err))))))
-
-;;; ROOT: matlabroot
-;;
-;;;###autoload
-(defun matlab-mode-determine-matlabroot ()
-  "Return the MATLABROOT for the `matlab-shell-command'.
-The MATLABROOT does not have a trailing slash.
-Returns nil if unable to determine the MATLABROOT."
-  ;; strip "/bin/matlab" from /path/to/matlabroot/bin/matlab
-  (let ((abs-matlab-exe (matlab-shell--abs-matlab-exe 'no-error)))
-    (when abs-matlab-exe
-      (let ((bin-dir (directory-file-name (file-name-directory abs-matlab-exe))))
-        ;; matlabroot no slash
-        (directory-file-name (file-name-directory bin-dir))))))
     
 
 ;;; Keymaps & Menus
@@ -601,7 +482,7 @@ Try C-h f matlab-shell RET"))
     (let* ((windowid (frame-parameter (selected-frame) 'outer-window-id))
            (newvar (concat "WINDOWID=" windowid))
            (process-environment (cons newvar process-environment))
-           (abs-matlab-exe (matlab-shell--abs-matlab-exe))
+           (abs-matlab-exe (matlab--get-abs-matlab-exe))
            (matlab-exe (if (file-remote-p abs-matlab-exe)
                            matlab-shell-command
                          abs-matlab-exe)))
@@ -1614,15 +1495,9 @@ installed, then use company to display completions in a popup window."
     ;; so well because it can take MATLAB a bit to compute completions.
     (call-interactively 'company-matlab-shell))
 
-   ;; Starting in Emacs 23, completion-in-region has everything we need for basic
-   ;; in-buffer completion
-   ((fboundp 'completion-in-region)
-    (matlab-shell-do-completion-light))
-
-   ;; Old school completion
+   ;; Use stock Emacs completion
    (t
-    (matlab-shell-do-completion))
-   ))
+    (matlab-shell-do-completion-light))))
 
 (defun matlab-shell-do-completion-light ()
   "Perform completion using `completion-in-region'."
@@ -1634,62 +1509,6 @@ installed, then use company to display completions in a popup window."
          (common-substr-end-pt   (cdr (assoc 'common-substr-end-pt completion-info))))
     (when (and (not did-completion) common-substr-start-pt common-substr-end-pt)
       (completion-in-region common-substr-start-pt common-substr-end-pt completions))))
-
-(defun matlab-shell-do-completion ()
-  "Perform completion using Emacs buffers.
-This should work in version before `completion-in-region' was available."
-  (let* ((inhibit-field-text-motion t)
-         (completion-info        (matlab-shell-get-completion-info))
-         ;;(last-cmd               (cdr (assoc 'last-cmd completion-info)))
-         (common-substr          (cdr (assoc 'common-substr completion-info)))
-         ;; (limit-pos              (cdr (assoc 'limit-pos completion-info)))
-         (completions            (cdr (assoc 'completions completion-info)))
-         (common-substr-start-pt (cdr (assoc 'common-substr-start-pt completion-info)))
-         (common-substr-end-pt   (cdr (assoc 'common-substr-end-pt completion-info)))
-         (did-completion         (cdr (assoc 'did-completion completion-info))))
-
-    (unless did-completion
-      ;; Whack the old command 'substring' that is starting part of the
-      ;; completions so we can insert it back later
-      (delete-region common-substr-start-pt common-substr-end-pt)
-      (goto-char (point-max))
-      ;; Process the completions
-      (if (eq (length completions) 1)
-          ;; If there is only one, then there is an obvious thing to do.
-          (progn
-            (insert (car (car completions)))
-            ;; kill completions buffer if still visible
-            (matlab-shell-tab-hide-completions))
-        ;; else handle multiple completions
-        (let ((try (try-completion common-substr completions)))
-          ;; Insert in a good completion.
-          (cond ((or (eq try nil) (eq try t)
-                     (and (stringp try)
-                          (string= try common-substr)))
-                 (insert common-substr)
-                 (let ((cbuff (get-buffer-create "*Completions*")))
-                   (with-output-to-temp-buffer cbuff
-                     (matlab-display-completion-list (mapcar #'car completions)
-                                                     common-substr))
-                   (display-buffer
-                    cbuff
-                    '((display-buffer-below-selected display-buffer-at-bottom)
-                      (inhibit-same-window . t)
-                      (window-height . fit-window-to-buffer))
-                    )
-                   ))
-                ((stringp try)
-                 (insert try)
-                 (matlab-shell-tab-hide-completions))
-                (t
-                 (insert common-substr))))
-        ))))
-
-(defun matlab-shell-tab-hide-completions ()
-  "Hide any completion windows for `matlab-shell-tab'."
-  (let ((bw (get-buffer-window "*Completions*")))
-    (when bw
-      (quit-window nil (get-buffer-window "*Completions*")))))
 
 ;;; Find Files
 ;;

@@ -29,22 +29,10 @@
 
 (require 't-utils)
 (require 'matlab-ts-mode)
-(require 'matlab-utils)
+(require 'matlab--access)
 
-(defvar matlab-shell-command) ;; TODO replace with require
-
-;; TODO use matlab-shell--abs-matlab-exe (place in matlab-utils.el) and also get mlint from
-;; there.
-(defvar sweep-test-matlab-ts-mode-indent--mlint
-  (let* ((matlab (or (and matlab-shell-command
-                          (not (string= matlab-shell-command ""))
-                          (not (string= matlab-shell-command "matlab"))
-                          matlab-shell-command)
-                     (executable-find "matlab")
-                     (user-error "Unable to find matlab on your system PATH")))
-         (mlint (replace-regexp-in-string "matlab\\(\\.exe\\)?\\'"
-                                          (concat matlab--platform "/mlint\\1") matlab)))
-    mlint))
+(defvar sweep-test-matlab-ts-mode-indent--mlint (or (matlab--get-mlint-exe)
+                                                    (error "MLint not found")))
 
 (defun sweep-test-matlab-ts-mode-indent--syntax-checker (file)
   "MLint FILE, return pair (VALID . CHECK-RESULT).

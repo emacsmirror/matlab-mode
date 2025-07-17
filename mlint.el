@@ -28,64 +28,25 @@
 ;; Run mlint, and highlight the problems in the buffer.
 ;;
 
-(eval-and-compile
-  (require 'matlab-compat))
+;;; Code:
+
 (require 'matlab)
+(require 'matlab--access)
+
 (require 'linemark)
 
 (eval-when-compile
   (require 'font-lock))
 
-;; If we can't find an mlint program this fcn will be needed.
-(autoload 'matlab-mode-determine-matlabroot "matlab-shell" "\
-Return the MATLABROOT for the \\='matlab-shell-command\\='.
-
-\(fn)" nil nil)
-
+(defgroup mlint nil
+  "MLint minor mode."
+  :prefix "mlint-"
+  :group 'matlab)
 
 ;; `goto-line' is for interactive use only; use `forward-line' instead.
 (defun mlint-goto-line (n)
   "Goto line N for mlint."
   (goto-char (point-min)) (forward-line (1- n)))
-
-;;; Code:
-(defvar mlint-platform
-  ;; See
-  ;;   >> lower(computer)
-  ;;   MATLABROOT/bin/util/arch.sh (or arch.bat)
-  (cond ((eq system-type 'darwin)
-         (cond
-          ((string-match "^arm" system-configuration) ;; e.g. arm-apple-darwin20.3.0
-           "maca64")
-          ((string-match "^x86_64" system-configuration)
-           "maci64")
-          ((string-match "^i386" system-configuration)
-           (let ((mt (getenv "MACHTYPE")))
-             (if (and (stringp mt) (string= "x86_32" mt))
-                 ;; This hack is bad since an Emacs started from
-                 ;; the doc doesn't have this variable, thus by defaulting
-                 ;; to checking the 32 bit (not common anymore) version,
-                 ;; we'll get the right answer most of the time.
-                 "maci" "maci64")))
-          (t
-           "mac")))
-        ((eq system-type 'gnu/linux)
-         (cond ((string-match "64\\|i686" system-configuration)
-                "glnxa64")
-               (t "glnx86")))
-        ((eq system-type 'solaris)
-         "sol2")
-        ((eq system-type 'hpux)
-         "hpux")
-        ((eq system-type 'windows-nt)
-         ;; Thought about checking the env PROCESSOR_ARCHITEW6432,
-         ;; but this said AMD on my Intel, which seemed suspicious.
-         (let ((proc (getenv "PROCESSOR_IDENTIFIER")))
-           (if (and (stringp proc) (string-match "64" proc))
-               "win64"
-             "win32")))
-        (t "unknown"))
-  "MATLAB platform we are running mlint on.  See >> lower(computer).")
 
 (defcustom mlint-calculate-cyclic-complexity-flag nil
   "*Non-nil means to collect cyclic complexity values."
@@ -100,13 +61,8 @@ Each entry is of the form:
 and ... is a list of cross-function variable usages.")
 (make-variable-buffer-local 'mlint-symtab-info)
 
-(defun mlint-programs-set-fcn (&optional symbol value)
-  "The :set function for `matlab-programs'.
-SYMBOL is the variable being set.  VALUE is the new value."
-  (condition-case nil
-      (custom-set-default symbol value)
-    (error (set symbol value)))
-  (mlint-reset-program))
+(defvar mlint-program nil
+  "MLINT executable to use.")
 
 (defvar mlint-program-selection-fcn nil
   "Function to specify the \\=`mlint-program\\=' for the current buffer.
@@ -119,42 +75,6 @@ the mlint for a buffer.  After opening a *.m file,
 appropriate mlint should be returned. If there's no mlint program
 available, nil should be returned and mlint will not be
 activated.")
-
-(defvar mlint-program nil
-  "Program to run for MLint.
-This value can be automatically set by \\=`mlint-programs\\='.")
-
-(defvar mlint-programs) ;; forward declaration to quiet compiler warning
-
-(defun mlint-reset-program ()
-  "Reset `mlint-program'."
-  (setq mlint-program
-        (let ((root (matlab-mode-determine-matlabroot)))
-          (when root
-            (let ((bin (expand-file-name "bin" root))
-                  (mlp mlint-programs)
-                  (ans nil))
-              (while (and mlp (not ans))
-                (cond ((null (car mlp))
-                       nil)
-                      ((file-executable-p (car mlp))
-                       (setq ans (car mlp)))
-                      ((executable-find (car mlp))
-                       (setq ans (executable-find (car mlp))))
-                      ;; Use the matlabroot found by matlab-shell
-                      ((file-executable-p (expand-file-name (car mlp) bin))
-                       (setq ans (expand-file-name (car mlp) bin)))
-                      (t nil))
-                (setq mlp (cdr mlp)))
-              ans)))))
-
-(defcustom mlint-programs (list
-                           "mlint"
-                           (concat mlint-platform "/mlint"))
-  "*List of possible locations of the mlint program."
-  :group 'mlint
-  :type '(repeat (file :tag "MLint Program: "))
-  :set 'mlint-programs-set-fcn)
 
 (defcustom mlint-flags '("-all" "-id") ; "-fix") % Need to support this output
   "*List of flags passed to mlint."
@@ -915,25 +835,27 @@ With prefix ARG, turn mlint minor mode on iff ARG is positive.
   :init-value nil
   :lighter " mlint"
   :keymap mlint-minor-mode-map
-  (if (and mlint-minor-mode (not (eq major-mode 'matlab-mode)))
-      (progn
-        (mlint-minor-mode -1)
-        (error "M-Lint minor mode is only for MATLAB Major mode")))
+
+  (when (and mlint-minor-mode (not (eq major-mode 'matlab-mode)))
+    (mlint-minor-mode -1)
+    (error "M-Lint minor mode is only for MATLAB Major mode"))
+
   (if (not mlint-minor-mode)
       (progn
         (mlint-clear-nested-function-info-overlays)
         (mlint-clear-warnings)
         (remove-hook 'after-save-hook 'mlint-buffer t))
+
     ;; activate mlint if possible
     (if mlint-program-selection-fcn
         (let ((ans (funcall mlint-program-selection-fcn)))
           (when ans
-            (make-local-variable 'mlint-program)
-            (setq mlint-program ans)))
+            (setq-local mlint-program ans)))
       ;; else use global mlint-program for all *.m files
-      (if (not mlint-program)
-          (if (y-or-n-p "No MLINT program available.  Configure it? ")
-              (customize-variable 'mlint-programs))))
+      (when (not mlint-program)
+        (setq mlint-program (matlab--get-mlint-exe))
+        (when (y-or-n-p "No MLINT program available.  Configure it? ")
+          (customize-variable 'mlint-programs))))
 
     (if mlint-program
         (progn
@@ -973,7 +895,6 @@ find it."
 (add-hook 'ediff-cleanup-hook 'mlint-ediff-cleanup-hook)
 
 (provide 'mlint)
-
 ;;; mlint.el ends here
 
 ;; LocalWords:  el Ludlam eludlam compat linemark eieio fboundp defalias fn defun MACHTYPE stringp
