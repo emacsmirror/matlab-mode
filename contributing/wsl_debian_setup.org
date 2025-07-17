@@ -1,0 +1,201 @@
+# File: contributing/wsl_debian_setup.org
+
+# | Copyright 2025 Free Software Foundation, Inc.
+# |
+# | This program is free software: you can redistribute it and/or modify
+# | it under the terms of the GNU General Public License as published by
+# | the Free Software Foundation, either version 3 of the License, or
+# | (at your option) any later version.
+# |
+# | This program is distributed in the hope that it will be useful,
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# | GNU General Public License for more details.
+# |
+# | You should have received a copy of the GNU General Public License
+# | along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#+startup: showall
+
+#+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles-from-org.css"/>
+#+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+#+options: ^:{}
+#+options: toc:nil
+#+latex_header: \usepackage[margin=0.5in]{geometry}
+#+latex_header: \usepackage{parskip}
+#+latex_header: \usepackage{tocloft}
+#+latex_header: \advance\cftsecnumwidth 0.5em\relax
+#+latex_header: \advance\cftsubsecindent 0.5em\relax
+#+latex_header: \advance\cftsubsecnumwidth 0.5em\relax
+
+#+title: Linux and Windows Emacs MATLAB Mode development using wsl
+#+author: John Ciolfi
+#+date: Jul-16-2026
+
+To work on Emacs MATLAB Mode, it's helpful to have both Linux and Windows. If you have a Windows
+system, you can leverage Windows Subsystem for Linux, wsl, to install Debian alongside Windows.
+This guide is a template, and may will need adjustments for your environment or updates as systems
+evolve.
+
+[[https://www.mathworks.com/matlabcentral/answers/1881447-can-i-use-matlab-or-other-mathworks-products-with-windows-subsystem-for-linux-wsl-wsl2][MATLAB is not offically supported under wsl]], so MATLAB may not run correctly under wsl.  For
+me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
+
+1. Install wsl. The first time you install wsl, you will need to do the following, reboot, then
+   redo it:
+
+   : wsl --install -d Debian
+
+2. Launch wsl in a Command Window
+
+   #+begin_src bash
+     C:\> wsl ~
+     C:\> wsl -d Debian --cd ~   # Alternative to specify the distribution
+     $ cat /etc/debian_version
+     12.11
+   #+end_src
+
+   You can create a shortcut on your Windows desktop by right-click, new Shortcut
+   and for the location, specify =C:\Windows\system32\wsl.exe ~=
+
+3. Install packages
+
+   Noice we are installing emacs from Debian 12 backports to get Emacs 30.1
+
+   #+begin_src bash
+     sudo apt update
+     sudo apt upgrade
+     sudo apt install zip
+     sudo apt install man
+     sudo apt install git
+     sudo apt install -t bookworm-backports emacs
+     sudo apt install chromium
+   #+end_src
+
+   We need a bunch of packages to be able to install MATLAB. See this [[https://www.mathworks.com/matlabcentral/answers/2018166-what-dependencies-are-needed-to-install-matlab-on-minimal-or-core-linux-installations][MATLAB Answers post]]. The
+   packages we need for R2025a are listed in [[https://github.com/mathworks-ref-arch/container-images/tree/main/matlab-deps][matlab-deps]] navigate to [[https://github.com/mathworks-ref-arch/container-images/blob/main/matlab-deps/r2025a/ubuntu24.04/base-dependencies.txt][base-dependencies.txt]] then
+   create an apt install command.  I used this [[https://askubuntu.com/questions/445487/what-debian-version-are-the-different-ubuntu-versions-based-on][site]] to map Debain 12 to Ubuntu 22 which for the
+   base_dependencies.txt. Alternatively, I suppose I could have used wsl to install Ubuntu, but I
+   have familiarity with Debian, so choose Debian.
+
+   #+begin_src bash
+     sudo apt install ca-certificates ibverbs-providers libasound2 libatomic1 libc6 libcairo-gobject2 libcairo2 libcap2 libcrypt1 libcups2 libdrm2 libfontconfig1 libfribidi0 libgbm1 libgdk-pixbuf-2.0-0 libgl1 libglib2.0-0 libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libgtk-3-0 libibverbs1 libice6 libltdl7 libnspr4 libnss3 libnuma1 libpam0g libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpixman-1-0 libpsm2-2 librdmacm1 libsndfile1 libtirpc3 libucx0 libuuid1 libwayland-client0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxfont2 libxft2 libxinerama1 libxrandr2 libxt6 libxtst6 libxxf86vm1 locales locales-all make net-tools procps sudo unzip wget x11-xkb-utils zlib1g
+   #+end_src
+
+   If you don't install these dependencies, the R2025a matlab install script may silently fail.
+
+4. Setup git
+
+  #+begin_src bash
+    git config --global user.email "you@example.com"
+    git config --global user.name "Your Name"
+  #+end_src
+
+5. Install MATLAB R2025a
+
+   From http://www.mathworks.com, download R2025a linux zip file and unzip. I unzipped it to
+   =~/matlab-installs/R2025a.u0.install/=, where in my terminology u0 is the first release (update
+   0).
+
+   #+begin_src bash
+     cd ~/matlab-installs/R2025a.u0.install
+     ./install
+   #+end_src
+
+   After typing ./install, a "MathWorks Product Installer" window will appear and you
+   can enter your Email, then continue to follow the installation instructions. Note, I installed
+   it in =~/matlab-installs/R2025a.u0= instead of the standard location.
+
+   I then ran matlab
+
+   #+begin_src
+     ~/matlab-installs/R2025a.u0/bin/matlab
+   #+end_src
+
+   and saw this error:
+
+   : /home/USER/.MathWorks/ServiceHost/-mw_shared_installs/v2025.2.2.1/mci/bin/glnxa64/InstallMathWorksServiceHost: error while loading shared libraries: libgtk-x11-2.0.so.0: cannot open shared object file: No such file or directory
+
+   I then:
+
+   #+begin_src bash
+     sudo apt update
+     sudo apt install libgtk2.0-0
+   #+end_src
+
+   I then re-ran matlab:
+
+   #+begin_src
+     ~/matlab-installs/R2025a.u0/bin/matlab
+   #+end_src
+
+   The MATLAB desktop appeared and ">> plot(1:10)" worked as expected.
+
+6. Add matlab to the PATH
+
+   Assuming you are using the bash shell (the default), add to ~/.bashrc
+
+   #+begin_src bash
+     # pathAdd /path/to/dir - adds /path/to/dir to end of PATH if not already present
+     pathAdd() {
+         if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+             PATH="${PATH:+"$PATH:"}$1"
+         fi
+     }
+
+     pathAdd $HOME/matlab-installs/R2025a.u0/bin
+   #+end_src
+
+   you'll want to do this for non-interactive and interactive shells. Generally, you place
+   the above before the following in your ~/.bashrc
+
+   #+begin_src bash
+     # If not running interactively, don't do anything
+     case $- in
+         ,*i*) ;;
+           ,*) return;;
+     esac
+   #+end_src
+
+7. Working in a git Emacs-MATLAB-Mode work-tree:
+
+   #+begin_src bash
+     cd ~/emacs-projects  # some working area
+     git clone https://github.com/mathworks/Emacs-MATLAB-Mode.git
+   #+end_src
+
+   Install =~/.emacs.d/tree-sitter/libtree-sitter-matlab.so= by grabbing matlab.so from
+   https://github.com/emacs-tree-sitter/tree-sitter-langs latest release and renaming it
+   to =~/.emacs.d/tree-sitter/libtree-sitter-matlab.so=
+
+   #+begin_src bash
+     cd Emacs-MATLAB-Mode
+     make
+   #+end_src
+
+   Note, in wsl, you can access Windows file system, e.g. to access C:\Users\YourName use
+   /mnt/c/Users/YourName. You could place the git work-tree under that, but I don't recommend it
+   because of performance and git issues. Rather have one git work-tree in the Linux side and
+   another on the Windows side in different places. You can then push/pull as you like between these
+   via origin/some-branch.
+
+8. Set the Emacs title to show if you are using Linux or Windows. Add to your ~/.emacs:
+
+   #+begin_src emacs-lisp
+     (setq frame-title-format (concat "%b - Emacs " (symbol-name system-type)))
+   #+end_src
+
+9. In your ~/.emacs, add your Emacs-MATLAB-mode git work-tree to the beginning of the
+   load-path and load it:
+
+   #+begin_src emacs-lisp
+     (add-to-list 'load-path (concat "HOME" "emacs-projects/Emacs-MATLAB-mode"))
+     (load-library "matlab-autoload")
+   #+end_src
+
+10. Run MATLAB in Emacs:
+
+    : M-x matlab-shell
+
+
+
+
