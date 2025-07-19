@@ -42,6 +42,7 @@
   )
 (require 'matlab)
 (require 'matlab-shell)
+(require 'matlab--access)
 (require 'semanticdb-matlab)
 
 ;;; Code:
@@ -84,7 +85,7 @@ If `semantic-mode' is not enabled, do something hacky to make it work."
 These paths will be parsed recursively by semantic.  Class and
 private directories will be omitted here.")
 
-(defvar semantic-matlab-root-directory (matlab-mode-determine-matlabroot)
+(defvar semantic-matlab-root-directory (matlab--get-matlabroot)
   "Root directory of MATLAB installation.
 Use `semantic-matlab-system-paths-include' to let semantic know
 which system directories you would like to include when doing
