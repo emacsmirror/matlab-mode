@@ -299,7 +299,7 @@ baseline check fails."
       (when (not error-msg)
         (if (not expected)
             (setq error-msg (list
-                             (format "Baseline for %s does not exists." lang-file)
+                             (format "Baseline for %s does not exist." lang-file)
                              (format "Got: %s" got-file)
                              (format "If got looks good, rename it to: %s" expected-file)))
           (setq error-msg (list
@@ -719,7 +719,7 @@ a character for each face setup by font-lock.  CODE_TO_FACE is an alist
 where each elment is (CHAR . FACE).  TEST-NAME is used when displaying
 messages.
 
-If NAME_expected.txt does not exists or doesn't match the results we
+If NAME_expected.txt does not exist or doesn't match the results we
 got, a NAME_expected.txt~ will be generated.  After reviewing
 NAME_expected.txt~, you should rename it to NAME_expected.txt or fix
 your code and rerun the test.

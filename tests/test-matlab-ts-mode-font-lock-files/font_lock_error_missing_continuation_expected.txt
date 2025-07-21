@@ -2,7 +2,7 @@ c ccc ccccccccc ccc
 c ccccccc cccccccccccc cccccc cccccc cc ccccccc ccccc
 c cccccccccccc ccccc cc cccccc ccccc ccc ccc ccc ccccc ccc cccccc
 kkkkkkkk ffffffffffffffffffffffffffffffffffffb
-                                              vv
+                                              ww
                                              b
     BBBBbBBBBBBBbddbbD
 kkk                         

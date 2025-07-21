@@ -1,1 +1,0 @@
-Remove skip when https://github.com/acristoffers/tree-sitter-matlab/issues/39 is fixed.

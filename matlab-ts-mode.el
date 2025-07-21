@@ -889,6 +889,19 @@ expression."
     nil
     0))
 
+(defun matlab-ts-mode--indent-continuation-level (_node parent _bol &rest _)
+  "Compute the continuation level for node with PARENT.
+This is `matlab-ts-mode--indent-level' or 0 when in a
+cell or matrix row."
+  (let ((row-node (let ((n parent))
+                    (while (and n
+                                (not (string= (treesit-node-type n) "row")))
+                      (setq n (treesit-node-parent n)))
+                    n)))
+    (if row-node
+        0
+      matlab-ts-mode--indent-level)))
+
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
@@ -1095,12 +1108,14 @@ expression."
      ;;             a (1,1) ... asdf
      ;;    TAB>        double
      ;;         end
-     ;; See: test-matlab-ts-mode-indent-files/indent_line_continuation.m
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation.m
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation_row.m
      ((lambda (node parent bol)
         (let ((prev-sibling (treesit-node-prev-sibling node)))
           (and prev-sibling
                (string= (treesit-node-type prev-sibling) "line_continuation"))))
-      parent ,matlab-ts-mode--indent-level)
+      ;; parent ,matlab-ts-mode--indent-level)
+      parent ,#'matlab-ts-mode--indent-continuation-level)
 
      ;; I-Rule: handle syntax errors by not indenting
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_nested_error.m
@@ -1751,18 +1766,27 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; (inserting text), so we also setup a post-command-hook to insert a newline if needed.
     (setq-local require-final-newline 'visit-save)
     (add-hook 'post-command-hook #'matlab-ts-mode--post-command-newline -99 t)
-    
+
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
     ;;      - will need to update matlab-shell.el to either use matlab.el or matlab-ts-mode.el
     ;;
     ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
     ;;      think it was missing a few toolboxes.
-    ;; 
+    ;;
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
     ;; TODO double check indent rules to see if they can be simplified
     ;; TODO update --indent-rules to have See: test file comments.
-
+    ;;
+    ;; TODO indent
+    ;;      mat = [1, 2; ...
+    ;;              3, 4];
+    ;; TODO indent
+    ;;      function a=foo
+    ;;          a = ...
+    ;;  TAB>
+    ;;              ^  <== should be here
+    ;;      end
     (treesit-major-mode-setup)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
