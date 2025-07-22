@@ -47,13 +47,13 @@
 ;; after examining it, rename it to
 ;; ./tests/test-LANGUAGE-ts-mode-font-lock-files/font_lock_test1_expected.txt.
 ;;
-;; When you run ert interactively, you'll be presented with a *ert* buffer.  You can
-;; type "m" on the colored dots in the *ert* buffer to see the messages for that ert test
+;; When you run ert interactively, you'll be presented with an ert result buffer.  You can
+;; type "m" on the colored dots in the ert result buffer to see the messages for that ert test
 ;; and the messages contain the sub-tests from the test loop for that ert test.  This will bring
 ;; up an *ERT Messages* buffer.  In this buffer, type
 ;;   M-x compilation-minor-mode
-;; to view the and navigate errors.  The default error viewing in the *ert* buffer is a bit dense
-;; due to the looping nature of the t-utils tests.
+;; to view the and navigate errors.  The default error viewing in the ert result buffer is a bit
+;; dense due to the looping nature of the t-utils tests.
 ;;
 ;; To run your tests in a build system, use
 ;;
@@ -785,8 +785,9 @@ To loop over all NAME*.LANG font-lock test files, interactively
 
   \\[ert] RET test-LANGUAGE-ts-mode-font-lock RET
 
-In the *ert* buffer, you can type \"m\" at the point of the test (where
-the color marker is) to see messages that were displayed by your test.
+In the `ert' result buffer, you can type \"m\" at the point of the
+test (where the color marker is) to see messages that were displayed by
+your test.
 
 To debug a specific font-lock test file
 
@@ -989,8 +990,9 @@ To loop over all NAME*.LANG indent test files, interactively
 
   \\[ert] RET test-LANGUAGE-ts-mode-indent RET
 
-In the *ert* buffer, you can type \"m\" at the point of the test (where
-the color marker is) to see messages that were displayed by your test.
+In the `ert' result buffer, you can type \"m\" at the point of the
+test (where the color marker is) to see messages that were displayed by
+your test.
 
 To debug a specific indent test file
 
@@ -1553,14 +1555,15 @@ Where ./tests/test-LANUGAGE-ts-mode-file-encoding.el contains:
                      nil
                      test-LANGUAGE-ts-mode-file-encoding--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
-      (t-utils-test-file-encoding test-name lang-files)))
+      (t-utils-test-file-encoding test-name lang-files \\='#LANGUAGE-ts-mode)))
 
 To loop over all NAME*.LANG file-encoding test files, interactively
 
   \\[ert] RET test-LANGUAGE-ts-mode-file-encoding RET
 
-In the *ert* buffer, you can type \"m\" at the point of the test (where
-the color marker is) to see messages that were displayed by your test.
+In the `ert' result buffer, you can type \"m\" at the point of the
+test (where the color marker is) to see messages that were displayed by
+your test.
 
 To debug a specific file-encoding test file
 
@@ -1583,12 +1586,13 @@ To debug a specific file-encoding test file
                  (got "Major mode activated succesfully.")
                  (got-file (concat expected-file "~")))
 
-            (t-utils--insert-file-for-test lang-file file-major-mode)
-            
+            ;; Load lang-file in temp buffer and activate file-major-mode
             (condition-case err
-                (t-utils--insert-file-for-test lang-file)
+                (t-utils--insert-file-for-test lang-file file-major-mode)
               (error
                (setq got (concat "Major mode errored with message\n" (error-message-string err)))))
+
+            (setq got (concat got "\n\n" "Entered major-mode: " (symbol-name major-mode) "\n"))
 
             (kill-buffer)
 

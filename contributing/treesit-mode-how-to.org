@@ -1460,6 +1460,92 @@ there-end with mismatch true (t) because the string is missing the starting quot
     No buffer modifications
 #+end_src
 
+* Setup: Handling Corrupted Content
+
+Corrupted content in LANGUAGE, NAME.LANG, files can crash Emacs when your tree-sitter
+language shared library runs on the corrupted content.  For example, try load a large
+binary file and =M-x LANGUAGE-major-mode=.  Since content should be utf-8, you should add
+to the start of your LANGUAGE-major-mode:
+
+#+begin_src emacs-lisp
+  (defun LANGUAGE-ts-mode--check-file-encoding ()
+    "Check file encoding.
+  Error is signaled if contents are corrupt because non-utf8 printable
+  content can crash Emacs via the LANGUAGE tree-sitter parser."
+
+    (let ((bad-char-point (save-excursion
+                            (goto-char (point-min))
+                            (when (re-search-forward "[^[:print:][:space:]]" nil t)
+                              (point)))))
+      (when bad-char-point
+        (fundamental-mode)
+        (goto-char bad-char-point)
+        (user-error "Buffer appears corrupt, non-printable utf8 character at point %d: %c"
+                    bad-char-point (char-before)))))
+
+
+  (define-derived-mode matlab-ts-mode prog-mode "LANGUAGE:ts"
+    "Documentation."
+
+    (LANGUAGE-ts-mode--check-file-encoding)
+
+    (when (treesit-ready-p 'LANGUAGE)
+      ;; <snip>
+      ))
+#+end_src
+
+** Test: Handling Corrupted Content
+
+Test setup:
+
+ #+begin_example
+ ./LANGUAGE-ts-mode.el
+ ./tests/test-LANUGAGE-ts-mode-file-encoding.el
+ ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME1.LANG
+ ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME1_expected.txt
+ ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME2.LANG
+ ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME2_expected.txt
+ ....
+ #+end_example
+
+=./tests/test-LANUGAGE-ts-mode-file-encoding.el= contains:
+
+  #+begin_src emacs-lisp
+    (require 't-utils)
+    (require 'LANGUAGE-ts-mode)
+
+    (defvar test-LANGUAGE-ts-mode-file-encoding--file nil)
+
+    (defun test-LANGUAGE-ts-mode-file-encoding--file (lang-file)
+      "Test file-encoding on LANG-FILE."
+      (let ((test-LANGUAGE-ts-mode-file-encoding--file lang-file))
+        (ert-run-tests-interactively "test-LANGUAGE-ts-mode-file-encoding")))
+
+    (ert-deftest test-LANGUAGE-ts-mode-file-encoding ()
+      (let* ((test-name "test-LANGUAGE-ts-mode-file-encoding")
+             (lang-files (t-utils-get-files
+                       test-name
+                       (rx ".lang" eos)
+                       nil
+                       test-LANGUAGE-ts-mode-file-encoding--file)))
+        (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
+        (t-utils-test-file-encoding test-name lang-files \\='#LANGUAGE-ts-mode)))
+  #+end_src
+
+Create /tests/test-LANUGAGE-ts-mode-file-encoding-files/*.LANG files containing corrupted
+(non-utf-8) content. Also create at least one valid *.LANG files.
+
+Run the test:
+
+ : M-x ert RET test-LANUGAGE-ts-mode-file-encoding RET
+
+In the =ert= result buffer, you can type \"m\" at the point of the test (where
+the color marker is) to see messages that were displayed by your test.
+
+If the =./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME*_expected.txt~= files look good
+rename them to =./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME*_expected.txt= (per the
+messages shown by ert).
+  
 * Final version
 
 TODO
