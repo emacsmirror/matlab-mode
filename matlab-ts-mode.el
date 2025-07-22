@@ -1875,7 +1875,15 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      for fIdx = 1:10
     ;;          ^                  <== RET on previous line or TAB should be here
     ;;      end                        when there is no spaces or content on the line
-
+    ;;
+    ;; TODO indent
+    ;;      s = sprintf("%d:%d", ...
+    ;;                  ^          <== RET on previous line or TAB should be here
+    ;;
+    ;; TODO font-lock
+    ;;       s = sprintf("see %d:%d", 1, 2)
+    ;;                        ^^ ^^            <== font-lock formatting_sequence
+    ;;
     (treesit-major-mode-setup)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
