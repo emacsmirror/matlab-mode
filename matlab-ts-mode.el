@@ -934,6 +934,33 @@ cell or matrix row."
         0
       matlab-ts-mode--indent-level)))
 
+(defun matlab-ts-mode--row-indent-level (node parent _bol &rest _)
+  "Indent level for a NODE in PARENT cell or matrix."
+
+  ;; first-entry is the 2nd element, i.e. child 1. Child 0 is is the "[" or "{".
+  ;; first-entry could be "line_continuation" or "row"
+  ;; "row" can also be empty, e.g. start-point == end-point as in
+  ;;       C = [
+  ;;             ...
+  ;;   TAB>      1 ...
+  ;;           ]
+  (let* ((first-entry (treesit-node-child parent 1))
+         first-start)
+    (if (and (not (equal node first-entry)) ;; point is not on first row
+             (equal (treesit-node-type first-entry) "row")
+             (not (= (setq first-start (treesit-node-start first-entry))
+                     (treesit-node-end first-entry))))
+        ;;         c = [2, 3;
+        ;;  TAB>        3, 4];
+        (let ((first-column (save-excursion
+                              (goto-char first-start)
+                              (current-column)))
+              (array-column (save-excursion
+                              (goto-char (treesit-node-start parent))
+                              (current-column))))
+          (- first-column array-column))
+      matlab-ts-mode--array-indent-level)))
+
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
@@ -1085,7 +1112,8 @@ cell or matrix row."
 
      ;; I-Rule:  a = [   ...    |    a = { ...
      ;; <TAB>          2 ...    |          2 ...
-     ((parent-is ,(rx bos (or "matrix" "cell") eos)) parent ,matlab-ts-mode--array-indent-level)
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_matrix.m
+     ((parent-is ,(rx bos (or "cell" "matrix") eos)) parent ,#'matlab-ts-mode--row-indent-level)
 
      ;; I-Rule:  function [   ...              |    function name (   ...
      ;; <TAB>              a, ... % comment    |                   a, ... % comment
@@ -1811,10 +1839,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO double check indent rules to see if they can be simplified
     ;; TODO update --indent-rules to have See: test file comments.
-    ;;
-    ;; TODO indent
-    ;;      mat = [1, 2; ...
-    ;;              3, 4];         <== TAB should align
     ;;
     ;; TODO indent
     ;;      mat = [1, 2
