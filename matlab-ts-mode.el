@@ -158,7 +158,7 @@ The returned point, pt, reflects that location."
 
 ;;; File encoding
 
-(defun matlab-ts-mode--check-set-file-encoding ()
+(defun matlab-ts-mode--check-file-encoding ()
   "Check/set file encoding.
 Error is signaled if contents are corrupt because non-utf8 printable
 content can crash Emacs via the matlab tree-sitter parser."
@@ -169,7 +169,7 @@ content can crash Emacs via the matlab tree-sitter parser."
     (goto-char (point-min))
     (when (looking-at "^V[0-9A-Z]+MCR[0-9]+")
       (fundamental-mode)
-      (user-error "Not activating matlab-ts-mode because this contains MATLAB Compiler Runtime")))
+      (user-error "Not activating matlab-ts-mode because this is MATLAB Compiler Runtime content")))
 
   ;; TODO should we check for utf-8 and error when non-utf8?
   ;;    (when (not (string-match "utf-8" (symbol-name buffer-file-coding-system)))
@@ -1717,7 +1717,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
 
   (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))"
 
-  (matlab-ts-mode--check-set-file-encoding)
+  (matlab-ts-mode--check-file-encoding)
 
   (when (treesit-ready-p 'matlab)
     (treesit-parser-create 'matlab)
