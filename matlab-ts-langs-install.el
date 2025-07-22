@@ -224,6 +224,7 @@ M-x matlab-ts-langs-install"
 	      (error-message-string err))))
     (delete-file tmp-tar-gz)))
 
+;;;###autoload
 (defun matlab-ts-langs-install (&optional dir)
   "Download the latest tree-sitter-langs *.tar.gz and extract to DIR.
 This will add or replace all

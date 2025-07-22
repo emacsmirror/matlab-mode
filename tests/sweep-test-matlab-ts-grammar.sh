@@ -10,6 +10,15 @@
 #   cd /path/to/directory/containing/mFiles
 #   /path/to/Emacs-MATLAB-Mode/tests/sweep-test-matlab-ts-grammar.sh
 #
+#   Results are saved in sweep-test-matlab-ts-grammar.result.txt
+#         Files-with-parse-error-nodes-but-pass-syntax-checker-fun:
+#           <files with tree-sitter error nodes>
+#
+#         Files-that-parsed-succesfully-but-failed-syntax-checker-fun:
+#           <files without tree-sitter error nodes>
+#
+#         Total-consistently-parsed-files: M of N
+#
 
 EmacsMATLABModeDir=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && cd .. && pwd)
 
