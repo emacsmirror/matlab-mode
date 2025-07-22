@@ -69,6 +69,7 @@ me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
      sudo apt install git
      sudo apt install -t bookworm-backports emacs
      sudo apt install chromium
+     sudo apt install shellcheck
    #+end_src
 
    We need a bunch of packages to be able to install MATLAB. See this [[https://www.mathworks.com/matlabcentral/answers/2018166-what-dependencies-are-needed-to-install-matlab-on-minimal-or-core-linux-installations][MATLAB Answers post]]. The
