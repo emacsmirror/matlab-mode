@@ -150,7 +150,7 @@
 ;; ----------
 ;; t-utils.el uses the ert package.  Many of t-utils functions operate on a set of input files and
 ;; compare them against baselines.  For example, `t-utils-test-font-lock' loops over a set of files,
-;; NAME.EXT, and compares them against NAME_expected.EXT.  The ert package does not provide a
+;; NAME.LANG, and compares them against NAME_expected.txt.  The ert package does not provide a
 ;; looping facility.  Therefore, t-utils internally performs the looping.  This makes reporting a
 ;; little off.  One test is really a number of tests defined by the test input files.  To debug a
 ;; specifice input file, the caller of the t-utils needs to setup for debugging.  See
@@ -180,12 +180,12 @@
     (delete-trailing-whitespace (point-min) (point-max))))
 
 (defun t-utils-get-files (test-name base-regexp &optional skip-regexp file-to-use)
-  "Return list of test input files, /abs/path/to/TEST-NAME-files/FILE.EXT.
+  "Return list of test input files, /abs/path/to/TEST-NAME-files/FILE.LANG.
 The basename of each returned file matches BASE-REGEXP and not optional
 SKIP-REGEXP.  Optional FILE-TO-USE narrow the list of full paths to that
 file and the result is a list of one file.
 
-For each:   /abs/path/to/TEST-NAME-files/FILE.EXT
+For each:   /abs/path/to/TEST-NAME-files/FILE.LANG
 if exists:  /abs/path/to/TEST-NAME-files/FILE.skip.txt
 then this test input file is skipped.
 
@@ -215,7 +215,7 @@ skipping all *_expected.lang files."
             (error "File %s does not exist" file-to-use)))
         (setq files (list true-file-to-use))))
 
-    ;; File each FILE.ext in files, remove it when a corresponding FILE.skip.txt exists.
+    ;; File each NAME.LANG in files, remove it when a corresponding FILE.skip.txt exists.
     (let ((files-not-skipped '()))
       (dolist (file files)
         (let ((skip-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.txt" file)))
@@ -322,7 +322,12 @@ baseline check fails."
 
 (defun t-utils--insert-file-for-test (file &optional file-major-mode)
   "Insert FILE into current temporary buffer for testing.
-If optional FILE-MAJOR-MODE function is provided, run that, otherwise"
+If optional FILE-MAJOR-MODE function is provided, run that, otherwise
+we examine the first line of the file for the major mode:
+  -*- MODE-NAME -*-
+or
+  -*- mode: MODE-NAME -*-"
+
   (insert-file-contents-literally file)
   ;; CRLF -> LF for consistency between Unix and Windows
   (goto-char (point-min))
@@ -559,7 +564,7 @@ differences for each command.  See `t-utils-test-xr' for details."
 
 (defun t-utils-test-xr (test-name lang-files)
   "Execute and record (t-utils-xr COMMANDS) from LANG-FILES list.
-For each NAME.EXT in LANG-FILES, run each (t-utils-xr COMMANDS) and
+For each NAME.LANG in LANG-FILES, run each (t-utils-xr COMMANDS) and
 compare results against NAME_expected.org.  TEST-NAME is used in
 messages.
 
@@ -712,7 +717,7 @@ got code-to-face (\"%s\" . %S), expected code-to-face (\"%s\" . %S)"
 
 (defun t-utils-test-font-lock (test-name lang-files code-to-face)
   "Test font-lock using on each lang-file in LANG-FILES list.
-Foreach lang-file NAME.EXT in LANG-FILES compare the file against
+Foreach file NAME.LANG in LANG-FILES compare the file against
 NAME_expected.txt, where NAME the file name minus the lang-file
 extension, EXT.  NAME_expected.txt is of same length as the file and has
 a character for each face setup by font-lock.  CODE_TO_FACE is an alist
@@ -744,9 +749,9 @@ Example test setup:
 
   ./LANGUAGE-ts-mode.el
   ./tests/test-LANUGAGE-ts-mode-font-lock.el
-  ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME1.EXT
+  ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME1.LANG
   ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME1_expected.txt
-  ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME2.EXT
+  ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME2.LANG
   ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME2_expected.txt
   ....
 
@@ -776,7 +781,7 @@ Where ./tests/test-LANUGAGE-ts-mode-font-lock.el contains:
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-font-lock test-name lang-files code-to-face)))
 
-To loop over all NAME*.EXT font-lock test files, interactively
+To loop over all NAME*.LANG font-lock test files, interactively
 
   \\[ert] RET test-LANGUAGE-ts-mode-font-lock RET
 
@@ -785,8 +790,8 @@ the color marker is) to see messages that were displayed by your test.
 
 To debug a specific font-lock test file
 
- M-: (test-LANGUAGE-ts-mode-font-lock--file \
-\"test-LANUGAGE-ts-mode-font-lock-files/NAME.EXT\")"
+ M-: (test-LANGUAGE-ts-mode-font-lock--file
+      \"test-LANUGAGE-ts-mode-font-lock-files/NAME.LANG\")"
 
   (let ((face-to-code (mapcar (lambda (pair)
                                 (cons (cdr pair) (car pair)))
@@ -989,8 +994,8 @@ the color marker is) to see messages that were displayed by your test.
 
 To debug a specific indent test file
 
- M-: (test-LANGUAGE-ts-mode-indent--file \
-\"test-LANUGAGE-ts-mode-indent-files/NAME.LANG\")"
+ M-: (test-LANGUAGE-ts-mode-indent--file
+      \"test-LANUGAGE-ts-mode-indent-files/NAME.LANG\")"
 
 
   (when (not error-nodes-regexp)
@@ -1277,12 +1282,12 @@ LANGUAGE tree-sitter that need addressing or some other issue."
 Compare syntax-table of each NAME.LANG in LANG-FILES against NAME_expected.txt.
 TEST-NAME is used in messages.
 
-If NAME_expected.txt does not exist or the result of NAME.ext doesn't
+If NAME_expected.txt does not exist or the result of NAME.LANG doesn't
 match NAME_expected.txt, NAME_expected.txt~ will be created.  You are
 then instructured to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
-To add a test for TEST-NAME.el which call this function, in the
+To add a test for TEST-NAME.el which calls this function, in the
 corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
@@ -1343,7 +1348,7 @@ NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
 instructured to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
-To add a test for TEST-NAME.el which call this function, in the
+To add a test for TEST-NAME.el which calls this function, in the
 corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
@@ -1404,7 +1409,7 @@ NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
 instructured to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
-To add a test for TEST-NAME.el which call this function, in the
+To add a test for TEST-NAME.el which calls this function, in the
 corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
@@ -1452,7 +1457,7 @@ NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
 instructured to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
-To add a test for TEST-NAME.el which call this function, in the
+To add a test for TEST-NAME.el which calls this function, in the
 corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
@@ -1500,6 +1505,102 @@ TODO should example test setup, see t-utils-test-font-lock."
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
 
+(defun t-utils-test-file-encoding (test-name lang-files file-major-mode)
+  "Test to check that the major-mode handles bad file encodings.
+Corrupted content in NAME.LANG of LANG-FILES list can crash Emacs when a
+tree-sitter language shared library runs on the corrupted content.  This
+loads the file, activate the major-mode, FILE-MAJOR-MODE, function and
+captures success if the file major-mode succeeds indicating file is not
+corrupted or the error message.  This result is captured in
+NAME_expected.txt.
+
+TEST-NAME is used in messages.
+
+If NAME_expected.txt does not exist or the result doesn't match
+NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
+instructured to validate the result and rename NAME_expected.txt~ to
+NAME_expected.txt.
+
+To add a test for TEST-NAME.el which calls this function, in the
+corresponding TEST-NAME-files/ directory, create
+TEST-NAME-files/NAME.LANG with either corrupted or non-corrupted
+content, then run the test.  Follow the messages to accept the generated
+baseline after validating it.
+
+Example test setup:
+
+  ./LANGUAGE-ts-mode.el
+  ./tests/test-LANUGAGE-ts-mode-file-encoding.el
+  ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME1.LANG
+  ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME1_expected.txt
+  ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME2.LANG
+  ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME2_expected.txt
+
+Where ./tests/test-LANUGAGE-ts-mode-file-encoding.el contains:
+
+  (defvar test-LANGUAGE-ts-mode-file-encoding--file nil)
+
+  (defun test-LANGUAGE-ts-mode-file-encoding--file (lang-file)
+    \"Test file-encoding on LANG-FILE.\"
+    (let ((test-LANGUAGE-ts-mode-file-encoding--file lang-file))
+      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-file-encoding\")))
+
+  (ert-deftest test-LANGUAGE-ts-mode-file-encoding ()
+    (let* ((test-name \"test-LANGUAGE-ts-mode-file-encoding\")
+           (lang-files (t-utils-get-files
+                     test-name
+                     (rx \".lang\" eos)
+                     nil
+                     test-LANGUAGE-ts-mode-file-encoding--file)))
+      (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
+      (t-utils-test-file-encoding test-name lang-files)))
+
+To loop over all NAME*.LANG file-encoding test files, interactively
+
+  \\[ert] RET test-LANGUAGE-ts-mode-file-encoding RET
+
+In the *ert* buffer, you can type \"m\" at the point of the test (where
+the color marker is) to see messages that were displayed by your test.
+
+To debug a specific file-encoding test file
+
+ M-: (test-LANGUAGE-ts-mode-file-encoding--file
+      \"test-LANUGAGE-ts-mode-file-encoding-files/NAME.LANG\")"
+
+  (let ((error-msgs '()))
+    (dolist (lang-file lang-files)
+      (with-temp-buffer
+
+        (let ((start-time (current-time)))
+
+          (message "START: %s %s" test-name lang-file)
+
+          (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
+                 (expected (when (file-exists-p expected-file)
+                             (with-temp-buffer
+                               (insert-file-contents-literally expected-file)
+                               (buffer-string))))
+                 (got "Major mode activated succesfully.")
+                 (got-file (concat expected-file "~")))
+
+            (t-utils--insert-file-for-test lang-file file-major-mode)
+            
+            (condition-case err
+                (t-utils--insert-file-for-test lang-file)
+              (error
+               (setq got (concat "Major mode errored with message\n" (error-message-string err)))))
+
+            (kill-buffer)
+
+            (let ((error-msg (t-utils--baseline-check
+                              test-name start-time
+                              lang-file got got-file expected expected-file)))
+              (when error-msg
+                (push error-msg error-msgs)))))))
+
+    ;; Validate t-utils-test-file-encoding result
+    (setq error-msgs (reverse error-msgs))
+    (should (equal error-msgs '()))))
 
 (provide 't-utils)
 ;;; t-utils.el ends here

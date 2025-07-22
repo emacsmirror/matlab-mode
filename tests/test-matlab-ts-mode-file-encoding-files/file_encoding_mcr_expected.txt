@@ -1,0 +1,4 @@
+Major mode errored with message
+Not activating matlab-ts-mode because this is MATLAB Compiler Runtime content
+
+Entered major-mode: fundamental-mode

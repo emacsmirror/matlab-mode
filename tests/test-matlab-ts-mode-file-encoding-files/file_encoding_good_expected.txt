@@ -1,0 +1,3 @@
+Major mode activated succesfully.
+
+Entered major-mode: matlab-ts-mode

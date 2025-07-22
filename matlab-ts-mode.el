@@ -156,6 +156,38 @@ The returned point, pt, reflects that location."
                       node-at-point)))
     (cons pt real-node)))
 
+;;; File encoding
+
+(defun matlab-ts-mode--check-set-file-encoding ()
+  "Check/set file encoding.
+Error is signaled if contents are corrupt because non-utf8 printable
+content can crash Emacs via the matlab tree-sitter parser."
+
+  ;; MCR check. Version info is at start.
+  ;; R2025a example: V2MCC8000MEC2000MCR2000<binary-data>
+  (save-excursion
+    (goto-char (point-min))
+    (when (looking-at "^V[0-9A-Z]+MCR[0-9]+")
+      (fundamental-mode)
+      (user-error "Not activating matlab-ts-mode because this contains MATLAB Compiler Runtime")))
+
+  ;; TODO should we check for utf-8 and error when non-utf8?
+  ;;    (when (not (string-match "utf-8" (symbol-name buffer-file-coding-system)))
+  ;;       (user-error "Buffer does not have utf-8 encoding"))
+  ;; note we cannot
+  ;;       (set-buffer-file-coding-system 'utf-8))
+  ;; because this would modify it and modes shouldn't modify the buffer.
+
+  (let ((bad-char-point (save-excursion
+                          (goto-char (point-min))
+                          (when (re-search-forward "[^[:print:][:space:]]" nil t)
+                            (point)))))
+    (when bad-char-point
+      (fundamental-mode)
+      (goto-char bad-char-point)
+      (user-error "Buffer appears corrupt, non-printable utf8 character at point %d: %c"
+                  bad-char-point (char-before)))))
+
 ;;; Syntax table
 
 (defvar matlab-ts-mode--syntax-table
@@ -1685,6 +1717,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
 
   (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))"
 
+  (matlab-ts-mode--check-set-file-encoding)
+
   (when (treesit-ready-p 'matlab)
     (treesit-parser-create 'matlab)
 
@@ -1780,13 +1814,44 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO indent
     ;;      mat = [1, 2; ...
-    ;;              3, 4];
+    ;;              3, 4];         <== TAB should align
+    ;;
+    ;; TODO indent
+    ;;      mat = [1, 2
+    ;;             ^               <== RET on previous line or TAB should be here
+    ;;
+    ;; TODO indent
+    ;;      c = { ...
+    ;;            {'one'           <== TAB to here (first RET or TAB, then type)
+    ;;
+    ;; TODO indent (good add test?):
+    ;;      c = { ...
+    ;;            {'one', 'two'}, ...
+    ;;            {'three', 'four'}, ...
+    ;;          }
     ;; TODO indent
     ;;      function a=foo
     ;;          a = ...
-    ;;  TAB>
-    ;;              ^  <== should be here
+    ;;              ^              <== RET on previous line or TAB should be here
     ;;      end
+    ;;
+    ;; TODO indent
+    ;;      filesToCheck = ...
+    ;;          ^                  <== RET on previous line or TAB should be here
+    ;; TODO indent
+    ;;      filesToCheck = ...
+    ;;          [
+    ;;            ^                <== RET on previous line or TAB should be here
+    ;;
+    ;; TODO indent
+    ;;      for fIdx = 1:10
+    ;;          ^                  <== RET on previous line or TAB should be here
+    ;;
+    ;; TODO indent (no syntax errors)
+    ;;      for fIdx = 1:10
+    ;;          ^                  <== RET on previous line or TAB should be here
+    ;;      end                        when there is no spaces or content on the line
+
     (treesit-major-mode-setup)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
