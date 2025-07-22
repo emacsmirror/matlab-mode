@@ -31,8 +31,9 @@
 (require 'matlab-ts-mode)
 (require 'matlab--access)
 
-(defvar sweep-test-matlab-ts-mode-indent--mlint (or (matlab--get-mlint-exe)
-                                                    (error "MLint not found")))
+(defvar sweep-test-matlab-ts-mode-indent--mlint
+  (or (matlab--get-mlint-exe)
+      (error "MLint not found, is matlab on your PATH?")))
 
 (defun sweep-test-matlab-ts-mode-indent--syntax-checker (file)
   "MLint FILE, return pair (VALID . CHECK-RESULT).
@@ -76,7 +77,7 @@ reported which is likely a bug in the tree-sitter parser.
 
 This calls `t-utils-sweep-test-indent' with does a number of
 checks to validate the ident rules.  When run interactively,
-displays the result in a *t-utils-seep-indent* buffer, otherwise
+displays the result in a *sweep-test-matlab-ts-mode-indent* buffer, otherwise
 the results are displayed on stdout."
 
   (let ((test-name "sweep-test-matlab-ts-mode-indent")

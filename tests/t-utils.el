@@ -320,20 +320,63 @@ baseline check fails."
              test-name lang-file (t-utils--took start-time))
     error-msg))
 
-(defun t-utils--insert-file-for-test (file &optional file-major-mode)
+(defun t-utils--display-result (test-name directory result &optional no-erase)
+  "Display a test RESULT string.
+If noninteractive this shows the result using `message', otherwise this
+creates *TEST-NAME* result buffer containing RESULT in DIRECTORY and
+dislays that buffer.  Optional NO-ERASE, if non-nil will not erase the
+result buffer prior to inserting RESULT."
+  (if noninteractive
+      (message "%s" result)
+    (let ((result-buf (get-buffer-create (concat "*" test-name "*"))))
+      (with-current-buffer result-buf
+        (read-only-mode -1)
+        (buffer-disable-undo)
+        (setq-local default-directory (file-truename directory))
+        (when (not no-erase)
+          (erase-buffer))
+        (if (= (point-min) (point-max))
+            (insert "# -*- compilation-minor-mode -*-\n\n")
+          (goto-char (point-max)))
+        (insert result)
+        (goto-char (point-min))
+        (text-mode) ;; so we can enable compilation-minor-mode
+        (compilation-minor-mode) ;; this lets us navigate to errors (would be nice to disable "g")
+        (set-buffer-modified-p nil)
+        (read-only-mode 1))
+      (display-buffer result-buf))))
+
+(defun t-utils--insert-file-for-test (file &optional file-major-mode skip-corrupt-check)
   "Insert FILE into current temporary buffer for testing.
 If optional FILE-MAJOR-MODE function is provided, run that, otherwise
 we examine the first line of the file for the major mode:
+
   -*- MODE-NAME -*-
-or
-  -*- mode: MODE-NAME -*-"
+  -*- mode: MODE-NAME -*-
+
+and run that.
+
+If optional SKIP-CORRUPT-CHECK is non-nil, the check for corrupted content is
+skipped."
 
   (insert-file-contents-literally file)
+
+  ;; We're testing a programming lanugage which is using utf-8-unix encoding
+  (set-buffer-file-coding-system 'utf-8-unix)
+
+  ;; Check for corrupted characters (these can crash Emacs via the language server parser)
+  (when (not skip-corrupt-check)
+    (goto-char (point-min))
+    (when (re-search-forward "[^[:print:][:space:]]" nil t)
+      (error "%s appears corrupt, non-printable utf8 character at point %d: %c"
+             file (point) (char-before))))
+
   ;; CRLF -> LF for consistency between Unix and Windows
   (goto-char (point-min))
   (while (re-search-forward "\r" nil t)
     (replace-match ""))
   (goto-char (point-min))
+
   ;; Set mode
   (if file-major-mode
       (funcall file-major-mode)
@@ -344,8 +387,10 @@ or
     (let* ((mode (match-string 1))
            (mode-cmd (intern (concat mode "-mode"))))
       (funcall mode-cmd)))
+
   ;; Incase the mode moves the point, reset to point-min.
   (goto-char (point-min))
+
   ;; Stash away the real buffer file for later use (and return it).
   (setq-local t-utils--buf-file file))
 
@@ -1178,7 +1223,7 @@ The result is:
 
 When run in an interacive Emacs session, e.g.
    M-: (sweep-LANGUAGE-ts-mode-indent)
-the result is shown in \"*t-utils-sweep-indent*\" buffer, otherwise it
+the result is shown in \"*TEST-NAME*\" buffer, otherwise it
 is displayed on stdout.
 
 After running this, you examine the results to see if there are issues.
@@ -1242,9 +1287,7 @@ LANGUAGE tree-sitter that need addressing or some other issue."
                                               (format "%s:1: note: indent took %.3f seconds\n"
                                                       file (gethash file took-ht)))
                                             files))))
-           (result (concat "# -*- compilation-minor-mode -*-\n"
-                           "\n"
-                           (format "Files-with-parse-error-nodes%s:\n"
+           (result (concat (format "Files-with-parse-error-nodes%s:\n"
                                    (if syntax-checker-fun
                                        "-but-pass-syntax-checker-fun"
                                      ""))
@@ -1261,21 +1304,7 @@ LANGUAGE tree-sitter that need addressing or some other issue."
                            "Slowest-indents:\n"
                            slow-files)))
 
-      (if noninteractive
-          (message "%s" result)
-        (let ((dir default-directory)
-              (result-buf (get-buffer-create "*t-utils-sweep-indent*")))
-          (with-current-buffer result-buf
-            (setq-local default-directory dir)
-            (read-only-mode -1)
-            (erase-buffer)
-            (buffer-disable-undo)
-            (insert result)
-            (goto-char (point-min))
-            (text-mode) ;; so we can enable compilation-minor-mode
-            (compilation-minor-mode)
-            (read-only-mode 1))
-          (display-buffer result-buf))))
+      (t-utils--display-result test-name directory result))
 
     (message "FINISHED: %s %s" test-name (t-utils--took start-time))))
 
@@ -1588,7 +1617,7 @@ To debug a specific file-encoding test file
 
             ;; Load lang-file in temp buffer and activate file-major-mode
             (condition-case err
-                (t-utils--insert-file-for-test lang-file file-major-mode)
+                (t-utils--insert-file-for-test lang-file file-major-mode 'skip-corrupt-check)
               (error
                (setq got (concat "Major mode errored with message\n" (error-message-string err)))))
 
@@ -1605,6 +1634,191 @@ To debug a specific file-encoding test file
     ;; Validate t-utils-test-file-encoding result
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
+
+(defun t-utils--log (log-file string &optional create)
+  "Append STRING to LOG-FILE.
+If CREATE is t, create LOG-FILE instead of appending"
+  (let ((coding-system-for-write 'no-conversion))
+    (write-region string nil log-file (not create))))
+
+(defun t-utils--log-create (test-name log-file)
+  "Create LOG-FILE with \"START: TEST-NAME\" content.
+Returns LOG-FILE truename"
+  
+  (setq log-file (file-truename (or log-file (concat test-name ".log"))))
+  (t-utils--log log-file (format "START: %s\n" test-name) t)
+  (message "Logging to: %s" log-file)
+  log-file)
+
+(defun t-utils--bad-parse-msg (lang-file parse-issue error-info)
+  "Return an bad parse error message for LANG-FILE containing ERROR-INFO.
+PARSE-ISSUE is a string for the message.
+ERROR-INFO is \"at line NUM:COL<optional-text\""
+
+  (cond
+   ((string-match "at line \\([0-9]+\\):\\([0-9]+\\)" error-info)
+    (format  "%s:%s:%s: error: %s %s\n"
+             lang-file (match-string 1 error-info) (match-string 2 error-info)
+             parse-issue error-info))
+   (t
+    (error "%s bad error-info, %s" lang-file error-info))))
+
+(defun t-utils--err-loc (error-node)
+  "Get \"type at line N1:C1 to N2:C2\" string for ERROR-NODE."
+
+  (let* ((start-point (treesit-node-start error-node))
+         (start-line (line-number-at-pos start-point))
+         (start-col (save-excursion ;; error messages are one based columns
+                      (goto-char start-point)
+                      (1+ (current-column))))
+         (end-point (treesit-node-end error-node))
+         (end-line (line-number-at-pos end-point))
+         (end-col (save-excursion
+                    (goto-char end-point)
+                    (1+ (current-column)))))
+    (format "%s node at line %d:%d to %d:%d (point %d to %d)"
+            (treesit-node-type error-node)
+            start-line start-col
+            end-line end-col
+            start-point
+            end-point)))
+
+(defun t-utils-sweep-test-ts-grammar (test-name
+                                      directory
+                                      lang-file-regexp
+                                      major-mode-fun
+                                      syntax-checker-fun
+                                      &optional error-nodes-regexp
+                                      log-file)
+  "Sweep test a tree-sitter grammar shared library looking for parse issues.
+
+File basenames matching matching LANG-FILE-REGEXP under DIRECTORY
+recursively are examined.  TEST-NAME is used in messages.
+
+Each matching file is read into a temporary buffer and then
+MAJOR-MODE-FUN is called.  This should be a mode that activates
+a tree-sitter grammar, i.e. calls (treesit-parser-create \\='LANGUAGE).
+
+ERROR-NODES-REGEXP, defaulting to (rx bol \"ERROR\" eos), is provided to
+`treesit-search-subtree' to look for syntax errors in the parse tree.
+
+SYNTAX-CHECKER-FUN is a function that takes a list of files and should
+return a hash table with files as the keys and the value of each key is
+either
+  (cons \"no-syntax-errors\" nil)
+  (cons \"has-syntax-errors\" \"at line N1:COL1 to N2:COL2\")
+
+Progress messages are logged to LOG-FILE which defaults to
+TEST_NAME.log.
+
+The result is:
+
+    Files-with-parse-error-nodes-but-pass-syntax-checker-fun:
+      <files with tree-sitter error nodes>
+
+    Files-that-parsed-succesfully-but-failed-syntax-checker-fun:
+      <files without tree-sitter error nodes>
+
+    Total-consistently-parsed-files: M of N
+
+When run in an interacive Emacs session, e.g.
+    M-: (sweep-LANGUAGE-ts-mode-grammar)
+the result is shown in \"*TEST-NAME*\" buffer,
+otherwise the result is displayed on stdout."
+
+  (when (not error-nodes-regexp)
+    (setq error-nodes-regexp (rx bos "ERROR" eos)))
+
+  (setq log-file (t-utils--log-create test-name log-file))
+  (when (not noninteractive)
+    (t-utils--display-result test-name directory (concat "Log: " log-file "\n\n")))
+  
+  (let ((start-time (current-time))
+        (all-lang-files (sort (mapcar #'file-truename ;; Expand "~" for the syntax-checker-fun
+                                      (directory-files-recursively directory lang-file-regexp))))
+        (lang-files-to-check '())
+        (ts-parse-result-ht (make-hash-table :test 'equal)))
+
+    (when (= (length all-lang-files) 0)
+      (user-error "No files found in directory %s recursively matching regexp \"%s\""
+                  directory lang-file-regexp))
+    (t-utils--log log-file (format "Found %d files to check %s\n"
+                                   (length all-lang-files) (t-utils--took start-time)))
+
+    (dolist (lang-file all-lang-files)
+      (with-temp-buffer
+        (let (ok)
+          (t-utils--log log-file (format "Reading: %s\n" lang-file))
+          (condition-case err
+              (progn
+                (t-utils--insert-file-for-test lang-file major-mode-fun)
+                (setq ok t))
+            (error
+             (t-utils--log log-file (format "Skipping %s, %s\n"
+                                            lang-file (error-message-string err)))))
+          (when ok
+            (push lang-file lang-files-to-check)
+            (let* ((root (treesit-buffer-root-node))
+                   (error-node (treesit-search-subtree root error-nodes-regexp nil t))
+                   (syntax-status-pair (if error-node
+                                           (cons "has-syntax-errors" (t-utils--err-loc error-node))
+                                         (cons "no-syntax-errors" nil))))
+              (puthash lang-file syntax-status-pair ts-parse-result-ht)
+              (t-utils--log log-file (format "ts-parse: %s > %S\n"
+                                             lang-file syntax-status-pair)))))))
+
+    (when (= (length lang-files-to-check) 0)
+      (user-error "No files to check (all skipped)\n"))
+    (setq lang-files-to-check (sort lang-files-to-check))
+    (t-utils--log log-file (format "Checking %d files\n" (length lang-files-to-check)))
+
+    (t-utils--log log-file (format "Calling %S\n" syntax-checker-fun))
+    (let ((syntax-check-result-ht (funcall syntax-checker-fun lang-files-to-check))
+          (files-with-bad-ts-error-parse "")
+          (files-with-bad-ts-success-parse "")
+          (n-consistent-files 0))
+
+      (t-utils--log log-file (format "Examinging %S result\n" syntax-checker-fun))
+
+      (dolist (lang-file lang-files-to-check)
+        (let ((ts-parse-file-result-pair (gethash lang-file ts-parse-result-ht))
+              (syntax-check-file-result-pair
+               (let ((pair (gethash lang-file syntax-check-result-ht)))
+                 (when (not (or (equal (car pair) "has-syntax-errors")
+                                (equal (car pair) "no-syntax-errors")))
+                   (user-error "Bad hash %S, %s -> %S" syntax-check-result-ht lang-file pair))
+                 pair)))
+          (if (string= (car ts-parse-file-result-pair) (car syntax-check-file-result-pair))
+              (setq n-consistent-files (1+ n-consistent-files))
+            (pcase (car ts-parse-file-result-pair)
+              ("has-syntax-errors" ;; ts says syntax errors, syntax-check says no errors
+               (setq files-with-bad-ts-error-parse
+                     (concat files-with-bad-ts-error-parse
+                             (t-utils--bad-parse-msg lang-file
+                                                     "bad tree-sitter parse"
+                                                     (cdr ts-parse-file-result-pair)))))
+              ("no-syntax-errors";; ts says no syntax errors, syntax-check says have errors
+               (setq files-with-bad-ts-success-parse
+                     (concat files-with-bad-ts-success-parse
+                             (t-utils--bad-parse-msg lang-file
+                                                     "tree-sitter did not detect error"
+                                                     (cdr syntax-check-file-result-pair)))))
+              (_ (cl-assert nil))))))
+
+      (let ((result
+             (concat
+              "Files-with-parse-error-nodes-but-pass-syntax-checker-fun:\n"
+              files-with-bad-ts-error-parse
+              "\n"
+              "Files-that-parsed-succesfully-but-failed-syntax-checker-fun:\n"
+              files-with-bad-ts-success-parse
+              "\n"
+              "Total-consistently-parsed-files: " (format "%d of %d\n" n-consistent-files
+                                                          (length lang-files-to-check)))))
+        (t-utils--display-result test-name directory result 'no-erase)))
+
+    (t-utils--log log-file (format "FINISHED: %s %s\n" test-name (t-utils--took start-time)))
+    (message "Finished, see: %s" log-file)))
 
 (provide 't-utils)
 ;;; t-utils.el ends here
