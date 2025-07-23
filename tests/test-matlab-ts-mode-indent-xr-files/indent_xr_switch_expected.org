@@ -1,0 +1,162 @@
+#+startup: showall
+
+* Executing commands from indent_xr_switch.m:2:2:
+
+  (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "case 1") "C-m" (insert "disp('1');") "C-m" (insert "end") "C-m")
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  132
+  Moved to point:   21
+  : 2:0: % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "case 1") "C-m" (insert "disp('1');") "C-m" (insert "end") "C-m")
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :   21
+  Moved to point:  133
+  : 3:0: switch fcn1(a)
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  133
+  Moved to point:  147
+  : 3:14: switch fcn1(a)
+  :                     ^
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  147
+  Moved to point:  150
+  : 4:2:   
+  :        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,6 +1,7 @@
+ % -*- matlab-ts -*-
+ % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "case 1") "C-m" (insert "disp('1');") "C-m" (insert "end") "C-m")
+ switch fcn1(a)
++  
+ 
+ 
+   
+  #+end_src diff
+
+- Invoking      : (insert "case 1")
+  Start point   :  150
+  Moved to point:  156
+  : 4:8:   case 1
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,7 +1,7 @@
+ % -*- matlab-ts -*-
+ % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "case 1") "C-m" (insert "disp('1');") "C-m" (insert "end") "C-m")
+ switch fcn1(a)
+-  
++  case 1
+ 
+ 
+   
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  156
+  Moved to point:  161
+  : 5:4:     
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,6 +2,7 @@
+ % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "case 1") "C-m" (insert "disp('1');") "C-m" (insert "end") "C-m")
+ switch fcn1(a)
+   case 1
++    
+ 
+ 
+   
+  #+end_src diff
+
+- Invoking      : (insert "disp('1');")
+  Start point   :  161
+  Moved to point:  171
+  : 5:14:     disp('1');
+  :                     ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "case 1") "C-m" (insert "disp('1');") "C-m" (insert "end") "C-m")
+ switch fcn1(a)
+   case 1
+-    
++    disp('1');
+ 
+ 
+   
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  171
+  Moved to point:  172
+  : 6:0: 
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -5,6 +5,7 @@
+     disp('1');
+ 
+ 
++
+   
+ 
+ 
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   :  172
+  Moved to point:  175
+  : 6:3: end
+  :         ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -3,7 +3,7 @@
+ switch fcn1(a)
+   case 1
+     disp('1');
+-
++end
+ 
+ 
+   
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  175
+  Moved to point:  176
+  : 7:0: 
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -6,6 +6,7 @@
+ end
+ 
+ 
++
+   
+ 
+ 
+  #+end_src diff

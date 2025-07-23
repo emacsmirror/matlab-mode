@@ -1,0 +1,119 @@
+#+startup: showall
+
+* Executing commands from indent_xr_mat1.m:2:2:
+
+  (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :   99
+  Moved to point:   21
+  : 2:0: % (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :   21
+  Moved to point:  100
+  : 3:0: mat1 = [ [1, 2], [3, 4], ...
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  100
+  Moved to point:  129
+  : 4:0:    ...
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  129
+  Moved to point:  138
+  : 4:9:          ...
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,7 +1,7 @@
+ % -*- matlab-ts -*-
+ % (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
+ mat1 = [ [1, 2], [3, 4], ...
+-   ...
++         ...
+  ...
+ 
+ 
+  #+end_src diff
+
+- Invoking      : "C-n" = next-line
+  Start point   :  138
+  Moved to point:  146
+  : 5:4:  ...
+  :          ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  146
+  Moved to point:  154
+  : 5:12:          ...
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ % (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
+ mat1 = [ [1, 2], [3, 4], ...
+          ...
+- ...
++         ...
+ 
+ 
+ 
+  #+end_src diff
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  154
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  154
+  Moved to point:  164
+  : 6:9:          
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -3,6 +3,7 @@
+ mat1 = [ [1, 2], [3, 4], ...
+          ...
+          ...
++         
+ 
+ 
+ 
+  #+end_src diff
+
+- Invoking      : (insert "];
+")
+  Start point   :  164
+  Moved to point:  167
+  : 7:0: 
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -3,7 +3,8 @@
+ mat1 = [ [1, 2], [3, 4], ...
+          ...
+          ...
+-         
++         ];
++
+ 
+ 
+ 
+  #+end_src diff

@@ -1,0 +1,67 @@
+#+startup: showall
+
+* Executing commands from indent_xr_mat3.m:2:2:
+
+  (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[3, 4]];\n"))
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :   81
+  Moved to point:   21
+  : 2:0: % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[3, 4]];\n"))
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :   21
+  Moved to point:   82
+  : 3:0: mat3 = [[1, 2]
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :   82
+  Moved to point:   96
+  : 3:14: mat3 = [[1, 2]
+  :                     ^
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :   96
+  Moved to point:  105
+  : 4:8:         
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,6 +1,7 @@
+ % -*- matlab-ts -*-
+ % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[3, 4]];\n"))
+ mat3 = [[1, 2]
++        
+ 
+ 
+ 
+  #+end_src diff
+
+- Invoking      : (insert "[3, 4]];
+")
+  Start point   :  105
+  Moved to point:  114
+  : 5:0: 
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,7 +1,8 @@
+ % -*- matlab-ts -*-
+ % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[3, 4]];\n"))
+ mat3 = [[1, 2]
+-        
++        [3, 4]];
++
+ 
+ 
+ 
+  #+end_src diff

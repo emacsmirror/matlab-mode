@@ -980,7 +980,8 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
         ;; result is nil or an error message list of strings
         error-msg))))
 
-(defun t-utils-test-indent (test-name lang-files &optional line-manipulator error-nodes-regexp)
+(defun t-utils-test-indent (test-name lang-files
+                                      &optional indent-checker line-manipulator error-nodes-regexp)
   "Test indent on each file in LANG-FILES list.
 Compare indent of each NAME.LANG in LANG-FILES against NAME_expected.LANG.
 TEST-NAME is used in messages.
@@ -998,6 +999,9 @@ accept the generated baseline after validating it.
 Two methods are used to indent each file in LANG-FILES,
 
  1. (indent-region (point-min) (point-man))
+
+    If optional INDENT-CHECKER function is provided, that is called with
+    the temporary buffer in context after the `indent-region'.
 
  2. Indent via typing simulation.  If lang-file has no error nodes in the
     parse tree, indent is simulated by \"typing lang-file\" to exercise
@@ -1086,7 +1090,12 @@ To debug a specific indent test file
 
             (message "START: %s <indent-region> %s" test-name lang-file)
             (setq lang-file-major-mode major-mode)
+
             (indent-region (point-min) (point-max))
+
+            (when indent-checker
+              (funcall indent-checker))
+
             (t-utils--trim)
             (let ((got (buffer-substring (point-min) (point-max)))
                   (got-file (concat expected-file "~")))

@@ -711,6 +711,9 @@ We use a looping pattern similar to the font-lock test for our indent tests:
   ./tests/test-LANGUAGE-ts-mode-indent.el
   ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test1.lang
   ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test1_expected.lang  // generated for you
+  ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test2.lang
+  ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test2_expected.lang  // generated for you
+  ....
 #+end_example
 
 where test-LANGUAGE-ts-mode-indent.el contains:
@@ -751,6 +754,85 @@ where test-LANGUAGE-ts-mode-indent.el contains:
       (t-utils-error-if-no-treesit-for 'LANGUAGE test-name)
       (t-utils-test-indent test-name)))
 #+end_src
+
+** Test: Indent as you type
+
+Code should be indented correctly as you type. Consider
+
+ : someVariable = {
+ :                  ^   <== Cursor should move here when RET is typed at end of prior line
+
+To test this we use =t-utils-xr= to execute and record editing commands. The test setup:
+
+#+begin_example
+  ./LANGUAGE-ts-mode.el
+  ./tests/test-LANGUAGE-ts-mode-indent-xr.el
+  ./tests/test-LANGUAGE-ts-mode-indent-xr-files/indent_test1.lang
+  ./tests/test-LANGUAGE-ts-mode-indent-xr-files/indent_test1_expected.org  // generated for you
+  ....
+#+end_example
+
+where =test-LANGUAGE-ts-mode-indent-xr.el= contains:
+
+#+begin_src emacs-lisp
+  (require 't-utils)
+  (require 'LANGUAGE-ts-mode)
+
+  (defvar test-LANGUAGE-ts-mode-indent-xr--file nil)
+
+  (defun test-LANGUAGE-ts-mode-indent-xr--file (lang-file)
+    "Test an individual LANG-FILE.
+  This is provided for debugging.
+    M-: (test-LANGUAGE-ts-mode-indent-xr--file
+        \"test-LANGUAGE-ts-mode-indent-xr-files/LANG-FILE\")"
+    (let ((test-LANGUAGE-ts-mode-indent-xr--file lang-file))
+      (ert-run-tests-interactively "test-LANGUAGE-ts-mode-indent-xr")))
+
+  (ert-deftest test-LANGUAGE-ts-mode-indent-xr ()
+    "Test indent using ./test-LANGUAGE-ts-mode-indent-xr-files/NAME.lang.
+  Using ./test-LANGUAGE-ts-mode-indent-xr-files/NAME.lang, compare typing
+  commands via `t-utils-xr' Lisp commans in the *.lang files and compare
+  agains ./test-LANGUAGE-ts-mode-indent-xr-files/NAME_expected.org.  This
+  loops on all ./test-LANGUAGE-ts-mode-indent-xr-files/NAME.lang files.
+
+  To add a test, create
+    ./test-LANGUAGE-ts-mode-indent-xr-files/NAME.lang
+  and run this function.  The baseline is saved for you as
+    ./test-LANGUAGE-ts-mode-indent-xr-files/NAME_expected.org~
+  after validating it, rename it to
+    ./test-LANGUAGE-ts-mode-indent-xr-files/NAME_expected.org"
+
+    (let* ((test-name "test-LANGUAGE-ts-mode-indent-xr")
+           (lang-files (t-utils-get-files
+                     test-name
+                     (rx ".lang" eos)
+                     nil
+                     test-LANGUAGE-ts-mode-indent-xr--file)))
+      (t-utils-error-if-no-treesit-for 'LANGUAGE test-name)
+      (t-utils-test-xr test-name lang-files)))
+#+end_src
+
+An example =./tests/test-LANGUAGE-ts-mode-indent-xr-files/indent_test1.lang= where =%= is starts a
+comment:
+
+#+begin_example
+  % -*- LANGAUAGE-ts -*-
+  % (t-utils-xr "C-a" "C-n" (insert "someVariable = {") "C-e" "C-m" (insert "1234") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
+#+end_example
+
+The execute and record function, =t-utils-xr= runs the Emacs commands which creates below the
+comment line.
+
+#+begin_example
+  someVariable = {
+                   1234
+                 }
+#+end_example
+
+The commands are recorded into
+=./tests/test-LANGUAGE-ts-mode-indent-xr-files/indent_test1_expected.org~= and compared against
+baseline =indent_test1_expected.org=. If the baseline doesn't exist you are asked to review
+=indent_test1_expected.org~= and rename it to indent_test1_expected.org if it looks good.
 
 ** Sweep test: Indent
 
@@ -1545,7 +1627,7 @@ the color marker is) to see messages that were displayed by your test.
 If the =./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME*_expected.txt~= files look good
 rename them to =./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME*_expected.txt= (per the
 messages shown by ert).
-  
+
 * Final version
 
 TODO

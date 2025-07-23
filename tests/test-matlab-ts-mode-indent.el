@@ -30,6 +30,8 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
+(defvar test-matlab-ts-mode-indent--current-indent-level nil)
+
 (defvar test-matlab-ts-mode-indent--file nil)
 
 (defun test-matlab-ts-mode-indent--file (m-file)
@@ -59,7 +61,13 @@ after validating it, rename it to
                    (rx ".m" eos)
                    (rx "_expected.m" eos) ;; skip our *_expected.m baselines
                    test-matlab-ts-mode-indent--file))
+         (indent-checker (lambda ()
+                           (setq test-matlab-ts-mode-indent--current-indent-level
+                                 matlab-ts-mode--function-indent-level)))
          (line-manipulator (lambda ()
+                             ;; Set the indent level to what the m-file has
+                             (setq matlab-ts-mode--function-indent-level
+                                   test-matlab-ts-mode-indent--current-indent-level)
                              ;; Workaround
                              ;; https://github.com/acristoffers/tree-sitter-matlab/issues/32
                              (goto-char (point-min))
@@ -70,7 +78,7 @@ after validating it, rename it to
                                    (insert " ")))
                                (forward-line)))))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
-    (t-utils-test-indent test-name m-files line-manipulator)))
+    (t-utils-test-indent test-name m-files indent-checker line-manipulator)))
 
 (provide 'test-matlab-ts-mode-indent)
 ;;; test-matlab-ts-mode-indent.el ends here
