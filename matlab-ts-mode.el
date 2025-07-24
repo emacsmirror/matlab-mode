@@ -1990,6 +1990,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
     ;; TODO double check indent rules to see if they can be simplified
+    ;;
     ;; TODO update --indent-rules to have "See: test file" comments.
     ;;
     ;; TODO indent
@@ -1999,8 +2000,17 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      end
     ;;
     ;; TODO indent
+    ;;          outResult = longFunction(...
+    ;;              ^              <== RET on previous line or TAB should be here
+    ;;
+    ;; TODO indent
+    ;;          a = f(1) + f2(1, ...
+    ;;                        ^              <== RET on previous line or TAB should be here
+    ;;
+    ;; TODO indent
     ;;      filesToCheck = ...
     ;;          ^                  <== RET on previous line or TAB should be here
+    ;;
     ;; TODO indent
     ;;      filesToCheck = ...
     ;;          [
