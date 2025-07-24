@@ -90,27 +90,24 @@ https://github.com/emacs-tree-sitter/tree-sitter-langs/"
 	  (mapconcat #'identity tar-args " ")
 	  (buffer-string)))
 
-(defun matlab--ts-get-langs-to-extract (slib-re tar-args)
-  "Get ts languages to extract from tar TAR-ARGS stdout in `current-buffer'.
-SLIB-RE is the regexp that matches LANGUAGE.SLIB-EXT"
+(defun matlab--ts-get-langs-to-extract (slib-re extract-dir tar-args)
+  "Get ts languages to from EXTRACT-DIR created by tar TAR-ARGS.
+SLIB-RE is the regexp that matches LANGUAGE.SLIB-EXT."
 
   (let ((all-languages '())
+        (extracted-files (directory-files extract-dir nil slib-re t))
 	(languages-to-extract '()))
-
-    (goto-char (point-min))
-
-    (while (not (eobp))
-      (cond ((looking-at slib-re)
-	     (push (match-string 1) all-languages))
-	    ((not (or (looking-at "^[\r\n]+$")
-                      (looking-at "^BUNDLE-VERSION$")))
-	     (error "Unexpeced content in output from %s"
-		    (matlab--ts-langs-tar-result tar-args))))
-      (forward-line))
+    (dolist (file extracted-files)
+      (when (string-match slib-re file)
+        (push (match-string 1 file) all-languages)))
     (setq all-languages (sort all-languages))
 
-    (if (y-or-n-p "Do you want extract all tree-sitter language shared libraries,
-(y for all, n to specify)? ")
+    (when (= (length all-languages) 0)
+      (error "Failed to find any extracted files in %s from command %s"
+       extract-dir
+       (matlab--ts-langs-tar-result tar-args)))
+
+    (if (eq ?a (read-char-choice "Extract (a)ll or (s)pecify languages: (a/s)? " '(?a ?s)))
         (setq languages-to-extract all-languages)
       (let ((prompt "First language to extract: ")
 	    done)
@@ -179,8 +176,9 @@ LATEST-URL is the URL used to get *.tar.gz into the current buffer"
 		 (tar-args `("-x" "-v" "-f" ,tmp-tar-gz "-C" ,extract-dir))
 		 status)
 
-            (when (not (file-directory-p extract-dir))
-              (make-directory extract-dir))
+            (when (file-directory-p extract-dir)
+              (delete-directory extract-dir t))
+            (make-directory extract-dir)
 
             (setq status (apply #'call-process "tar" nil t nil tar-args))
 	    (when (not (= status 0))
@@ -193,23 +191,17 @@ LATEST-URL is the URL used to get *.tar.gz into the current buffer"
 			       ('gnu/linux "so")
 			       ;; assume some other type of linux, e.g. bsdunix, andriod
 			       (_ "so")))
-		   (slib-re (concat "^\\([^ \t\r\n]+\\)\\." slib-ext "$"))
-		   (languages-to-extract (matlab--ts-get-langs-to-extract slib-re tar-args)))
-
-	      (goto-char (point-min))
-	      (while (not (eobp))
-                (when (looking-at slib-re)
-                  (let ((slib (match-string 0))
-                        (lang (match-string 1)))
-
-                    (when (member lang languages-to-extract)
-		      (let ((src-file (concat extract-dir "/" slib))
-                            (dst-file (concat dir "/libtree-sitter-" slib)))
-		        (when (file-exists-p dst-file)
-		          (delete-file dst-file))
-		        (rename-file src-file dst-file)))))
-
-	        (forward-line))
+		   (slib-re (concat "\\`\\([^ \t\r\n]+\\)\\." slib-ext "\\'"))
+		   (languages-to-extract (matlab--ts-get-langs-to-extract slib-re extract-dir
+                                                                          tar-args)))
+              
+              (dolist (language languages-to-extract)
+		(let* ((slib (concat language "." slib-ext))
+                       (src-file (concat extract-dir "/" slib))
+                       (dst-file (concat dir "/libtree-sitter-" slib)))
+		  (when (file-exists-p dst-file)
+		    (delete-file dst-file))
+		  (rename-file src-file dst-file)))
 
               (delete-directory extract-dir t)
 
@@ -253,7 +245,7 @@ https://github.com/emacs-tree-sitter/tree-sitter-lang
 is known to work with Emacs 30 as of July 2025"
            emacs-major-version))
   
-  (dolist (command '("tar" "gunzip"))
+  (dolist (command '("tar"))
     (when (not (executable-find command))
       (user-error "Unable to download, %s is not found on your `exec-path'" command)))
 
