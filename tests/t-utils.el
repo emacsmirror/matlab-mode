@@ -249,6 +249,8 @@ non-directory part matches the regexp, MATCH.  For example,
 It is assumed each matched test contains `ert-deftest' that has the same
 name as the test file.  These test names are then run using `ert'."
 
+  (interactive)
+
   (when (not match)
     (setq match "^test-.*\\.el\\'"))
 
