@@ -16,7 +16,7 @@
 # | along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # |
 # | Commentary:
-# |   Guidelines for writting a major mode powered by tree-sitter
+# |   Guidelines for writing a major mode powered by tree-sitter
 
 #+startup: showall
 
@@ -49,13 +49,37 @@
 - [ ] Investigate [[https://www.gnu.org/software/emacs/manual/html_mono/ert.html][ERT]] and [[https://github.com/jorgenschaefer/emacs-buttercup][buttercup]] testing
 - [ ] When done
   + validate we replaced: matlab => LANGUAGE, .m => .lang, m-file => lang-file
-  + double check our t-utils.el programatically insert it
-  + programatically insert all tests?
+  + double check our t-utils.el programmatically insert it
+  + programmatically insert all tests?
 
+* What does tree-sitter provide?
+
+Tree-sitter provides a parse tree for your language in real-time. The tree-sitter parser for your
+language is a highly efficient C shared library that is loaded into the Emacs process. The parse
+tree is incrementally updated as you type, and errors are localized to the smallest nodes in the
+tree. This means you can build a very accurate and highly performant major mode for your language
+leveraging tree-sitter for:
+
+ - Syntax highlighting.
+ - Indenting as you type. This includes accurate indentation when there are syntax errors.
+ - Semantic navigation. For example, go-to function start, go-to function end, etc.
+ - Imenu for navigation to function definitions or other items in your buffer.
+ - Highlight of paired items, such as parentheses, brackets, braces, function start/end, quotes,
+   etc.
+ - Electric pair mode to automatically insert matching closing delimiters such as parentheses,
+   brackets, braces, quotes, etc.
+
+Tree-sitter differs from the Language Server Protocol, LSP. They both parse the source file but
+have different objectives. LSP is a separate process and thus is not incremental, so much slower. It
+does a deeper analysis of the source file. For example, with languages like C/C++, LSP parses the
+include headers so it can provide go-to definition, find references, diagnostics warning and error
+messages, and similar capabilities. These LSP capabilities are not provided by tree-sitter, nor
+does it make sense for tree-sitter to provide them. It makes perfect sense that Emacs provides
+both tree-sitter and LSP because they both provide complementary capabilities for coding.
 
 * Guide to building a tree-sitter mode
 
-This guide to building a *LANGUAGE-ts-mode* for /file.lang/ files was written for Emacs 30.1.
+This guide to building a *LANGUAGE-ts-mode* for /file.lang/ files was written using Emacs 30.1.
 
 In creating a tree-sitter mode for a programming language, you have two options. You can leverage an
 old-style existing mode via =(define-derived-mode LANGUAGE-ts-mode OLD-LANGUAGE-mode "LANGUAGE"
@@ -69,29 +93,31 @@ mode and the new tree-sitter mode.
 
 To create the mode, we recommend following this order:
 
-1. *Font-lock*. We suggest doing this first, so that /file.lang/ is syntactically colored when
-   viewing it.
-2. *Indent*. Next we set up indentation so that you can edit /file.lang/ easily.
+1. *Font-lock*. Do this first, so that /file.lang/ is syntactically colored when viewing it.
+2. *Indent*. Next set up indentation so that you can edit /file.lang/ easily.
 3. *Syntax table and comments*.
 4. *Imenu*
 5. *Navigation*. Set up treesit-defun-type-regexp and treesit-defun-name-function to enable
    navigation features like beginning-of-defun and end-of-defun
+6. *Others*. In the sections below, you will see additional items to polish off your tree-sitter major mode.
 
-Perhaps the most important item is to write tests while creating the =LANGUAGE=ts-mode=. We provide
-some example tests that are designed to be repurposed by your =LANGUAGE-ts-mode=. Avoid developing
-the full fledged mode, then adding tests because if you are like the rest of us, you'll keep putting
-off writing the tests which will make =LANGUAGE-ts=mode= very difficult to maintain.
+Writing tests as you develop your =LANGUAGE-ts-mode= will speed up the creation of the
+mode and payoff nicely when making future updates to the mode. Test infrastructure is provided
+which is designed to be used by your =LANGUAGE-ts-mode=. Avoid developing the full fledged mode,
+then adding tests because if you are like the rest of us, you'll keep putting off writing the tests
+which will make =LANGUAGE-ts=mode= very difficult to maintain.
 
 Emacs has the testing frameworks, [[https://www.gnu.org/software/emacs/manual/html_node/ert/index.html][ERT, Emacs Lisp Regressing Testing.]] There is also the [[https://github.com/jorgenschaefer/emacs-buttercup/][Emacs
-buttercup]] though this is non-ELPA. As you'll see below, the techniques I used don't rely on ERT in
-some of the tests because I wanted it to be very easy to add tests.  For example, when writing a
-font-lock test, all you should do is provide the =file.lang= and run the test. The test will see
-there is no expected baseline to compare against, so it will generate one for you and ask you to
-validate it. The expect baseline for =file.lang= is =file_expected.txt= and the contents of the
-=file_expected.txt= is of same length of =file.lang=, where each character's face is encoded in a
-signle character. This makes it very easy to lockdown the behavior of font-lock without having to
-write lisp code to add the test. The same test strategy is used for other aspects of our
-=LANGUAGE-ts-mode=.
+buttercup]] though this is non-ELPA. To make creation and testing of the major mode easy, fast, and
+efficient, I built t-tuils.el that leverages ERT and adds looping capabilities, baseline file
+generation, and execute-and-record capabilities. With these extra capabilities, it is very fast to
+author high-coverage tests. For example, when writing a font-lock test, you provide the =file.lang=
+and run the test. The test will see there is no expected baseline to compare against, so it will
+generate one for you and ask you to validate it. The expect baseline for =file.lang= is
+=file_expected.txt= and the contents of the =file_expected.txt= is of same length of =file.lang=,
+where each character's face is encoded in a single character. This makes it very easy to lock down
+the behavior of font-lock without having to write lisp code to add the expected rsults of the
+test. The same test strategy is used for other aspects of our =LANGUAGE-ts-mode=.
 
 * Major Mode Conventions
 
@@ -109,24 +135,24 @@ Start by reading [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Maj
 If you are not familiar with the concepts behind tree-sitter, see
 https://tree-sitter.github.io/tree-sitter. Learn the notion of queries and try out queries in the
 playground section of the site on one of the languages supported by the site. A good understanding
-of the syntax tree and queires are required to implement a new tree-sitter major mode. You don't
-need to understand how to implement a lanugage parser if one already exists, otherwise you'll need
+of the syntax tree and queries are required to implement a new tree-sitter major mode. You don't
+need to understand how to implement a language parser if one already exists, otherwise you'll need
 to write a tree-sitter language parser.
 
 The tree-sitter parser produces a syntax tree:
 
 #+begin_example
-  +-------+     +------------------------------+   shared libary,
+  +-------+     +------------------------------+   shared library,
   |       |     |                              |   SLIB = .so    on Linux
-  | Emacs |<===>| libtree-sitter-LANUGAGE.SLIB |          .dll   on Windows
+  | Emacs |<===>| libtree-sitter-LANGUAGE.SLIB |          .dll   on Windows
   |       |     |                              |          .dylib on Mac
   +-------+     +------------------------------+
 #+end_example
 
-The libtree-sitter-LANUAGE.SLIB shared library is used to create a syntax tree of LANUAGE:
+The libtree-sitter-LANGUAGE.SLIB shared library is used to create a syntax tree of LANGUAGE:
 
 #+begin_example
-  LANUAGE program             Syntax Tree
+  LANGUAGE program             Syntax Tree
 
    c = a + b                      =
                                 /   \
@@ -182,7 +208,7 @@ will likely hang.
 
 #+end_src
 
-Validate your LANGAUGE-ts-mode works. Create foo.lang (where .lang is the extension used by your
+Validate your LANGUAGE-ts-mode works. Create foo.lang (where .lang is the extension used by your
 language) containing valid LANGUAGE content, then open foo.txt in Emacs and run:
 
 : M-x LANGUAGE-ts-mode
@@ -196,9 +222,9 @@ You should now be able to use:
 
 - Incremental updates to your LANGUAGE-ts-mode
 
-   As you update =LANUGAGE-ts-mode.el= you need to tell Emacs to pick up the updates. To do this,
+   As you update =LANGUAGE-ts-mode.el= you need to tell Emacs to pick up the updates. To do this,
 
-    - Use =C-x C-e=. With the cursor =(point)= at the end of the syntatic expression in your
+    - Use =C-x C-e=. With the cursor =(point)= at the end of the syntactic expression in your
       file and run =C-x C-e= (or =M-x eval-last-sexp=) to evaluate the sexp prior to the cursor
       point. The =C-x C-e= binding is very helpful with the =(t-utils-xr ....)= macros
       you place in your NAME.LANG test files.
@@ -238,7 +264,7 @@ in a file that has =M-x LANGUAGE-ts-mode= active.
 
 : M-: (treesit-query-capture (treesit-buffer-root-node) '((comment) @comments))
 
-Suppose your lanugage contains the keyword "if", you can find all "if" keywords using:
+Suppose your language contains the keyword "if", you can find all "if" keywords using:
 
 : M-: (treesit-query-capture (treesit-buffer-root-node) '("if" @keywords))
 
@@ -249,7 +275,7 @@ and "else" keywords:
 
 Note, to validate your queries use:
 
-: M-x (treesit-query-validate 'LANGUAGE '(QUERRY @catpture-name))
+: M-x (treesit-query-validate 'LANGUAGE '(QUERY @capture-name))
 
 Once we know the queries, we can set up font-lock. For example, here we fontify comments, keywords,
 and within comments we highlight to do markers.
@@ -454,7 +480,7 @@ To run your tests in a build system, use
   by the code-to-face alist setup by this function.  This loops
   on all ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang files.
 
-  To add a test, createp
+  To add a test, create
     ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang
   and run this function.  The baseline is saved for you as
     ./test-LANGUAGE-ts-mode-font-lock-files/NAME_expected.txt~
@@ -549,7 +575,7 @@ the tests.
 #+end_src
 
 To write the indent rules, we need to define the /matcher/, /anchor/, and /offset/ of each rule as
-explained in the Emacs manual, "[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Parser-based Indentation]]".  The /matcher/ and /anchor/ are are
+explained in the Emacs manual, "[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Parser-based Indentation]]".  The /matcher/ and /anchor/ are
 functions that take three arguments, tree-sitter =node=, tree-sitter =parent= node, and =bol=.  The
 =node= can be nil when not in a node. For example, when you type return, RET, after a statement.
 =bol= is the beginning-of-line buffer position. /matcher/ returns non-nil when the rule applies and
@@ -631,7 +657,7 @@ If we type =TAB= on the if a > 1 we'll see
  : -->N:#<treesit-node if_statement in 1-48> P:#<treesit-node source_file in 1-49> BOL:1 GP:nil NPS:nil
 
 This gives us our first rule, =((parent-is ,(rx bos "source_file" eos)) column-0 0)= is the rule for
-the root node, which in our LANGUAGE is "source_file" and says to sart on column 0.
+the root node, which in our LANGUAGE is "source_file" and says to start on column 0.
 
 If we type  =TAB= on the "b = a * 2" line in the following =if_else.lang= file.
 we'll see in the =*Messages*= buffer we'll see in the =*Messages*= buffer:
@@ -640,9 +666,9 @@ we'll see in the =*Messages*= buffer we'll see in the =*Messages*= buffer:
 
 where point 14-24 is "b = a * 2" and we see it has a node named "block". Thus, we update we add to
 our indent rules, =((node-is ,(rx bos "block" eos)) parent 4)= and a couple more rules as shown
-below. Notice we included a comment before each rule, which will aid in the long-term maintance of
+below. Notice we included a comment before each rule, which will aid in the long-term maintenance of
 the code. If the font-lock rules are complex, you may also want to add ";; F-Rule: description"
-comments to them.  I like using a commen prefix in the comments to make the standout and searchable.
+comments to them.  I like using a common prefix in the comments to make the standout and searchable.
 
 #+begin_src emacs-lisp
   (defvar LANGUAGE-ts-mode--indent-rules
@@ -669,12 +695,12 @@ comments to them.  I like using a commen prefix in the comments to make the stan
 *Tip*: =C-M-x= in our =defvar= and re-run =M-x LANGUAGE-ts-mode= file to pick up the new indent
 rules.
 
-*Tip*: If you look at the defintion, =M-x find-variable RET treesit-simple-indent-presets RET=, you
+*Tip*: If you look at the definition, =M-x find-variable RET treesit-simple-indent-presets RET=, you
 can see how the built-in /matchers/ and /anchors/ are written. From that, you can write your own as
 needed.
 
 We can simplify this because the "else_clause" and "end" nodes have the same indent rules
-so we can combine them and also handle handle nested if-statements as shown below.
+so we can combine them and also handle nested if-statements as shown below.
 
 #+begin_src emacs-lisp
   (defvar LANGUAGE-ts-mode--indent-rules
@@ -699,8 +725,8 @@ so we can combine them and also handle handle nested if-statements as shown belo
     "Tree-sitter indent rules for `LANGUAGE-ts-mode'.")
 #+end_src
 
-Following this process, we complete our our indent engine by adding more rules. As we develop
-the rules, it is good to lockdown expected behavior with tests.
+Following this process, we complete our indent engine by adding more rules. As we develop
+the rules, it is good to lock down expected behavior with tests.
 
 ** Test: Indent
 
@@ -791,8 +817,8 @@ where =test-LANGUAGE-ts-mode-indent-xr.el= contains:
   (ert-deftest test-LANGUAGE-ts-mode-indent-xr ()
     "Test indent using ./test-LANGUAGE-ts-mode-indent-xr-files/NAME.lang.
   Using ./test-LANGUAGE-ts-mode-indent-xr-files/NAME.lang, compare typing
-  commands via `t-utils-xr' Lisp commans in the *.lang files and compare
-  agains ./test-LANGUAGE-ts-mode-indent-xr-files/NAME_expected.org.  This
+  commands via `t-utils-xr' Lisp commands in the *.lang files and compare
+  against ./test-LANGUAGE-ts-mode-indent-xr-files/NAME_expected.org.  This
   loops on all ./test-LANGUAGE-ts-mode-indent-xr-files/NAME.lang files.
 
   To add a test, create
@@ -816,7 +842,7 @@ An example =./tests/test-LANGUAGE-ts-mode-indent-xr-files/indent_test1.lang= whe
 comment:
 
 #+begin_example
-  % -*- LANGAUAGE-ts -*-
+  % -*- LANGUAGE-ts -*-
   % (t-utils-xr "C-a" "C-n" (insert "someVariable = {") "C-e" "C-m" (insert "1234") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
 #+end_example
 
@@ -837,14 +863,14 @@ baseline =indent_test1_expected.org=. If the baseline doesn't exist you are aske
 ** Sweep test: Indent
 
 We define a sweep test to be a test that tries an action on a large number of files and reports
-issues it finds.  Sweep tests differ from classic basesline tests such as the above where we run
+issues it finds.  Sweep tests differ from classic baseline tests such as the above where we run
 functions and check the result for correctness.  A sweep test of indent on many thousands of
 LANGUAGE files cannot check the result of each individual indent because there is no baseline
 results for each file. However, a sweep test can check for asserts, unexpected errors, and slow
 indents. It can also check for invalid parse trees reported by the LANGUAGE tree-sitter if you have
 an external command that can check for syntax errors in your LANGUAGE files.
 
-Our indent sweep test takes a directory and runs indent-region all LANUGAGE files under the
+Our indent sweep test takes a directory and runs indent-region all LANGUAGE files under the
 directory recursively.
 
  - If the parse tree indicates an error, we call the external syntax checker to double
@@ -868,15 +894,15 @@ directory recursively.
 
    In our classic test things work fine because our test has a parent with a previous
    sibling. However, we may have missed that parent may not have a previous sibling. A sweep of a
-   large number of LANGUAGE files has good probablity of hitting this. If parent doesn't have a
-   previous sibling, we'll get "error (void-function stirng-match-p)."
+   large number of LANGUAGE files has good probability of hitting this. If parent doesn't have a
+   previous sibling, we'll get "error (void-function string-match-p)."
 
 Our indent sweep test:
 
 #+begin_src emacs-lisp
   (require 't-utils)
 
-  (defun sweep-test-LANGUAGE-ts-mode-indent--syntax-checkder (file)
+  (defun sweep-test-LANGUAGE-ts-mode-indent--syntax-checker (file)
     "Syntax check FILE, return pair (VALID . CHECK-RESULT).
   Where VALID is t if the file has valid syntax, nil otherwise.
   String CHECK-RESULT is what the syntax checker command returned."
@@ -938,11 +964,11 @@ represents the hierarchical structure of your source code, giving a structural b
 code.
 
 Think of the syntax table as a "language character descriptor". The syntax table defines the
-syntatic role of each character within the buffer containing your source code.  Characters are
+syntactic role of each character within the buffer containing your source code.  Characters are
 assigned a syntax class which includes word characters, comment start, comment end, string
 delimiters, opening and closing delimiters (e.g.  =(=, =)=, =[=, =]=, ={=, =}=), etc. The syntax
-table enables natural code editing and navitagion capabilities. For example, the syntax table is
-used by movement commands, e.g. =C-M-f", =M-x forward-sexp=, based on syntatic expressions (words,
+table enables natural code editing and navigating capabilities. For example, the syntax table is
+used by movement commands, e.g. =C-M-f", =M-x forward-sexp=, based on syntactic expressions (words,
 symbols, or balanced expressions). The syntax table is used for parentheses matching. It enables
 comment operations such as =M-;=, =M-x comment-dwim=.
 
@@ -1129,16 +1155,16 @@ you should test after setting up ='defun=:
   C-M-h  Marks defun, place point at beginning of defun and mark at the end, mark-defun
 #+end_example
 
-For proper synatic expression movement, you should define ='sexp=. Defining 'sexp requires that you
-also define ='text= to conver comments and strings. ='sexp= and ='text= are used by forward-sexp and
+For proper syntactic expression movement, you should define ='sexp=. Defining 'sexp requires that you
+also define ='text= to cover comments and strings. ='sexp= and ='text= are used by forward-sexp and
 friends (forward-sexp-function is set treesit-forward-sexp by treesit-major-mode-setup).
 
-Syntatic expressions, s-expressions, or simply sexp commands operate on /balanced
+Syntactic expressions, s-expressions, or simply sexp commands operate on /balanced
 expressions/. Strings are naturally balanced expressions because they start and end with some type
 of quote character. Likewise brackets =[ items ]= and braces ={ items }= are typically balanced
 expressions because they have open and close characters. Some languages have keywords expressions
 that have a starting keyword and an ending keyword. For example "if" could be paired with a closing
-"end" keyword. s-expressions can span multipe lines. s-expressions can be nested. These commands
+"end" keyword. s-expressions can span multiple lines. s-expressions can be nested. These commands
 leverage ='sexp= and ='text= things:
 
 #+begin_example
@@ -1156,8 +1182,8 @@ leverage ='sexp= and ='text= things:
   C-M-t   Transpose s-expressions, transpose-sexp
 #+end_example
 
-='sentence= and ='text= are used by forward-sentance via forward-sentence-function which is set to
-treesit-forward-sentence. The following sentance movement commands use forward-sentance:
+='sentence= and ='text= are used by forward-sentence via forward-sentence-function which is set to
+treesit-forward-sentence. The following sentence movement commands use forward-sentence:
 
 #+begin_example
   M-e      Move forward to next end of sentence, forward-sentence
@@ -1167,8 +1193,8 @@ treesit-forward-sentence. The following sentance movement commands use forward-s
 #+end_example
 
 You can add other items to treesit-thing-settings such as ='comment= and ='string=, though
-treesit.el doesn't currenlty use these, so I'd avoid doing so because the names you choose may not
-matach future items treesit.el will use.
+treesit.el doesn't currently use these, so I'd avoid doing so because the names you choose may not
+match future items treesit.el will use.
 
 The following commands move via parenthesis, though they are not tree-sitter aware. For example, it
 would be nice if down-list / up-list could be redirected to move up and down the nested
@@ -1211,7 +1237,7 @@ and strings to be filled like plain text, you should add a =text= entry to =tree
 e.g. if nodeName1 and nodeName2 should be filled like plain text, use:
 
  #+begin_src emacs-lisp
- (defvar LANGAUAGE-ts-mode--thing-settings
+ (defvar LANGUAGE-ts-mode--thing-settings
   `((LANGUAGE
      (text ,(rx (or "nodeName1" "nodeName2" ....))))))
  #+end_src
@@ -1225,7 +1251,7 @@ TODO
 
 * Setup: treesit-defun-name-function
 
-Emacs supports the concept of Change Logs for documentating changes.  With version control systems
+Emacs supports the concept of Change Logs for documenting changes.  With version control systems
 like git, there's less need for Change Logs, though the format of the Change Logs.  In Emacs using
 =C-x 4 a= (add-change-log-entry-other-window) will end up calling =add-log-current-defun= which
 defers to the =treesit-defun-name-function= to get information for the entry to add to the log file.
@@ -1252,7 +1278,7 @@ first two elements.  When name-fcn is nil the imenu names are generated the
   (defvar LANGUAGE-ts-mode--imenu-settings
     `(("Class" ,(rx bos "class_definition" eos))
       ("Function" ,(rx bos "function_definition" eos)))
-    "Tree-sitter imenu setttings.")
+    "Tree-sitter imenu settings.")
 
   ;; <snip>
 
@@ -1331,7 +1357,7 @@ show-paren-mode uses =show-paren-data-function= to match "start" with "end" pair
  :      ^       ^                      ^          ^
  :    here     there                  here       there
 
-Your programming lanugage may have other items that should be paired. You can leverage
+Your programming language may have other items that should be paired. You can leverage
 show-paren-mode as a general "show pair mode". For example, you can extend show-paren-mode
 to show matching start/end quotes in a string:
 
@@ -1339,7 +1365,7 @@ to show matching start/end quotes in a string:
  :     ^       ^
  :    here    there
 
-If your programming lanugage has block-like keywords, we can pair them. For example:
+If your programming language has block-like keywords, we can pair them. For example:
 
  :  if condition
  :  ^
@@ -1434,14 +1460,14 @@ how to do string matching assuming strings can be created using ='single quotes'
 Test file structure:
 
  : LANGUAGE-ts-mode.el
- : tests/test-LANUGAGE-ts-mode-show-paren.el
- : tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM1.LANG
- : tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM1_expected.org
- : tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM2.LANG
- : tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM2_expected.org
+ : tests/test-LANGUAGE-ts-mode-show-paren.el
+ : tests/test-LANGUAGE-ts-mode-show-paren-files/show_paren_ITEM1.LANG
+ : tests/test-LANGUAGE-ts-mode-show-paren-files/show_paren_ITEM1_expected.org
+ : tests/test-LANGUAGE-ts-mode-show-paren-files/show_paren_ITEM2.LANG
+ : tests/test-LANGUAGE-ts-mode-show-paren-files/show_paren_ITEM2_expected.org
  : ...
 
-where =tests/test-LANUGAGE-ts-mode-show-paren.el= contains:
+where =tests/test-LANGUAGE-ts-mode-show-paren.el= contains:
 
 #+begin_src emacs-lisp
   (require 't-utils)
@@ -1481,7 +1507,7 @@ where =tests/test-LANUGAGE-ts-mode-show-paren.el= contains:
       (t-utils-test-xr test-name lang-files)))
 #+end_src
 
-Each =tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM.LANG= file looks like the
+Each =tests/test-LANGUAGE-ts-mode-show-paren-files/show_paren_ITEM.LANG= file looks like the
 following assuming we have =% comment=" lines, replace with your language comments.
 
 #+begin_example
@@ -1514,8 +1540,8 @@ s6 = asdf>"
 
 The tests are using the execute and record function, =t-utils-xr= which runs commands and records
 them into a =*.org= file. We run the test and if
-=tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM_expected.org= doesn't exist,
-=tests/test-LANUGAGE-ts-mode-show-paren-files/show_paren_ITEM_expected.org~= will be generated and
+=tests/test-LANGUAGE-ts-mode-show-paren-files/show_paren_ITEM_expected.org= doesn't exist,
+=tests/test-LANGUAGE-ts-mode-show-paren-files/show_paren_ITEM_expected.org~= will be generated and
 after inspection rename the =*.org~= to =*.org=.
 
 For example, the last t-utils-xr result in the *.org file is below. Notice, that standard-output is
@@ -1582,15 +1608,15 @@ Test setup:
 
  #+begin_example
  ./LANGUAGE-ts-mode.el
- ./tests/test-LANUGAGE-ts-mode-file-encoding.el
- ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME1.LANG
- ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME1_expected.txt
- ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME2.LANG
- ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME2_expected.txt
+ ./tests/test-LANGUAGE-ts-mode-file-encoding.el
+ ./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME1.LANG
+ ./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME1_expected.txt
+ ./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME2.LANG
+ ./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME2_expected.txt
  ....
  #+end_example
 
-=./tests/test-LANUGAGE-ts-mode-file-encoding.el= contains:
+=./tests/test-LANGUAGE-ts-mode-file-encoding.el= contains:
 
   #+begin_src emacs-lisp
     (require 't-utils)
@@ -1614,18 +1640,18 @@ Test setup:
         (t-utils-test-file-encoding test-name lang-files \\='#LANGUAGE-ts-mode)))
   #+end_src
 
-Create /tests/test-LANUGAGE-ts-mode-file-encoding-files/*.LANG files containing corrupted
+Create /tests/test-LANGUAGE-ts-mode-file-encoding-files/*.LANG files containing corrupted
 (non-utf-8) content. Also create at least one valid *.LANG files.
 
 Run the test:
 
- : M-x ert RET test-LANUGAGE-ts-mode-file-encoding RET
+ : M-x ert RET test-LANGUAGE-ts-mode-file-encoding RET
 
 In the =ert= result buffer, you can type \"m\" at the point of the test (where
 the color marker is) to see messages that were displayed by your test.
 
-If the =./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME*_expected.txt~= files look good
-rename them to =./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME*_expected.txt= (per the
+If the =./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME*_expected.txt~= files look good
+rename them to =./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME*_expected.txt= (per the
 messages shown by ert).
 
 * Final version
@@ -1641,7 +1667,7 @@ expression based modes, especially for a reasonably complex programming language
 A downside of a tree-sitter mode is that the necessary =libtree-sitter-LANGUAGE.SLIB= shared library
 files are not provided with the =NAME-ts-mode='s that are shipped with Emacs. For =NAME-ts-mode='s
 that are installed via =M-x package-install LANGUAGE-ts-mode=, the corresponding
-=libtree-sitter-LANUAGE.SLIB= shared libraries are not installed.  You can have Emacs build
+=libtree-sitter-LANGUAGE.SLIB= shared libraries are not installed.  You can have Emacs build
 =~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.SLIB= via =M-x treesit-install-language-grammar=, but
 this can result in shared libraries that do not run correctly because of a compiler version mismatch
 between what was used for Emacs and what was used to build =libtree-sitter-LANGUAGE.SLIB=.
@@ -1661,9 +1687,9 @@ ensure the right compilers are in place and specify the ABI version. Something l
 
 As of Jun-2025, for Emacs 30.1, you can copy the prebuilt shared library, LANGUAGE.SLIB, from
 https://github.com/emacs-tree-sitter/tree-sitter-langs and place it in
-=~/.emacs.d/tree-sitter/libtree-sitter-LANUGAGE.SLIB=. Note, Emacs will first look for
+=~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.SLIB=. Note, Emacs will first look for
 =libtree-sitter-LANGUAGE.SLIB= in =treesit-extra-load-path=, then in subdirectory =tree-sitter= under
-=user-emacs-directory= (=~/.emacs.d/tree-sitter/libtree-sitter-LANUGAGE.SLIB=), then in the system
+=user-emacs-directory= (=~/.emacs.d/tree-sitter/libtree-sitter-LANGUAGE.SLIB=), then in the system
 =/lib=.
 
 These downsides are relatively minor compared with the benefits of a tree-sitter powered mode. It is
@@ -1683,7 +1709,7 @@ TODO extract help from t-utils.el and place here.
 
   - Install MSYS2
   - Run MSYS2 bash, then: pacman -S gcc
-  - Install gpg from https://www.gpg4win.org/ and place it on on the path before MSYS2.
+  - Install gpg from https://www.gpg4win.org/ and place it on the path before MSYS2.
   - Install matlab tree sitter from src using Emacs 30.1
   #+begin_example
     emacs
@@ -1704,7 +1730,7 @@ TODO extract help from t-utils.el and place here.
 
 - [ ] In [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html][Parser-Based Indentation]] we have prev-line which goes backward exactly one line
 
-  Consider a programming lanugage with a few statements, e.g.
+  Consider a programming language with a few statements, e.g.
 
   #+begin_example
     {
@@ -1803,14 +1829,14 @@ TODO extract help from t-utils.el and place here.
      - Variable creation/assignment will be semantically colored.
 
      - Now fontify all MATLAB/Simulink factory builtin provided functions, class
-       methods/properities, enums, etc. Note, if you override a builtin function with a variable,
+       methods/properties, enums, etc. Note, if you override a builtin function with a variable,
        the variable creation/assignment will be colored as a variable, but the use will continue to
        be a function.  To avoid this confusing state, use variable names that collide with builtin
        items.
 
   2. Improved indent
 
-     - Simplfiied the semantics for indent. The indent rules are:
+     - Simplified the semantics for indent. The indent rules are:
 
        + TODO
 
@@ -1834,7 +1860,7 @@ TODO extract help from t-utils.el and place here.
 
      + TODO
 
-  6. Change Log command now work with MATALB *.m files.
+  6. Change Log command now work with MATLAB *.m files.
 
      Running =C-x 4 a= (add-change-log-entry-other-window) will now insert the name of the function
      or classdef for the current point.
@@ -1873,11 +1899,11 @@ TODO extract help from t-utils.el and place here.
        C-M-t   Transpose s-expressions, transpose-sexp
      #+end_example
 
- 12. Improved sentance commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
+ 12. Improved sentence commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
      "Wrong number of arguments: (0 . 0), 1" and now works in matlab-ts-mode.
 
      #+begin_example
-       M-e      Move Move forward to next end of sentence, forward-sentence
+       M-e      Move forward to next end of sentence, forward-sentence
        M-a      Move backward to start of sentence, backward-sentence
        M-k      Kill from point to end of sentence, kill-sentence
        C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
@@ -1894,3 +1920,10 @@ TODO extract help from t-utils.el and place here.
        using LSP mode.
 
        TODO - show how to do in lsp-mode and update lsp-mode org on this.
+
+# LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
+# LocalWords:  lang utils Imenu LSP defun ELPA tuils setq SLIB libtree dylib sexp xr defcusom
+# LocalWords:  defface EDebug ielm fontify Fontifying fontified defcustom alist eos bol NPS prev BUF
+# LocalWords:  caar cdar bos dwim propertize ppss SPC reindent defadvice IMenu imenu pred fn elec
+# LocalWords:  funcall myfcn prin asdf repeat:nil ABI abi MSYS pacman gpg bobp defclass
+# LocalWords:  fontification lsp
