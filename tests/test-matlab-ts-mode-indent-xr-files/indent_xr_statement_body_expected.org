@@ -1,0 +1,893 @@
+#+startup: showall
+
+* Executing commands from indent_xr_statement_body.m:3:2:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :   74
+  Moved to point:  108
+  : 4:33: classdef indent_xr_statement_body
+  :                                        ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  108
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  108
+  Moved to point:  113
+  : 5:4:     
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,6 +2,7 @@
+ 
+ % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+ classdef indent_xr_statement_body
++    
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     properties
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   :  113
+  Moved to point:  115
+  : 5:6:     %c
+  :            ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ 
+ % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+ classdef indent_xr_statement_body
+-    
++    %c
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     properties
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  115
+  Moved to point:  111
+  : 5:2: %c
+  :        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ 
+ % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+ classdef indent_xr_statement_body
+-    %c
++%c
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     properties
+  #+end_src diff
+
+* Executing commands from indent_xr_statement_body.m:7:6:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  169
+  Moved to point:  184
+  : 8:14:     properties
+  :                     ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  184
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  184
+  Moved to point:  193
+  : 9:8:         
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -6,6 +6,7 @@
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     properties
++        
+     end
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   :  193
+  Moved to point:  195
+  : 9:10:         %c
+  :                 ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -6,7 +6,7 @@
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     properties
+-        
++        %c
+     end
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  195
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:12:6:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  261
+  Moved to point:  273
+  : 13:11:     methods
+  :                   ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  273
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  273
+  Moved to point:  282
+  : 14:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -11,6 +11,7 @@
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     methods
++        
+         function foo(a)
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   :  282
+  Moved to point:  284
+  : 14:10:         %c
+  :                  ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -11,7 +11,7 @@
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     methods
+-        
++        %c
+         function foo(a)
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  284
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:17:14:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  374
+  Moved to point:  396
+  : 18:21:             if a == 1
+  :                             ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  396
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  396
+  Moved to point:  413
+  : 19:16:                 
+  :                        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -16,6 +16,7 @@
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             if a == 1
++                
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 try
+                     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   :  413
+  Moved to point:  415
+  : 19:18:                 %c
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -16,7 +16,7 @@
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             if a == 1
+-                
++                %c
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 try
+                     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  415
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:20:18:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  484
+  Moved to point:  504
+  : 21:19:                 try
+  :                           ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  504
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  504
+  Moved to point:  525
+  : 22:20:                     
+  :                            ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -19,6 +19,7 @@
+                 %c
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 try
++                    
+                     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 catch
+                 end
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   :  525
+  Moved to point:  527
+  : 22:22:                     %c
+  :                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -19,7 +19,7 @@
+                 %c
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 try
+-                    
++                    %c
+                     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 catch
+                 end
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  527
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:23:22:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  600
+  Moved to point:  622
+  : 24:21:                 catch
+  :                             ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  622
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  622
+  Moved to point:  643
+  : 25:20:                     
+  :                            ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -22,6 +22,7 @@
+                     %c
+                     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 catch
++                    
+                 end
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   :  643
+  Moved to point:  645
+  : 25:22:                     %c
+  :                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -22,7 +22,7 @@
+                     %c
+                     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 catch
+-                    
++                    %c
+                 end
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  645
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:28:18:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  735
+  Moved to point:  756
+  : 29:20:                 spmd
+  :                            ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  756
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  756
+  Moved to point:  777
+  : 30:20:                     
+  :                            ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -27,6 +27,7 @@
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 spmd
++                    
+                 end
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   :  777
+  Moved to point:  779
+  : 30:22:                     %c
+  :                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -27,7 +27,7 @@
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 spmd
+-                    
++                    %c
+                 end
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  779
+  Moved to point:  775
+  : 30:18:                 %c
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -27,7 +27,7 @@
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+                 spmd
+-                    %c
++                %c
+                 end
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+* Executing commands from indent_xr_statement_body.m:33:18:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  865
+  Moved to point:  891
+  : 34:25:             elseif a == 2
+  :                                 ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  891
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  891
+  Moved to point:  908
+  : 35:16:                 
+  :                        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -32,6 +32,7 @@
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             elseif a == 2
++                
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             else
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   :  908
+  Moved to point:  910
+  : 35:18:                 %c
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -32,7 +32,7 @@
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             elseif a == 2
+-                
++                %c
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             else
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  910
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:37:18:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  980
+  Moved to point:  997
+  : 38:16:             else
+  :                        ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  997
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  997
+  Moved to point: 1014
+  : 39:16:                 
+  :                        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -37,6 +37,7 @@
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             else
+                 
++                
+             end
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   : 1014
+  Moved to point: 1016
+  : 39:18:                 %c
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -36,7 +36,7 @@
+ 
+                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             else
+-                
++                %c
+                 
+             end
+ 
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   : 1016
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:43:14:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1115
+  Moved to point: 1135
+  : 44:19:             while a
+  :                           ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   : 1135
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   : 1135
+  Moved to point: 1152
+  : 45:16:                 
+  :                        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -42,6 +42,7 @@
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             while a
++                
+             end
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   : 1152
+  Moved to point: 1154
+  : 45:18:                 %c
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -42,7 +42,7 @@
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             while a
+-                
++                %c
+             end
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   : 1154
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:48:14:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1236
+  Moved to point: 1264
+  : 49:27:             for fIdx = 1:10
+  :                                   ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   : 1264
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   : 1264
+  Moved to point: 1281
+  : 50:16:                 
+  :                        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -47,6 +47,7 @@
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             for fIdx = 1:10
++                
+             end
+         end
+     end
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   : 1281
+  Moved to point: 1283
+  : 50:18:                 %c
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -47,7 +47,7 @@
+ 
+             % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+             for fIdx = 1:10
+-                
++                %c
+             end
+         end
+     end
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   : 1283
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:55:6:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1377
+  Moved to point: 1388
+  : 56:10:     events
+  :                  ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   : 1388
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   : 1388
+  Moved to point: 1397
+  : 57:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -54,6 +54,7 @@
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     events
++        
+     end
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   : 1397
+  Moved to point: 1399
+  : 57:10:         %c
+  :                  ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -54,7 +54,7 @@
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     events
+-        
++        %c
+     end
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   : 1399
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:60:6:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1465
+  Moved to point: 1481
+  : 61:15:     enumeration
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   : 1481
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   : 1481
+  Moved to point: 1490
+  : 62:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -59,6 +59,7 @@
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     enumeration
++        
+         red
+     end
+ end
+  #+end_src diff
+
+- Invoking      : (insert "%c")
+  Start point   : 1490
+  Moved to point: 1492
+  : 62:10:         %c
+  :                  ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -59,7 +59,7 @@
+ 
+     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
+     enumeration
+-        
++        %c
+         red
+     end
+ end
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   : 1492
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_statement_body.m:67:2:
+
+  (t-utils-xr (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
+
+- Invoking      : (re-search-backward "^classdef")
+  Start point   : 1626
+  Moved to point:   75
+  : 4:0: classdef indent_xr_statement_body
+  :      ^
+  No buffer modifications
+
+- Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
+  Start point   :   75
+  No point movement
+  standard-output:
+    "classdef indent_xr_statement_body
+  %c
+  
+      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+      properties
+          %c
+      end
+  
+      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+      methods
+          %c
+          function foo(a)
+  
+              % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+              if a == 1
+                  %c
+                  % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+                  try
+                      %c
+                      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+                  catch
+                      %c
+                  end
+  
+                  % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+                  spmd
+                  %c
+                  end
+  
+                  % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+              elseif a == 2
+                  %c
+  
+                  % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+              else
+                  %c
+                  
+              end
+  
+              % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+              while a
+                  %c
+              end
+  
+              % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+              for fIdx = 1:10
+                  %c
+              end
+          end
+      end
+  
+      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+      events
+          %c
+      end
+  
+      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+      enumeration
+          %c
+          red
+      end
+  end
+  
+  % (t-utils-xr (re-search-backward \"^classdef\") (print (buffer-substring-no-properties (point) (point-max))))
+  "
+  No buffer modifications

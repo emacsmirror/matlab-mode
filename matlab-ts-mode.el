@@ -862,6 +862,10 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
               ))))))
   matlab-ts-mode--function-indent-level)
 
+(defun matlab-ts-mode--set-function-indent-level-for-gp (node parent bol &rest _)
+  "Set and return offset for parent of PARENT (grand-parent of NODE) at BOL."
+  (matlab-ts-mode--set-function-indent-level node (treesit-node-parent parent) bol))
+
 ;; TODO - keep or rm matlab-ts-mode--do-functions-have-end (it's not currently used)
 (defun matlab-ts-mode--do-functions-have-end ()
   "Are functions terminated with an end keyword?"
@@ -1153,7 +1157,13 @@ is where we start looking for the error node."
 
      ;; I-Rule: function's
      ((parent-is ,(rx bos "function_definition" eos))
-      parent ,#'matlab-ts-mode--set-function-indent-level)
+      parent ,#'matlab-ts-mode--set-function-indent-level-for-gp)
+
+     ;; I-Rule: function a = indent_xr_fun()<RET>
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun*.m
+     ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos (or "function_definition") eos))
+      grand-parent ,#'matlab-ts-mode--set-function-indent-level)
+
 
      ;; I-Rule: constructs within classdef or function's.
      ((node-is ,(rx bos (or "arguments_statement" "block" "enumeration" "enum" "methods" "events"
@@ -1177,10 +1187,6 @@ is where we start looking for the error node."
                       eos))
       parent ,matlab-ts-mode--indent-level)
 
-     ;; I-Rule: function a = indent_xr_fun()<RET>
-     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun.m
-     ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos (or "function_definition") eos))
-      grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: case 10<RET>
      ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos (or "switch_statement" "case_clause"
@@ -1197,10 +1203,26 @@ is where we start looking for the error node."
      ((parent-is ,(rx bos (or "else_clause" "elseif_clause") eos))
       parent ,matlab-ts-mode--indent-level)
 
-     ;; I-Rule: if a ...
-     ;; <TAB>
+     ;; I-Rule: if variable ...
+     ;;             ^             <== TAB or RET on prior line
+     ;;         end
+     ;; xxx
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_statement_body.m
      ((n-p-gp nil ,(rx bos "\n" eos)
-              ,(rx bos (or "if_statement" "else_clause" "elseif_clause" ) eos))
+              ,(rx bos (or "class_definition"
+                           "properties"
+                           "enumeration"
+                           "methods"
+                           "events"
+                           "function_definition"
+                           "arguments_statement"
+                           "spmd_statement"
+                           "try_statement"
+                           "catch_clause"
+                           "while_statement"
+                           "for_statement"
+                           "if_statement" "else_clause" "elseif_clause")
+                   eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: disp(myMatrix(1:  ...
@@ -1988,11 +2010,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      for fIdx = 1:10
     ;;          ^                  <== RET on previous line or TAB should be here
     ;;
-    ;; TODO indent (no syntax errors)
-    ;;      for fIdx = 1:10
-    ;;          ^                  <== RET on previous line or TAB should be here
-    ;;      end                        when there is no spaces or content on the line
-    ;;
     ;; TODO indent
     ;;      s = sprintf("%d:%d", ...
     ;;                  ^          <== RET on previous line or TAB should be here
@@ -2000,6 +2017,13 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO font-lock
     ;;       s = sprintf("see %d:%d", 1, 2)
     ;;                        ^^ ^^            <== font-lock formatting_sequence
+    ;; TODO font-lock
+    ;;      classdef fooenum
+    ;;          enumeration
+    ;;              
+    ;;              red  % bad font when there's a blank line before this member
+    ;;          end
+    ;;      end
     ;;
     ;; TODO Mismatched parentheses
     ;;      Start with:
