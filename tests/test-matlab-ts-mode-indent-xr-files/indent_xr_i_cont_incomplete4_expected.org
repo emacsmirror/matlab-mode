@@ -97,9 +97,10 @@
   Start point   :  200
   No point movement
   standard-output:
-    "function a = indent_xr_i_cont_incomplete4
-      a = foo((1+2)*3, a, ...
-              99);
-  end
-  "
+  #+begin_example
+function a = indent_xr_i_cont_incomplete4
+    a = foo((1+2)*3, a, ...
+            99);
+end
+  #+end_example
   No buffer modifications

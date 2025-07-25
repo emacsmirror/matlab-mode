@@ -151,9 +151,10 @@
   Start point   :  213
   No point movement
   standard-output:
-    "function indent_xr_fun1
-      a = 1;
-  end
-  
-  "
+  #+begin_example
+function indent_xr_fun1
+    a = 1;
+end
+
+  #+end_example
   No buffer modifications

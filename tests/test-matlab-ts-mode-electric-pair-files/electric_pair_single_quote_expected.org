@@ -15,7 +15,9 @@
   Start point   :  147
   No point movement
   standard-output:
-    t
+  #+begin_example
+t
+  #+end_example
   No buffer modifications
 
 * Executing commands from electric_pair_single_quote.m:8:2:
@@ -33,7 +35,9 @@
   Start point   :  269
   No point movement
   standard-output:
-    t
+  #+begin_example
+t
+  #+end_example
   No buffer modifications
 
 * Executing commands from electric_pair_single_quote.m:11:2:
@@ -71,7 +75,9 @@
   Start point   :  445
   No point movement
   standard-output:
-    nil
+  #+begin_example
+nil
+  #+end_example
   No buffer modifications
 
 - Invoking      : (delete-region (1- (point)) (point))
@@ -126,7 +132,9 @@
   Start point   :  637
   No point movement
   standard-output:
-    nil
+  #+begin_example
+nil
+  #+end_example
   No buffer modifications
 
 - Invoking      : (delete-region (- (point) 4) (point))

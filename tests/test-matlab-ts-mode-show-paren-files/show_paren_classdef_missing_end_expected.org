@@ -22,5 +22,7 @@
   Start point   :   96
   No point movement
   standard-output:
-    (96 104 nil nil t)
+  #+begin_example
+(96 104 nil nil t)
+  #+end_example
   No buffer modifications

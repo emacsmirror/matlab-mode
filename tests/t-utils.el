@@ -589,10 +589,14 @@ You can run `t-utils--diff-check' to debug"))))
                 (with-current-buffer standard-output
                   (let ((contents (string-trim (buffer-substring (point-min) (point-max)))))
                     (when (not (string= contents ""))
+                      (setq contents (replace-regexp-in-string "\\`\"" "" contents))
+                      (setq contents (replace-regexp-in-string "\"\\'" "" contents))
                       (setq result (concat result
-                                           "  standard-output:\n  "
-                                           (replace-regexp-in-string "^" "  " contents)
-                                           "\n")))))
+                                           "  standard-output:\n"
+                                           "  #+begin_example\n"
+                                           contents
+                                           (if (string-match-p "\n\\'" contents) "" "\n")
+                                           "  #+end_example\n")))))
 
                 ;; Record buffer modifications by adding what happened to result
                 (if (equal start-contents end-contents)

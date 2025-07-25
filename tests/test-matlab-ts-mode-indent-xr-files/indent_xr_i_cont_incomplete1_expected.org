@@ -114,10 +114,11 @@
   Start point   :  207
   No point movement
   standard-output:
-    "function result = indent_xr_i_cont_incomplete1(a, b)
-      result = 1 + myfcn(a, ...
-                         b);
-      
-  end
-  "
+  #+begin_example
+function result = indent_xr_i_cont_incomplete1(a, b)
+    result = 1 + myfcn(a, ...
+                       b);
+    
+end
+  #+end_example
   No buffer modifications

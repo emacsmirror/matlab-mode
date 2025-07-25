@@ -36,7 +36,9 @@
   Start point   :  142
   No point movement
   standard-output:
-    nil
+  #+begin_example
+nil
+  #+end_example
   No buffer modifications
 
 * Executing commands from show_paren_string.m:7:2:
@@ -75,7 +77,9 @@
   Start point   :  251
   No point movement
   standard-output:
-    nil
+  #+begin_example
+nil
+  #+end_example
   No buffer modifications
 
 * Executing commands from show_paren_string.m:10:2:
@@ -107,7 +111,9 @@
   Start point   :  357
   No point movement
   standard-output:
-    (357 358 370 371 nil)
+  #+begin_example
+(357 358 370 371 nil)
+  #+end_example
   No buffer modifications
 
 * Executing commands from show_paren_string.m:13:2:
@@ -125,7 +131,9 @@
   Start point   :  477
   No point movement
   standard-output:
-    (464 465 477 478 nil)
+  #+begin_example
+(464 465 477 478 nil)
+  #+end_example
   No buffer modifications
 
 * Executing commands from show_paren_string.m:16:2:
@@ -157,7 +165,9 @@
   Start point   :  583
   No point movement
   standard-output:
-    (583 584 595 596 nil)
+  #+begin_example
+(583 584 595 596 nil)
+  #+end_example
   No buffer modifications
 
 * Executing commands from show_paren_string.m:19:2:
@@ -175,7 +185,9 @@
   Start point   :  701
   No point movement
   standard-output:
-    (689 690 701 702 nil)
+  #+begin_example
+(689 690 701 702 nil)
+  #+end_example
   No buffer modifications
 
 * Executing commands from show_paren_string.m:22:2:
@@ -224,7 +236,9 @@
   Start point   :  882
   No point movement
   standard-output:
-    (882 883 918 919 nil)
+  #+begin_example
+(882 883 918 919 nil)
+  #+end_example
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line

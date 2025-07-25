@@ -825,69 +825,70 @@
   Start point   :   75
   No point movement
   standard-output:
-    "classdef indent_xr_statement_body
-  %c
-  
-      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-      properties
-          %c
-      end
-  
-      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-      methods
-          %c
-          function foo(a)
-  
-              % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-              if a == 1
-                  %c
-                  % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-                  try
-                      %c
-                      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-                  catch
-                      %c
-                  end
-  
-                  % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-                  spmd
-                  %c
-                  end
-  
-                  % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-              elseif a == 2
-                  %c
-  
-                  % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-              else
-                  %c
-                  
-              end
-  
-              % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-              while a
-                  %c
-              end
-  
-              % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-              for fIdx = 1:10
-                  %c
-              end
-          end
-      end
-  
-      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-      events
-          %c
-      end
-  
-      % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-      enumeration
-          %c
-          red
-      end
-  end
-  
-  % (t-utils-xr (re-search-backward \"^classdef\") (print (buffer-substring-no-properties (point) (point-max))))
-  "
+  #+begin_example
+classdef indent_xr_statement_body
+%c
+
+    % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+    properties
+        %c
+    end
+
+    % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+    methods
+        %c
+        function foo(a)
+
+            % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+            if a == 1
+                %c
+                % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+                try
+                    %c
+                    % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+                catch
+                    %c
+                end
+
+                % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+                spmd
+                %c
+                end
+
+                % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+            elseif a == 2
+                %c
+
+                % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+            else
+                %c
+                
+            end
+
+            % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+            while a
+                %c
+            end
+
+            % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+            for fIdx = 1:10
+                %c
+            end
+        end
+    end
+
+    % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+    events
+        %c
+    end
+
+    % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
+    enumeration
+        %c
+        red
+    end
+end
+
+% (t-utils-xr (re-search-backward \"^classdef\") (print (buffer-substring-no-properties (point) (point-max))))
+  #+end_example
   No buffer modifications

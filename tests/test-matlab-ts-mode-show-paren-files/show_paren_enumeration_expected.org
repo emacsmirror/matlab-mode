@@ -29,7 +29,9 @@
   Start point   :  150
   No point movement
   standard-output:
-    (150 161 329 332 nil)
+  #+begin_example
+(150 161 329 332 nil)
+  #+end_example
   No buffer modifications
 
 * Executing commands from show_paren_enumeration.m:10:10:
@@ -61,5 +63,7 @@
   Start point   :  329
   No point movement
   standard-output:
-    (329 332 150 161 nil)
+  #+begin_example
+(329 332 150 161 nil)
+  #+end_example
   No buffer modifications
