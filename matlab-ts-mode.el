@@ -2101,13 +2101,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;        Line2:
     ;;      then type a ']' on the 2nd line, in echo area, see: Mismatched parentheses
     ;;
-    ;; TODO improve formatting t-utils-xr print's, e.g. improve:
-    ;;        standard-output:
-    ;;          "function a = indent_xr_fun()
-    ;;            a = 1;
-    ;;        end
-    ;;        "
-    ;;
     ;; TODO create defcustom matlab-ts-mode-electric-ends that inserts end statements
     ;;      when a function, switch, while, for, etc. is entered. This should handle continuations.
 
