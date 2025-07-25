@@ -2084,18 +2084,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;            ^                <== RET on previous line or TAB should be here
     ;;      See https://github.com/acristoffers/tree-sitter-matlab/issues/47
     ;;
-    ;; TODO indent
-    ;;          outResult = longFunction(...
-    ;;              ^              <== RET on previous line or TAB should be here
-    ;;
-    ;; TODO indent
-    ;;      for fIdx = 1:10
-    ;;          ^                  <== RET on previous line or TAB should be here
-    ;;
-    ;; TODO indent
-    ;;      s = sprintf("%d:%d", ...
-    ;;                  ^          <== RET on previous line or TAB should be here
-    ;;
     ;; TODO font-lock
     ;;       s = sprintf("see %d:%d", 1, 2)
     ;;                        ^^ ^^            <== font-lock formatting_sequence
