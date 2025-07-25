@@ -234,8 +234,14 @@ You should now be able to use:
 
     - Use =C-u C-M-x= within a =defun= to EDebug it.
 
-   Note: =M-x eval-buffer= will not reevaluate already defined =defvar='s (and other items), so you
-   must use one of the above to update a =defvar=, etc.
+- Full re-evaluation of LANGUAGE-ts-mode.el
+
+    : M-x eval-buffer-fully
+
+  =M-x eval-buffer= will only re-evaluate defun definitions. It will not reevaluate already
+  defined =defvar=, =defvar-local=, and =defface= defintions. You can use =C-x C-e= or =C-M-x= on
+  each updated defintion to re-evaluate them. Alternatively, using [[file:eval-buffer-fully.el]], you
+  can =M-x eval-buffer-fully=.
 
 - =M-x LANGUAGE-ts-mode=
 
@@ -243,6 +249,15 @@ You should now be able to use:
    to re-load your mode in your =test.lang= file. For example, when writing the indent rules, you'll
    need to run =M-x LANGUAGE-ts-mode= after =M=x eval-defun= on in your =(defvar
    LANGUAGE-ts-mode--indent-rules ....)=.
+
+- =M-: (treesit-.....)=
+
+  You can use =M-:= or =M-x eval-expression= to evaluate expressions while visiting =file.lang=.
+  For example, you can find the parent of a node at point:
+
+  : M-: (treesit-node-parent (treesit-node-at (point))
+
+  To find the available functions and view their help, you can run =C-h f treesit-<TAB>=.
 
 - Use =M-x ielm=
 
@@ -252,6 +267,26 @@ You should now be able to use:
   ELISP> (with-current-buffer "test.lang"
            (treesit-node-parent (treesit-node-at (point))))
   #+end_example
+
+- Additional tree-sitter inspection functions for debugging
+
+  [[file:ts-inspect.el]] provides
+
+  1. ts-inspect-point
+
+     : M-: (ts-inpsect-point)
+
+     Display information about node at POSITION. \\
+     POSITION defaults to the current point.
+     Returns a string of the form:
+       : Heirarchy:
+       :   #<treesit-node ROOT in 1-67>
+       :     #<treesit-node PARENT in 37-62>
+       :       #<treesit-node NODE in 61-62>
+       : Prev-siblings:
+       :   > #<treesit-node PREV-SIBLING2 in 59-60>
+       :     > #<treesit-node PREV-SIBLING1 in 60-61>
+       :       > #<treesit-node NODE in 61-62>
 
 * Setup: Font-lock
 

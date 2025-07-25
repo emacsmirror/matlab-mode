@@ -898,19 +898,6 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
     nil
     0))
 
-(defun matlab-ts-mode--indent-continuation-level (_node parent _bol &rest _)
-  "Compute the continuation level for node with PARENT.
-This is `matlab-ts-mode--indent-level' or 0 when in a
-cell or matrix row."
-  (let ((row-node (let ((n parent))
-                    (while (and n
-                                (not (string= (treesit-node-type n) "row")))
-                      (setq n (treesit-node-parent n)))
-                    n)))
-    (if row-node
-        0
-      matlab-ts-mode--indent-level)))
-
 (defun matlab-ts-mode--row-indent-level (node parent _bol &rest _)
   "Indent level for a NODE in PARENT cell or matrix."
 
@@ -938,54 +925,132 @@ cell or matrix row."
           (- first-column array-column))
       matlab-ts-mode--array-indent-level)))
 
-(defvar matlab-ts-mode--error-switch-matcher-pair)
+(defvar matlab-ts-mode--i-error-switch-matcher-pair)
 
-(defun matlab-ts-mode--error-switch-matcher (node parent bol &rest _)
-  "Is NODE PARENT in an ERROR node for a switch statement?
-If so, set `matlab-ts-mode--error-switch-matcher-pair'.  BOL,
-beginning-of-line point, is where we start looking for the error node."
-  (when (or (not node)
-            (string= (treesit-node-type parent) "ERROR"))
+(defun matlab-ts-mode--i-error-switch-matcher (node _parent bol &rest _)
+  "Tab on an empty line after switch, case, or otherwise?
+NODE is nil in this case and BOL, beginning-of-line point, is where we
+are indenting.  If so, set
+`matlab-ts-mode--i-error-switch-matcher-pair'.
+
+  Example:  switch fcn1(a)
+      TAB>    ^
+
+Similar for for case and otherwise statements."
+  (when (not node)
     (save-excursion
       (goto-char bol)
       (re-search-backward "[^ \t\n\r]" nil t)
 
-      (let ((check-node (treesit-node-at (point))))
+      (let* ((check-node (treesit-node-at (point)))
+             (error-node (treesit-node-parent check-node)))
+        (while (and error-node
+                    (not (string= (treesit-node-type error-node) "ERROR")))
+          (setq error-node (treesit-node-parent error-node)))
 
-        ;; ;; when on "\n" move to prior node
-        ;; (when (and (string= (treesit-node-type check-node) "\n")
-        ;;            (re-search-backward "[^ \t\n\r]" nil t))
-        ;;   (setq check-node (treesit-node-at (point))))
+        ;; In an error-node, see if this error is due to an incomplete switch statement.
+        (when error-node
+          (let ((child-node (treesit-node-child error-node 0)))
+            (when (and child-node
+                       (string-match-p (rx bos (or "switch" "case" "otherwise") eos)
+                                       (treesit-node-type child-node)))
+              (setq matlab-ts-mode--i-error-switch-matcher-pair
+                    (cons (treesit-node-start child-node)
+                          matlab-ts-mode--switch-indent-level)))))))))
 
-        (let ((error-node (treesit-node-parent check-node)))
-          (while (and error-node
-                      (not (string= (treesit-node-type error-node) "ERROR")))
-            (setq error-node (treesit-node-parent error-node)))
+(defun matlab-ts-mode--i-error-switch-anchor (&rest _)
+  "Return the anchor computed by `matlab-ts-mode--i-error-switch-matcher'."
+  (car matlab-ts-mode--i-error-switch-matcher-pair))
 
-          ;; In an error-node, see if this error is due to an incomplete switch statement.
-          (when error-node
-            (let ((child-node (treesit-node-child error-node 0)))
-              (when (and child-node
-                         (string-match-p (rx bos (or "switch" "case" "otherwise") eos)
-                                         (treesit-node-type child-node)))
-                (setq matlab-ts-mode--error-switch-matcher-pair
-                      (cons (treesit-node-start child-node)
-                            matlab-ts-mode--switch-indent-level))))))))))
+(defun matlab-ts-mode--i-error-switch-offset (&rest _)
+  "Return the offset computed by `matlab-ts-mode--i-error-switch-matcher'."
+  (cdr matlab-ts-mode--i-error-switch-matcher-pair))
 
-(defun matlab-ts-mode--error-switch-anchor (&rest _)
-  "Return the anchor computed by `matlab-ts-mode--error-switch-matcher'."
-  (car matlab-ts-mode--error-switch-matcher-pair))
+(defun matlab-ts-mode--i-cont-matcher (node _parent _bol &rest _)
+  "Is current NODE part of a valid continuation?"
+  (let ((prev-sibling (treesit-node-prev-sibling node)))
+    (and prev-sibling
+         (string= (treesit-node-type prev-sibling) "line_continuation"))))
 
-(defun matlab-ts-mode--error-switch-offset (&rest _)
-  "Return the offset computed by `matlab-ts-mode--error-switch-matcher'."
-  (cdr matlab-ts-mode--error-switch-matcher-pair))
+(defun matlab-ts-mode--i-cont-offset (_node parent _bol &rest _)
+  "Get the ellipsis continuation offset based on PARENT.
+This is `matlab-ts-mode--indent-level' or 0 when in a cell or matrix
+row."
+  (let ((row-node (let ((n parent))
+                    (while (and n
+                                (not (string= (treesit-node-type n) "row")))
+                      (setq n (treesit-node-parent n)))
+                    n)))
+    (if row-node
+        0
+      matlab-ts-mode--indent-level)))
 
 
-(defvar matlab-ts-mode--error-row-matcher-pair)
+(defvar matlab-ts-mode--i-cont-incomplete-matcher-pair)
 
-(defun matlab-ts-mode--error-row-matcher (_node _parent bol &rest _)
-  "Is s point within an ERROR node and can we determine indent?
-If so, set `matlab-ts-mode--error-row-matcher-pair' to the anchor and
+(defun matlab-ts-mode--i-cont-incomplete-matcher (node parent _bol &rest _)
+  "Is current line part of an ellipsis line continuation?
+If so, set `matlab-ts-mode--i-cont-incomplete-matcher-pair'.  This is for
+incomplete statements where NODE is nil and PARENT is line_continuation."
+
+  ;; Case when code is incomplete:
+  ;;
+  ;;        x = 1 + myfcn(a, ...
+  ;;   TAB>               ^       NODE is nil and PARENT is line_continuation
+
+  (when (and (not node)
+             (string= (treesit-node-type parent) "line_continuation"))
+    (save-excursion
+      (let ((check-node parent))
+        ;; Walk over line_continuation and identify the "check node" we should be looking at.
+        (while (string-match-p (rx bos "line_continuation" eos)
+                               (treesit-node-type check-node))
+          (goto-char (treesit-node-start check-node))
+          (if (re-search-backward "[^ \t\n\r]" nil t)
+              (setq check-node (treesit-node-at (point)))
+            ;; at start of buffer
+            (setq check-node nil)))
+
+        (when check-node
+          (let ((anchor-node check-node))
+
+            ;; Look for prev-sibling we can anchor on
+            (while (and anchor-node
+                        (not (string-match-p (rx bos "(" eos)
+                                             (treesit-node-type anchor-node))))
+              (setq anchor-node (treesit-node-prev-sibling anchor-node)))
+
+            ;; Look for parent that we can use for indent
+            (when (not anchor-node)
+              (setq anchor-node check-node)
+              (while (and anchor-node
+                          (not (string-match-p (rx bos (or "ERROR" "arguments") eos)
+                                               (treesit-node-type anchor-node))))
+                (setq anchor-node (treesit-node-parent anchor-node))))
+
+            (when anchor-node
+              (setq matlab-ts-mode--i-cont-incomplete-matcher-pair
+                    (cons (treesit-node-start anchor-node)
+                          (pcase (treesit-node-type anchor-node)
+                            ("(" 1)
+                            ("arguments" 0)
+                            ("ERROR" matlab-ts-mode--indent-level)
+                            (_ (error "Assert - unhandled anchor-node, %S" anchor-node)))))
+              )))))))
+
+(defun matlab-ts-mode--i-cont-incomplete-anchor (&rest _)
+  "Return the anchor computed by `matlab-ts-mode--i-cont-incomplete-matcher'."
+  (car matlab-ts-mode--i-cont-incomplete-matcher-pair))
+
+(defun matlab-ts-mode--i-cont-incomplete-offset (&rest _)
+  "Return the offset computed by `matlab-ts-mode--i-cont-incomplete-matcher'."
+  (cdr matlab-ts-mode--i-cont-incomplete-matcher-pair))
+
+(defvar matlab-ts-mode--i-error-row-matcher-pair)
+
+(defun matlab-ts-mode--i-error-row-matcher (_node _parent bol &rest _)
+  "Is point within an ERROR node and can we determine indent?
+If so, set `matlab-ts-mode--i-error-row-matcher-pair' to the anchor and
 offset we should use and return non-nil.  BOL, beginning-of-line point,
 is where we start looking for the error node."
   ;; 1) Given
@@ -1066,7 +1131,7 @@ is where we start looking for the error node."
             (when check-node
               (cond
                ((string-match-p (rx bos (or "[" "{") eos) (treesit-node-type check-node))
-                (setq matlab-ts-mode--error-row-matcher-pair
+                (setq matlab-ts-mode--i-error-row-matcher-pair
                       (cons (treesit-node-start check-node) 2)))
                ;; Case: looking at row?
                (t
@@ -1077,27 +1142,43 @@ is where we start looking for the error node."
                      (setq check-node prev-sibling))
                    (setq prev-sibling (treesit-node-prev-sibling prev-sibling))))
                 ;; In an ERROR node of a matrix or cell, return anchor
-                (setq matlab-ts-mode--error-row-matcher-pair
+                (setq matlab-ts-mode--i-error-row-matcher-pair
                       (cons (treesit-node-start check-node) 0)))))))))))
 
-(defun matlab-ts-mode--error-row-anchor (&rest _)
-  "Return the anchor computed by `matlab-ts-mode--error-row-matcher'."
-  (car matlab-ts-mode--error-row-matcher-pair))
+(defun matlab-ts-mode--i-error-row-anchor (&rest _)
+  "Return the anchor computed by `matlab-ts-mode--i-error-row-matcher'."
+  (car matlab-ts-mode--i-error-row-matcher-pair))
 
-(defun matlab-ts-mode--error-row-offset (&rest _)
-  "Return the offset computed by `matlab-ts-mode--error-row-matcher'."
-  (cdr matlab-ts-mode--error-row-matcher-pair))
+(defun matlab-ts-mode--i-error-row-offset (&rest _)
+  "Return the offset computed by `matlab-ts-mode--i-error-row-matcher'."
+  (cdr matlab-ts-mode--i-error-row-matcher-pair))
+
+(defun matlab-ts-mode--in-error-matcher (node _parent _bol &rest _)
+  "Is NODE an ERROR node or is it under an ERROR node?"
+  (let (in-error-node)
+    (while (and node
+                (not in-error-node))
+      (if (equal "ERROR" (treesit-node-type node))
+          (setq in-error-node t)
+        (setq node (treesit-node-parent node))))
+    in-error-node))
 
 (defvar matlab-ts-mode--indent-rules
   `((matlab
+
+     ;; I-Rule: syntax errors
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_syntax_error1.m
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_syntax_error2.m
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_continuation1.m
+     (,#'matlab-ts-mode--in-error-matcher no-indent 0)
 
      ;; I-Rule: cell/matrix row matcher when in an error node
      ;;         mat0 = [1, 2
      ;;                 ^            <-- TAB or RET on prior line goes here
      ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_mat*.m
-     (,#'matlab-ts-mode--error-row-matcher
-      ,#'matlab-ts-mode--error-row-anchor
-      ,#'matlab-ts-mode--error-row-offset)
+     (,#'matlab-ts-mode--i-error-row-matcher
+      ,#'matlab-ts-mode--i-error-row-anchor
+      ,#'matlab-ts-mode--i-error-row-offset)
 
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
      ((parent-is ,(rx bos "source_file" eos)) column-0 0)
@@ -1206,7 +1287,6 @@ is where we start looking for the error node."
      ;; I-Rule: if variable ...
      ;;             ^             <== TAB or RET on prior line
      ;;         end
-     ;; xxx
      ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_statement_body.m
      ((n-p-gp nil ,(rx bos "\n" eos)
               ,(rx bos (or "class_definition"
@@ -1306,39 +1386,32 @@ is where we start looking for the error node."
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_comment_after_prop.m
      ((node-is "comment") parent 0)
 
-     ;; I-Rule: line continuation
+     ;; I-Rule: error-switch-matcher
+     ;;         switch fcn1(a)
+     ;;           ^                       <== TAB to here
+     (,#'matlab-ts-mode--i-error-switch-matcher
+      ,#'matlab-ts-mode--i-error-switch-anchor
+      ,#'matlab-ts-mode--i-error-switch-offset)
+
+     ;; I-Rule: line continuation for valid statements
      ;;         arguments
-     ;;             a (1,1) ... asdf
+     ;;             a (1,1) ... comment
      ;;    TAB>        double
-     ;;         end
+     ;;         endo
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation.m
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation_row.m
-     ((lambda (node parent bol)
-        (let ((prev-sibling (treesit-node-prev-sibling node)))
-          (and prev-sibling
-               (string= (treesit-node-type prev-sibling) "line_continuation"))))
-      ;; parent ,matlab-ts-mode--indent-level)
-      parent ,#'matlab-ts-mode--indent-continuation-level)
+     (,#'matlab-ts-mode--i-cont-matcher parent ,#'matlab-ts-mode--i-cont-offset)
 
-     ;; I-Rule: In an empty line, string, etc. just maintain indent
-     ;;         switch fcn1(a)
-     ;;           ^                       <== TAB or RET on prior line goes here
-     ;; Parent node could be "source_file", so must be before
-     ;;   ((parent-is ,(rx bos "source_file" eos)) column-0 0)
-     (,#'matlab-ts-mode--error-switch-matcher
-      ,#'matlab-ts-mode--error-switch-anchor
-      ,#'matlab-ts-mode--error-switch-offset)
-
-     ;; I-Rule: handle syntax errors by not indenting
-     ;; See: tests/test-matlab-ts-mode-indent-files/indent_nested_error.m
-     ((lambda (node &rest _)
-        (let (in-error-node)
-          (while (and node (not in-error-node))
-            (if (equal "ERROR" (treesit-node-type node))
-                (setq in-error-node t)
-              (setq node (treesit-node-parent node))))
-          in-error-node))
-      no-indent 0)
+     ;; I-Rule: line continuations for incomplete continuations
+     ;;            myVariable = 1 + myfcn(a, ...
+     ;;                                   ^              <== TAB or RET on prior line goes here
+     ;;
+     ;;            myVariable = 1 + myfcn(a, b) + ...
+     ;;                ^                                 <== TAB or RET on prior line goes here
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_continuation*.m
+     (,#'matlab-ts-mode--i-cont-incomplete-matcher
+      ,#'matlab-ts-mode--i-cont-incomplete-anchor
+      ,#'matlab-ts-mode--i-cont-incomplete-offset)
 
      ;; I-Rule: Assert if no rule matched and asserts are enabled.
      ,matlab-ts-mode--indent-assert-rule
@@ -2030,7 +2103,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO font-lock
     ;;      classdef fooenum
     ;;          enumeration
-    ;;              
+    ;;
     ;;              red  % bad font when there's a blank line before this member
     ;;          end
     ;;      end
@@ -2047,6 +2120,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;            a = 1;
     ;;        end
     ;;        "
+    ;;
+    ;; TODO create defcustom matlab-ts-mode-electric-ends that inserts end statements
+    ;;      when a function, switch, while, for, etc. is entered. This should handle continuations.
 
     (treesit-major-mode-setup)
 

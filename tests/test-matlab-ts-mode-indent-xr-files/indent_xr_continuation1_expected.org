@@ -1,0 +1,115 @@
+#+startup: showall
+
+* Executing commands from indent_xr_continuation1.m:3:2:
+
+  (t-utils-xr "C-e" "C-m" (insert "result = 1 + myfcn(a, ...") "C-m" (insert "b);") "C-m" (re-search-backward "^[ ]*result") (print (buffer-substring-no-properties (point) (point-max))))
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  255
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  255
+  Moved to point:  260
+  : 4:4:     
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,4 +1,5 @@
+ % -*- matlab-ts -*-
+ function result = indent_xr_continuation1(a, b)
+ % (t-utils-xr "C-e" "C-m" (insert "result = 1 + myfcn(a, ...") "C-m" (insert "b);") "C-m" (re-search-backward "^[ ]*result") (print (buffer-substring-no-properties (point) (point-max))))
++    
+ end
+  #+end_src diff
+
+- Invoking      : (insert "result = 1 + myfcn(a, ...")
+  Start point   :  260
+  Moved to point:  285
+  : 4:29:     result = 1 + myfcn(a, ...
+  :                                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,5 +1,5 @@
+ % -*- matlab-ts -*-
+ function result = indent_xr_continuation1(a, b)
+ % (t-utils-xr "C-e" "C-m" (insert "result = 1 + myfcn(a, ...") "C-m" (insert "b);") "C-m" (re-search-backward "^[ ]*result") (print (buffer-substring-no-properties (point) (point-max))))
+-    
++    result = 1 + myfcn(a, ...
+ end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  285
+  Moved to point:  309
+  : 5:23:                        
+  :                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,4 +2,5 @@
+ function result = indent_xr_continuation1(a, b)
+ % (t-utils-xr "C-e" "C-m" (insert "result = 1 + myfcn(a, ...") "C-m" (insert "b);") "C-m" (re-search-backward "^[ ]*result") (print (buffer-substring-no-properties (point) (point-max))))
+     result = 1 + myfcn(a, ...
++                       
+ end
+  #+end_src diff
+
+- Invoking      : (insert "b);")
+  Start point   :  309
+  Moved to point:  312
+  : 5:26:                        b);
+  :                                 ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,5 +2,5 @@
+ function result = indent_xr_continuation1(a, b)
+ % (t-utils-xr "C-e" "C-m" (insert "result = 1 + myfcn(a, ...") "C-m" (insert "b);") "C-m" (re-search-backward "^[ ]*result") (print (buffer-substring-no-properties (point) (point-max))))
+     result = 1 + myfcn(a, ...
+-                       
++                       b);
+ end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  312
+  Moved to point:  317
+  : 6:4:     
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -3,4 +3,5 @@
+ % (t-utils-xr "C-e" "C-m" (insert "result = 1 + myfcn(a, ...") "C-m" (insert "b);") "C-m" (re-search-backward "^[ ]*result") (print (buffer-substring-no-properties (point) (point-max))))
+     result = 1 + myfcn(a, ...
+                        b);
++    
+ end
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^[ ]*result")
+  Start point   :  317
+  Moved to point:  256
+  : 4:0:     result = 1 + myfcn(a, ...
+  :      ^
+  No buffer modifications
+
+- Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
+  Start point   :  256
+  No point movement
+  standard-output:
+    "    result = 1 + myfcn(a, ...
+                         b);
+      
+  end
+  "
+  No buffer modifications

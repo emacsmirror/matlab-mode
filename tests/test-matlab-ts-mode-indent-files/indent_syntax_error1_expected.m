@@ -1,0 +1,3 @@
+% -*- matlab-ts -*-
+function myVariable = indent_syntax_error1(a, b)
+    myVariable = 1 + myfcn(a ...
