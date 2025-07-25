@@ -1408,7 +1408,7 @@ is where we start looking for the error node."
      ;;
      ;;            myVariable = 1 + myfcn(a, b) + ...
      ;;                ^                                 <== TAB or RET on prior line goes here
-     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_continuation*.m
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_i_cont_incomplete*.m
      (,#'matlab-ts-mode--i-cont-incomplete-matcher
       ,#'matlab-ts-mode--i-cont-incomplete-anchor
       ,#'matlab-ts-mode--i-cont-incomplete-offset)
@@ -1419,7 +1419,6 @@ is where we start looking for the error node."
   "Tree-sitter indent rules for `matlab-ts-mode'.")
 
 ;;; Thing settings for movement, etc.
-
 
 ;; TODO should we use following for M-a, M-e?
 ;; This needs tune up, but could workout better than using matlab-ts-mode--thing-settings
@@ -2065,12 +2064,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO double check indent rules to see if they can be simplified
     ;;
     ;; TODO update --indent-rules to have "See: test file" comments.
-    ;;
-    ;; TODO indent
-    ;;      function a=foo
-    ;;          a = ...
-    ;;              ^              <== RET on previous line or TAB should be here
-    ;;      end
     ;;
     ;; TODO indent
     ;;          outResult = longFunction(...
