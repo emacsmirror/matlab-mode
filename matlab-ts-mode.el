@@ -1012,13 +1012,19 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
             (setq check-node nil)))
 
         (when check-node
-          (let ((anchor-node check-node))
+          (let ((anchor-node check-node)
+                paren-with-args)
 
-            ;; Look for prev-sibling we can anchor on
+            ;; Look for open paren of a function-call, index, or expression grouping
             (while (and anchor-node
                         (not (string-match-p (rx bos "(" eos)
                                              (treesit-node-type anchor-node))))
+              (setq paren-with-args t)
               (setq anchor-node (treesit-node-prev-sibling anchor-node)))
+
+            ;; If we found "( ..." then we anchor off parent
+            (when (and anchor-node (not paren-with-args))
+              (setq anchor-node nil))
 
             ;; Look for parent that we can use for indent
             (when (not anchor-node)
@@ -2066,21 +2072,21 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO update --indent-rules to have "See: test file" comments.
     ;;
     ;; TODO indent
-    ;;          outResult = longFunction(...
-    ;;              ^              <== RET on previous line or TAB should be here
-    ;;
-    ;; TODO indent
-    ;;          a = f(1) + f2(1, ...
-    ;;                        ^              <== RET on previous line or TAB should be here
-    ;;
-    ;; TODO indent
-    ;;      filesToCheck = ...
-    ;;          ^                  <== RET on previous line or TAB should be here
+    ;;      function outResult = foo
+    ;;                  outResult = longFunction(...    <== TAB should shift, w/o "..." it shifts
+    ;;      end
+    ;;      Requires ERROR node be located under the function_output.
+    ;;      See https://github.com/acristoffers/tree-sitter-matlab/issues/47
     ;;
     ;; TODO indent
     ;;      filesToCheck = ...
     ;;          [
     ;;            ^                <== RET on previous line or TAB should be here
+    ;;      See https://github.com/acristoffers/tree-sitter-matlab/issues/47
+    ;;
+    ;; TODO indent
+    ;;          outResult = longFunction(...
+    ;;              ^              <== RET on previous line or TAB should be here
     ;;
     ;; TODO indent
     ;;      for fIdx = 1:10
