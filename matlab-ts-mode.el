@@ -125,6 +125,11 @@ can move point, but it will be restored for them."
   :type '(repeat (choice :tag "Function: "
                          (matlab-ts-mode-on-save-fix-name))))
 
+(defcustom matlab-ts-mode-highlight-comment-markers t
+  "*Highlight triple-x, to-do, and fix-me comment markers?
+See \\[matlab-ts-mode-comment-marker-help]."
+  :type 'boolean)
+
 ;;; Global variables used in multiple code ";;; sections"
 
 (defvar matlab-ts-mode--comment-heading-re
@@ -487,29 +492,63 @@ start-point and end-point."
                                        'matlab-ts-mode-comment-heading-face
                                        override start end)))))
 
+(defvar matlab-ts-mode--comment-markers
+  (list (concat "XX" "X")
+        (concat "FIX" "ME")
+        (concat "TO" "DO")))
+
+(defvar matlab-ts-mode--comment-markers-re
+  (rx-to-string `(seq word-start (group (or ,@matlab-ts-mode--comment-markers) word-end))))
+
+;; TODO add following to a menu item
+(defun matlab-ts-mode-comment-marker-help ()
+  "Display help on triple-x, fix me, and to do comment markers."
+  (interactive)
+  (with-help-window "*Comment Marker Help*"
+    (with-current-buffer "*Comment Marker Help*"
+      (setq-local revert-buffer-function (lambda (&rest _)))
+      (insert (format "\
+Within comments, the following markers will be highlighted:
+
+%-5s : Triple-x markers indicate coding tasks that must be completed
+        prior to committing code to your repository.
+
+%-5s : Fix-me markers should be fixed as soon as possible, but are not
+        considered coding tasks that must be addressed prior to
+        committing code to your repository.
+
+%-5s : To-do markers represent future coding tasks and therefore code
+        with these comments can be committed to your repository.
+"
+                      (propertize (nth 0 matlab-ts-mode--comment-markers)
+                                  'face font-lock-warning-face)
+                      (propertize (nth 1 matlab-ts-mode--comment-markers)
+                                  'face font-lock-warning-face)
+                      (propertize (nth 2 matlab-ts-mode--comment-markers)
+                                  'face font-lock-warning-face))))))
+
 (defun matlab-ts-mode--comment-to-do-capture (comment-node override start end &rest _)
-  "Fontify comment to do, fix me, and triple-x markers.
+  "Fontify triple-x, fix me, and to do markers in comments.
+For guidelines on using these comment markers see:
+  \\[matlab-ts-mode-comment-marker-help]
 COMMENT-NODE is the tree-sitter comment node from a
 treesit-font-lock-rules rule and OVERRIDE is from that rule.  START and
 END specify the region to be fontified which could be smaller or larger
 than the COMMENT-NODE start-point and end-point."
-  (save-excursion
-    (let ((comment-end (treesit-node-end comment-node)))
-      (goto-char (treesit-node-start comment-node))
-      (while (< (point) comment-end)
-        ;; Note, the markers below have spaces in them so we don't find them when searching "C-s"
-        ;; while editing this file.
-        (if (re-search-forward (rx word-start (group (or (seq "to" "do")
-                                                         (seq "fix" "me")
-                                                         (seq "x" "xx")))
-                                   word-end)
-                               comment-end t)
-            (let ((keyword-start (match-beginning 1))
-                  (keyword-end (match-end 1)))
-              (treesit-fontify-with-override keyword-start keyword-end
-                                             'matlab-ts-mode-comment-to-do-marker-face
-                                             override start end))
-          (goto-char comment-end))))))
+  (when matlab-ts-mode-highlight-comment-markers
+    (save-excursion
+      (let ((comment-end (treesit-node-end comment-node)))
+        (goto-char (treesit-node-start comment-node))
+        (while (< (point) comment-end)
+          ;; Note, the markers below have spaces in them so we don't find them when searching "C-s"
+          ;; while editing this file.
+          (if (re-search-forward matlab-ts-mode--comment-markers-re comment-end t)
+              (let ((keyword-start (match-beginning 1))
+                    (keyword-end (match-end 1)))
+                (treesit-fontify-with-override keyword-start keyword-end
+                                               'matlab-ts-mode-comment-to-do-marker-face
+                                               override start end))
+            (goto-char comment-end)))))))
 
 (defun matlab-ts-mode--namespace-builtins-capture (field-expression-node override start end &rest _)
   "Fontify foo.bar.goo when it is a builtin function.
