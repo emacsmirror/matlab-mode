@@ -713,13 +713,9 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    :feature 'string
    '((string_content) @font-lock-string-face
      ((string_content) ["\"" "'"]) @matlab-ts-mode-string-delimiter-face
-     (string ["\"" "'"] @matlab-ts-mode-string-delimiter-face))
-
-   ;; F-Rule: escape sequences in strings e.g. \n as in "One\nTwo"
-   ;; See: ./tests/test-matlab-ts-mode-font-lock-files/font_lock_strings.m
-   :language 'matlab
-   :feature 'escape-sequence
-   '((escape_sequence) @font-lock-escape-face)
+     (string ["\"" "'"] @matlab-ts-mode-string-delimiter-face)
+     (escape_sequence) @font-lock-escape-face
+     (formatting_sequence) @font-lock-escape-face)
 
    ;; F-rule: operators: *, /, +, -, etc.
    ;; Note, this rule must come after the string rule because single quote (') can be a transpose or
@@ -2013,7 +2009,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local treesit-font-lock-settings matlab-ts-mode--font-lock-settings)
     (setq-local treesit-font-lock-feature-list
                 '((comment comment-special comment-marker definition fcn-name-value)
-                  (keyword operator string escape-sequence type command-name command-arg)
+                  (keyword operator string type command-name command-arg)
                   (variable builtins namespace-builtins number bracket delimiter)
                   (syntax-error)))
 
@@ -2077,10 +2073,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
-    ;; TODO double check indent rules to see if they can be simplified
-    ;;
-    ;; TODO update --indent-rules to have "See: test file" comments.
-    ;;
     ;; TODO indent
     ;;      function outResult = foo
     ;;                  outResult = longFunction(...    <== TAB should shift, w/o "..." it shifts
@@ -2094,9 +2086,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;            ^                <== RET on previous line or TAB should be here
     ;;      See https://github.com/acristoffers/tree-sitter-matlab/issues/47
     ;;
-    ;; TODO font-lock
-    ;;       s = sprintf("see %d:%d", 1, 2)
-    ;;                        ^^ ^^            <== font-lock formatting_sequence
     ;; TODO font-lock
     ;;      classdef fooenum
     ;;          enumeration

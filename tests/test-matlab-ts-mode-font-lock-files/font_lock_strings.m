@@ -2,6 +2,7 @@
 
 s1 = "abc";
 s2 = 'One\nTwo';
+s3 = sprintf("see %d:%d", 1, 2)
 
 A = [1 2; 3 4];
 B = A';   % transpose
