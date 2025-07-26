@@ -118,7 +118,7 @@ Guidelines:
 
 (defcustom matlab-ts-mode-on-save-fixes
   '(matlab-ts-mode-on-save-fix-name)
-  "List of function symbols which offer to fix *.m files on save.
+  "*List of function symbols which offer to fix *.m files on save.
 During save these functions are called and will prompt to fix issues in
 *.m files.  Each function gets no arguments, and returns nothing.  They
 can move point, but it will be restored for them."
@@ -128,6 +128,19 @@ can move point, but it will be restored for them."
 (defcustom matlab-ts-mode-highlight-comment-markers t
   "*Highlight triple-x, to-do, and fix-me comment markers?
 See \\[matlab-ts-mode-comment-marker-help]."
+  :type 'boolean)
+
+(defcustom matlab-ts-mode-enable-mlint-flycheck t
+  "*Enable MLint code analyzer via flycheck.
+This requires that you install the flycheck package
+https://www.flycheck.org can be installed by adding
+to your ~/.emacs
+  (require \\='package)
+  (add-to-list \\='package-archives
+               \\='(\"MELPA Stable\" . \"https://stable.melpa.org/packages/\") t)
+Then restart Emacs and run
+  \\[package-install] RET flycheck RET
+You can also install via use-package or other methods."
   :type 'boolean)
 
 ;;; Global variables used in multiple code ";;; sections"
@@ -2012,6 +2025,35 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
 ;;   "The keymap used in `matlab-ts-mode'.")
 
 ;;; matlab-ts-mode
+
+;;; MLint Flycheck
+
+(defvar flycheck-checkers) ;; incase flycheck is not on the path
+
+(eval-and-compile
+  (when (not (require 'flycheck nil 'noerror))
+    (defmacro flycheck-define-checker (symbol _docstring &rest _properties)
+      "To use flycheck SYMBOL, they need to install flycheck."
+      (message "To use %S flycheck, you need to install flycheck." symbol))))
+
+(flycheck-define-checker matlab-mlint
+  "A MATLAB checker using MATLAB mlint code analyzer."
+  ;; TODO use matlab--get-mlint-exe instead of assuming mlint is on path
+  :command ("mlint" "-id" "-all" source-original)
+  ;; Example mlint messages.
+  ;; L 588 (C 46-49): LOAD: To avoid conflicts with functions ....
+  :error-patterns
+  ((warning line-start "L " line " (C " column "-" column "): " (id (* alnum)) ":" (message))
+   (warning line-start "L " line " (C " column "): " (id (* alnum)) ":" (message)))
+  :modes (matlab-ts-mode)
+  :predicate (lambda () (flycheck-buffer-saved-p)))
+
+;; Register flycheck
+(when matlab-ts-mode-enable-mlint-flycheck
+  (if (require 'flycheck nil 'noerror)
+      (add-to-list 'flycheck-checkers 'matlab-mlint)
+    (message "matlab-ts-mode: no flycheck, unable to activate mlint - \
+to fix install https://www.flycheck.org")))
 
 ;;;###autoload
 (define-derived-mode matlab-ts-mode prog-mode "MATLAB:ts"
