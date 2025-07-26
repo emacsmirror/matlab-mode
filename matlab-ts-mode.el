@@ -108,7 +108,7 @@ Guidelines:
   "*Face used for numbers.")
 
 (defcustom matlab-ts-mode-font-lock-level 3
-  "*Level of font lock, 1 for minimal syntax highlighting and 4 for maximum."
+  "*Level of font lock for MATLAB code."
   ;; Setting to 4 to results in parse errors causing too much "red". See 'syntax-error
   ;; font-lock feature below.
   :type '(choice (const :tag "Minimal" 1)
@@ -2090,9 +2090,10 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      classdef fooenum
     ;;          enumeration
     ;;
-    ;;              red  % bad font when there's a blank line before this member
+    ;;              red % parse error when the prior line is a blank line containing spaces or tabs
     ;;          end
     ;;      end
+    ;;      See: https://github.com/acristoffers/tree-sitter-matlab/issues/48
     ;;
     ;; TODO Mismatched parentheses
     ;;      Start with:
