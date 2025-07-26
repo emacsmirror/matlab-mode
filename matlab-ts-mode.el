@@ -795,6 +795,8 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 
 ;;; Indent
 
+;; TODO add indent standard here.
+
 ;; We discourage customizing the indentation rules. Having one-style of consistent indentation makes
 ;; reading others' code easier.
 (defvar matlab-ts-mode--indent-level 4
@@ -803,6 +805,155 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
   "Indentation level for switch-case statements.")
 (defvar matlab-ts-mode--array-indent-level 2
   "Indentation level for elements in an array.")
+
+(defun matlab-ts-mode--i-error-matcher (node _parent _bol &rest _)
+  "Is NODE an ERROR node or is it under an ERROR node?"
+  (let (in-error-node)
+    (while (and node
+                (not in-error-node))
+      (if (equal "ERROR" (treesit-node-type node))
+          (setq in-error-node t)
+        (setq node (treesit-node-parent node))))
+    in-error-node))
+
+(defvar matlab-ts-mode--i-error-row-matcher-pair)
+
+(defun matlab-ts-mode--i-error-row-matcher (_node _parent bol &rest _)
+  "Is point within an ERROR node and can we determine indent?
+If so, set `matlab-ts-mode--i-error-row-matcher-pair' to the anchor and
+offset we should use and return non-nil.  BOL, beginning-of-line point,
+is where we start looking for the error node."
+  ;; 1) Given
+  ;;            mat = [ [1, 2]; [3, 4];
+  ;;        TAB>
+  ;;    we have parse tree
+  ;;        (ERROR (identifier) = [
+  ;;         (row
+  ;;          (matrix [
+  ;;           (row (number) , (number))
+  ;;           ]))
+  ;;         ;
+  ;;         (row
+  ;;          (matrix [
+  ;;           (row (number) , (number))
+  ;;           ]))
+  ;;         ;)
+  ;;
+  ;; 2) Now add ellipsis continuation:
+  ;;            mat = [ [1, 2]; [3, 4]; ...
+  ;;        TAB>
+  ;; we'll have parse tree
+  ;;       (source_file
+  ;;        (ERROR (identifier) = [
+  ;;         (row
+  ;;          (matrix [
+  ;;           (row (number) , (number))
+  ;;           ]))
+  ;;         ;
+  ;;         (row
+  ;;          (matrix [
+  ;;           (row (number) , (number))
+  ;;           ]))
+  ;;         ;)
+  ;;        (line_continuation))
+  ;; Notice the line_continuation is not under the ERROR node, so we need to find that,
+  ;; hence below we navigate over line_continuation's.
+  ;;
+  ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/46
+
+  (save-excursion
+    (goto-char bol)
+
+    ;; Move inside the error node if at an error node.
+    (when (string= (treesit-node-type (treesit-node-at (point))) "ERROR")
+      (re-search-backward "[^ \t\n\r]" nil t))
+
+    ;; If on a "[" or "{" move back (we don't want to shift the current line)
+    (when (string-match-p (rx bos (or "[" "{") eos) (treesit-node-type (treesit-node-at (point))))
+      (re-search-backward "[^ \t\n\r]" nil t))
+
+    ;; Walk over line_continuation, ",", ";" and identify the "check node" we should be looking
+    ;; at.
+    (let ((check-node (treesit-node-at (point))))
+      (while (string-match-p (rx bos (or "line_continuation" "," ";") eos)
+                             (treesit-node-type check-node))
+        (goto-char (treesit-node-start check-node))
+        (if (re-search-backward "[^ \t\n\r]" nil t)
+            (setq check-node (treesit-node-at (point)))
+          ;; at start of buffer
+          (setq check-node nil)))
+
+      (when check-node
+        ;; Look to see if we are under an ERROR node
+        (let ((error-node (treesit-node-parent check-node)))
+          (while (and error-node
+                      (not (string= (treesit-node-type error-node) "ERROR")))
+            (setq error-node (treesit-node-parent error-node)))
+
+          ;; In an error-node, see if this error is due to an incomplete cell or matrix,
+          ;; if so return the start point of the row to anchor against.
+          (when error-node
+            (while (and check-node
+                        (not (string-match-p (rx bos (or "row" "[" "{") eos)
+                                             (treesit-node-type check-node))))
+              (setq check-node (treesit-node-parent check-node)))
+
+            (when check-node
+              (cond
+               ((string-match-p (rx bos (or "[" "{") eos) (treesit-node-type check-node))
+                (setq matlab-ts-mode--i-error-row-matcher-pair
+                      (cons (treesit-node-start check-node) 2)))
+               ;; Case: looking at row?
+               (t
+                ;; Find first row to anchor against
+                (let ((prev-sibling (treesit-node-prev-sibling check-node)))
+                 (while prev-sibling
+                   (when (string= (treesit-node-type prev-sibling) "row")
+                     (setq check-node prev-sibling))
+                   (setq prev-sibling (treesit-node-prev-sibling prev-sibling))))
+                ;; In an ERROR node of a matrix or cell, return anchor
+                (setq matlab-ts-mode--i-error-row-matcher-pair
+                      (cons (treesit-node-start check-node) 0)))))))))))
+
+(defun matlab-ts-mode--i-error-row-anchor (&rest _)
+  "Return the anchor computed by `matlab-ts-mode--i-error-row-matcher'."
+  (car matlab-ts-mode--i-error-row-matcher-pair))
+
+(defun matlab-ts-mode--i-error-row-offset (&rest _)
+  "Return the offset computed by `matlab-ts-mode--i-error-row-matcher'."
+  (cdr matlab-ts-mode--i-error-row-matcher-pair))
+
+(defun matlab-ts-mode--i-doc-block-comment-matcher (node parent bol &rest _)
+  "Is NODE, PARENT within a function/classdef doc block comment \"%{ ... %}\"?
+BOL, beginning-of-line point, is where we start looking for the error
+node."
+  (and (not node)
+       (string= "comment" (treesit-node-type parent))
+       (not (save-excursion (goto-char bol)
+                            (looking-at "%")))
+       (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent))))
+
+(defun matlab-ts-mode--i-doc-comment-matcher (node parent _bol &rest _)
+  "Is NODE, PARENT a function/classdef doc comment?"
+  (or (and (string= "comment" (or (treesit-node-type node) ""))
+           (matlab-ts-mode--is-doc-comment node parent))
+      (and (not node)
+           (string= "comment" (treesit-node-type parent))
+           (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent)))))
+
+(defun matlab-ts-mode--i-in-block-comment-matcher (node parent bol &rest _)
+  "Is NODE, PARENT, BOL within a block \"{% ... %)\"?"
+  (and (not node)
+       (string= "comment" (treesit-node-type parent))
+       (not (save-excursion (goto-char bol)
+                            (looking-at "%")))))
+
+(defun matlab-ts-mode--i-block-comment-end-matcher (node parent bol &rest _)
+  "Is NODE, PARENT, BOL last line of \"{% ... %)\"?"
+  (and (not node)
+       (string= "comment" (treesit-node-type parent))
+       (save-excursion (goto-char bol)
+                       (looking-at "%"))))
 
 ;; `matlab-ts-mode--function-indent-level'
 ;;
@@ -1052,123 +1203,6 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
   "Return the offset computed by `matlab-ts-mode--i-cont-incomplete-matcher'."
   (cdr matlab-ts-mode--i-cont-incomplete-matcher-pair))
 
-(defvar matlab-ts-mode--i-error-row-matcher-pair)
-
-(defun matlab-ts-mode--i-error-row-matcher (_node _parent bol &rest _)
-  "Is point within an ERROR node and can we determine indent?
-If so, set `matlab-ts-mode--i-error-row-matcher-pair' to the anchor and
-offset we should use and return non-nil.  BOL, beginning-of-line point,
-is where we start looking for the error node."
-  ;; 1) Given
-  ;;            mat = [ [1, 2]; [3, 4];
-  ;;        TAB>
-  ;;    we have parse tree
-  ;;        (ERROR (identifier) = [
-  ;;         (row
-  ;;          (matrix [
-  ;;           (row (number) , (number))
-  ;;           ]))
-  ;;         ;
-  ;;         (row
-  ;;          (matrix [
-  ;;           (row (number) , (number))
-  ;;           ]))
-  ;;         ;)
-  ;;
-  ;; 2) Now add ellipsis continuation:
-  ;;            mat = [ [1, 2]; [3, 4]; ...
-  ;;        TAB>
-  ;; we'll have parse tree
-  ;;       (source_file
-  ;;        (ERROR (identifier) = [
-  ;;         (row
-  ;;          (matrix [
-  ;;           (row (number) , (number))
-  ;;           ]))
-  ;;         ;
-  ;;         (row
-  ;;          (matrix [
-  ;;           (row (number) , (number))
-  ;;           ]))
-  ;;         ;)
-  ;;        (line_continuation))
-  ;; Notice the line_continuation is not under the ERROR node, so we need to find that,
-  ;; hence below we navigate over line_continuation's.
-  ;;
-  ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/46
-
-  (save-excursion
-    (goto-char bol)
-
-    ;; Move inside the error node if at an error node.
-    (when (string= (treesit-node-type (treesit-node-at (point))) "ERROR")
-      (re-search-backward "[^ \t\n\r]" nil t))
-
-    ;; If on a "[" or "{" move back (we don't want to shift the current line)
-    (when (string-match-p (rx bos (or "[" "{") eos) (treesit-node-type (treesit-node-at (point))))
-      (re-search-backward "[^ \t\n\r]" nil t))
-
-    ;; Walk over line_continuation, ",", ";" and identify the "check node" we should be looking
-    ;; at.
-    (let ((check-node (treesit-node-at (point))))
-      (while (string-match-p (rx bos (or "line_continuation" "," ";") eos)
-                             (treesit-node-type check-node))
-        (goto-char (treesit-node-start check-node))
-        (if (re-search-backward "[^ \t\n\r]" nil t)
-            (setq check-node (treesit-node-at (point)))
-          ;; at start of buffer
-          (setq check-node nil)))
-
-      (when check-node
-        ;; Look to see if we are under an ERROR node
-        (let ((error-node (treesit-node-parent check-node)))
-          (while (and error-node
-                      (not (string= (treesit-node-type error-node) "ERROR")))
-            (setq error-node (treesit-node-parent error-node)))
-
-          ;; In an error-node, see if this error is due to an incomplete cell or matrix,
-          ;; if so return the start point of the row to anchor against.
-          (when error-node
-            (while (and check-node
-                        (not (string-match-p (rx bos (or "row" "[" "{") eos)
-                                             (treesit-node-type check-node))))
-              (setq check-node (treesit-node-parent check-node)))
-
-            (when check-node
-              (cond
-               ((string-match-p (rx bos (or "[" "{") eos) (treesit-node-type check-node))
-                (setq matlab-ts-mode--i-error-row-matcher-pair
-                      (cons (treesit-node-start check-node) 2)))
-               ;; Case: looking at row?
-               (t
-                ;; Find first row to anchor against
-                (let ((prev-sibling (treesit-node-prev-sibling check-node)))
-                 (while prev-sibling
-                   (when (string= (treesit-node-type prev-sibling) "row")
-                     (setq check-node prev-sibling))
-                   (setq prev-sibling (treesit-node-prev-sibling prev-sibling))))
-                ;; In an ERROR node of a matrix or cell, return anchor
-                (setq matlab-ts-mode--i-error-row-matcher-pair
-                      (cons (treesit-node-start check-node) 0)))))))))))
-
-(defun matlab-ts-mode--i-error-row-anchor (&rest _)
-  "Return the anchor computed by `matlab-ts-mode--i-error-row-matcher'."
-  (car matlab-ts-mode--i-error-row-matcher-pair))
-
-(defun matlab-ts-mode--i-error-row-offset (&rest _)
-  "Return the offset computed by `matlab-ts-mode--i-error-row-matcher'."
-  (cdr matlab-ts-mode--i-error-row-matcher-pair))
-
-(defun matlab-ts-mode--in-error-matcher (node _parent _bol &rest _)
-  "Is NODE an ERROR node or is it under an ERROR node?"
-  (let (in-error-node)
-    (while (and node
-                (not in-error-node))
-      (if (equal "ERROR" (treesit-node-type node))
-          (setq in-error-node t)
-        (setq node (treesit-node-parent node))))
-    in-error-node))
-
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
@@ -1176,7 +1210,7 @@ is where we start looking for the error node."
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_syntax_error1.m
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_syntax_error2.m
      ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_continuation1.m
-     (,#'matlab-ts-mode--in-error-matcher no-indent 0)
+     (,#'matlab-ts-mode--i-error-matcher no-indent 0)
 
      ;; I-Rule: cell/matrix row matcher when in an error node
      ;;         mat0 = [1, 2
@@ -1190,40 +1224,16 @@ is where we start looking for the error node."
      ((parent-is ,(rx bos "source_file" eos)) column-0 0)
 
      ;; I-Rule: within a function/classdef doc block comment "%{ ... %}"?
-     ((lambda (node parent bol &rest _)
-        (and (not node)
-             (string= "comment" (treesit-node-type parent))
-             (not (save-excursion (goto-char bol)
-                                  (looking-at "%")))
-             (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent))))
-      parent 2)
+     (,#'matlab-ts-mode--i-doc-block-comment-matcher parent 2)
 
      ;; I-Rule: function/classdef doc comment?
-     ((lambda (node parent &rest _)
-        (or (and (string= "comment" (or (treesit-node-type node) ""))
-                 (matlab-ts-mode--is-doc-comment node parent))
-            (and (not node)
-                 (string= "comment" (treesit-node-type parent))
-                 (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent)))))
-      parent 0)
+     (,#'matlab-ts-mode--i-doc-comment-matcher parent 0)
 
      ;; I-Rule: within a code block comment "%{ ... %}"?
-     ((lambda (node parent bol &rest _)
-        (and (not node)
-             (string= "comment" (treesit-node-type parent))
-             (not (save-excursion (goto-char bol)
-                                  (looking-at "%")))))
-      parent
-      2)
+     (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
 
      ;; I-Rule: last line of code block coment "%{ ... %}"?
-     ((lambda (node parent bol &rest _)
-        (and (not node)
-             (string= "comment" (treesit-node-type parent))
-             (save-excursion (goto-char bol)
-                             (looking-at "%"))))
-      parent
-      0)
+     (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
 
      ;; I-Rule: switch case and otherwise statements
      ((node-is ,(rx bos (or "case_clause" "otherwise_clause") eos))
