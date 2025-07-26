@@ -1591,14 +1591,21 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
   "Tree-sitter things for movement.")
 
 (defun matlab-ts-mode--forward-sexp (&optional arg)
-  "Use `treesit-forward-sexp' when not in comments.
-ARG is described in the docstring of `forward-sexp-function'.
-When in comments do the normal parenthesis s-expression movement
-by calling `forward-sexp-default-function'."
+  "Use `treesit-forward-sexp' when matching code only.
+ARG is described in the docstring of `forward-sexp'.  When we are
+matching a parenthesis, bracket, brace, or when point is in a comment do
+the normal s-expression movement by calling
+`forward-sexp-default-function'."
   (interactive "^p")
-  (let* ((pt-and-node (matlab-ts-mode--real-node-at-point))
-         (node (cdr pt-and-node)))
-    (if (equal (treesit-node-type node) "comment")
+  (let* ((move-back (and (numberp arg) (< arg 0)))
+         (match-paren (if move-back
+                          (member (char-before) '(?\] ?\) ?\}))
+                        (member (char-after) '(?\[ ?\( ?\{)))))
+    (if (or match-paren
+            (let* ((pt-and-node (matlab-ts-mode--real-node-at-point))
+                   (node (cdr pt-and-node)))
+              (equal (treesit-node-type node) "comment")))
+        ;; See tests/test-matlab-ts-mode-thing-settings-files/thing_forward_sexp1.m
         (forward-sexp-default-function arg)
       (treesit-forward-sexp arg))))
 
@@ -2095,21 +2102,15 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      end
     ;;      See: https://github.com/acristoffers/tree-sitter-matlab/issues/48
     ;;
-    ;; TODO Mismatched parentheses
-    ;;      Start with:
-    ;;        Line1:  mat = [ [1, 2]; [3, 4];
-    ;;        Line2:
-    ;;      then type a ']' on the 2nd line, in echo area, see: Mismatched parentheses
-    ;;
     ;; TODO create defcustom matlab-ts-mode-electric-ends that inserts end statements
     ;;      when a function, switch, while, for, etc. is entered. This should handle continuations.
 
     (treesit-major-mode-setup)
 
-    ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
-    ;; s-expression matching using parenthesis. This fix is need for our tests work. We need
-    ;; to evaluate (t-utils-NAME ....) expressions from within comments using C-x C-e and this
-    ;; leverages forward-sexp to match up the parentheses.
+    ;; Correct forward-sexp setup created by `treesit-major-mode' so that for parenthesis, brackets,
+    ;; braces, and comments we do normal s-expression matching using parenthesis. This fix is need
+    ;; for our tests work. We need to evaluate (t-utils-NAME ....) expressions from within comments
+    ;; using C-x C-e and this leverages forward-sexp to match up the parentheses.
     (setq-local forward-sexp-function #'matlab-ts-mode--forward-sexp)
     ))
 

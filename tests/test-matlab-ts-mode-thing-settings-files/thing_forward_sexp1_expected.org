@@ -1,0 +1,251 @@
+#+startup: showall
+
+* Executing commands from thing_forward_sexp1.m:3:6:
+
+  (t-utils-xr "C-n" "C-n" "C-e" "C-b" (forward-sexp -1) (forward-sexp) "C-b" (forward-sexp -1) (forward-sexp))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  170
+  Moved to point:  187
+  : 4:16:     m = [[1, 2];
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  187
+  Moved to point:  204
+  : 5:16:            [3, 4]];
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  204
+  Moved to point:  207
+  : 5:19:            [3, 4]];
+  :                          ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  207
+  Moved to point:  206
+  : 5:18:            [3, 4]];
+  :                         ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp -1)
+  Start point   :  206
+  Moved to point:  179
+  : 4:8:     m = [[1, 2];
+  :              ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp)
+  Start point   :  179
+  Moved to point:  206
+  : 5:18:            [3, 4]];
+  :                         ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  206
+  Moved to point:  205
+  : 5:17:            [3, 4]];
+  :                        ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp -1)
+  Start point   :  205
+  Moved to point:  199
+  : 5:11:            [3, 4]];
+  :                  ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp)
+  Start point   :  199
+  Moved to point:  205
+  : 5:17:            [3, 4]];
+  :                        ^
+  No buffer modifications
+
+* Executing commands from thing_forward_sexp1.m:7:6:
+
+  (t-utils-xr "C-n" "C-n" "C-e" "C-b" (forward-sexp -1) (forward-sexp) "C-b" (forward-sexp -1) (forward-sexp))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  323
+  Moved to point:  340
+  : 8:16:     c = {{1, 2};
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  340
+  Moved to point:  357
+  : 9:16:          {3, 4}};
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  357
+  Moved to point:  358
+  : 9:17:          {3, 4}};
+  :                        ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  358
+  Moved to point:  357
+  : 9:16:          {3, 4}};
+  :                       ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp -1)
+  Start point   :  357
+  Moved to point:  332
+  : 8:8:     c = {{1, 2};
+  :              ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp)
+  Start point   :  332
+  Moved to point:  357
+  : 9:16:          {3, 4}};
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  357
+  Moved to point:  356
+  : 9:15:          {3, 4}};
+  :                      ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp -1)
+  Start point   :  356
+  Moved to point:  350
+  : 9:9:          {3, 4}};
+  :               ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp)
+  Start point   :  350
+  Moved to point:  356
+  : 9:15:          {3, 4}};
+  :                      ^
+  No buffer modifications
+
+* Executing commands from thing_forward_sexp1.m:11:6:
+
+  (t-utils-xr "C-n" "C-n" "C-e" "C-b" (forward-sexp -1) (forward-sexp) "C-b" (forward-sexp -1) (forward-sexp))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  478
+  Moved to point:  499
+  : 12:20:     v = ((1+2) * ...
+  :                            ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  499
+  Moved to point:  516
+  : 13:16:          (3+4));
+  :                        ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  516
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  516
+  Moved to point:  515
+  : 13:15:          (3+4));
+  :                       ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp -1)
+  Start point   :  515
+  Moved to point:  487
+  : 12:8:     v = ((1+2) * ...
+  :               ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp)
+  Start point   :  487
+  Moved to point:  515
+  : 13:15:          (3+4));
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  515
+  Moved to point:  514
+  : 13:14:          (3+4));
+  :                      ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp -1)
+  Start point   :  514
+  Moved to point:  509
+  : 13:9:          (3+4));
+  :                ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp)
+  Start point   :  509
+  Moved to point:  514
+  : 13:14:          (3+4));
+  :                      ^
+  No buffer modifications
+
+* Executing commands from thing_forward_sexp1.m:15:6:
+
+  (t-utils-xr "C-n" "C-e" (forward-sexp -1) (forward-sexp) "C-b" (forward-sexp -1) (forward-sexp))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  620
+  Moved to point:  662
+  : 16:41:     %  Comment with paren's ((1+2)*(3+4))
+  :                                                 ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  662
+  No point movement
+  No buffer modifications
+
+- Invoking      : (forward-sexp -1)
+  Start point   :  662
+  Moved to point:  649
+  : 16:28:     %  Comment with paren's ((1+2)*(3+4))
+  :                                    ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp)
+  Start point   :  649
+  Moved to point:  662
+  : 16:41:     %  Comment with paren's ((1+2)*(3+4))
+  :                                                 ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  662
+  Moved to point:  661
+  : 16:40:     %  Comment with paren's ((1+2)*(3+4))
+  :                                                ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp -1)
+  Start point   :  661
+  Moved to point:  656
+  : 16:35:     %  Comment with paren's ((1+2)*(3+4))
+  :                                           ^
+  No buffer modifications
+
+- Invoking      : (forward-sexp)
+  Start point   :  656
+  Moved to point:  661
+  : 16:40:     %  Comment with paren's ((1+2)*(3+4))
+  :                                                ^
+  No buffer modifications

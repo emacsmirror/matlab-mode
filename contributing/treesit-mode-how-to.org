@@ -1242,15 +1242,47 @@ s-expressions, but you cannot do that. Similar for forward-list, backward-list.
   C-M-p   Move backward to the previous list expression in the same level, backward-list
 #+end_example
 
-TODO - explain you'll need to correct forward-sexp when in comments
+** Setup: configure forward-sexp-function after treesit-major-mode-setup
+
+It is likely that the treesit-forward-sexp won't do the right thing in comments or with parenthesis,
+brackets, and braces, so for these we should just use =forward-sexp-default-function= for those.
+To do this, we define
 
 #+begin_src emacs-lisp
+(defun LANGUAGE-ts-mode--forward-sexp (&optional arg)
+  "Use `treesit-forward-sexp' when matching code only.
+ARG is described in the docstring of `forward-sexp'.  When we are
+matching a parenthesis, bracket, brace, or when point is in a comment do
+the normal s-expression movement by calling
+`forward-sexp-default-function'."
+  (interactive "^p")
+  (let* ((move-back (and (numberp arg) (< arg 0)))
+         (match-paren (if move-back
+                          (member (char-before) '(?\] ?\) ?\}))
+                        (member (char-after) '(?\[ ?\( ?\{)))))
+    (if (or match-paren
+            (let* ((pt-and-node (LANGUAGE-ts-mode--real-node-at-point))
+                   (node (cdr pt-and-node)))
+              (equal (treesit-node-type node) "comment")))
+        ;; See tests/test-LANGUAGE-ts-mode-thing-settings-files/thing_forward_sexp1.m
+        (forward-sexp-default-function arg)
+      (treesit-forward-sexp arg))))
+#+end_src
+
+and then re-set =forward-sexp-function= after =(treesit-major-mode-setup)=:
+
+#+begin_src emacs-lisp
+  (when (treesit-ready-p 'matlab)
+    (treesit-parser-create 'matlab)
+
+    ;; <snip>
+
     (treesit-major-mode-setup)
 
-    ;; Correct forward-sexp setup created by `treesit-major-mode' so that in comments we do normal
-    ;; s-expression matching using parenthesis. This fix is need for our tests were we need
-    ;; to evaluate (t-utils-NAME ....) expressions from within comments using C-x C-e.
+    ;; Correct forward-sexp setup created by `treesit-major-mode' so that for parenthesis, brackets,
+    ;; braces, and comments we do normal s-expression matching using parenthesis.
     (setq-local forward-sexp-function #'LANGUAGE-ts-mode--forward-sexp)
+    ))
 #+end_src
 
 ** Test: treesit-thing-settings
