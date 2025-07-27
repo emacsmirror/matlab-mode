@@ -269,7 +269,7 @@ the \"mlint\" entry in `mlint-programs', in which case this is the mlint
 next to the matlab found by `matlab--get-abs-matlab-exe'.  If we
 resolved another entry in `mlint-programs', we'll use that and by
 convention that entry should be an absolute path, but that's not
-guaranteed."
+guaranteed.  Nil is returned if mlint is not found."
   (let (mlint-exe)
     (cl-loop for mlint in mlint-programs do
              (if (string= mlint "mlint")
