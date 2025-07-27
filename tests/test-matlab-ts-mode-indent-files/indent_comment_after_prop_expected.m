@@ -1,7 +1,7 @@
 % -*- matlab-ts -*-
 
 % comment
-classdef indent_comment_after_prop
+classdef indent_comment_after_prop < handle
 
     % comment
     properties
@@ -20,7 +20,7 @@ classdef indent_comment_after_prop
     methods
 
         % comment
-        function foo(a)
+        function foo1(a)
 
             % comment
             arguments

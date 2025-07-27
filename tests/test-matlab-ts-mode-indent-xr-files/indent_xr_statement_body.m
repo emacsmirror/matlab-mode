@@ -1,7 +1,7 @@
 % -*- matlab-ts -*-
 
 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
-classdef indent_xr_statement_body
+classdef indent_xr_statement_body < handle
 
     % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
     properties

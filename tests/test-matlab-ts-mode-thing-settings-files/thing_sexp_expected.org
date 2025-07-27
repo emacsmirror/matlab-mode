@@ -14,13 +14,13 @@
 - Invoking      : "C-n" = next-line
   Start point   :   22
   Moved to point:   57
-  : 4:0: classdef thing_sexp
+  : 4:0: classdef thing_sexp < handle
   :      ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
   Start point   :   57
-  Moved to point: 2440
+  Moved to point: 2449
   : 105:3: end
   :           ^
   No buffer modifications
@@ -30,50 +30,50 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  146
-  Moved to point:   78
+  Start point   :  155
+  Moved to point:   87
   : 6:0:     % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :   78
-  Moved to point:  147
+  Start point   :   87
+  Moved to point:  156
   : 7:0:     properties
   :      ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   :  147
-  Moved to point:  151
+  Start point   :  156
+  Moved to point:  160
   : 7:4:     properties
   :          ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  151
-  Moved to point:  333
+  Start point   :  160
+  Moved to point:  342
   : 18:7:     end
   :              ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  333
-  Moved to point: 2195
+  Start point   :  342
+  Moved to point: 2204
   : 90:7:     end
   :              ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2195
-  Moved to point: 2312
+  Start point   : 2204
+  Moved to point: 2321
   : 97:7:     end
   :              ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2312
-  Moved to point: 2436
+  Start point   : 2321
+  Moved to point: 2445
   : 104:7:     end
   :               ^
   No buffer modifications
@@ -83,36 +83,36 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  218
-  Moved to point:  162
+  Start point   :  227
+  Moved to point:  171
   : 8:0:         % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  162
-  Moved to point:  219
+  Start point   :  171
+  Moved to point:  228
   : 9:0:         p1 = 0
   :      ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   :  219
-  Moved to point:  227
+  Start point   :  228
+  Moved to point:  236
   : 9:8:         p1 = 0
   :              ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  227
-  Moved to point:  234
+  Start point   :  236
+  Moved to point:  243
   : 10:0:         p2 = ...
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  234
-  Moved to point:  326
+  Start point   :  243
+  Moved to point:  335
   : 18:0:     end
   :       ^
   No buffer modifications
@@ -122,36 +122,36 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  404
-  Moved to point:  348
+  Start point   :  413
+  Moved to point:  357
   : 22:0:         % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  348
-  Moved to point:  405
+  Start point   :  357
+  Moved to point:  414
   : 23:0:         function method1(in1, in2)
   :       ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   :  405
-  Moved to point:  413
+  Start point   :  414
+  Moved to point:  422
   : 23:8:         function method1(in1, in2)
   :               ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  413
-  Moved to point: 1881
+  Start point   :  422
+  Moved to point: 1890
   : 76:11:         end
   :                   ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1881
-  Moved to point: 2187
+  Start point   : 1890
+  Moved to point: 2196
   : 89:11:         end
   :                   ^
   No buffer modifications
@@ -161,85 +161,85 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f"  "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  558
-  Moved to point:  441
+  Start point   :  567
+  Moved to point:  450
   : 25:0:             % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f"  "C-M-f")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  441
-  Moved to point:  559
+  Start point   :  450
+  Moved to point:  568
   : 26:0:             arguments
   :       ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   :  559
-  Moved to point:  571
+  Start point   :  568
+  Moved to point:  580
   : 26:12:             arguments
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  571
-  Moved to point:  662
+  Start point   :  580
+  Moved to point:  671
   : 29:15:             end
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  662
-  Moved to point:  694
+  Start point   :  671
+  Moved to point:  703
   : 31:30:             global gVar1 gVar2
   :                                      ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  694
-  Moved to point:  725
+  Start point   :  703
+  Moved to point:  734
   : 32:30:             global pVar1 pVar2
   :                                      ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  725
-  Moved to point: 1291
+  Start point   :  734
+  Moved to point: 1300
   : 53:15:             end
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1291
-  Moved to point: 1310
+  Start point   : 1300
+  Moved to point: 1319
   : 55:17:             j = 0;
   :                         ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1310
-  Moved to point: 1632
+  Start point   : 1319
+  Moved to point: 1641
   : 67:15:             end
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1632
-  Moved to point: 1663
+  Start point   : 1641
+  Moved to point: 1672
   : 69:29:             c = {'1', {2, 3}};
   :                                     ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1663
-  Moved to point: 1683
+  Start point   : 1672
+  Moved to point: 1692
   : 71:17:             x = 0
   :                         ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1683
-  Moved to point: 1751
+  Start point   : 1692
+  Moved to point: 1760
   : 74:15:             end
   :                       ^
   No buffer modifications
@@ -249,64 +249,64 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  819
-  Moved to point:  727
+  Start point   :  828
+  Moved to point:  736
   : 34:0:             % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  727
-  Moved to point:  820
+  Start point   :  736
+  Moved to point:  829
   : 35:0:             try
   :       ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   :  820
-  Moved to point:  832
+  Start point   :  829
+  Moved to point:  841
   : 35:12:             try
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  832
-  Moved to point: 1291
+  Start point   :  841
+  Moved to point: 1300
   : 53:15:             end
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1291
-  Moved to point: 1310
+  Start point   : 1300
+  Moved to point: 1319
   : 55:17:             j = 0;
   :                         ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1310
-  Moved to point: 1632
+  Start point   : 1319
+  Moved to point: 1641
   : 67:15:             end
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1632
-  Moved to point: 1663
+  Start point   : 1641
+  Moved to point: 1672
   : 69:29:             c = {'1', {2, 3}};
   :                                     ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1663
-  Moved to point: 1683
+  Start point   : 1672
+  Moved to point: 1692
   : 71:17:             x = 0
   :                         ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1683
-  Moved to point: 1751
+  Start point   : 1692
+  Moved to point: 1760
   : 74:15:             end
   :                       ^
   No buffer modifications
@@ -316,29 +316,29 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  892
-  Moved to point:  836
+  Start point   :  901
+  Moved to point:  845
   : 36:0:                 % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  836
-  Moved to point:  893
+  Start point   :  845
+  Moved to point:  902
   : 37:0:                 switch in
   :       ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   :  893
-  Moved to point:  909
+  Start point   :  902
+  Moved to point:  918
   : 37:16:                 switch in
   :                        ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  909
-  Moved to point: 1225
+  Start point   :  918
+  Moved to point: 1234
   : 49:19:                 end
   :                           ^
   No buffer modifications
@@ -348,50 +348,50 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   : 1001
-  Moved to point:  919
+  Start point   : 1010
+  Moved to point:  928
   : 38:0:                   % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  919
-  Moved to point: 1002
+  Start point   :  928
+  Moved to point: 1011
   : 39:0:                   case 10
   :       ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   : 1002
-  Moved to point: 1020
+  Start point   : 1011
+  Moved to point: 1029
   : 39:18:                   case 10
   :                          ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1020
-  Moved to point: 1024
+  Start point   : 1029
+  Moved to point: 1033
   : 39:22:                   case 10
   :                              ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1024
-  Moved to point: 1058
+  Start point   : 1033
+  Moved to point: 1067
   : 40:30:                     disp('10');
   :                                      ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1058
-  Moved to point: 1117
+  Start point   : 1067
+  Moved to point: 1126
   : 43:30:                     disp('11');
   :                                      ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 1117
-  Moved to point: 1203
+  Start point   : 1126
+  Moved to point: 1212
   : 47:31:                     disp('~10');
   :                                       ^
   No buffer modifications
@@ -401,85 +401,85 @@
   (t-utils-xr "C-a" "C-p" "C-e" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b"  "C-M-b")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   : 1869
-  Moved to point: 1752
+  Start point   : 1878
+  Moved to point: 1761
   : 75:0:             % (t-utils-xr "C-a" "C-p" "C-e" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b"  "C-M-b")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-p" = previous-line
-  Start point   : 1752
-  Moved to point: 1736
+  Start point   : 1761
+  Moved to point: 1745
   : 74:0:             end
   :       ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1736
-  Moved to point: 1751
+  Start point   : 1745
+  Moved to point: 1760
   : 74:15:             end
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   : 1751
-  Moved to point: 1696
+  Start point   : 1760
+  Moved to point: 1705
   : 72:12:             while x < 10
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   : 1696
-  Moved to point: 1678
+  Start point   : 1705
+  Moved to point: 1687
   : 71:12:             x = 0
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   : 1678
-  Moved to point: 1646
+  Start point   : 1687
+  Moved to point: 1655
   : 69:12:             c = {'1', {2, 3}};
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   : 1646
-  Moved to point: 1324
+  Start point   : 1655
+  Moved to point: 1333
   : 56:12:             for n = 1:in
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   : 1324
-  Moved to point: 1305
+  Start point   : 1333
+  Moved to point: 1314
   : 55:12:             j = 0;
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   : 1305
-  Moved to point:  832
+  Start point   : 1314
+  Moved to point:  841
   : 35:12:             try
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   :  832
-  Moved to point:  707
+  Start point   :  841
+  Moved to point:  716
   : 32:12:             global pVar1 pVar2
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   :  707
-  Moved to point:  676
+  Start point   :  716
+  Moved to point:  685
   : 31:12:             global gVar1 gVar2
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-b" = backward-sexp
-  Start point   :  676
-  Moved to point:  571
+  Start point   :  685
+  Moved to point:  580
   : 26:12:             arguments
   :                    ^
   No buffer modifications
@@ -489,57 +489,57 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   : 1995
-  Moved to point: 1911
+  Start point   : 2004
+  Moved to point: 1920
   : 80:0:             % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1911
-  Moved to point: 1996
+  Start point   : 1920
+  Moved to point: 2005
   : 81:0:             n = 200;
   :       ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   : 1996
-  Moved to point: 2008
+  Start point   : 2005
+  Moved to point: 2017
   : 81:12:             n = 200;
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2008
-  Moved to point: 2015
+  Start point   : 2017
+  Moved to point: 2024
   : 81:19:             n = 200;
   :                           ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2015
-  Moved to point: 2036
+  Start point   : 2024
+  Moved to point: 2045
   : 82:19:             A = 500;
   :                           ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2036
-  Moved to point: 2064
+  Start point   : 2045
+  Moved to point: 2073
   : 83:26:             a = zeros(1,n);
   :                                  ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2064
-  Moved to point: 2155
+  Start point   : 2073
+  Moved to point: 2164
   : 86:15:             end
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2155
-  Moved to point: 2175
+  Start point   : 2164
+  Moved to point: 2184
   : 88:18:             return
   :                          ^
   No buffer modifications
@@ -549,36 +549,36 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   : 2264
-  Moved to point: 2208
+  Start point   : 2273
+  Moved to point: 2217
   : 93:0:         % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   : 2208
-  Moved to point: 2265
+  Start point   : 2217
+  Moved to point: 2274
   : 94:0:         e1
   :       ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   : 2265
-  Moved to point: 2273
+  Start point   : 2274
+  Moved to point: 2282
   : 94:8:         e1
   :               ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2273
-  Moved to point: 2275
+  Start point   : 2282
+  Moved to point: 2284
   : 94:10:         e1
   :                  ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2275
-  Moved to point: 2286
+  Start point   : 2284
+  Moved to point: 2295
   : 95:10:         e2
   :                  ^
   No buffer modifications
@@ -588,36 +588,36 @@
   (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   : 2386
-  Moved to point: 2330
+  Start point   : 2395
+  Moved to point: 2339
   : 100:0:         % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
   :        ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   : 2330
-  Moved to point: 2387
+  Start point   : 2339
+  Moved to point: 2396
   : 101:0:         one
   :        ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   : 2387
-  Moved to point: 2395
+  Start point   : 2396
+  Moved to point: 2404
   : 101:8:         one
   :                ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2395
-  Moved to point: 2398
+  Start point   : 2404
+  Moved to point: 2407
   : 101:11:         one
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   : 2398
-  Moved to point: 2410
+  Start point   : 2407
+  Moved to point: 2419
   : 102:11:         two
   :                    ^
   No buffer modifications

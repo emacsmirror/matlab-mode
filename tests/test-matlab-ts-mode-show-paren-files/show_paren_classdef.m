@@ -1,7 +1,7 @@
 % -*- matlab-ts -*-
 
 % (t-utils-xr "C-a" "C-n" (prin1 (matlab-ts-mode--show-paren-or-block)))
-classdef show_paren_classdef
+classdef show_paren_classdef < handle
 
     % (t-utils-xr "C-a" "C-n" "M-m" (prin1 (matlab-ts-mode--show-paren-or-block)))
     properties

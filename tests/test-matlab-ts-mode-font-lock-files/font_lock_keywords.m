@@ -1,5 +1,5 @@
 % -*- matlab-ts -*-
-classdef font_lock_keywords
+classdef font_lock_keywords < handle
     properties
         p1 = 0
     end

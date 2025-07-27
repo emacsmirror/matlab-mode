@@ -1,5 +1,5 @@
 % -*- matlab-ts -*-
-classdef indent_comments_in_blocks
+classdef indent_comments_in_blocks < handle
     properties
         bar;
         % comment here

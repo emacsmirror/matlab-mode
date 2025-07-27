@@ -1,5 +1,5 @@
 % -*- matlab-ts -*-
-classdef indent_keywords
+classdef indent_keywords < handle
     properties
         % comment here
         p1 = 0

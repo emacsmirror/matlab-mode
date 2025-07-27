@@ -1,7 +1,7 @@
 % -*- matlab-ts -*-
 
 % (t-utils-xr "C-a" "C-n" "C-M-f")
-classdef thing_sexp
+classdef thing_sexp < handle
 
     % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
     properties
