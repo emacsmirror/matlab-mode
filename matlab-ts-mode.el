@@ -1,4 +1,4 @@
-;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
+ ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
 ;; Copyright 2025 Free Software Foundation, Inc.
 ;;
@@ -2037,30 +2037,30 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
 
 ;; TODO - do we need to disable when lsp is active?
 
-(if (require 'flycheck nil 'noerror)
-    (let* ((mlint (matlab--get-mlint-exe)))
-      ;; If we have mlint, activate.
-      ;; We could display a message here or in matlab-ts-mode if we don't have mlint, but
-      ;; this would be just noise and cause problems when running tests with emacs -q.
+(when (require 'flycheck nil 'noerror)
+  (let* ((mlint (matlab--get-mlint-exe)))
+    ;; If we have mlint, activate.
+    ;; We could display a message here or in matlab-ts-mode if we don't have mlint, but
+    ;; this would be just noise and cause problems when running tests with emacs -q.
 
-      ;; TODO - add to MATLAB a menu item to view mlint messages and issue info if
-      ;;        no flycheck or no mlint.
-      (when mlint
-        (flycheck-define-command-checker
-            'matlab
-          "MATLAB mlint code analyzer"
-          :command `(,mlint "-id" "-all" source-original)
-          ;; Example mlint messages.
-          ;; L 588 (C 46-49): LOAD: To avoid conflicts with functions ....
-          :error-patterns
-          '((warning line-start "L " line " (C " column "-" column "): "
-                     (id (* alnum)) ":" (message))
-            (warning line-start "L " line " (C " column "): "
-                     (id (* alnum)) ":" (message)))
-          :modes '(matlab-ts-mode)
-          :predicate #'(lambda () (flycheck-buffer-saved-p)))
-        ;; Register matlab-mlint with flycheck
-        (add-to-list 'flycheck-checkers 'matlab-mlint)))
+    ;; TODO - add to MATLAB a menu item to view mlint messages and issue info if no flycheck or no
+    ;;        mlint.
+    (when mlint
+      (flycheck-define-command-checker
+          'matlab
+        "MATLAB mlint code analyzer"
+        :command `(,mlint "-id" "-all" source-original)
+        ;; Example mlint messages.
+        ;; L 588 (C 46-49): LOAD: To avoid conflicts with functions ....
+        :error-patterns
+        '((warning line-start "L " line " (C " column "-" column "): "
+                   (id (* alnum)) ":" (message))
+          (warning line-start "L " line " (C " column "): "
+                   (id (* alnum)) ":" (message)))
+        :modes '(matlab-ts-mode)
+        :predicate #'(lambda () (flycheck-buffer-saved-p)))
+      ;; Register matlab-mlint with flycheck
+      (add-to-list 'flycheck-checkers 'matlab-mlint))))
 
 ;;;###autoload
 (define-derived-mode matlab-ts-mode prog-mode "MATLAB:ts"
