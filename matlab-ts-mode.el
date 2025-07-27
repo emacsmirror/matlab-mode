@@ -2183,7 +2183,13 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO indent
     ;;      classdef foo
-    ;;          ^                  <== RET on previous line go here (or TAB to here)
+    ;;          ^                  <== RET on previous line should go here (or TAB to here)
+    ;;
+    ;; TODO indent
+    ;;       for i=1:10
+    ;;           disp(i)
+    ;;           ^                 <== TAB on empty line or RET previous line should go here
+    ;;       end
     ;;
     ;; TODO font-lock
     ;;      classdef fooenum
@@ -2193,6 +2199,10 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;          end
     ;;      end
     ;;      See: https://github.com/acristoffers/tree-sitter-matlab/issues/48
+    ;;
+    ;; TODO font-lock when errors
+    ;;      can we add light error indicator somewhere, e.g. put an underline marker on the error
+    ;;      region?
     ;;
     ;; TODO create defcustom matlab-ts-mode-electric-ends that inserts end statements
     ;;      when a function, switch, while, for, etc. is entered. This should handle continuations.
