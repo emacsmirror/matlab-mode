@@ -2181,6 +2181,10 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;            ^                <== RET on previous line or TAB should be here
     ;;      See https://github.com/acristoffers/tree-sitter-matlab/issues/47
     ;;
+    ;; TODO indent
+    ;;      classdef foo
+    ;;          ^                  <== RET on previous line go here (or TAB to here)
+    ;;
     ;; TODO font-lock
     ;;      classdef fooenum
     ;;          enumeration
