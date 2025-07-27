@@ -58,16 +58,29 @@ for fIdx = 1:length(filesToCheck)
     file = filesToCheck(fIdx);
     issues = codeIssues(file);
 
-    % Syntax errors have error Sererity
-    syntaxErrors = issues.Issues.Severity(:) == matlab.codeanalysis.IssueSeverity.error;
-    if any(syntaxErrors)
-         sIdx = find(syntaxErrors, 1, 'first');
-         syntaxStatus = sprintf(\"has-syntax-errors at line %d:%d to %d:%d - %s\", ...
-                                issues.Issues.LineStart(sIdx), ...
-                                issues.Issues.ColumnStart(sIdx), ...
-                                issues.Issues.LineEnd(sIdx), ...
-                                issues.Issues.ColumnEnd(sIdx), ...
-                                issues.Issues.Description(sIdx));
+    errorIdx = [];
+    for issueIdx = 1 : size(issues.Issues, 1)
+        if ~isequal(issues.Issues.Severity(issueIdx), matlab.codeanalysis.IssueSeverity.error)
+            continue;
+        end
+
+        % Ignore mismatch in class/function name because it is not an error when executed.
+        % \"foo.m\" error auto  \"Class name 'foo1' and file name do not agree ....\"
+        desc = issues.Issues.Description(issueIdx);
+        if regexp(desc, \"^Class name .* and file name do not agree\", 'once')
+            continue
+        end
+        errorIdx = issueIdx;
+        break
+    end
+
+    if ~isempty(errorIdx)
+        syntaxStatus = sprintf(\"has-syntax-errors at line %d:%d to %d:%d - %s\", ...
+                               issues.Issues.LineStart(errorIdx), ...
+                               issues.Issues.ColumnStart(errorIdx), ...
+                               issues.Issues.LineEnd(errorIdx), ...
+                               issues.Issues.ColumnEnd(errorIdx), ...
+                               issues.Issues.Description(errorIdx));
     else
         syntaxStatus = \"no-syntax-errors\";
     end
