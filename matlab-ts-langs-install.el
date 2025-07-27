@@ -60,29 +60,42 @@ See https://github.com/emacs-tree-sitter/tree-sitter-langs/releases/latest"
                    "aarch64-apple-darwin"
 		 "x86_64-apple-darwin")))))
 
-(defun matlab--ts-langs-latest-url ()
-  "Get the latest tree-sitter-langs *.tar.gv URL.
-Returns latest *.tar.gz release URL from
+(defun matlab--ts-langs-download-url ()
+  "Get the download tree-sitter-langs *.tar.gv URL.
+Returns the *.tar.gz release URL from
 https://github.com/emacs-tree-sitter/tree-sitter-langs/"
 
   (let* ((ts-url "https://github.com/emacs-tree-sitter/tree-sitter-langs")
-	 (tags-buf (url-retrieve-synchronously (concat ts-url "/tags")))
-	 release-url)
+         (tags-url (concat ts-url "/tags"))
+	 (tags-buf (url-retrieve-synchronously tags-url))
+         (versions '())
+         latest-ver
+	 download-url)
 
     (with-current-buffer tags-buf
-      (when (re-search-forward "tree-sitter-langs/releases/tag/" nil t)
-	(when (looking-at "\\([.0-9]+\\)")
-	  (let ((ver (match-string 1))
-		;; See in ts-url: tree-sitter-langs-build.el
-		(platform (matlab--ts-langs-platform)))
+      (while (re-search-forward "tree-sitter-langs/releases/tag/\\([.0-9]+\\)" nil t)
+	(let ((ver (match-string 1)))
+          (when (not latest-ver)
+            (setq latest-ver ver))
+          (when (not (member ver versions))
+            (push ver versions)))))
 
-	    (setq release-url (concat ts-url
-				      "/releases/download/" ver "/tree-sitter-grammars."
-				      platform
-				      ".v" ver
-				      ".tar.gz"))))))
+    (when (not latest-ver)
+      (error "Failed to get release versions from %s" tags-url))
+
+    (let ((ver-to-download (completing-read (concat
+                                             "Version to download (" latest-ver " is latest): ")
+                                            versions nil t latest-ver))
+	  (platform (matlab--ts-langs-platform)))
+
+      ;; For download-url, see in ts-url: tree-sitter-langs-build.el
+      (setq download-url (concat ts-url
+				 "/releases/download/" ver-to-download "/tree-sitter-grammars."
+				 platform
+				 ".v" ver-to-download
+				 ".tar.gz")))
     (kill-buffer tags-buf)
-    release-url))
+    download-url))
 
 (defun matlab--ts-langs-tar-result (tar-args)
   "Return string \"tar TAR-ARGS\\n<stdout-result>\"."
@@ -259,7 +272,7 @@ is known to work with Emacs 30 as of July 2025"
       (error "%d is not a directory" dir))
     (setq dir (file-truename dir)))
 
-  (let* ((latest-url (matlab--ts-langs-latest-url))
+  (let* ((latest-url (matlab--ts-langs-download-url))
 	 (latest-buf (if (y-or-n-p (format "Download \n %s\n and extract to %s/? "
 					   latest-url dir))
 			 (let ((buf (url-retrieve-synchronously latest-url)))
