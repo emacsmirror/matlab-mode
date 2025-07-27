@@ -2039,10 +2039,13 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
 
 (if (require 'flycheck nil 'noerror)
     (let* ((mlint (matlab--get-mlint-exe)))
-      (if (not mlint)
-          ;; TODO - dislay when activating matlab-ts-mode?
-          (message "mlint code analyzer not found, not activating flycheck for MATLAB.
-To fix, place matlab on your system path or configure `matlab-shell-command'")
+      ;; If we have mlint, activate.
+      ;; We could display a message here or in matlab-ts-mode if we don't have mlint, but
+      ;; this would be just noise and cause problems when running tests with emacs -q.
+
+      ;; TODO - add to MATLAB a menu item to view mlint messages and issue info if
+      ;;        no flycheck or no mlint.
+      (when mlint
         (flycheck-define-command-checker
             'matlab
           "MATLAB mlint code analyzer"
@@ -2057,10 +2060,7 @@ To fix, place matlab on your system path or configure `matlab-shell-command'")
           :modes '(matlab-ts-mode)
           :predicate #'(lambda () (flycheck-buffer-saved-p)))
         ;; Register matlab-mlint with flycheck
-        (add-to-list 'flycheck-checkers 'matlab-mlint)
-        ))
-  (message "matlab-ts-mode: no flycheck, unable to activate mlint - \
-to fix install https://www.flycheck.org"))
+        (add-to-list 'flycheck-checkers 'matlab-mlint)))
 
 ;;;###autoload
 (define-derived-mode matlab-ts-mode prog-mode "MATLAB:ts"
