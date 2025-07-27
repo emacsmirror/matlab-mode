@@ -1,12 +1,12 @@
 % -*- matlab-ts -*-
-function font_lock_fcn_arguments(in1, properties, options)
+function font_lock_fcn_arguments(in1, properties, foo, options)
     arguments
-       in1 (1,:) {mustBeNumeric}
-       properties double
-       foo (1,1) string
-       options.goo
-       options.bar double
-       options.LineStyle (1,1) string = "-" 
-       options.LineWidth (1,1) {mustBeNumeric} = 1
+        in1 (1,:) {mustBeNumeric}
+        properties double
+        foo (1,1) string
+        options.goo
+        options.bar double
+        options.LineStyle (1,1) string = "-"
+        options.LineWidth (1,1) {mustBeNumeric} = 1
     end
 end
