@@ -1770,6 +1770,56 @@ ELPA package for it?
 
 TODO extract help from t-utils.el and place here.
 
+* Building matlab tree sitter manually
+
+On Debian 12 Intel/AMD 64-bit, install node and gcc if not installed:
+
+#+begin_src bash
+  sudo apt update
+  sudo apt install nodejs npm
+  node --version
+  # v18.19.0
+
+  sudo apt install gcc
+  gcc --version
+  # gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+
+#+end_src
+
+Download and extract tree-sitter-linux-x64.gz from
+https://github.com/tree-sitter/tree-sitter/releases into some location, e.g.
+
+ : ~/emacs-projects/tree-sitter-bin/tree-sitter
+
+Get matlab tree-sitter, e.g.
+
+#+begin_src bash
+  cd ~/emacs-projects
+  git clone https://github.com/acristoffers/tree-sitter-matlab.git
+#+end_src
+
+Build:
+
+#+begin_src bash
+  cd ~/emacs-projects/tree-sitter-matlab
+  ~/emacs-projects/tree-sitter-bin/tree-sitter generate --abi 14
+#+end_src
+
+Install, using default branch
+
+#+begin_example
+  emacs
+  M-x treesit-install-language-grammar
+  Language: matlab
+  There is no recipe for matlab, do you want to build it interactively? (y or n) y
+  Enter the URL of the Git repository of the language grammar: ~/emacs-projects/tree-sitter-matlab
+  Enter the tag or branch (default: default branch):
+  Enter the subdirectory in which the parser.c file resides (default: "src"):
+  Enter the C compiler to use (default: auto-detect):
+  Enter the C++ compiler to use (default: auto-detect):
+  Install to (default: ~/.emacs.d/tree-sitter):
+#+end_example
+
 * Issues
 
 - [ ] Building libtree-sitter-matlab.dll from src on Windows produces a DLL that fails.
