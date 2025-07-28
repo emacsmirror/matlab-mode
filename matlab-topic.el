@@ -24,6 +24,7 @@
 
 ;;; Code:
 (require 'matlab)
+(require 'matlab--shell-map)
 (require 'matlab-shell)
 (require 'view)
 
@@ -71,7 +72,7 @@
   (let ((km (make-sparse-keymap)))
     (define-key km [return] 'matlab-shell-help-choose)
     (define-key km "q" 'bury-buffer)
-    (define-key km [(control h) (control m)] matlab-help-map)
+    (define-key km [(control h) (control m)] matlab--shell-help-map)
     (if (string-match "XEmacs" emacs-version)
 	(define-key km [button2] 'matlab-shell-help-click)
       (define-key km [mouse-2] 'matlab-shell-help-click)

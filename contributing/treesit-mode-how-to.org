@@ -2038,6 +2038,11 @@ Install, using default branch
 
        TODO - show how to do in lsp-mode and update lsp-mode org on this.
 
+ 14. matlab-shell now has one correct ways of running code sections, via menu =MATLAB -> Code
+     Sections -> Run Section (C-c C-<return>)= or and the older =MATLAB -> Run Code Section=
+     (matlab-shell-run-code-section) because it was duplication and wasn't correctly handling all
+     cases.
+
 # LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
 # LocalWords:  lang utils Imenu LSP defun ELPA tuils setq SLIB libtree dylib sexp xr defcusom
 # LocalWords:  defface EDebug ielm fontify Fontifying fontified defcustom alist eos bol NPS prev BUF

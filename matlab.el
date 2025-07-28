@@ -56,6 +56,7 @@
 (require 'matlab-scan)
 (require 'matlab-sections)
 (require 'matlab-syntax)
+(require 'matlab--shell-map)
 
 (require 'derived)
 (require 'easymenu)
@@ -540,28 +541,12 @@ point, but it will be restored for them."
 
 (make-variable-buffer-local 'matlab-return-add-semicolon)
 
-(defcustom matlab-change-current-directory nil
-  "*If non nil, make file's directory the current directory when evaluating it."
-  :group 'matlab
-  :type 'boolean)
-
-(make-variable-buffer-local 'matlab-change-current-directory)
-
 (defvar matlab-mode-abbrev-table nil
   "The abbrev table used in `matlab-mode' buffers.")
 (define-abbrev-table 'matlab-mode-abbrev-table ())
 
 
 ;;; Keybindings ===============================================================
-
-(defvar matlab-help-map
-  (let ((km (make-sparse-keymap)))
-    (define-key km "r" 'matlab-shell-run-command)
-    (define-key km "f" 'matlab-shell-describe-command)
-    (define-key km "a" 'matlab-shell-apropos)
-    (define-key km "v" 'matlab-shell-describe-variable)
-    km)
-  "The help key map for `matlab-mode' and `matlab-shell-mode'.")
 
 (defvar matlab-mode-map
   (let ((km (make-sparse-keymap)))
@@ -588,11 +573,10 @@ point, but it will be restored for them."
     ;; Connecting to MATLAB Shell
     (define-key km [(control c) (control s)] 'matlab-shell-save-and-go)
     (define-key km [(control c) (control r)] 'matlab-shell-run-region)
-    (define-key km [(meta control return)] 'matlab-shell-run-code-section)
     (define-key km [(control return)] 'matlab-shell-run-region-or-line)
     (define-key km [(control c) (control t)] 'matlab-show-line-info)
     (define-key km [(control c) ?. ] 'matlab-shell-locate-fcn)
-    (define-key km [(control h) (control m)] matlab-help-map)
+    (define-key km [(control h) (control m)] matlab--shell-help-map)
     (define-key km [(meta s)] 'matlab-show-matlab-shell-buffer)
     (define-key km [(control meta mouse-2)] 'matlab-find-file-click)
     ;; Debugger interconnect
@@ -614,25 +598,6 @@ point, but it will be restored for them."
      :active (matlab-any-shell-active-p)]
     ["Run Region" matlab-shell-run-region
      :active (matlab-any-shell-active-p)]
-    ["Run Code Section" matlab-shell-run-code-section
-     :active (matlab-any-shell-active-p)]
-    "----"
-    ["Locate MATLAB function" matlab-shell-locate-fcn
-     :active (matlab-shell-active-p)
-     :help "Run 'which FCN' in matlab-shell, then open the file in Emacs"]
-    ["Show M-Lint Warnings" matlab-toggle-show-mlint-warnings
-     :active (and (locate-library "mlint") (fboundp 'mlint-minor-mode))
-     :style toggle :selected  matlab-show-mlint-warnings
-     ]
-    ("Auto Fix"
-     ["Verify/Fix source" matlab-mode-verify-fix-file t]
-     ["Quiesce source" matlab-mode-vf-quiesce-buffer t]
-     )
-    ("Format"
-     ["Justify Line" matlab-justify-line t]
-     ["Fill Comment" fill-paragraph]
-     ["Comment Region" matlab-comment-region t]
-     ["Uncomment Region" matlab-uncomment-region t])
     ("Code Sections"
      ["Run section" matlab-sections-run-section
       :active matlab-sections-minor-mode
@@ -666,6 +631,23 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
       :help "Move the current \"%% section\" down."]
      "--"
      ["Sections help" matlab-sections-help])
+    "----"
+    ["Locate MATLAB function" matlab-shell-locate-fcn
+     :active (matlab-shell-active-p)
+     :help "Run 'which FCN' in matlab-shell, then open the file in Emacs"]
+    ["Show M-Lint Warnings" matlab-toggle-show-mlint-warnings
+     :active (and (locate-library "mlint") (fboundp 'mlint-minor-mode))
+     :style toggle :selected  matlab-show-mlint-warnings
+     ]
+    ("Auto Fix"
+     ["Verify/Fix source" matlab-mode-verify-fix-file t]
+     ["Quiesce source" matlab-mode-vf-quiesce-buffer t]
+     )
+    ("Format"
+     ["Justify Line" matlab-justify-line t]
+     ["Fill Comment" fill-paragraph]
+     ["Comment Region" matlab-comment-region t]
+     ["Uncomment Region" matlab-uncomment-region t])
     ("Debug"
      ["Edit File (toggle read-only)" matlab-shell-gud-mode-edit
       :help "Exit MATLAB debug minor mode to edit without exiting MATLAB's K>> prompt."
@@ -1784,19 +1766,6 @@ A negative number means there were more ends than starts.
                  (setq depth (1+ depth)))))
 
         depth))))
-
-
-(defun matlab-function-called-at-point ()
-  "Return a string representing the function called nearby point."
-  (save-excursion
-    (beginning-of-line)
-    (cond ((looking-at "\\s-*\\([a-zA-Z]\\w+\\)[^=][^=]")
-           (match-string 1))
-          ((and (re-search-forward "=" (line-end-position) t)
-                (looking-at "\\s-*\\([a-zA-Z]\\w+\\)\\s-*[^=]"))
-           (match-string 1))
-          (t nil))))
-
 
 (defun matlab-comment-on-line ()
   "Place the cursor on the beginning of a valid comment on this line.

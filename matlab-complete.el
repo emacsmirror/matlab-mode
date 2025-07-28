@@ -33,6 +33,7 @@
 (require 'cl-macs)
 (require 'matlab)
 (require 'matlab-shell)
+(require 'matlab--shell-bridge)
 
 (defun matlab-uniquify-list (lst)
   "Return a list that is a subset of LST where all elements are unique."

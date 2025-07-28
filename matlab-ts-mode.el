@@ -1,4 +1,4 @@
- ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
+;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
 ;; Copyright 2025 Free Software Foundation, Inc.
 ;;
@@ -1486,84 +1486,144 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
 
 ;;; Thing settings for movement, etc.
 
+
+(defvar matlab-ts-mode--statements-type-re
+  (rx (seq
+       bos
+       (or "arguments_statement"
+           "assignment"
+           "lambda"
+           "class_definition"
+           "enumeration"
+           "events"
+           "for_statement"
+           "function_call"
+           "function_definition"
+           "if_statement"
+           "methods"
+           "property"
+           "properties"
+           "spmd_statement"
+           "switch_statement"
+           "try_statement"
+           "while_statement")
+       eos))
+  "MATLAB command statements.")
+
 ;; TODO should we use following for M-a, M-e?
 ;; This needs tune up, but could workout better than using matlab-ts-mode--thing-settings
-;;
-;; (defvar matlab-ts-mode--statements-ht
-;;   #s(hash-table
-;;      test equal
-;;      data ("arguments_statement" t
-;;            "assignment" t
-;;            "lambda" t
-;;            "class_definition" t
-;;            "enumeration" t
-;;            "events" t
-;;            "for_statement" t
-;;            "function_definition" t
-;;            "if_statement" t
-;;            "methods" t
-;;            "property" t
-;;            "properties" t
-;;            "spmd_statement" t
-;;            "switch_statement" t
-;;            "try_statement" t
-;;            "while_statement" t))
-;;   "MATLAB command statements.")
-;;
-;; (cl-defun matlab-ts-mode-beginning-of-statement (&optional goto-end)
-;;   "Move to the beginning of a command statement.
-;; If optional GOTO-END is \\='end, move to end of the current statement.
-;;
-;; We define a command statement to be a complete syntatic unit that has
-;; a start and end.  For example, if point is in an assigment statement
-;;        var = ...
-;;          1;
-;; move point to the \"v\" when GOTO-END is nil, otherwise move to the
-;; \";\".  If point is in an if statement, move to the start or end of
-;; that.  Likewise for other command statements.
-;;
-;; The point is moved to the start or end of the innermost statement that
-;; the point is on.  No movement is performed if point is not in a
-;; statement.  This can occur when there are syntax errors or the buffer
-;; has no content.
-;;
-;; Returns nil if not in a statement, otherwise the `point' which
-;; will be a new point if the starting point was not at the start
-;; or end of the command statement."
-;;   (interactive)
-;;
-;;   (cl-assert (or (not goto-end) (eq goto-end 'end)))
-;;
-;;   (let ((node (treesit-node-at (point))))
-;;
-;;     (when (and (> (point) 1)
-;;                (equal (treesit-node-type node) "\n")
-;;                (re-search-backward "[^ \t\n\r]" nil t))
-;;       (setq node (treesit-node-at (point))))
-;;
-;;     (while (and node
-;;                 (let ((type (treesit-node-type node)))
-;;                   (when (equal type "ERROR")
-;;                     ;; No movement if we have a syntax error
-;;                     (message "Not in statement due to syntax error.")
-;;                     (cl-return nil))
-;;                   (not (gethash type matlab-ts-mode--statements-ht))))
-;;       (setq node (treesit-node-parent node)))
-;;
-;;     (when (not node)
-;;       (message "Not in a statement.")
-;;       (cl-return))
-;;
-;;     (when node
-;;       (goto-char (if (eq goto-end 'end)
-;;                      (treesit-node-end node)
-;;                    (treesit-node-start node))))))
-;;
-;; (defun matlab-ts-mode-end-of-statement ()
-;;   "Move to the end of a command statement.
-;; This is the opposite of `matlab-ts-mode-beginning-of-statement'."
-;;   (interactive)
-;;   (matlab-ts-mode-beginning-of-statement 'end))
+
+(cl-defun matlab-ts-mode-beginning-of-statement (&optional goto-end statement-type-re)
+  "Move to the beginning of a statement.
+If optional GOTO-END is \\='end, move to end of the current statement.
+
+We define a command statement to be a complete syntatic unit that has
+a start and end.  For example, if point is in an assigment statement
+    var = ...
+      1;
+move point to the \"v\" when GOTO-END is nil, otherwise move to the the
+point after \";\".  Likewise for other command statements.
+
+The point is moved to the start or end of the innermost statement that
+the point is on.  No movement is performed if point is not in a
+statement.  This can occur when there are syntax errors or the buffer
+has no content.
+
+Optional STATEMENT-TYPE-RE is a regular expression matching the type of
+statement to look for.  For example, to move to the begining of the
+current assignment statement, use
+
+  (matlab-ts-mode-beginning-of-statement nil
+    (rx (seq bos \"assignment\" eos))
+
+If STATEMENT-TYPE-RE is not specified, `matlab-ts-mode--statements-type-re'
+is used.
+
+Returns nil if not in a statement, otherwise the `point' which
+will be a new point if the starting point was not at the start
+or end of the command statement."
+  (interactive)
+
+  (cl-assert (or (not goto-end) (eq goto-end 'end)))
+
+  (when (not statement-type-re)
+    (setq statement-type-re matlab-ts-mode--statements-type-re))
+  
+  (let ((start-point (point))
+        (node (treesit-node-at (point))))
+
+    ;; When on a newline, back up to prior statement
+    (when (and (> (point) 1)
+               (equal (treesit-node-type node) "\n")
+               (re-search-backward "[^ \t\n\r]" nil t))
+      (setq node (treesit-node-at (point))))
+
+    ;; When at ";" use prev-sibling
+    (when (equal (treesit-node-type node) ";")
+      (setq node (treesit-node-prev-sibling node)))
+
+    ;; find nearest ancestor that matches statement-type-re
+    (while (and node
+                (let ((type (treesit-node-type node)))
+                  (when (equal type "ERROR")
+                    ;; No movement if we have a syntax error
+                    (message "Not in statement due to syntax error.")
+                    (cl-return-from matlab-ts-mode-beginning-of-statement))
+                  (not (string-match-p statement-type-re type))))
+      (setq node (treesit-node-parent node)))
+
+    (when (not node)
+      (message "Not in a statement")
+      (cl-return-from matlab-ts-mode-beginning-of-statement))
+
+    (when node
+      (let* ((statement-start-point (treesit-node-start node))
+             (end-node (or
+                        ;; Use next sibling node if it's a ";" for the an
+                        ;; assignment or function_call.
+                        (and (string-match-p (rx (seq bos (or "assignment"
+                                                              "function_call")
+                                                      eos))
+                                             (treesit-node-type node))
+                             (let ((next-node (treesit-node-next-sibling node)))
+                               (when (and next-node
+                                          (string= ";" (treesit-node-type next-node)))
+                                 next-node)))
+                        node))
+             (statement-end-point (treesit-node-end end-node)))
+        (when (and (>= start-point statement-start-point)
+                   (<= start-point statement-end-point))
+          (goto-char (if (eq goto-end 'end)
+                         statement-end-point
+                       statement-start-point)))))))
+
+(defun matlab-ts-mode-end-of-statement (&optional statement-type)
+  "Move to the end of a command statement.
+This is the opposite of `matlab-ts-mode-beginning-of-statement'.
+Optional STATEMENT-TYPE is the type of statement to look for.  If
+not specified statement in `matlab-ts-mode--statements-ht' are used."
+  (interactive)
+  (matlab-ts-mode-beginning-of-statement 'end statement-type))
+
+(defun matlab-ts-mode-beginning-of-command ()
+  "Move to the beginning of the command at point.
+Commands are either assignement or function_call statements that can be
+evaluated at the matlab prompt.  Movement occurs only if the point is in
+an assignment or function call.  Note array indexing is considered a
+function call."
+  (matlab-ts-mode-beginning-of-statement nil (rx (seq bos (or "assignment"
+                                                              "function_call")
+                                                      eos))))
+
+(defun matlab-ts-mode-end-of-command ()
+  "Move to the end of the command at point.
+Commands are either assignement or function_call statements that can be
+evaluated at the matlab prompt.  Movement occurs only if the point is in
+an assignment or function call.  Note array indexing is considered a
+function call."
+  (matlab-ts-mode-beginning-of-statement 'end (rx (seq bos (or "assignment"
+                                                               "function_call")
+                                                       eos))))
 
 (defvar matlab-ts-mode--thing-settings
   `((matlab
@@ -2206,7 +2266,11 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO create defcustom matlab-ts-mode-electric-ends that inserts end statements
     ;;      when a function, switch, while, for, etc. is entered. This should handle continuations.
-
+    ;;
+    ;; TODO on load enter matlab-ts-mode when file contains mcode and
+    ;;      (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
+    ;;      is active. Also look at matlab-mode magic-mode-alist setup.
+    ;;   
     (treesit-major-mode-setup)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that for parenthesis, brackets,

@@ -26,10 +26,17 @@
 
 ;;; Code:
 
-(require 'matlab)
 (require 'matlab-compat)
 (eval-and-compile
   (require 'matlab--access))
+(require 'matlab--shell-bridge)
+(require 'matlab--shell-map)
+
+;; Note this should *NOT*
+;;   (require 'matlab) ;; or (require 'matlab-mode)
+;; or
+;;   (require 'matlab-ts-mode)
+;; because it is designed to work with both `matlab-mode' and `matlab-ts-mode'
 
 (require 'comint)
 (require 'server)
@@ -157,12 +164,18 @@ narrow completions, you may find the responses slow and if so,
 you can try turning this off."
   :type 'boolean)
 
+(defcustom matlab-change-current-directory nil
+  "*If non nil, make file's directory the current directory when evaluating it."
+  :type 'boolean)
+
+(make-variable-buffer-local 'matlab-change-current-directory)
+
 (defvar matlab-shell-tab-company-available (if (locate-library "company") t nil)
   "Non-nil if we have `company' installed.
 Use this to override initial check.")
 
 (defvar matlab-shell-errorscanning-syntax-table
-  (let ((st (copy-syntax-table matlab-mode-syntax-table)))
+  (let ((st (copy-syntax-table (matlab--shell-get-syntax-table))))
     ;; Make \n be whitespace when scanning output.
     (modify-syntax-entry ?\n  " " st)
     st)
@@ -188,8 +201,9 @@ If multiple prompts are seen together, only call this once.")
 
 ;;; Font Lock
 ;;
-;; Extra font lock keywords for the MATLAB shell.
-(defconst matlab-shell-font-lock-keywords
+;; Font lock keywords for the MATLAB shell.
+
+(defconst matlab-shell-error-font-lock-keywords
   (list
    ;; How about Errors?
    '("^\\(Error in\\|Syntax error in\\)\\s-+==>\\s-+\\(.+\\)$"
@@ -199,13 +213,7 @@ If multiple prompts are seen together, only call this once.")
    ;; User beep things
    '("\\(\\?\\?\\?[^\n]+\\)" 1 font-lock-comment-face)
    )
-  "Additional keywords used by MATLAB when reporting errors in interactive\
-mode.")
-
-(defconst matlab-shell-font-lock-keywords-1
-  (append matlab-basic-font-lock-keywords
-          matlab-shell-font-lock-keywords)
-  "Keyword symbol used for basic font-lock for MATLAB shell.")
+  "The matlab-shell error keywords.")
 
 (defconst matlab-shell-object-output-font-lock-keywords
   (list
@@ -240,18 +248,12 @@ mode.")
       (1 font-lock-variable-name-face)))
    '("[[{]\\([0-9]+\\(?:x[0-9]+\\)+ \\w+\\)[]}]" (1 font-lock-comment-face))
    )
-  "Highlight various extra outputs that are typical for MATLAB.")
+  "The matlab-shell output related keywords.")
 
-(defconst matlab-shell-font-lock-keywords-2
-  (append matlab-shell-font-lock-keywords-1
-          matlab-function-font-lock-keywords
+(defconst matlab-shell-font-lock-keywords
+  (append matlab-shell-error-font-lock-keywords
           matlab-shell-object-output-font-lock-keywords)
-  "Keyword symbol used for gaudy font-lock for MATLAB shell.")
-
-(defconst matlab-shell-font-lock-keywords-3
-  (append matlab-shell-font-lock-keywords-2
-          matlab-really-gaudy-font-lock-keywords)
-  "Keyword symbol used for really gaudy font-lock for MATLAB shell.")
+  "The matlab-shell keywords.")
     
 
 ;;; Keymaps & Menus
@@ -271,7 +273,7 @@ mode.")
     (define-key km [(control c) (control c)] #'matlab-shell-interrupt-subjob)
 
     ;; Help system
-    (define-key km [(control h) (control m)] matlab-help-map)
+    (define-key km [(control h) (control m)] matlab--shell-help-map)
 
     ;; Completion
     (define-key km (kbd "TAB") #'matlab-shell-tab)
@@ -382,18 +384,16 @@ in a popup buffer.
   (if (fboundp 'comint-read-input-ring)
       (comint-read-input-ring t))
 
-  ;;; MODE Settings
-  (make-local-variable 'comment-start)
-  (setq comment-start "%")
+  (setq-local comment-start "%")
 
   (use-local-map matlab-shell-mode-map)
-  (set-syntax-table matlab-mode-syntax-table)
+  (set-syntax-table (matlab--shell-get-syntax-table))
 
-  (make-local-variable 'font-lock-defaults)
-  (setq font-lock-defaults '((matlab-shell-font-lock-keywords-1
-                              matlab-shell-font-lock-keywords-2
-                              matlab-shell-font-lock-keywords-3)
-                             t nil ((?_ . "w"))))
+  (setq-local font-lock-defaults '((matlab-shell-font-lock-keywords)
+                             t   ;; syntatic fontification (strings and comments) is not performed.
+                             nil ;; keywords are case sensitive
+                             ;; Put _ as a word constituent, simplifying keywords
+                             ((?_ . "w"))))
 
   ;; GUD support
   (matlab-shell-mode-gud-enable-bindings)
@@ -1620,10 +1620,7 @@ Snatched and hacked from dired-x.el"
               ""
             (search-forward-regexp comint-prompt-regexp)
             (buffer-substring (point) (line-end-position)))))
-    (save-excursion
-      (buffer-substring-no-properties
-       (matlab-scan-beginning-of-command)
-       (matlab-scan-end-of-command)))))
+    (matlab--get-command-at-point-to-run)))
 
 (defun matlab-non-empty-lines-in-string (str)
   "Return number of non-empty lines in STR."
@@ -1655,7 +1652,7 @@ This command requires an active MATLAB shell."
                       "MATLAB command line: "
                       (cons (matlab-read-line-at-point) 0))))
   (let ((doc (matlab-shell-collect-command-output command)))
-    (matlab-output-to-temp-buffer "*MATLAB Help*" doc)))
+    (matlab-output-to-temp-buffer "*MATLAB Run Command Result*" doc)))
 
 (defun matlab-shell-describe-variable (variable)
   "Get the contents of VARIABLE and display them in a buffer.
@@ -1672,7 +1669,7 @@ This command requires an active MATLAB shell."
 This uses the lookfor command to find viable commands.
 This command requires an active MATLAB shell."
   (interactive
-   (let ((fn (matlab-function-called-at-point))
+   (let ((fn (matlab--function-called-at-point))
          val)
      (setq val (read-string (if fn
                                 (format "Describe function (default %s): " fn)
@@ -2254,30 +2251,10 @@ Similar to  `comint-send-input'."
 ;;
 ;; Run some subset of the buffer in matlab-shell.
 
-(defun matlab-shell-run-code-section ()
-  "Run the code-section the cursor is in."
-  (interactive)
-  (let ((start (save-excursion
-                 (forward-page -1)
-                 (if (looking-at "function")
-                     (error "You are not in a code-section.  Try `matlab-shell-save-and-go' instead"))
-                 (when (matlab-line-comment-p (matlab-compute-line-context 1))
-                   ;; Skip over starting comment from the current code-section.
-                   (matlab-end-of-command)
-                   (end-of-line)
-                   (forward-char 1))
-                 (point)))
-        (end (save-excursion
-               (forward-page 1)
-               (when (matlab-line-comment-p (matlab-compute-line-context 1))
-                 (beginning-of-line)
-                 (forward-char -1))
-               (point))))
-    (matlab-shell-run-region start end t)))
-
 (defun matlab-shell-run-region-or-line ()
   "Run region from BEG to END and display result in MATLAB shell.
-pIf region is not active run the current line.
+This should be called from a *.m file in `matlab-ts-mode' or
+`matlab-mode'.  If region is not active run the current line.
 This command requires an active MATLAB shell."
   (interactive)
   (if (and transient-mark-mode mark-active)
@@ -2288,8 +2265,9 @@ This command requires an active MATLAB shell."
 ;;;###autoload
 (defun matlab-shell-run-region (beg end &optional noshow)
   "Run region from BEG to END and display result in MATLAB shell.
-If NOSHOW is non-nil, replace newlines with commas to suppress
-output.  This command requires an active MATLAB shell."
+If NOSHOW is non-nil, replace newlines with commas to suppress output.
+This should be called from a *.m file in `matlab-ts-mode' or
+`matlab-mode'.  This command requires an active MATLAB shell."
   (interactive "r")
   (if (> beg end) (let (mid) (setq mid beg  beg end  end mid)))
 
@@ -2364,6 +2342,9 @@ Optional argument NOSHOW specifies if we should echo the region to the
    (t
     (funcall matlab-shell-run-region-function beg end noshow))))
 
+(defsubst matlab--cursor-in-string ()
+  "Return t if the cursor is in a valid MATLAB character vector or string scalar."
+  (nth 3 (syntax-ppss (point))))
 
 (defun matlab-shell-region->commandline (beg end &optional noshow)
   "Convert the region between BEG and END into a MATLAB command.
@@ -2377,7 +2358,7 @@ When NOSHOW is non-nil, suppress output by adding ; to commands."
       (goto-char (point-min))
       ;; Delete all the comments
       (while (search-forward "%" nil t)
-        (unless (matlab-cursor-in-string)
+        (unless (matlab--cursor-in-string)
           (delete-region (1- (point)) (line-end-position))))
       (setq str (buffer-substring-no-properties (point-min) (point-max))))
 
@@ -2393,7 +2374,7 @@ When NOSHOW is non-nil, suppress output by adding ; to commands."
       ;; Remove continuations
       (while (string-match
               (concat "\\s-*"
-                      (regexp-quote matlab-ellipsis-string)
+                      (regexp-quote "...")
                       "\\s-*\n")
               str)
         (setq str (replace-match " " t t str)))
