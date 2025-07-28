@@ -69,18 +69,18 @@ else
     BATCH_UPDATE = -f loaddefs-generate-batch $(abspath $(LOADDEFS)) $(abspath $(LOADDIRS))
 endif
 
-$(LOADDEFS): | .clean.tstamp
+$(LOADDEFS): $(ELC) | .clean.tstamp
 	"$(EMACS)" $(EMACSFLAGS) $(addprefix -L ,$(LOADPATH)) $(BATCH_UPDATE)
 
 CHECK_FOR_LEXICAL_BINDING = \
 	@awk 'NR==1 && !/-*- lexical-binding: t -*-/ { \
 	      print ARGV[1] ":1: error: -*- lexical-binding: t -*- missing"; exit 1}'
 
-%.elc: %.el | $(LOADDEFS)
+%.elc: %.el
 	$(CHECK_FOR_LEXICAL_BINDING) $<
 	"$(EMACS)" $(EMACSFLAGS) $(addprefix -L ,$(LOADPATH)) -f batch-byte-compile $<
 
-$(ELC): $(LOADDEFS) $(MAKEFILE_LIST) | .clean.tstamp
+$(ELC): $(MAKEFILE_LIST) | .clean.tstamp
 
 ifneq ($(filter tests all, $(GOALS)),)
     # Running tests. Check for existence of MATLAB because it's used by tests/Makefile for testing
