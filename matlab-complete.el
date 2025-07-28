@@ -402,7 +402,7 @@ If NEXT then the next patch from the list is used."
 (defun matlab-property-completions (prefix &optional next)
   "Return PREFIX matching elements for property names in strings.
 If NEXT then the next property from the list is used."
-  (let ((f (matlab-function-called-at-point))
+  (let ((f (matlab--function-called-at-point))
 	(lst matlab-property-lists)
 	(foundlst nil)
 	(expandto nil))

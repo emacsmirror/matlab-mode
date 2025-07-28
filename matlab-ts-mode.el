@@ -38,7 +38,9 @@
 (require 'treesit)
 
 (require 'matlab--access)
+(require 'matlab--shared)
 (require 'matlab-ts-mode--builtins)
+(require 'matlab-sections)
 
 ;;; Customizations
 
@@ -1548,7 +1550,7 @@ or end of the command statement."
 
   (when (not statement-type-re)
     (setq statement-type-re matlab-ts-mode--statements-type-re))
-  
+
   (let ((start-point (point))
         (node (treesit-node-at (point))))
 
@@ -2047,47 +2049,6 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
       (when (not (= (char-before) ?\n))
         (insert "\n")))))
 
-;;; Key bindings
-
-;; TODO - update matlab-shell to use matlab-mode (matlab.el) or matlab-ts-mode.el functions
-;;        then enable following. Double check against matlab.el key bindings to see if we
-;;        want others.
-;;
-;; (defvar matlab-ts-mode--help-map
-;;   (let ((km (make-sparse-keymap)))
-;;     (define-key km "r" #'matlab-shell-run-command)
-;;     (define-key km "f" #'matlab-shell-describe-command)
-;;     (define-key km "a" #'matlab-shell-apropos)
-;;     (define-key km "v" #'matlab-shell-describe-variable)
-;;     km)
-;;   "The help key map for `matlab-ts-mode' and `matlab-shell-mode'.")
-;;
-;; (defvar matlab-ts-mode--map
-;;   (let ((km (make-sparse-keymap)))
-;;
-;;     ;; TODO - keep? Insert, Fill stuff
-;;     ;; (define-key km [(control c) (control c)] 'matlab-insert-map-fcn)
-;;     ;; (define-key km [(control c) (control j)] 'matlab-justify-line)
-;;
-;;     ;; Connecting to MATLAB Shell
-;;     (define-key km [(control c) (control s)] #'matlab-shell-save-and-go)
-;;     (define-key km [(control c) (control r)] #'matlab-shell-run-region)
-;;     (define-key km [(meta control return)] #'matlab-shell-run-code-section)
-;;     (define-key km [(control return)] #'matlab-shell-run-region-or-line)
-;;     (define-key km [(control c) (control t)] #'matlab-show-line-info)
-;;     (define-key km [(control c) ?. ] #'matlab-shell-locate-fcn)
-;;     (define-key km [(control h) (control m)] matlab-ts-mode--help-map)
-;;     (define-key km [(meta s)] #'matlab-show-matlab-shell-buffer)
-;;     (define-key km [(control meta mouse-2)] #'matlab-find-file-click)
-;;
-;;     ;; Debugger interconnect
-;;     (substitute-key-definition 'read-only-mode 'matlab-toggle-read-only km global-map)
-;;
-;;     km)
-;;   "The keymap used in `matlab-ts-mode'.")
-
-;;; matlab-ts-mode
-
 ;;; MLint Flycheck
 
 (defvar flycheck-checkers) ;; incase flycheck is not on the path
@@ -2122,9 +2083,200 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
       ;; Register matlab-mlint with flycheck
       (add-to-list 'flycheck-checkers 'matlab-mlint))))
 
+;;; Keymap
+
+(defvar-keymap matlab-ts-mode-map
+  :doc "Keymap for `matlab-ts-mode' buffers."
+  :parent prog-mode-map
+
+  ;; Navigation Commands
+  "C-c C-c" 'matlab-insert-map-fcn
+  "C-c C-j" #'matlab-justify-line
+  ;; TODO - add these?
+  ;; (define-key km [(meta a)] 'matlab-beginning-of-command)
+  ;; (define-key km [(meta e)] 'matlab-end-of-command)
+
+    ;; Connecting to MATLAB Shell
+  "C-c C-s" 'matlab-shell-save-and-go
+  "C-c C-r" 'matlab-shell-run-region
+  "C-<return>" 'matlab-shell-run-region-or-line
+  "C-c C-t" 'matlab-show-line-info
+  "C-c ?" 'matlab-shell-locate-fcn
+  "C-h C-m" matlab--shell-help-map
+  "M-s" 'matlab-show-matlab-shell-buffer
+  "C-M-<mouse-2>" 'matlab-find-file-click
+
+  ;; TODO test ebbreak, ebclear, etc. and all menu items related to debugging
+  ;;    ebstop in /home/ciolfi/tmp/foo.m at 13%%
+  ;;    ebclear in /home/ciolfi/tmp/foo.m at 13%%
+  ;;    Error using dbclear
+  ;;    Argument must be a text scalar.
+  ;;
+  ;;    Error in ebclear (line 21)
+  ;;        dbclear(args);
+  ;;        ^^^^^^^^^^^^^
+
+  ;; ;; Debugger interconnect
+  ;; (substitute-key-definition 'read-only-mode 'matlab-toggle-read-only km global-map)
+
+  )
+
+;;; Menu
+
+(easy-menu-define matlab-mode-menu matlab-ts-mode-map
+  "Menu for `matlab-ts-mode'."
+  '("MATLAB"
+    ["Start MATLAB (M-x matlab-shell)" matlab-shell
+     :active (not (matlab-shell-active-p))
+     :visible (not (matlab-shell-active-p))
+     :help "Run MATLAB in a *MATLAB* shell buffer"]
+    ["Switch to MATLAB (M-x matlab-shell)" matlab-shell
+     :active (matlab-any-shell-active-p)
+     :visible (matlab-any-shell-active-p)
+     :help "Switch to the *MATLAB* shell buffer"]
+    ["Save and go" matlab-shell-save-and-go
+     :active (matlab-any-shell-active-p)
+     :help "Save this *.m file and evaluate it in the *MATLAB* shell"]
+    ["Run region" matlab-shell-run-region
+     :active (matlab-any-shell-active-p)
+     :help "Evaluate the active region in the *MATLAB* shell buffer"]
+    ["Run command" matlab-shell-run-command
+     :active (matlab-shell-active-p)
+     :help "Prompt for a command and run it in the *MATLAB* shell buffer.
+Result is shown in a *MATLAB Run Command Result* buffer."]
+    ["Describe command" matlab-shell-describe-command
+     :active (matlab-shell-active-p)
+     :help "Run \"help COMMAND\" in the *MATLAB* shell buffer
+and display in a help buffer."]
+    ["Describe variable" matlab-shell-describe-variable
+     :active (matlab-shell-active-p)
+     :help "Evaluate VARIABLE in the *MATLAB* shell buffer and
+display result in a buffer"]
+    ["Command Apropos" matlab-shell-apropos
+     :active (matlab-shell-active-p)
+     :help "Look for active command in *MATLAB* shell buffer matching a regex"]
+    ["Locate MATLAB function" matlab-shell-locate-fcn
+     :active (matlab-shell-active-p)
+     :help "Run 'which FCN' in the *MATLAB* shell, and if it's a *.m file open it in a buffer"]
+    ("Code Sections"
+     ["Run section" matlab-sections-run-section
+      :active matlab-sections-minor-mode
+      :help "Run the current \"%% section\" in
+matlab-shell (Unix) or matlab-netshell (Windows)"]
+     ["Run prior sections" matlab-sections-run-prior-sections
+      :active matlab-sections-minor-mode
+      :help "Run all \"%% sections\" prior to the current section in
+matlab-shell (Unix) or matlab-netshell (Windows)"]
+     ["Move to beginning" matlab-sections-beginning-of-section
+      :active matlab-sections-minor-mode
+      :help "Move point to the beginning of the current \"%% section\""]
+     ["Move to end" matlab-sections-end-of-section
+      :active matlab-sections-minor-mode
+      :help "Move point to the end of the current \"%% section\""]
+     ["Backward section" matlab-sections-backward-section
+      :active matlab-sections-minor-mode
+      :help "Move point backward to the prior \"%% section\""]
+     ["Forward section" matlab-sections-forward-section
+      :active matlab-sections-minor-mode
+      :help "Move point forward to the next \"%% section\""]
+     ["Mark/select section" matlab-sections-mark-section
+      :active matlab-sections-minor-mode
+      :help "Select the current code selection region by placing the
+mark at the beginning of the \"%% section\" and point at the end of the section"]
+     ["Move section up" matlab-sections-move-section-up
+      :active matlab-sections-minor-mode
+      :help "Move the current \"%% section\" up."]
+     ["Move section down" matlab-sections-move-section-down
+      :active matlab-sections-minor-mode
+      :help "Move the current \"%% section\" down."]
+     "--"
+     ["Sections help" matlab-sections-help])
+    "----"
+    ("Debug"
+     ["Edit File (toggle read-only)" matlab-shell-gud-mode-edit
+      :help "Exit MATLAB debug minor mode to edit without exiting MATLAB's K>> prompt."
+      :visible gud-matlab-debug-active ]
+     ["Add Breakpoint (ebstop in FILE at point)" mlgud-break
+      :active (matlab-shell-active-p)
+      :help "When MATLAB debugger is active, set break point at current M-file point"]
+     ["Remove Breakpoint (ebclear in FILE at point)" mlgud-remove
+      :active (matlab-shell-active-p)
+      :help "When MATLAB debugger is active, remove break point in FILE at point." ]
+     ["List Breakpoints (ebstatus)" mlgud-list-breakpoints
+      :active (matlab-shell-active-p)
+      :help "List active breakpoints."]
+     ["Step (dbstep in)" mlgud-step
+      :active gud-matlab-debug-active
+      :help "When MATLAB debugger is active, step into line"]
+     ["Next (dbstep)" mlgud-next
+      :active gud-matlab-debug-active
+      :help "When MATLAB debugger is active, step one line"]
+     ["Finish function  (dbstep out)" mlgud-finish
+      :active gud-matlab-debug-active
+      :help "When MATLAB debugger is active, run to end of function"]
+     ["Continue (dbcont)" mlgud-cont
+      :active gud-matlab-debug-active
+      :help "When MATLAB debugger is active, run to next break point or finish"]
+     ["Evaluate Expression" matlab-shell-gud-show-symbol-value
+      :active (matlab-any-shell-active-p)
+      :help "When MATLAB is active, show value of the symbol under point."]
+     ["Show Stack" mlg-show-stack
+      :active gud-matlab-debug-active
+      :help "When MATLAB debugger is active, show the stack in a buffer."]
+
+;;  Advertise these more if we can get them working w/ mlgud's frame show.
+;;      ["Up Call Stack (dbup)" mlgud-up
+;;       :active gud-matlab-debug-active
+;;       :help "When MATLAB debugger is active and at break point, go up a frame"]
+;;      ["Down Call Stack (dbdown)" mlgud-down
+;;       :active gud-matlab-debug-active
+;;       :help "When MATLAB debugger is active and at break point, go down a frame"]
+
+     ["Quit debugging (dbquit)" mlgud-stop-subjob
+      :active gud-matlab-debug-active
+      :help "When MATLAB debugger is active, stop debugging"]
+     )
+
+    ;; TODO - how to autoload these?  Do we want this menu?
+    ;;     ("Insert"
+    ;;      ["Complete Symbol" matlab-complete-symbol t]
+    ;;      ["Comment" matlab-comment t]
+    ;;      ["if end" tempo-template-matlab-if t]
+    ;;      ["if else end" tempo-template-matlab-if-else t]
+    ;;      ["for end" tempo-template-matlab-for t]
+    ;;      ["switch otherwise end" tempo-template-matlab-switch t]
+    ;;      ["Next case" matlab-insert-next-case t]
+    ;;      ["try catch end" tempo-template-matlab-try t]
+    ;;      ["while end" tempo-template-matlab-while t]
+    ;;      ["End of block" matlab-insert-end-block t]
+    ;;      ["Function" tempo-template-matlab-function t]
+    ;;      ["Stringify Region" matlab-stringify-region t]
+    ;;      )
+    "----"
+    ("Format"
+     ["Fill comment / string / reindent function" prog-fill-reindent-defun]
+     ["Justify line" matlab-justify-line]
+     ["Comment DWIM" comment-dwim]
+     ["Comment/uncomment region" comment-or-uncomment-region])
+
+    "----"
+    ("Customize"
+     ["Customize matlab-ts-mode" (lambda ()
+                                   (interactive)
+                                   (customize-group 'matlab-ts))]
+     ["Customize matlab-shell" (lambda ()
+                                 (interactive)
+                                 (require 'matlab-shell)
+                                 (customize-group 'matlab-shell))
+      :help "Customize \\[matlab-shell] which is used by matlab-ts-mode for code evaluation."]
+     )
+    ))
+
+;;; matlab-ts-mode
+
 ;;;###autoload
 (define-derived-mode matlab-ts-mode prog-mode "MATLAB:ts"
-  "Major mode for editing MATLAB files with tree-sitter.
+  "Major mode for editing MATLAB files, powered by tree-sitter.
 
 This mode is independent from the classic matlab-mode.el, `matlab-mode',
 so configuration variables of that mode, like do not affect this mode.
@@ -2134,7 +2286,9 @@ If you have the MATLAB tree-sitter grammar installed,
 is t, add the following to an Init File (e.g. `user-init-file' or
 `site-run-file') to enter the MATLAB tree-sitter mode by default:
 
-  (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))"
+  (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))
+
+\\{matlab-ts-mode-map}"
 
   (matlab-ts-mode--check-file-encoding)
 
@@ -2220,6 +2374,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     (setq-local require-final-newline 'visit-save)
     (add-hook 'post-command-hook #'matlab-ts-mode--post-command-newline -99 t)
 
+    ;; give each file it's own parameter history
+    (setq-local matlab-shell-save-and-go-history '("()"))
+
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
     ;;      - will need to update matlab-shell.el to either use matlab.el or matlab-ts-mode.el
     ;;
@@ -2270,7 +2427,11 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO on load enter matlab-ts-mode when file contains mcode and
     ;;      (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
     ;;      is active. Also look at matlab-mode magic-mode-alist setup.
-    ;;   
+    ;;
+    ;; TODO matlab sections
+    ;;
+    ;; TODO check abbrev mode - think this is setup by prog-mode, also see matlab-mode
+
     (treesit-major-mode-setup)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that for parenthesis, brackets,

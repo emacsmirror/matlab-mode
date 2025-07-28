@@ -1721,6 +1721,37 @@ If the =./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME*_expected.txt~= f
 rename them to =./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME*_expected.txt= (per the
 messages shown by ert).
 
+* Setup: keymap and menu
+
+We inherited from prog-mode which gives us a keymap. If our language has
+additional commands we'd like to bind to key, we do it =defvar-keymap=.
+To add a menu, we do it using =easy-menu-define=.
+
+#+begin_src emacs-lisp
+  (defvar-keymap LANGUAGE-ts-mode-map
+    :doc "Keymap for `LANGUAGE-ts-mode' buffers."
+    :parent prog-mode-map
+
+    "KEYS-1" 'language-command-1
+    "KEYS-2" 'language-command-2
+    ;; <snip>
+    )
+
+  (easy-menu-define LANGUAGE-mode-menu LANGUAGE-ts-mode-map
+    "Menu for `LANGUAGE-ts-mode'."
+
+    '("LANGUAGE"
+      ["Command 1" language-command-1
+       :help "help for command 1"]
+      ["Command 2" language-command-2
+       :help "help for command 2"]))
+
+    ;;;###autoload
+  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE:ts"
+     ;;; <snip>
+    )
+#+end_src
+
 * Final version
 
 TODO

@@ -32,7 +32,7 @@
 
 ;; This trick allows this file to be autoloaded ONLY when the user uses the insert prefix.
 ;;
-;;;###autoload (autoload 'matlab-insert-map-fcn "matlab-cgen" "Keymap for C-c C-c in matlab-mode" t 'keymap)
+;;;###autoload (autoload 'matlab-insert-map-fcn "matlab-cgen" "Keymap for C-c C-c in matlab-ts-mode or matlab-mode" t 'keymap)
 
 (defvar matlab-insert-map
   (let ((km (make-sparse-keymap)))

@@ -165,7 +165,10 @@ you can try turning this off."
   :type 'boolean)
 
 (defcustom matlab-change-current-directory nil
-  "*If non nil, make file's directory the current directory when evaluating it."
+  "*If non nil, make file's directory the current directory before evaluation.
+When visiting *.m files, there's several functions that you can use to
+evaluate MATLAB code.  When this is t, before evaluation the change the
+current directory in `matlab-shell' to the file's directory."
   :type 'boolean)
 
 (make-variable-buffer-local 'matlab-change-current-directory)
@@ -1516,9 +1519,10 @@ installed, then use company to display completions in a popup window."
 
 (defun matlab-shell-which-fcn (fcn)
   "Get the location of FCN's M file.
-Returns an alist: ( LOCATION . BUILTINFLAG )
-LOCATION is a string indicating where it is, and BUILTINFLAG is
-non-nil if FCN is a builtin."
+Returns cons (LOCATION . BUILTIN-FLAG) or nil if not found.
+LOCATION is a string indicating where it is, and BUILTIN-FLAG is non-nil
+if FCN is a builtin.  When BUILTIN-FLAG is t, the LOCATION may be a file
+that doesn't exist."
   (save-excursion
     (let* ((msbn (matlab-shell-buffer-barf-not-running))
            (cmd (format "disp(which('%s'))" fcn))
@@ -1552,9 +1556,13 @@ non-nil if FCN is a builtin."
           (let ((s (read-string (concat "MATLAB locate fcn (default " default "): "))))
             (if (string= s "") default s))
         (read-string "MATLAB locate fcn: ")))))
-  (let ((file (matlab-shell-which-fcn fcn)))
-    (if file
-        (find-file (car file))
+  (let ((file-pair (matlab-shell-which-fcn fcn)))
+    (if file-pair
+        (let ((file (car file-pair)))
+          (if (or (not (string-match-p "\\.m\\'" file))
+                  (not (file-exists-p file)))
+              (error "%s is built-in or a non-m-file" file)
+            (find-file file)))
       (error "Command which('%s') returned empty" fcn))))
 
 (defvar matlab-shell-matlabroot-run nil
@@ -2513,7 +2521,7 @@ Argument FNAME specifies if we should echo the region to the command line."
 ;; LocalWords:  auth mlfile EMAACSCAP buffname showbuff symlink'd emacsinit sha dirs ebstop
 ;; LocalWords:  evalforms Histed pmark memq promptend numchars integerp emacsdocomplete mycmd ba
 ;; LocalWords:  nreverse emacsdocompletion byteswap stringp cbuff mapcar bw FCN's alist substr usr
-;; LocalWords:  BUILTINFLAG dired bol bobp numberp princ minibuffer fn matlabregex lastcmd notimeout
+;; LocalWords:  dired bol bobp numberp princ minibuffer fn matlabregex lastcmd notimeout
 ;; LocalWords:  stacktop eltest testme localfcn LF fileref funcall ef ec basec sk nondirectory utils
 ;; LocalWords:  ignoredups boundp edir sexp Fixup mapc emacsrun noshow cnt ellipsis newf bss noselect
 ;; LocalWords:  fname mlx xemacs linux darwin truename clientcmd simulationc caar

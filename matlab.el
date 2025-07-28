@@ -56,7 +56,7 @@
 (require 'matlab-scan)
 (require 'matlab-sections)
 (require 'matlab-syntax)
-(require 'matlab--shell-map)
+(require 'matlab--shared)
 
 (require 'derived)
 (require 'easymenu)
@@ -2633,14 +2633,6 @@ filling which will automatically insert `...' and the end of a line."
                       ))))
             (goto-char m)))
          ))))
-
-(defun matlab-justify-line ()
-  "Delete space on end of line and justify."
-  (interactive)
-  (save-excursion
-    (end-of-line)
-    (delete-horizontal-space)
-    (justify-current-line)))
 
 (defun matlab-fill-paragraph (&optional justify)
   "When in a comment, fill the current paragraph.
