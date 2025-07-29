@@ -1314,7 +1314,130 @@ LANGUAGE-ts-mode--thing-settings)= after you've setup your syntax table.
 
 ** Test: Fill Paragraph
 
-TODO
+We use =t-utils-xr= and a looping test to look over all
+=./tests/test-LANGUAGE-ts-mode-fill-paragraph-files/fill_paragraph_test*.lang= files:
+
+#+begin_example
+  ./LANGUAGE-ts-mode.el
+  ./tests/test-LANGUAGE-ts-mode-fill-paragraph.el
+  ./tests/test-LANGUAGE-ts-mode-fill-paragraph-files/fill_paragraph_test1.lang
+  ./tests/test-LANGUAGE-ts-mode-fill-paragraph-files/fill_paragraph_test1_expected.org
+  ./tests/test-LANGUAGE-ts-mode-fill-paragraph-files/fill_paragraph_test2.lang
+  ./tests/test-LANGUAGE-ts-mode-fill-paragraph-files/fill_paragraph_test2_expected.org
+  ....
+#+end_example
+
+An example =fill_paragraph_test1.lang= where '%' starts a comment:
+
+#+begin_src matlab
+  % -*- matlab-ts -*-
+  function b = fill_paragraph_test1(a)
+
+      % Setup test to use a small fill column
+      % (t-utils-xr (set-fill-column 60))
+      %
+      % Test of fill paragraph
+      % (t-utils-xr "C-n" "C-n" "M-q")
+      %
+      % A very long comment. A very long comment. A very long comment. A very long comment. A very long comment.
+
+      b = 1;
+  end
+#+end_src
+
+and the corresponding baseline, =fill_paragraph_test1_expected.org=
+
+#+begin_src org
+  ,#+startup: showall
+
+  ,* Executing commands from fill_paragraph_test1.m:5:6:
+
+    (t-utils-xr (set-fill-column 60))
+
+  - Invoking      : (set-fill-column 60)
+    Start point   :  142
+    No point movement
+    No buffer modifications
+
+  ,* Executing commands from fill_paragraph_test1.m:8:6:
+
+    (t-utils-xr "C-n" "C-n" "M-q")
+
+  - Invoking      : "C-n" = next-line
+    Start point   :  214
+    Moved to point:  220
+    : 9:5:     %
+    :           ^
+    No buffer modifications
+
+  - Invoking      : "C-n" = next-line
+    Start point   :  220
+    Moved to point:  226
+    : 10:5:     % A very long comment. A very long comment. A very long comment. A very long comment. A very long comment.
+    :            ^
+    No buffer modifications
+
+  - Invoking      : "M-q" = prog-fill-reindent-defun
+    Start point   :  226
+    No point movement
+    Buffer modified:
+    ,#+begin_src diff
+  --- start_contents
+  +++ end_contents
+  @@ -7,7 +7,8 @@
+       % Test of fill paragraph
+       % (t-utils-xr "C-n" "C-n" "M-q")
+       %
+  -    % A very long comment. A very long comment. A very long comment. A very long comment. A very long comment.
+  +    % A very long comment. A very long comment. A very long
+  +    % comment. A very long comment. A very long comment.
+   
+       b = 1;
+   end
+    ,#+end_src diff
+
+#+end_src
+
+The =test-LANGUAGE-ts-mode-fill-paragraph.el=:
+
+#+begin_src emacs-lisp
+  (require 't-utils)
+  (require 'LANGUAGE-ts-mode)
+
+  (defvar test-LANGUAGE-ts-mode-fill-paragraph--file nil)
+
+  (defun test-LANGUAGE-ts-mode-fill-paragraph--file (lang-file)
+    "Test an individual LANG-FILE.
+  This is provided for debugging.
+    M-: (test-LANGUAGE-ts-mode-fill-paragraph--file
+         \"test-LANGUAGE-ts-mode-fill-paragraph-files/LANG-FILE\")"
+    (let ((test-LANGUAGE-ts-mode-fill-paragraph--file lang-file))
+      (ert-run-tests-interactively "test-LANGUAGE-ts-mode-fill-paragraph")))
+
+  (ert-deftest test-LANGUAGE-ts-mode-fill-paragraph ()
+    "Test fill paragraph using ./test-LANGUAGE-ts-mode-fill-paragraph-files/NAME.lang.
+  Using ./test-LANGUAGE-ts-mode-fill-paragraph-files/NAME.lang, run
+  `fill-paragraph' and compare result against
+  ./test-LANGUAGE-ts-mode-fill-paragraph-files/NAME_expected.org.  This loops
+  on all ./test-LANGUAGE-ts-mode-comments-files/NAME.lang files.
+
+  To add a test, create
+    ./test-LANGUAGE-ts-mode-fill-paragraph-files/NAME.lang
+  and run this function.  The baseline is saved for you as
+    ./test-LANGUAGE-ts-mode-fill-paragraph-files/NAME_expected.org~
+  after validating it, rename it to
+    ./test-LANGUAGE-ts-mode-fill-paragraph-files/NAME_expected.org"
+
+    (let* ((test-name "test-LANGUAGE-ts-mode-fill-paragraph")
+           (lang-files (t-utils-get-files
+                     test-name
+                     (rx ".lang" eos)
+                     nil
+                     test-LANGUAGE-ts-mode-fill-paragraph--file)))
+      (t-utils-error-if-no-treesit-for 'LANGUAGE test-name)
+      (t-utils-test-xr test-name lang-files)))
+#+end_src
+
 
 * Setup: treesit-defun-name-function
 
@@ -1746,7 +1869,7 @@ To add a menu, we do it using =easy-menu-define=.
       ["Command 2" language-command-2
        :help "help for command 2"]))
 
-    ;;;###autoload
+  ;;;###autoload
   (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE:ts"
      ;;; <snip>
     )

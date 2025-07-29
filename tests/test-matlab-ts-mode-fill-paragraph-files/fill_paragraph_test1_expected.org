@@ -1,0 +1,47 @@
+#+startup: showall
+
+* Executing commands from fill_paragraph_test1.m:5:6:
+
+  (t-utils-xr (set-fill-column 60))
+
+- Invoking      : (set-fill-column 60)
+  Start point   :  142
+  No point movement
+  No buffer modifications
+
+* Executing commands from fill_paragraph_test1.m:8:6:
+
+  (t-utils-xr "C-n" "C-n" "M-q")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  214
+  Moved to point:  220
+  : 9:5:     %
+  :           ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  220
+  Moved to point:  226
+  : 10:5:     % A very long comment. A very long comment. A very long comment. A very long comment. A very long comment.
+  :            ^
+  No buffer modifications
+
+- Invoking      : "M-q" = prog-fill-reindent-defun
+  Start point   :  226
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -7,7 +7,8 @@
+     % Test of fill paragraph
+     % (t-utils-xr "C-n" "C-n" "M-q")
+     %
+-    % A very long comment. A very long comment. A very long comment. A very long comment. A very long comment.
++    % A very long comment. A very long comment. A very long
++    % comment. A very long comment. A very long comment.
+ 
+     b = 1;
+ end
+  #+end_src diff
