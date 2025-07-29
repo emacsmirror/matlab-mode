@@ -2033,30 +2033,55 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
 
 ;; TODO - do we need to disable when lsp is active?
 
-(when (require 'flycheck nil 'noerror)
+(when (and matlab-ts-mode-enable-mlint-flycheck
+           (require 'flycheck nil 'noerror))
   (let* ((mlint (matlab--get-mlint-exe)))
     ;; If we have mlint, activate.
     ;; We could display a message here or in matlab-ts-mode if we don't have mlint, but
     ;; this would be just noise and cause problems when running tests with emacs -q.
 
-    ;; TODO - add to MATLAB a menu item to view mlint messages and issue info if no flycheck or no
-    ;;        mlint.
     (when mlint
       (flycheck-define-command-checker
-          'matlab
+          'matlab-mlint
         "MATLAB mlint code analyzer"
         :command `(,mlint "-id" "-all" source-original)
         ;; Example mlint messages.
         ;; L 588 (C 46-49): LOAD: To avoid conflicts with functions ....
         :error-patterns
-        '((warning line-start "L " line " (C " column "-" column "): "
-                   (id (* alnum)) ":" (message))
-          (warning line-start "L " line " (C " column "): "
-                   (id (* alnum)) ":" (message)))
+        '((warning line-start "L " line " (C " column "-" column "): " (id (* alnum)) ":" (message))
+          (warning line-start "L " line " (C " column "): " (id (* alnum)) ":" (message)))
         :modes '(matlab-ts-mode)
         :predicate #'(lambda () (flycheck-buffer-saved-p)))
       ;; Register matlab-mlint with flycheck
       (add-to-list 'flycheck-checkers 'matlab-mlint))))
+
+(defvar flycheck-mode) ;; from flycheck.el
+(declare-function flycheck-list-errors "flycheck.el")
+
+;; TODO what about if lsp is active, matlab-ts-mode-check-mlint-setup should defer to that
+(defun matlab-ts-mode-check-mlint-setup ()
+  "Check the mlint setup and then view mlint messages."
+  (interactive)
+
+  (when (not matlab-ts-mode-enable-mlint-flycheck)
+    (error "MATLAB mlint is disabled.  To enable,
+M-x customize-variable RET matlab-ts-mode-enable-mlint-flycheck"))
+
+  (when (not (featurep 'flycheck))
+    (error "Package flycheck is not installed.  To install, see
+C-h v matlab-ts-mode-enable-mlint-flycheck"))
+
+  (when (not (matlab--get-mlint-exe))
+    (error "MATLAB mlint is not found"))
+
+  (when (not flycheck-mode)
+    (error "M-x flycheck-mode is not enabled.
+A fix is to add to ~/.emacs
+  (global-flycheck-mode)"))
+
+  (message "matlab-mlint flycheck is active.
+Use \"%s\" to view mlint errors or click FlyC on the mode line."
+           (substitute-command-keys "\\[flycheck-list-errors]")))
 
 ;;; MATLAB Code sections, `matlab-sections-minor-mode'
 
@@ -2277,6 +2302,11 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
     ;;      ["Stringify Region" matlab-stringify-region t]
     ;;      )
     "----"
+    ["View mlint code analyzer messages" (flycheck-list-errors)
+     :help "View mlint code analyzer messages.
+Click FlyC in the mode-line for more options."]
+    ["Check mlint setup" matlab-ts-mode-check-mlint-setup]
+    "----"
     ["Jump to function" imenu]
     "----"
     ["Grep comment markers" matlab-ts-mode-grep-comment-markers
@@ -2420,9 +2450,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Activate MATLAB script ";; heading" matlab-sectinos-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
-    ;;      - will need to update matlab-shell.el to either use matlab.el or matlab-ts-mode.el
-    ;;
     ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
     ;;      think it was missing a few toolboxes.
     ;;
@@ -2486,7 +2513,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO matlab.el, matlab-is-matlab-file - handle matlab-ts-mode
     ;;
     ;; TODO matlab-shell-mode: update help to have matlab-ts-mode or matlab-mode
-    
+
     (treesit-major-mode-setup)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that for parenthesis, brackets,
