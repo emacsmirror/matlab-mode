@@ -1856,6 +1856,7 @@ Enable/disable `matlab-sections-minor-mode' based on file content."
   (mapc (lambda (fix-function)
           (funcall fix-function))
         matlab-ts-mode-on-save-fixes)
+  (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
   ;; `write-contents-functions' expects this callback to return nil to continue with other hooks and
   ;; the final save. See `run-hook-with-args-until-success'.
   nil)
@@ -2082,6 +2083,28 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
         :predicate #'(lambda () (flycheck-buffer-saved-p)))
       ;; Register matlab-mlint with flycheck
       (add-to-list 'flycheck-checkers 'matlab-mlint))))
+
+;;; MATLAB Code sections, `matlab-sections-minor-mode'
+
+(defun matlab-ts-mode--mfile-type ()
+  "Get *.m type, \\='empty, \\='script, \\='function, \\='class."
+  (if (save-excursion
+        (= (progn (forward-comment (point-max)) (point)) (point-max)))
+      ;; Case: 'empty - No code (blanks and comments are considered empty)
+      'empty
+    (let* ((first-code-node (let* ((root (treesit-buffer-root-node))
+                                   (child-idx 0)
+                                   (child (treesit-node-child root child-idx)))
+                              (while (string= (treesit-node-type child) "comment")
+                                (setq child-idx (1+ child-idx))
+                                (setq child (treesit-node-child root child-idx))
+                                (cl-assert child))
+                              child))
+           (first-code-type (treesit-node-type first-code-node)))
+      (pcase first-code-type
+        ("class_definition" 'class)
+        ("function_definition" 'function)
+        (_ 'script)))))
 
 ;;; Keymap
 
@@ -2377,6 +2400,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; give each file it's own parameter history
     (setq-local matlab-shell-save-and-go-history '("()"))
 
+    ;; Activate MATLAB script ";; heading" matlab-sectinos-minor-mode if needed
+    (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
+
     ;; TODO the MATLAB menu items from matlab.el, e.g. debugging, etc.
     ;;      - will need to update matlab-shell.el to either use matlab.el or matlab-ts-mode.el
     ;;
@@ -2428,10 +2454,11 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
     ;;      is active. Also look at matlab-mode magic-mode-alist setup.
     ;;
-    ;; TODO matlab sections
-    ;;
     ;; TODO check abbrev mode - think this is setup by prog-mode, also see matlab-mode
-
+    ;;
+    ;; TODO org mode matlab-ts-mode blocks testing
+    ;;
+    
     (treesit-major-mode-setup)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that for parenthesis, brackets,
