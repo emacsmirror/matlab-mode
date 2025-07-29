@@ -1277,6 +1277,7 @@ This will also enter `matlab-mode' for empty files *.m files when
                             enter-matlab-mode)
                         (while buffers
                           (with-current-buffer (car buffers)
+                            ;; TODO - handle matlab-ts-mode
                             (when (or (eq major-mode 'matlab-mode)
                                       (eq major-mode 'matlab-shell-mode))
                               (setq enter-matlab-mode t)
@@ -1478,26 +1479,6 @@ All Key Bindings:
         ;; If there is an error loading the stuff, don't
         ;; continue.
         (error nil))))
-
-
-;; Support debug mode and read only toggling.
-(defvar gud-matlab-debug-active nil)
-(declare-function matlab-shell-gud-minor-mode "matlab-shell-gud")
-
-(defun matlab-toggle-read-only (&optional arg)
-  "Toggle read-only bit in MATLAB mode.
-This looks to see if we are currently debugging, and if so re-enable
-our debugging feature.
-Optional argument ARG specifies if the read-only mode should be set."
-  (interactive "P")
-  (ignore arg)
-  (if (and (featurep 'matlab-shell-gud)
-           gud-matlab-debug-active)
-      ;; The debugging is active, just re-enable debugging read-only-mode
-      (matlab-shell-gud-minor-mode 1)
-    ;; Else - it is not - probably doing something else.
-    (call-interactively 'read-only-mode)
-    ))
 
 
 ;;; Utilities =================================================================

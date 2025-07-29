@@ -30,7 +30,7 @@
 (eval-and-compile
   (require 'matlab--access))
 (require 'matlab--shell-bridge)
-(require 'matlab--shell-map)
+(require 'matlab--shared)
 
 ;; Note this should *NOT*
 ;;   (require 'matlab) ;; or (require 'matlab-mode)

@@ -24,7 +24,7 @@
 
 ;;; Code:
 (require 'matlab)
-(require 'matlab--shell-map)
+(require 'matlab--shared)
 (require 'matlab-shell)
 (require 'view)
 

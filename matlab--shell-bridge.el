@@ -34,6 +34,15 @@ to strings and comments."
       matlab-ts-mode--syntax-table
     matlab-mode-syntax-table))
 
+(defvar matlab-ts-mode-map)
+(defvar matlab-mode-map)
+
+(defun matlab--get-matlab-map ()
+  "Return either `matlab-mode-map' or `matlab-ts-mode-map'."
+  (if (matlab--is-matlab-ts-mode-active)
+      matlab-ts-mode-map
+    matlab-mode-map))
+
 (declare-function matlab-scan-beginning-of-command "matlab-mode")
 (declare-function matlab-scan-end-of-command "matlab-mode")
 

@@ -2142,22 +2142,7 @@ Within comments, the following markers will be highlighted:
   "C-c ?" 'matlab-shell-locate-fcn
   "C-h C-m" matlab--shell-help-map
   "M-s" 'matlab-show-matlab-shell-buffer
-  "C-M-<mouse-2>" 'matlab-find-file-click
-
-  ;; TODO test ebbreak, ebclear, etc. and all menu items related to debugging
-  ;;    ebstop in /home/ciolfi/tmp/foo.m at 13%%
-  ;;    ebclear in /home/ciolfi/tmp/foo.m at 13%%
-  ;;    Error using dbclear
-  ;;    Argument must be a text scalar.
-  ;;
-  ;;    Error in ebclear (line 21)
-  ;;        dbclear(args);
-  ;;        ^^^^^^^^^^^^^
-
-  ;; ;; Debugger interconnect
-  ;; (substitute-key-definition 'read-only-mode 'matlab-toggle-read-only km global-map)
-
-  )
+  "C-M-<mouse-2>" 'matlab-find-file-click)
 
 ;;; Menu
 
@@ -2296,10 +2281,20 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
     ["Comment marker help" matlab-ts-mode-comment-marker-help]
     "----"
     ("Format"
-     ["Fill comment / string / reindent function" prog-fill-reindent-defun]
+     ["Fill comment / string / indent function" prog-fill-reindent-defun]
+     ["Indent region" indent-region
+      :help "Indent active region"]
      ["Justify line" matlab-justify-line]
-     ["Comment DWIM" comment-dwim]
-     ["Comment/uncomment region" comment-or-uncomment-region])
+     ["Comment DWIM" comment-dwim
+      :help "Comment Do What I Mean
+If region is active comment or uncomment it,
+Else insert comment if line is empty,
+Else call comemnt-indent.
+See `comment-dwim' for more capabilties."]
+     ["Comment/uncomment current line " comment-line
+      :help "Comment or uncomment current line and leave point after it."]
+     ["Set comment column to point" comment-set-column
+      :help "Set the column for when M-; inserts a column"])
 
     "----"
     ("Customize"
@@ -2485,6 +2480,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO org mode matlab-ts-mode blocks testing
     ;;
+    ;; TODO matlab.el, matlab-is-matlab-file - handle matlab-ts-mode
+    ;;
+    ;; TODO matlab-shell-mode: update help to have matlab-ts-mode or matlab-mode
     
     (treesit-major-mode-setup)
 
@@ -2493,6 +2491,11 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; for our tests work. We need to evaluate (t-utils-NAME ....) expressions from within comments
     ;; using C-x C-e and this leverages forward-sexp to match up the parentheses.
     (setq-local forward-sexp-function #'matlab-ts-mode--forward-sexp)
+
+    ;; M-x matlab-shell Debugger interconnect
+    (let ((km (current-local-map)))
+      (substitute-key-definition 'read-only-mode #'matlab-toggle-read-only km global-map))
+
     ))
 
 (provide 'matlab-ts-mode)

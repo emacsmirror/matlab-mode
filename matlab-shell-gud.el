@@ -25,6 +25,7 @@
 ;; to supporting mlgud.
 
 (require 'matlab-shell)
+(require 'matlab--shell-bridge)
 
 (eval-and-compile
   (require 'mlgud)
@@ -91,7 +92,8 @@ Disable this option if the tooltips are too slow in your setup."
   (when window-system
 
     (setq gud-matlab-tool-bar-map
-          (let ((map (make-sparse-keymap)))
+          (let ((map (make-sparse-keymap))
+                (matlab-map (matlab--get-matlab-map)))
             (dolist (x '((mlgud-break . "gud/break")
                          (mlgud-remove . "gud/remove")
                          (mlgud-cont . "gud/cont")
@@ -103,7 +105,7 @@ Disable this option if the tooltips are too slow in your setup."
                          (mlgud-list-breakpoints . "describe")
                          ))
               (tool-bar-local-item-from-menu
-               (car x) (cdr x) map matlab-mode-map))
+               (car x) (cdr x) map matlab-map))
             map))
 
     )
@@ -124,6 +126,7 @@ Disable this option if the tooltips are too slow in your setup."
   (setq mlgud-minor-mode 'matlab)
 
   ;; This starts us supporting mlgud tooltips.
+  (add-to-list 'mlgud-tooltip-modes 'matlab-ts-mode)
   (add-to-list 'mlgud-tooltip-modes 'matlab-mode)
 
   (make-local-variable 'mlgud-marker-filter)
@@ -608,6 +611,7 @@ LONGESTNAME specifies the how long the longest name we can expect is."
       ))
   ;; The first time breakpoints are added, make sure we can activate breakpoints
   ;; when new files are opened in a buffer.
+  (add-hook 'matlab-ts-mode-hook 'mlg-breakpoint-activate-buffer-opened-hook)
   (add-hook 'matlab-mode-hook 'mlg-breakpoint-activate-buffer-opened-hook)
   )
 
@@ -964,7 +968,8 @@ Debug commands are:
 
 (defun matlab-shell-gud-minor-mode-activator ()
   "Activate gud in matlab-shell when in MATLAB mode."
-  (when (eq major-mode 'matlab-mode)
+  (when (or (eq major-mode 'matlab-ts-mode)
+            (eq major-mode 'matlab-mode))
     (matlab-shell-gud-minor-mode 1)))
 
 ;;;###autoload
@@ -1024,7 +1029,8 @@ Debug commands are:
 
 (defun matlab-shell-gud-minor-mode-deactivator ()
   "Deactivate gud in matlab-shell when in MATLAB mode."
-  (when (eq major-mode 'matlab-mode)
+  (when (or (eq major-mode 'matlab-ts-mode)
+            (eq major-mode 'matlab-mode))
     (matlab-shell-inactive-gud-minor-mode 1)))
 
 ;;;###autoload
