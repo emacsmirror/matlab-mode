@@ -193,10 +193,11 @@ content can crash Emacs via the matlab tree-sitter parser."
       (fundamental-mode)
       (user-error "Not activating matlab-ts-mode because this is MATLAB Compiler Runtime content")))
 
-  ;; TODO should we check for utf-8 and error when non-utf8?
+  ;; We could check for utf-8 and error when non-utf8, but that may cause grief. Suppose
+  ;; a malformed character is in a comment. That should be allowed.
   ;;    (when (not (string-match "utf-8" (symbol-name buffer-file-coding-system)))
   ;;       (user-error "Buffer does not have utf-8 encoding"))
-  ;; note we cannot
+  ;; Note we cannot
   ;;       (set-buffer-file-coding-system 'utf-8))
   ;; because this would modify it and modes shouldn't modify the buffer.
 
@@ -516,33 +517,6 @@ start-point and end-point."
 
 (defvar matlab-ts-mode--comment-markers-re
   (rx-to-string `(seq word-start (group (or ,@matlab-ts-mode--comment-markers) word-end))))
-
-;; TODO add following to a menu item
-(defun matlab-ts-mode-comment-marker-help ()
-  "Display help on triple-x, fix me, and to do comment markers."
-  (interactive)
-  (with-help-window "*Comment Marker Help*"
-    (with-current-buffer "*Comment Marker Help*"
-      (setq-local revert-buffer-function (lambda (&rest _)))
-      (insert (format "\
-Within comments, the following markers will be highlighted:
-
-%-5s : Triple-x markers indicate coding tasks that must be completed
-        prior to committing code to your repository.
-
-%-5s : Fix-me markers should be fixed as soon as possible, but are not
-        considered coding tasks that must be addressed prior to
-        committing code to your repository.
-
-%-5s : To-do markers represent future coding tasks and therefore code
-        with these comments can be committed to your repository.
-"
-                      (propertize (nth 0 matlab-ts-mode--comment-markers)
-                                  'face font-lock-warning-face)
-                      (propertize (nth 1 matlab-ts-mode--comment-markers)
-                                  'face font-lock-warning-face)
-                      (propertize (nth 2 matlab-ts-mode--comment-markers)
-                                  'face font-lock-warning-face))))))
 
 (defun matlab-ts-mode--comment-to-do-capture (comment-node override start end &rest _)
   "Fontify triple-x, fix me, and to do markers in comments.
@@ -2106,6 +2080,47 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
         ("function_definition" 'function)
         (_ 'script)))))
 
+;;; Comment markers
+
+(defun matlab-ts-mode-comment-marker-help ()
+  "Display help on triple-x, fix me, and to do comment markers."
+  (interactive)
+  (with-help-window "*Comment Marker Help*"
+    (with-current-buffer "*Comment Marker Help*"
+      (setq-local revert-buffer-function (lambda (&rest _)))
+      (insert (format "\
+Within comments, the following markers will be highlighted:
+
+%-5s : Triple-x markers indicate coding tasks that must be completed
+        prior to committing code to your repository.
+
+%-5s : Fix-me markers should be fixed as soon as possible, but are not
+        considered coding tasks that must be addressed prior to
+        committing code to your repository.
+
+%-5s : To-do markers represent future coding tasks and therefore code
+        with these comments can be committed to your repository.
+"
+                      (propertize (nth 0 matlab-ts-mode--comment-markers)
+                                  'face font-lock-warning-face)
+                      (propertize (nth 1 matlab-ts-mode--comment-markers)
+                                  'face font-lock-warning-face)
+                      (propertize (nth 2 matlab-ts-mode--comment-markers)
+                                  'face font-lock-warning-face))))))
+
+(defun matlab-ts-mode-grep-comment-markers ()
+  "Run grep on current file to find the triple-x, fix-me, and to do markers."
+  (interactive)
+  (when (not (buffer-file-name))
+    (error "Buffer %s is not associated with a file" (buffer-name)))
+  (when (buffer-modified-p)
+    (if (y-or-n-p (format "Save %s? " (buffer-name)))
+        (save-buffer)
+      (error "Save %s before grep'ing for comment markers" (buffer-name))))
+  (let ((pattern (mapconcat #'identity matlab-ts-mode--comment-markers "\\|")))
+    (grep (concat grep-command "-wie \"" pattern "\" "
+                  (file-name-nondirectory (buffer-file-name))))))
+
 ;;; Keymap
 
 (defvar-keymap matlab-ts-mode-map
@@ -2275,6 +2290,10 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
     ;;      ["Function" tempo-template-matlab-function t]
     ;;      ["Stringify Region" matlab-stringify-region t]
     ;;      )
+    "----"
+    ["Grep comment markers" matlab-ts-mode-grep-comment-markers
+     :help "Run grep to find triple-x, fix-me, and to do comment markers."]
+    ["Comment marker help" matlab-ts-mode-comment-marker-help]
     "----"
     ("Format"
      ["Fill comment / string / reindent function" prog-fill-reindent-defun]
