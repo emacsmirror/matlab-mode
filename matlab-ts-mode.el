@@ -2429,6 +2429,14 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;          ^                  <== RET on previous line should go here (or TAB to here)
     ;;
     ;; TODO indent
+    ;;      classdef mfile_type_classdef
+    ;;          properties
+    ;;              p1
+    ;;              ^              <== RET on previsous line should go here
+    ;;          end
+    ;;      end
+    ;;
+    ;; TODO indent
     ;;       for i=1:10
     ;;           disp(i)
     ;;           ^                 <== TAB on empty line or RET previous line should go here
