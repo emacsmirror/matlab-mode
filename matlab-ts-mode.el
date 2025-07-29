@@ -2247,13 +2247,14 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
       :active gud-matlab-debug-active
       :help "When MATLAB debugger is active, show the stack in a buffer."]
 
-;;  Advertise these more if we can get them working w/ mlgud's frame show.
-;;      ["Up Call Stack (dbup)" mlgud-up
-;;       :active gud-matlab-debug-active
-;;       :help "When MATLAB debugger is active and at break point, go up a frame"]
-;;      ["Down Call Stack (dbdown)" mlgud-down
-;;       :active gud-matlab-debug-active
-;;       :help "When MATLAB debugger is active and at break point, go down a frame"]
+     ;; TODO
+     ;;  Advertise these more if we can get them working w/ mlgud's frame show.
+     ;;      ["Up Call Stack (dbup)" mlgud-up
+     ;;       :active gud-matlab-debug-active
+     ;;       :help "When MATLAB debugger is active and at break point, go up a frame"]
+     ;;      ["Down Call Stack (dbdown)" mlgud-down
+     ;;       :active gud-matlab-debug-active
+     ;;       :help "When MATLAB debugger is active and at break point, go down a frame"]
 
      ["Quit debugging (dbquit)" mlgud-stop-subjob
       :active gud-matlab-debug-active
@@ -2275,6 +2276,8 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
     ;;      ["Function" tempo-template-matlab-function t]
     ;;      ["Stringify Region" matlab-stringify-region t]
     ;;      )
+    "----"
+    ["Jump to function" imenu]
     "----"
     ["Grep comment markers" matlab-ts-mode-grep-comment-markers
      :help "Run grep to find triple-x, fix-me, and to do comment markers."]
