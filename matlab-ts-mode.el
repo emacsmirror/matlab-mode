@@ -1347,6 +1347,14 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
                    eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
+     ;; I-Rule: grandparent is block
+     ;;      for i=1:10
+     ;;          disp(i)
+     ;;          ^                         <== RET on prior line or tab goes here
+     ;;      end
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_grandparent_is_block.m
+     ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos "block" eos)) grand-parent 0)
+
      ;; I-Rule: disp(myMatrix(1:  ...
      ;; <TAB>                 end));
      ((parent-is ,(rx bos "range" eos)) parent 0)
@@ -2480,12 +2488,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;          end
     ;;      end
     ;;
-    ;; TODO indent
-    ;;       for i=1:10
-    ;;           disp(i)
-    ;;           ^                 <== TAB on empty line or RET previous line should go here
-    ;;       end
-    ;;
     ;; TODO font-lock
     ;;      classdef fooenum
     ;;          enumeration
@@ -2513,6 +2515,13 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO matlab.el, matlab-is-matlab-file - handle matlab-ts-mode
     ;;
     ;; TODO matlab-shell-mode: update help to have matlab-ts-mode or matlab-mode
+    ;;
+    ;; TODO font-lock highlight variable refences to match variable assignements, e.g.
+    ;;      var = [1:10];
+    ;;      disp(var)               % var usage has same face as var.
+    ;;
+    ;; TODO add rename identifier
+
 
     (treesit-major-mode-setup)
 
