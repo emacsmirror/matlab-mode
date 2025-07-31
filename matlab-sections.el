@@ -488,8 +488,9 @@ See `matlab-sections-help' for details on MATLAB code sections."
   :init-value nil
   :keymap matlab-sections-minor-mode-map
 
-  (make-local-variable 'page-delimiter)
-  (setq page-delimiter matlab-sections-section-break-regexp)
+  (when (eq major-mode 'matlab-mode)
+    ;; page-delimiter is setup by matlab-ts-mode (and is more accurate there)
+    (setq-local page-delimiter matlab-sections-section-break-regexp))
   (when matlab-sections-highlight-section
     (matlab-sections-setup-section-highlight)))
 

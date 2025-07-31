@@ -1,0 +1,1 @@
+Remove when https://github.com/acristoffers/tree-sitter-matlab/issues/51 is fixed

@@ -226,10 +226,10 @@ skipping all *_expected.lang files."
                                            (replace-regexp-in-string "^" "    "
                                                                      (buffer-string))))))
                 (message "%s:1: warning: skipping this test input because %s exists\n%s"
-                         file skip-file skip-file-contents)))
-          ;; Not skipped. Note we ignore hidden link files, e.g. .#foo.lang
-          (when (not (string-match-p "\\`\\.#" file))
-            (push file files-not-skipped))))
+                         file skip-file skip-file-contents))
+            ;; Not skipped. Note we ignore hidden link files, e.g. .#foo.lang
+            (when (not (string-match-p "\\`\\.#" file))
+              (push file files-not-skipped)))))
 
       ;; Sorted result
       (sort files-not-skipped))))
@@ -368,7 +368,7 @@ containing RESULT."
         (read-only-mode 1))
       (display-buffer result-buf))))
 
-(defun t-utils--insert-file-for-test (file &optional file-major-mode skip-corrupt-check)
+(defun t-utils--insert-file-for-test (file &optional file-major-mode setup-callback skip-corrupt-check)
   "Insert FILE into current temporary buffer for testing.
 If optional FILE-MAJOR-MODE function is provided, run that, otherwise
 we examine the first line of the file for the major mode:
@@ -377,6 +377,9 @@ we examine the first line of the file for the major mode:
   -*- mode: MODE-NAME -*-
 
 and run that.
+
+If optional SETUP-CALLBACK is specified, it is invoked after setting
+the major mode in the temporary buffer.
 
 If optional SKIP-CORRUPT-CHECK is non-nil, the check for corrupted content is
 skipped."
@@ -409,6 +412,9 @@ skipped."
     (let* ((mode (match-string 1))
            (mode-cmd (intern (concat mode "-mode"))))
       (funcall mode-cmd)))
+
+  (when setup-callback
+    (funcall setup-callback))
 
   ;; Incase the mode moves the point, reset to point-min.
   (goto-char (point-min))
@@ -517,7 +523,7 @@ You can run `t-utils--diff-check' to debug"))))
             (not (save-excursion (goto-char (1- (point))) (looking-at ")"))))
     (error "Expected point to be after a closing parenthisis, \")\""))
 
-  (let* ((line-move-visual nil) ;; C-n moves by true lines and not the width
+  (let* ((line-move-visual nil) ;; C-n, next-line: moves by true lines and not the width
          (buf-file (t-utils--get-buf-file))
          (start-line (line-number-at-pos))
          (xr-end-point (point))
@@ -786,7 +792,7 @@ got code-to-face (\"%s\" . %S), expected code-to-face (\"%s\" . %S)"
                   got-code got-face
                   expected-code expected-face))))
 
-(defun t-utils-test-font-lock (test-name lang-files code-to-face)
+(defun t-utils-test-font-lock (test-name lang-files code-to-face &optional setup-callback)
   "Test font-lock using on each lang-file in LANG-FILES list.
 Foreach file NAME.LANG in LANG-FILES compare the file against
 NAME_expected.txt, where NAME the file name minus the lang-file
@@ -799,6 +805,9 @@ If NAME_expected.txt does not exist or doesn't match the results we
 got, a NAME_expected.txt~ will be generated.  After reviewing
 NAME_expected.txt~, you should rename it to NAME_expected.txt or fix
 your code and rerun the test.
+
+If optional SETUP-CALLBACK is specified it is called after setting the
+major mode on the temporary buffer for lang-file.
 
 For example, suppose our LANG-FILE contains
     int foo(void) {
@@ -871,7 +880,7 @@ To debug a specific font-lock test file
         (error-msgs '()))
     (dolist (lang-file lang-files)
       (with-temp-buffer
-        (t-utils--insert-file-for-test lang-file)
+        (t-utils--insert-file-for-test lang-file nil setup-callback)
         (let ((start-time (current-time)))
           (message "START: %s %s" test-name lang-file)
 
@@ -1672,7 +1681,7 @@ To debug a specific file-encoding test file
 
             ;; Load lang-file in temp buffer and activate file-major-mode
             (condition-case err
-                (t-utils--insert-file-for-test lang-file file-major-mode 'skip-corrupt-check)
+                (t-utils--insert-file-for-test lang-file file-major-mode nil 'skip-corrupt-check)
               (error
                (setq got (concat "Major mode errored with message\n" (error-message-string err)))))
 
