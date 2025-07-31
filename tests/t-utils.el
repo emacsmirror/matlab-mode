@@ -226,7 +226,9 @@ skipping all *_expected.lang files."
                                            (replace-regexp-in-string "^" "    "
                                                                      (buffer-string))))))
                 (message "%s:1: warning: skipping this test input because %s exists\n%s"
-                         file skip-file skip-file-contents))
+                         file skip-file skip-file-contents)))
+          ;; Not skipped. Note we ignore hidden link files, e.g. .#foo.lang
+          (when (not (string-match-p "\\`\\.#" file))
             (push file files-not-skipped))))
 
       ;; Sorted result
