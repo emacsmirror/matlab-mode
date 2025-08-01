@@ -1869,5 +1869,179 @@ otherwise the result is displayed on stdout."
 
     (t-utils--log log-file (format "FINISHED: %s %s\n" test-name (t-utils--took start-time)))))
 
+(defun t-utils--syntax-tree-draw-node (node)
+  "Draw the syntax tree of NODE in the current buffer.
+
+When this function is called, point should be at the position where the
+node should start.  When this function returns, it leaves point at the
+end of the last line of NODE.
+
+Similar `treesit--explorer-draw-node' but designed for test baselines."
+
+  (let* ((type (treesit-node-type node))
+         (field-name (treesit-node-field-name node))
+         (children (treesit-node-children node))
+         (named (treesit-node-check node 'named))
+         ;; Column number of the start of the field-name, aka start of
+         ;; the whole node.
+         (before-field-column (current-column))
+         ;; Column number after the field-name.
+         after-field-column
+         ;; Are all children suitable for inline?
+         (all-children-inline
+          (eq 0 (apply #'+ (mapcar #'treesit-node-child-count children))))
+         ;; If the child is the first child, we can inline, if the
+         ;; previous child is suitable for inline, this child can
+         ;; inline, if the previous child is not suitable for inline,
+         ;; this child cannot inline.
+         (can-inline t))
+
+    ;; Draw field name.  If all children are suitable for inline, we
+    ;; draw everything in one line, other wise draw field name and the
+    ;; rest of the node in two lines.
+    (when field-name
+      (insert (concat field-name ": "))
+      (when (and children (not all-children-inline))
+        (insert "\n")
+        (indent-to-column (1+ before-field-column))))
+    (setq after-field-column (current-column))
+
+    ;; Draw the decorated type.
+    (if named
+        (progn
+          (insert "(")
+          (insert type)
+          (when (not (treesit-node-child node 0)) ;; leaf node?
+            (let ((node-text (substring-no-properties (treesit-node-text node))))
+              (dolist (pair (list '("\t" . "\\\\t") '("\r" . "\\\\r") '("\n" . "\\\\n")))
+                (setq node-text (replace-regexp-in-string (car pair) (cdr pair) node-text)))
+              (when (> (length node-text) 50)
+                (setq node-text (concat (substring node-text 0 50) "...")))
+              (insert (format "[%d,%d]{%s}"
+                              (treesit-node-start node)
+                              (treesit-node-end node)
+                              node-text)))))
+      (pcase type
+        ("\n" (insert "\\n"))
+        ("\t" (insert "\\t"))
+        (" "  (insert "SPC"))
+        (_    (insert type))))
+
+    ;; Draw children.
+    (dolist (child children)
+      ;; If a child doesn't have children, it is suitable for inline.
+      (let ((draw-inline (eq 0 (treesit-node-child-count child)))
+            (children-indent (1+ after-field-column)))
+        (if (and draw-inline can-inline)
+            ;; Draw children on the same line.
+            (progn
+              (insert " ")
+              (t-utils--syntax-tree-draw-node child))
+          ;; Draw children on the new line.
+          (insert "\n")
+          (indent-to-column children-indent)
+          (t-utils--syntax-tree-draw-node child))
+        (setq can-inline draw-inline)))
+
+    ;; Done drawing children, draw the ending paren.
+    (when named (insert ")"))))
+
+(defun t-utils--get-syntax-tree ()
+  "Return the syntax tree for the current buffer."
+  (let ((root (or (treesit-buffer-root-node)
+                  (error "No tree-sitter root node"))))
+    (with-temp-buffer
+      (insert "# tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}\n")
+      (t-utils--syntax-tree-draw-node root)
+      (buffer-string))))
+
+(defun t-utils-test-parser (test-name lang-files)
+  "Validate the tree-sitter parse tree against a baseline.
+Each NAME.LANG of LANG-FILES list parse tree is captured and
+an annotated version of it is compared against baseline, NAME_expected.txt.
+TEST-NAME is used in messages.
+
+If NAME_expected.txt does not exist or the result doesn't match
+NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
+instructured to validate the result and rename NAME_expected.txt~ to
+NAME_expected.txt.
+
+To add a test for TEST-NAME.el which calls this function, in the
+corresponding TEST-NAME-files/ directory, create
+TEST-NAME-files/NAME.LANG with either corrupted or non-corrupted
+content, then run the test.  Follow the messages to accept the generated
+baseline after validating it.
+
+Example test setup:
+
+  ./LANGUAGE-ts-mode.el
+  ./tests/test-LANUGAGE-ts-mode-parser.el
+  ./tests/test-LANUGAGE-ts-mode-parser-files/NAME1.LANG
+  ./tests/test-LANUGAGE-ts-mode-parser-files/NAME1_expected.txt
+  ./tests/test-LANUGAGE-ts-mode-parser-files/NAME2.LANG
+  ./tests/test-LANUGAGE-ts-mode-parser-files/NAME2_expected.txt
+
+Where ./tests/test-LANUGAGE-ts-mode-parser.el contains:
+
+  (defvar test-LANGUAGE-ts-mode-parser--file nil)
+
+  (defun test-LANGUAGE-ts-mode-parser--file (lang-file)
+    (let ((test-LANGUAGE-ts-mode-parser--file lang-file))
+      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-parser\")))
+
+  (ert-deftest test-LANGUAGE-ts-mode-parser ()
+    (let* ((test-name \"test-LANGUAGE-ts-mode-parser\")
+           (lang-files (t-utils-get-files
+                        test-name
+                        (rx \".lang\" eos)
+                        nil
+                        test-LANGUAGE-ts-mode-parser--file)))
+      (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
+      (t-utils-test-parser test-name lang-files \\='#LANGUAGE-ts-mode)))
+
+To loop over all NAME*.LANG test files, interactively
+
+  \\[ert] RET test-LANGUAGE-ts-mode-parser RET
+
+In the `ert' result buffer, you can type \"m\" at the point of the
+test (where the color marker is) to see messages that were displayed by
+your test.
+
+To debug a specific -parser test file
+
+ M-: (test-LANGUAGE-ts-mode-parser--file
+      \"test-LANUGAGE-ts-mode-parser-files/NAME.LANG\")"
+
+  (let ((error-msgs '()))
+    (dolist (lang-file lang-files)
+      (with-temp-buffer
+
+        (let ((start-time (current-time)))
+
+          (message "START: %s %s" test-name lang-file)
+
+          (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
+                 (expected (when (file-exists-p expected-file)
+                             (with-temp-buffer
+                               (insert-file-contents-literally expected-file)
+                               (buffer-string))))
+                 (got-file (concat expected-file "~"))
+                 got)
+            (t-utils--insert-file-for-test lang-file)
+
+            (setq got (t-utils--get-syntax-tree))
+
+            (kill-buffer)
+
+            (let ((error-msg (t-utils--baseline-check
+                              test-name start-time
+                              lang-file got got-file expected expected-file)))
+              (when error-msg
+                (push error-msg error-msgs)))))))
+
+    ;; Validate t-utils-test-file-encoding result
+    (setq error-msgs (reverse error-msgs))
+    (should (equal error-msgs '()))))
+
 (provide 't-utils)
 ;;; t-utils.el ends here
