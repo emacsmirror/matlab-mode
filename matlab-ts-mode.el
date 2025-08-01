@@ -843,17 +843,6 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 (defvar matlab-ts-mode--array-indent-level 2
   "Indentation level for elements in an array.")
 
-;; TODO - is this right?  Perhaps it's better to understand the context and indent?
-(defun matlab-ts-mode--i-error-matcher (node _parent _bol &rest _)
-  "Is NODE an ERROR node or is it under an ERROR node?"
-  (let (in-error-node)
-    (while (and node
-                (not in-error-node))
-      (if (equal "ERROR" (treesit-node-type node))
-          (setq in-error-node t)
-        (setq node (treesit-node-parent node))))
-    in-error-node))
-
 (defvar matlab-ts-mode--i-error-row-matcher-pair)
 
 (defun matlab-ts-mode--i-error-row-matcher (_node _parent bol &rest _)
@@ -909,9 +898,9 @@ is where we start looking for the error node."
     (when (string= (treesit-node-type (treesit-node-at (point))) "ERROR")
       (re-search-backward "[^ \t\n\r]" nil t))
 
-    ;; ;; If on a "[" or "{" move back (we don't want to shift the current line)
-    ;; (when (string-match-p (rx bos (or "[" "{") eos) (treesit-node-type (treesit-node-at (point))))
-    ;;   (re-search-backward "[^ \t\n\r]" nil t))
+    ;; If on a "[" or "{" move back (we don't want to shift the current line)
+    (when (string-match-p (rx bos (or "[" "{") eos) (treesit-node-type (treesit-node-at (point))))
+      (re-search-backward "[^ \t\n\r]" nil t))
 
     ;; Walk over line_continuation, ",", ";" and identify the "check node" we should be looking
     ;; at.
@@ -1246,7 +1235,7 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
 
 (defvar matlab-ts-mode--i-next-line-pair)
 
-(defun matlab-ts-mode--i-next-line-matcher (_node parent _bol &rest _)
+(defun matlab-ts-mode--i-next-line-matcher (node parent _bol &rest _)
   "Matcher for indent on a newline being inserted.
 If so, set `matlab-ts-mode--i-next-line-pair'.
 NODE may or may not be nil.  PARENT will be a newline, so
@@ -1264,23 +1253,33 @@ Prev-siblings:
     > #<treesit-node identifier in 30-33>
       > #<treesit-node \""
 
-  (when (string= (treesit-node-type parent) "\n")
-    (let* ((anchors-rx (rx (seq bos (or "classdef"
+  (when (or (and node
+                 (string= (treesit-node-type node) "ERROR"))
+            (string= (treesit-node-type parent) "\n"))
+
+    (let* ((node-to-examine (if node node parent))
+           (anchors-rx (rx (seq bos (or "function_definition"
+                                        "classdef"
                                         "properties"
                                         "property"
-                                        "methods")
+                                        "methods"
+                                        "["
+                                        "{")
                                eos)))
            (anchor-node (or
                          ;; Look to previous siblings to see if they match anchors-rx
-                         (let ((prev-sibling (treesit-node-prev-sibling parent)))
+                         (let ((prev-sibling (treesit-node-prev-sibling node-to-examine)))
                              (while (and prev-sibling
                                          (not (string-match-p anchors-rx
                                                               (treesit-node-type prev-sibling))))
                                (setq prev-sibling (treesit-node-prev-sibling prev-sibling)))
                              prev-sibling)
-                         ;; Look to ancestors siblings to see if they match anchors-rx
-                         (let* ((ancestor (treesit-node-parent parent))
-                                (ancestor-type (treesit-node-type ancestor)))
+                         ;; Look to ancestors siblings to see if they match anchors-rx, except
+                         ;; when node is defined (an error node), in which case we can't look
+                         ;; at ancestors.
+                         (let* ((ancestor (when (not node)
+                                            (treesit-node-parent parent)))
+                                (ancestor-type (when ancestor (treesit-node-type ancestor))))
                            (while (and ancestor
                                        (not (string-match-p anchors-rx ancestor-type)))
                              (setq ancestor (if (string= ancestor-type "ERROR")
@@ -1288,9 +1287,11 @@ Prev-siblings:
                                               (treesit-node-parent ancestor))))
                            ancestor))))
       (when anchor-node
-        (let ((indent-level (if (string= (treesit-node-type anchor-node) "property")
-                                0
-                              matlab-ts-mode--indent-level)))
+        (let ((indent-level (pcase (treesit-node-type anchor-node)
+                              ("property" 0)
+                              ((rx (seq bos (or "[" "{" eos))) matlab-ts-mode--array-indent-level)
+                              ("function_definition" matlab-ts-mode--function-indent-level)
+                              (_ matlab-ts-mode--indent-level))))
           (setq matlab-ts-mode--i-next-line-pair
                 (cons (treesit-node-start anchor-node) indent-level))
 
@@ -1322,13 +1323,6 @@ Prev-siblings:
      (,#'matlab-ts-mode--i-next-line-matcher
       ,#'matlab-ts-mode--i-next-line-anchor
       ,#'matlab-ts-mode--i-next-line-offset)
-
-     ;; xxx move down?
-     ;; I-Rule: syntax errors
-     ;; See: tests/test-matlab-ts-mode-indent-files/indent_syntax_error1.m
-     ;; See: tests/test-matlab-ts-mode-indent-files/indent_syntax_error2.m
-     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_continuation1.m
-     (,#'matlab-ts-mode--i-error-matcher no-indent 0)
 
      ;; I-Rule: cell/matrix row matcher when in an error node
      ;;         mat0 = [1, 2
