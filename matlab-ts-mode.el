@@ -1235,8 +1235,8 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
 
 (defvar matlab-ts-mode--i-next-line-pair)
 
-(defun matlab-ts-mode--i-next-line-matcher (node parent _bol &rest _)
-  "Matcher for indent on a newline being inserted.
+(cl-defun matlab-ts-mode--i-next-line-matcher (node parent _bol &rest _)
+  "Matcher for indent on a newline being inserted when in presence of errors.
 If so, set `matlab-ts-mode--i-next-line-pair'.
 NODE may or may not be nil.  PARENT will be a newline, so
 Example: in this case NODE will be nil and PARENT is a newline.  Example:
@@ -1257,54 +1257,79 @@ Prev-siblings:
                  (string= (treesit-node-type node) "ERROR"))
             (string= (treesit-node-type parent) "\n"))
 
-    (let* ((node-to-examine (if node node parent))
-           (anchors-rx (rx (seq bos (or "function_definition"
-                                        "classdef"
-                                        "properties"
-                                        "property"
-                                        "methods"
-                                        "["
-                                        "{")
+    (let ((anchors-rx (rx (seq bos (or "function_definition"
+                                       "classdef"
+                                       "properties"
+                                       "property"
+                                       "methods"
+                                       "["
+                                       "{")
                                eos)))
-           (anchor-node (or
-                         ;; Look to previous siblings to see if they match anchors-rx
-                         (let ((prev-sibling (treesit-node-prev-sibling node-to-examine)))
-                             (while (and prev-sibling
-                                         (not (string-match-p anchors-rx
-                                                              (treesit-node-type prev-sibling))))
-                               (setq prev-sibling (treesit-node-prev-sibling prev-sibling)))
-                             prev-sibling)
-                         ;; Look to ancestors siblings to see if they match anchors-rx, except
-                         ;; when node is defined (an error node), in which case we can't look
-                         ;; at ancestors.
-                         (let* ((ancestor (when (not node)
-                                            (treesit-node-parent parent)))
-                                (ancestor-type (when ancestor (treesit-node-type ancestor))))
-                           (while (and ancestor
-                                       (not (string-match-p anchors-rx ancestor-type)))
-                             (setq ancestor (if (string= ancestor-type "ERROR")
-                                                nil
-                                              (treesit-node-parent ancestor))))
-                           ancestor))))
-      (when anchor-node
-        (let ((indent-level (pcase (treesit-node-type anchor-node)
-                              ("property" 0)
-                              ((rx (seq bos (or "[" "{" eos))) matlab-ts-mode--array-indent-level)
-                              ("function_definition" matlab-ts-mode--function-indent-level)
-                              (_ matlab-ts-mode--indent-level))))
-          (setq matlab-ts-mode--i-next-line-pair
-                (cons (treesit-node-start anchor-node) indent-level))
+          (node-to-check (or node parent))
+          in-error ;; is node, parent, or one of it's ancestors an ERROR?
+          prev-sibling-has-error ;; is a previous sibliling an ERROR?
+          prev-sibling-to-check
+          ancestor-to-check)
 
-          ;; TODO Rough sketch of electric-ends
-          ;;      We need to look at the parse tree to see if we should insert it.
-          ;;      Also, we should verify this doesn't happen with indent-region, only on RET.
-          ;; (when matlab-ts-mode-electric-ends
-          ;;   (save-excursion
-          ;;     (let ((insert-column (save-excursion
-          ;;                            (goto-char (treesit-node-start anchor-node))
-          ;;                            (current-column))))
-          ;;       (insert "\n" (make-string insert-column ?\ ) "end\n")))
-          t)))))
+      ;; ancestor-to-check
+      (let ((ancestor node-to-check))
+        (while (and ancestor (not in-error))
+          (let ((ancestor-type (treesit-node-type ancestor)))
+            (cond
+
+             ((string= ancestor-type "ERROR")
+              (setq in-error t))
+
+             ((and (not ancestor-to-check)
+                   (string-match-p anchors-rx ancestor-type))
+              (setq ancestor-to-check ancestor)))
+
+            (setq ancestor (if in-error
+                               nil
+                             (treesit-node-parent ancestor))))))
+
+      ;; prev-sibling-to-check
+
+      (let ((prev-sibling (treesit-node-prev-sibling node-to-check)))
+        (while (and prev-sibling (not prev-sibling-has-error))
+          (let ((prev-sibling-type (treesit-node-type prev-sibling)))
+            (cond
+             ((string= prev-sibling-type "ERROR")
+              (setq prev-sibling-has-error t))
+
+             ((and (not prev-sibling-to-check)
+                   (string-match-p anchors-rx prev-sibling-type))
+              (setq prev-sibling-to-check prev-sibling)))
+
+            (setq prev-sibling (if prev-sibling-has-error
+                                   nil
+                                 (treesit-node-prev-sibling prev-sibling))))))
+
+      (when (and (not in-error)
+                 (not prev-sibling-has-error))
+        (cl-return-from matlab-ts-mode--i-next-line-matcher nil))
+
+      (let ((anchor-node (or ancestor-to-check
+                             prev-sibling-to-check)))
+        (when anchor-node
+          (let ((indent-level (pcase (treesit-node-type anchor-node)
+                                ("property" 0)
+                                ((rx (seq bos (or "[" "{" eos))) matlab-ts-mode--array-indent-level)
+                                ("function_definition" matlab-ts-mode--function-indent-level)
+                                (_ matlab-ts-mode--indent-level))))
+            (setq matlab-ts-mode--i-next-line-pair
+                  (cons (treesit-node-start anchor-node) indent-level))
+
+            ;; TODO Rough sketch of electric-ends
+            ;;      We need to look at the parse tree to see if we should insert it.
+            ;;      Also, we should verify this doesn't happen with indent-region, only on RET.
+            ;; (when matlab-ts-mode-electric-ends
+            ;;   (save-excursion
+            ;;     (let ((insert-column (save-excursion
+            ;;                            (goto-char (treesit-node-start anchor-node))
+            ;;                            (current-column))))
+            ;;       (insert "\n" (make-string insert-column ?\ ) "end\n")))
+            t))))))
 
 (defun matlab-ts-mode--i-next-line-anchor (&rest _)
   "Return the anchor computed by `matlab-ts-mode--i-next-line-matcher'."
