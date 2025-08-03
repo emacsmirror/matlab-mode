@@ -31,7 +31,7 @@
   "Toggle read-only bit in MATLAB mode.
 This looks to see if we are currently debugging, and if so re-enable our
 debugging feature.  Optional argument ARG is ignored.  ARG is present
-because we are replacing `read-only-mode' key defintion with this
+because we are replacing `read-only-mode' key definition with this
 function."
 
   (interactive "P")
@@ -45,3 +45,5 @@ function."
 
 (provide 'matlab--shared)
 ;;; matlab--shared.el ends here
+
+;; LocalWords:  keymap defun gud featurep
