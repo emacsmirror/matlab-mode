@@ -805,7 +805,9 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    `(((identifier) @font-lock-builtin-face
       (:pred matlab-ts-mode--is-identifier-builtin @font-lock-builtin-face))
      ((command_name) @font-lock-builtin-face
-      (:pred matlab-ts-mode--is-command-builtin @font-lock-builtin-face)))
+      (:pred matlab-ts-mode--is-command-builtin @font-lock-builtin-face))
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_boolean.m
+     ((boolean) @font-lock-builtin-face))
 
    ;; F-Rule: namespaces (the +dir's, class methods, etc.)
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m

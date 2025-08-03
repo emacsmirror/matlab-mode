@@ -25,10 +25,10 @@ v o n oo n
 v o n o n
 v o n oo n
 
-vv o dddd o dddddD
-vv o dddd o dddddD
-vv o dddd oo dddddD
-vv o dddd oo dddddD
+vv o BBBB o BBBBBD
+vv o BBBB o BBBBBD
+vv o BBBB oo BBBBBD
+vv o BBBB oo BBBBBD
 vv o oddD
 
 vvv o obdb d oo nD
