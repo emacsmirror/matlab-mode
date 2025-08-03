@@ -25,7 +25,7 @@
 ;; Access to the MATLAB installation:
 ;;   `matlab--platform'           - "glnxa64", "maca64", "win64", etc.
 ;;   `matlab--get-abs-matlab-exe' - full path to the MATLAB executable
-;;   `matlab--get-mlint-exe'      - path to the MLint executabe, which
+;;   `matlab--get-mlint-exe'      - path to the MLint executable, which
 ;;                                  should be an absolute path, but not
 ;;                                  guaranteed
 ;; These should only be used by other matlab*.el files.
@@ -264,7 +264,7 @@ Other entries should be absolute paths."
 
 (defun matlab--get-mlint-exe ()
   "Return MLint executable or nil if not found.
-The returned execuable will be the full path to mlint.  If we resolved
+The returned executable will be the full path to mlint.  If we resolved
 the \"mlint\" entry in `mlint-programs', in which case this is the mlint
 next to the matlab found by `matlab--get-abs-matlab-exe'.  If we
 resolved another entry in `mlint-programs', we'll use that and by
@@ -289,3 +289,6 @@ guaranteed.  Nil is returned if mlint is not found."
 
 (provide 'matlab--access)
 ;;; matlab--access.el ends here
+
+;; LocalWords:  SPDX gmail maca MLint darwin maci MACHTYPE stringp linux glnx hpux nt env ARCHITEW
+;; LocalWords:  defcustom usr defun buf symlink'd truename setq cdr emacsclient ec emacsclientw
