@@ -84,7 +84,7 @@
 ;; by the code-to-face alist setup by this function.  This loops
 ;; on all ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang files.
 ;;
-;; To add a test, createp
+;; To add a test, create
 ;;   ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang
 ;; and run this function.  The baseline is saved for you as
 ;;   ./test-LANGUAGE-ts-mode-font-lock-files/NAME_expected.txt~
@@ -153,7 +153,7 @@
 ;; NAME.LANG, and compares them against NAME_expected.txt.  The ert package does not provide a
 ;; looping facility.  Therefore, t-utils internally performs the looping.  This makes reporting a
 ;; little off.  One test is really a number of tests defined by the test input files.  To debug a
-;; specifice input file, the caller of the t-utils needs to setup for debugging.  See
+;; specific input file, the caller of the t-utils needs to setup for debugging.  See
 ;; `t-utils-test-font-lock' above for this setup.
 ;;
 
@@ -238,7 +238,7 @@ skipping all *_expected.lang files."
   "Error if tree-sitter for LANGUAGE is not available.
 If not available an error containing TEST-NAME is generated."
   (when (not (treesit-ready-p language t))
-    (error "Test %s requires treesit for lanugage %s and it's not available" test-name language)))
+    (error "Test %s requires treesit for language %s and it's not available" test-name language)))
 
 (defun t-utils-run (&optional match)
   "Run test files in current directory matching regexp, MATCH.
@@ -301,31 +301,51 @@ baseline file for EXPECTED.  START-TIME is when we started the test and
 is used in displaying the test took time.
 
 Optional CHECKER-FUN if specified is called with LANG-FILE GOT GOT-FILE
-EXPECTED EXPECTED-FILE and can return a specialized error message or
-nil to use the standard error message.
+EXPECTED EXPECTED-FILE.  CHECKER-FUN should cons
+  (error-messages . do-baseline-check)
+where error-messages is a list of error messages or nil indicating
+success.  Boolean, do-baseline-check, indicates whether or not to do the
+baseline check of GOT vs EXPECTED.
 
 Returns nil on success, otherwise an error message list of strings if
 baseline check fails."
 
-  (let (error-msg)
+  (let (error-msg
+        (do-baseline-check t))
+
+    (when checker-fun
+      (let ((result (funcall checker-fun lang-file got got-file expected expected-file)))
+        (when result
+          (when (not (consp result))
+            (error "Baseline checker-fun for %s on %s didn't return a cons" test-name lang-file))
+          (when (car result)
+            (when (not (listp (car result)))
+              (error "Baseline checker-fun for %s on %s didn't return a valid list for (car result)"
+                     test-name lang-file))
+            (setq error-msg (car result)))
+          (setq do-baseline-check (cdr result)))))
+
     (when (not (string= got expected))
       (let ((coding-system-for-write 'raw-text-unix))
         (write-region got nil got-file))
 
-      (when checker-fun
-        (setq error-msg (funcall checker-fun lang-file got got-file expected expected-file)))
+      (when do-baseline-check
+        (let (baseline-errors)
+          (if (not expected)
+              (setq baseline-errors (list
+                                     (format "Baseline for %s does not exist." lang-file)
+                                     (format "Got: %s" got-file)
+                                     (format "If got looks good, rename it to: %s" expected-file)))
+            (setq baseline-errors (list
+                                   (format "Baseline for %s does not match expected." lang-file)
+                                   (format "Got: %s" got-file )
+                                   (format "Expected: %s" expected-file))))
+          (when baseline-errors
+            (if error-msg
+                (setq error-msg (append error-msg baseline-errors))
+              (setq error-msg baseline-errors))))))
 
-      (when (not error-msg)
-        (if (not expected)
-            (setq error-msg (list
-                             (format "Baseline for %s does not exist." lang-file)
-                             (format "Got: %s" got-file)
-                             (format "If got looks good, rename it to: %s" expected-file)))
-          (setq error-msg (list
-                           (format "Baseline for %s does not match expected." lang-file)
-                           (format "Got: %s" got-file )
-                           (format "Expected: %s" expected-file))))))
-    ;; When run noninteractively, having errors show up like compiler messages aids in finding
+    ;; When run non-interactively, having errors show up like compiler messages aids in finding
     ;; them. For example, run the test and pipe to a log file, then view the log file in
     ;; `compilation-minor-mode'.
     (when error-msg
@@ -368,7 +388,8 @@ containing RESULT."
         (read-only-mode 1))
       (display-buffer result-buf))))
 
-(defun t-utils--insert-file-for-test (file &optional file-major-mode setup-callback skip-corrupt-check)
+(defun t-utils--insert-file-for-test (file
+                                      &optional file-major-mode setup-callback skip-corrupt-check)
   "Insert FILE into current temporary buffer for testing.
 If optional FILE-MAJOR-MODE function is provided, run that, otherwise
 we examine the first line of the file for the major mode:
@@ -386,7 +407,7 @@ skipped."
 
   (insert-file-contents-literally file)
 
-  ;; We're testing a programming lanugage which is using utf-8-unix encoding
+  ;; We're testing a programming language which is using utf-8-unix encoding
   (set-buffer-file-coding-system 'utf-8-unix)
 
   ;; Check for corrupted characters (these can crash Emacs via the language server parser)
@@ -487,7 +508,7 @@ Returns diff of START-CONTENTS and END-CONTENTS."
                            "@@ -2,7 +2,7 @@\n"
                            " L2\n L3\n L4\n-L5\n+L5-MODIFIED\n L6\n L7\n L8\n")))
     (when (not (string= got expected))
-      (error "Running diff produced unexecpted results.
+      (error "Running diff produced unexpected results.
 Verify that diff is setup correctly, check `diff-command', etc.
 You can run `t-utils--diff-check' to debug"))))
 
@@ -521,7 +542,7 @@ You can run `t-utils--diff-check' to debug"))))
   "Implementation for `t-utils-xr' that processes COMMANDS."
   (when (or (= (point) 1)
             (not (save-excursion (goto-char (1- (point))) (looking-at ")"))))
-    (error "Expected point to be after a closing parenthisis, \")\""))
+    (error "Expected point to be after a closing parenthesis, \")\""))
 
   (let* ((line-move-visual nil) ;; C-n, next-line: moves by true lines and not the width
          (buf-file (t-utils--get-buf-file))
@@ -620,7 +641,7 @@ You can run `t-utils--diff-check' to debug"))))
                 (when (not (t-utils--use-xr-impl-result))
                   ;; Display debugging info for interactive evaluation of (t-utils-xr COMMANDS)
                   (read-string (concat debug-msg "\n" "Enter to continue:")))))
-          ;; unwind-protect unwindforms
+          ;; unwind-protect unwind forms
           (and (buffer-name standard-output)
                (kill-buffer standard-output)))))
 
@@ -632,7 +653,7 @@ You can run `t-utils--diff-check' to debug"))))
 
 (cl-defmacro t-utils-xr (&rest commands)
   "Execute and record results of each command in list of COMMANDS.
-This returns a string recofrding point movement and buffer modification
+This returns a string recording point movement and buffer modification
 differences for each command.  See `t-utils-test-xr' for details."
   (t-utils--xr-impl commands))
 
@@ -670,7 +691,7 @@ Consider ./test-defun-movement/my_test.c:
   10|   // (t-utils-xr (beginning-of-defun) (beginning-of-defun))
   11| }
 
-You can interactively evaulate each (t-utils-xr COMMANDS) by placing the
+You can interactively evaluate each (t-utils-xr COMMANDS) by placing the
 `point' on the closing parenthesis and typing \\[eval-last-sexp].  For
 example, with the point after the closing parenthesis on line 4 and
 running \\[eval-last-sexp], we'll see in the *Messages* buffer:
@@ -771,26 +792,31 @@ TODO should example test setup, see t-utils-test-font-lock."
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
 
-(defun t-utils--test-font-lock-error-at-pos (lang-file
-                                             got got-file expected expected-file code-to-face)
-  "Get error that includes the the position of the first font face difference.
+(defun t-utils--test-font-lock-checker (lang-file
+                                        got got-file expected expected-file code-to-face)
+  "Get error that includes the position of the first font face difference.
 See `t-utils-test-font-lock' for
 LANG-FILE GOT GOT-FILE EXPECTED EXPECTED-FILE CODE-TO-FACE."
 
-  (let* ((diff-idx (abs (compare-strings got nil nil
-                                         expected nil nil)))
-         (got-code (substring got (1- diff-idx) diff-idx))
-         (got-face (cdr (assoc got-code code-to-face)))
-         (expected-code (substring expected (1- diff-idx) diff-idx))
-         (expected-face (cdr (assoc expected-code code-to-face))))
-    (list (format "Baseline for %s does not match" lang-file)
-          (format "Got: %s" got-file)
-          (format "Expected: %s" expected-file)
-          (format "Difference at point %d: \
+  (when (and (not (string= got expected))
+             (= (length got) (length expected)))
+    (let* ((diff-idx (abs (compare-strings got nil nil
+                                           expected nil nil)))
+           (got-code (substring got (1- diff-idx) diff-idx))
+           (got-face (cdr (assoc got-code code-to-face)))
+           (expected-code (substring expected (1- diff-idx) diff-idx))
+           (expected-face (cdr (assoc expected-code code-to-face))))
+      (cons
+       (list (format "Baseline for %s does not match" lang-file)
+             (format "Got: %s" got-file)
+             (format "Expected: %s" expected-file)
+             (format "Difference at point %d: \
 got code-to-face (\"%s\" . %S), expected code-to-face (\"%s\" . %S)"
-                  diff-idx
-                  got-code got-face
-                  expected-code expected-face))))
+                     diff-idx
+                     got-code got-face
+                     expected-code expected-face))
+       nil ;; nil ==> do not do standard baseline comparison
+       ))))
 
 (defun t-utils-test-font-lock (test-name lang-files code-to-face &optional setup-callback)
   "Test font-lock using on each lang-file in LANG-FILES list.
@@ -798,7 +824,7 @@ Foreach file NAME.LANG in LANG-FILES compare the file against
 NAME_expected.txt, where NAME the file name minus the lang-file
 extension, EXT.  NAME_expected.txt is of same length as the file and has
 a character for each face setup by font-lock.  CODE_TO_FACE is an alist
-where each elment is (CHAR . FACE).  TEST-NAME is used when displaying
+where each element is (CHAR . FACE).  TEST-NAME is used when displaying
 messages.
 
 If NAME_expected.txt does not exist or doesn't match the results we
@@ -828,14 +854,14 @@ where int and void are keywords, etc. and CODE-TO-FACE contains:
 Example test setup:
 
   ./LANGUAGE-ts-mode.el
-  ./tests/test-LANUGAGE-ts-mode-font-lock.el
-  ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME1.LANG
-  ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME1_expected.txt
-  ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME2.LANG
-  ./tests/test-LANUGAGE-ts-mode-font-lock-files/NAME2_expected.txt
+  ./tests/test-LANGUAGE-ts-mode-font-lock.el
+  ./tests/test-LANGUAGE-ts-mode-font-lock-files/NAME1.LANG
+  ./tests/test-LANGUAGE-ts-mode-font-lock-files/NAME1_expected.txt
+  ./tests/test-LANGUAGE-ts-mode-font-lock-files/NAME2.LANG
+  ./tests/test-LANGUAGE-ts-mode-font-lock-files/NAME2_expected.txt
   ....
 
-Where ./tests/test-LANUGAGE-ts-mode-font-lock.el contains:
+Where ./tests/test-LANGUAGE-ts-mode-font-lock.el contains:
 
   (defvar test-LANGUAGE-ts-mode-font-lock--file nil)
 
@@ -872,7 +898,7 @@ your test.
 To debug a specific font-lock test file
 
  M-: (test-LANGUAGE-ts-mode-font-lock--file
-      \"test-LANUGAGE-ts-mode-font-lock-files/NAME.LANG\")"
+      \"test-LANGUAGE-ts-mode-font-lock-files/NAME.LANG\")"
 
   (let ((face-to-code (mapcar (lambda (pair)
                                 (cons (cdr pair) (car pair)))
@@ -919,9 +945,9 @@ To debug a specific font-lock test file
                     test-name start-time
                     lang-file got got-file expected expected-file
                     (lambda (lang-file got got-file expected expected-file)
-                      (when (= (length got) (length expected))
-                        (t-utils--test-font-lock-error-at-pos
-                         lang-file got got-file expected expected-file code-to-face))))))
+                      (t-utils--test-font-lock-checker lang-file got got-file
+                                                       expected expected-file
+                                                       code-to-face)))))
               (when error-msg
                 (push error-msg error-msgs)))))))
 
@@ -1005,7 +1031,7 @@ TEST-NAME is used in messages.
 
 If NAME_expected.LANG does not exist or the indent of NAME.LANG doesn't
 match NAME_expected.txt, NAME_expected.LANG~ will be created.  You are
-then instructured to validate the indent and rename NAME_expected.LANG~
+then instructed to validate the indent and rename NAME_expected.LANG~
 to NAME_expected.LANG.
 
 To add a test for TEST-NAME.el which calls this function, in the
@@ -1045,13 +1071,13 @@ Two methods are used to indent each file in LANG-FILES,
 Example test setup:
 
   ./LANGUAGE-ts-mode.el
-  ./tests/test-LANUGAGE-ts-mode-indent.el
-  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME1.LANG
-  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME1_expected.LANG
-  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME2.LANG
-  ./tests/test-LANUGAGE-ts-mode-indent-files/NAME2_expected.LANG
+  ./tests/test-LANGUAGE-ts-mode-indent.el
+  ./tests/test-LANGUAGE-ts-mode-indent-files/NAME1.LANG
+  ./tests/test-LANGUAGE-ts-mode-indent-files/NAME1_expected.LANG
+  ./tests/test-LANGUAGE-ts-mode-indent-files/NAME2.LANG
+  ./tests/test-LANGUAGE-ts-mode-indent-files/NAME2_expected.LANG
 
-Where ./tests/test-LANUGAGE-ts-mode-indent.el contains:
+Where ./tests/test-LANGUAGE-ts-mode-indent.el contains:
 
   (defvar test-LANGUAGE-ts-mode-indent--file nil)
 
@@ -1081,7 +1107,7 @@ your test.
 To debug a specific indent test file
 
  M-: (test-LANGUAGE-ts-mode-indent--file
-      \"test-LANUGAGE-ts-mode-indent-files/NAME.LANG\")"
+      \"test-LANGUAGE-ts-mode-indent-files/NAME.LANG\")"
 
 
   (when (not error-nodes-regexp)
@@ -1192,7 +1218,7 @@ errors according to the syntax-checker-fun\n%s" lang-file check-result))))
                                             log-file
                                             result-file)
   "Sweep test indent on files under DIRECTORY recursively.
-File basenames matching matching LANG-FILE-REGEXP are tested.
+File base names matching LANG-FILE-REGEXP are tested.
 TEST-NAME is used in messages.
 
 Each matching file is read into a temporary buffer and then
@@ -1200,7 +1226,7 @@ MAJOR-MODE-FUN is called.
 
 ERROR-NODES-REGEXP, defaulting to (rx box \"ERROR\" eos), is provided to
 `treesit-search-subtree' to look for syntax errors in the parse tree.
-SYNTAX-CHECKER-FUN is a function that should take one arument, the
+SYNTAX-CHECKER-FUN is a function that should take one argument, the
 current file being sweep tested, and should return cons pair
   (VALID . CHECK-RESULT)
 VALID is t there are no syntax errors, otherwise nil.  String
@@ -1215,7 +1241,7 @@ to TEST_NAME.result.txt.
 
 If the tree-sitter parse tree contains a node matching ERROR-NODES-REGEXP,
 SYNTAX-CHECKER-FUN is called and if the file does not have syntax error,
-it is reported because the tree-sitter parser says it has erorrs and
+it is reported because the tree-sitter parser says it has errors and
 the SYNTAX-CHECKER-FUN says it does not.
 
 Next, the buffer is indented using `indent-region' and if this fails it
@@ -1247,7 +1273,7 @@ be an assert rule and this should be activated:
 
   (define-derived-mode LANGUAGE-ts-mode prog-mode \"LANGUAGE:ts\"
      ;; <snip>
-     (setq-local treesit-simple-indent-rules LANUGAGE-ts-mode--indent-rules)
+     (setq-local treesit-simple-indent-rules LANGUAGE-ts-mode--indent-rules)
      ;; <snip>
      )
 
@@ -1264,14 +1290,14 @@ The result is:
 
     Files-with-parse-error-nodes[-but-pass-syntax-checker-fun]:
       <files with error nodes>
-    Files-that-parsed-succesfully-but-failed-syntax-checker-fun:
+    Files-that-parsed-successfully-but-failed-syntax-checker-fun:
       <files that tree-sitter parsed successfully but fail syntax-checker-fun>
     Indent-errors:
       <files that generated an indent error>
     Slowest-indents:
       <files where indent was slowest>
 
-When run in an interacive Emacs session, e.g.
+When run in an interactive Emacs session, e.g.
    M-: (sweep-LANGUAGE-ts-mode-indent)
 the result is shown in \"*TEST-NAME*\" buffer, otherwise it
 is displayed on stdout.
@@ -1281,7 +1307,7 @@ For example, the files with parse error nodes may be identifying issues
 with your LANGUAGE tree-sitter where it is failing to parse or the files
 may have syntax errors in them and the tree-sitter parse tree with error
 nodes is correct.  Any files that generated errors during
-`indent-region' are are likely bugs that should be addressed because
+`indent-region' are likely bugs that should be addressed because
 this will only call `indent-region' on files when the tree-sitter parse
 tree has no error nodes.  You should also look at the files where
 `indent-region' was slow.  Very slow indents could be bugs in the
@@ -1359,7 +1385,7 @@ LANGUAGE tree-sitter that need addressing or some other issue."
                            "\n"
                            (when check-valid-parse
                              (concat
-                              "Files-that-parsed-succesfully-but-failed-syntax-checker-fun:\n"
+                              "Files-that-parsed-successfully-but-failed-syntax-checker-fun:\n"
                               invalid-successful-parse
                               "\n"))
                            "Indent-errors:\n"
@@ -1379,7 +1405,7 @@ TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result of NAME.LANG doesn't
 match NAME_expected.txt, NAME_expected.txt~ will be created.  You are
-then instructured to validate the result and rename NAME_expected.txt~
+then instructed to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which calls this function, in the
@@ -1440,7 +1466,7 @@ NAME_expected.txt.  TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
 NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
-instructured to validate the result and rename NAME_expected.txt~
+instructed to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which calls this function, in the
@@ -1501,7 +1527,7 @@ LANG-FILES against NAME_expected.txt.  TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
 NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
-instructured to validate the result and rename NAME_expected.txt~
+instructed to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which calls this function, in the
@@ -1549,7 +1575,7 @@ LANG-FILES against NAME_expected.txt.  TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
 NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
-instructured to validate the result and rename NAME_expected.txt~
+instructed to validate the result and rename NAME_expected.txt~
 to NAME_expected.txt.
 
 To add a test for TEST-NAME.el which calls this function, in the
@@ -1613,7 +1639,7 @@ TEST-NAME is used in messages.
 
 If NAME_expected.txt does not exist or the result doesn't match
 NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
-instructured to validate the result and rename NAME_expected.txt~ to
+instructed to validate the result and rename NAME_expected.txt~ to
 NAME_expected.txt.
 
 To add a test for TEST-NAME.el which calls this function, in the
@@ -1625,13 +1651,13 @@ baseline after validating it.
 Example test setup:
 
   ./LANGUAGE-ts-mode.el
-  ./tests/test-LANUGAGE-ts-mode-file-encoding.el
-  ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME1.LANG
-  ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME1_expected.txt
-  ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME2.LANG
-  ./tests/test-LANUGAGE-ts-mode-file-encoding-files/NAME2_expected.txt
+  ./tests/test-LANGUAGE-ts-mode-file-encoding.el
+  ./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME1.LANG
+  ./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME1_expected.txt
+  ./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME2.LANG
+  ./tests/test-LANGUAGE-ts-mode-file-encoding-files/NAME2_expected.txt
 
-Where ./tests/test-LANUGAGE-ts-mode-file-encoding.el contains:
+Where ./tests/test-LANGUAGE-ts-mode-file-encoding.el contains:
 
   (defvar test-LANGUAGE-ts-mode-file-encoding--file nil)
 
@@ -1661,7 +1687,7 @@ your test.
 To debug a specific file-encoding test file
 
  M-: (test-LANGUAGE-ts-mode-file-encoding--file
-      \"test-LANUGAGE-ts-mode-file-encoding-files/NAME.LANG\")"
+      \"test-LANGUAGE-ts-mode-file-encoding-files/NAME.LANG\")"
 
   (let ((error-msgs '()))
     (dolist (lang-file lang-files)
@@ -1676,7 +1702,7 @@ To debug a specific file-encoding test file
                              (with-temp-buffer
                                (insert-file-contents-literally expected-file)
                                (buffer-string))))
-                 (got "Major mode activated succesfully.")
+                 (got "Major mode activated successfully.")
                  (got-file (concat expected-file "~")))
 
             ;; Load lang-file in temp buffer and activate file-major-mode
@@ -1742,7 +1768,7 @@ ERROR-INFO is \"at line NUM:COL<optional-text\""
                                       result-file)
   "Sweep test a tree-sitter grammar shared library looking for parse issues.
 
-File basenames matching matching LANG-FILE-REGEXP under DIRECTORY
+File base names matching LANG-FILE-REGEXP under DIRECTORY
 recursively are examined.  TEST-NAME is used in messages.
 
 Each matching file is read into a temporary buffer and then
@@ -1767,12 +1793,12 @@ The result is:
     Files-with-parse-error-nodes-but-pass-syntax-checker-fun:
       <files with tree-sitter error nodes>
 
-    Files-that-parsed-succesfully-but-failed-syntax-checker-fun:
+    Files-that-parsed-successfully-but-failed-syntax-checker-fun:
       <files without tree-sitter error nodes>
 
     Total-consistently-parsed-files: M of N
 
-When run in an interacive Emacs session, e.g.
+When run in an interactive Emacs session, e.g.
     M-: (sweep-LANGUAGE-ts-mode-grammar)
 the result is shown in \"*TEST-NAME*\" buffer,
 otherwise the result is displayed on stdout."
@@ -1827,7 +1853,7 @@ otherwise the result is displayed on stdout."
           (files-with-bad-ts-success-parse "")
           (n-consistent-files 0))
 
-      (t-utils--log log-file (format "Examinging %S result\n" syntax-checker-fun))
+      (t-utils--log log-file (format "Examining %S result\n" syntax-checker-fun))
 
       (dolist (lang-file lang-files-to-check)
         (let ((ts-parse-file-result-pair (gethash lang-file ts-parse-result-ht))
@@ -1859,7 +1885,7 @@ otherwise the result is displayed on stdout."
               "Files-with-parse-error-nodes-but-pass-syntax-checker-fun:\n"
               files-with-bad-ts-error-parse
               "\n"
-              "Files-that-parsed-succesfully-but-failed-syntax-checker-fun:\n"
+              "Files-that-parsed-successfully-but-failed-syntax-checker-fun:\n"
               files-with-bad-ts-success-parse
               "\n"
               "Total-consistently-parsed-files: " (format "%d of %d\n" n-consistent-files
@@ -1955,15 +1981,47 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
       (t-utils--syntax-tree-draw-node root)
       (buffer-string))))
 
+(defun t-utils--test-parser-error-node-checker (lang-file _got _got-file _expected _expected-file)
+  "Check ERROR node status for `t-utils-test-parser'.
+
+If LANG-FILE contains \"error\" in it's name, then the parse tree must
+have an ERROR node.  If LANG-FILE does not contain \"error\" in it's
+name, then the parse tree must not have an ERROR node."
+  (let* ((tree-error-node (treesit-search-subtree (treesit-buffer-root-node)
+                                                  (rx (seq bos "ERROR" eos))))
+         (tree-has-error (when tree-error-node t))
+         (lang-file-name (file-name-nondirectory lang-file))
+         (name-has-error (when (string-match-p (rx (seq bow "error" eow)) lang-file-name) t)))
+    (cond
+     ((equal tree-has-error (not name-has-error))
+      (cons
+       (list (concat "Parse tree for " lang-file
+                     "contains an ERROR node and file name does not contain the word \"error\" "
+                     "indicating that the parse tree should not have an ERROR node"))
+       nil ;; nil ==> do not do standard baseline check
+       ))
+
+     ((equal (not tree-has-error) name-has-error)
+      (cons
+       (list (concat "Parse tree for " lang-file
+                     "does not contain an ERROR node and file name contains word \"error\" "
+                     "indicating the parse tree should have an ERROR node"))
+       nil ;; nil ==> do not do standard baseline check
+       )))))
+
 (defun t-utils-test-parser (test-name lang-files)
   "Validate the tree-sitter parse tree against a baseline.
 Each NAME.LANG of LANG-FILES list parse tree is captured and
 an annotated version of it is compared against baseline, NAME_expected.txt.
 TEST-NAME is used in messages.
 
+If NAME.LANG contains the word \"error\" (error*.LANG,
+_error.LANG or _error_), then the parse tree must contain an \"ERROR\"
+node, otherwise it must not contain an \"ERROR\" node.
+
 If NAME_expected.txt does not exist or the result doesn't match
 NAME_expected.txt, NAME_expected.txt~ will be created.  You are then
-instructured to validate the result and rename NAME_expected.txt~ to
+instructed to validate the result and rename NAME_expected.txt~ to
 NAME_expected.txt.
 
 To add a test for TEST-NAME.el which calls this function, in the
@@ -1975,13 +2033,13 @@ baseline after validating it.
 Example test setup:
 
   ./LANGUAGE-ts-mode.el
-  ./tests/test-LANUGAGE-ts-mode-parser.el
-  ./tests/test-LANUGAGE-ts-mode-parser-files/NAME1.LANG
-  ./tests/test-LANUGAGE-ts-mode-parser-files/NAME1_expected.txt
-  ./tests/test-LANUGAGE-ts-mode-parser-files/NAME2.LANG
-  ./tests/test-LANUGAGE-ts-mode-parser-files/NAME2_expected.txt
+  ./tests/test-LANGUAGE-ts-mode-parser.el
+  ./tests/test-LANGUAGE-ts-mode-parser-files/NAME1.LANG
+  ./tests/test-LANGUAGE-ts-mode-parser-files/NAME1_expected.txt
+  ./tests/test-LANGUAGE-ts-mode-parser-files/NAME2.LANG
+  ./tests/test-LANGUAGE-ts-mode-parser-files/NAME2_expected.txt
 
-Where ./tests/test-LANUGAGE-ts-mode-parser.el contains:
+Where ./tests/test-LANGUAGE-ts-mode-parser.el contains:
 
   (defvar test-LANGUAGE-ts-mode-parser--file nil)
 
@@ -2010,7 +2068,7 @@ your test.
 To debug a specific -parser test file
 
  M-: (test-LANGUAGE-ts-mode-parser--file
-      \"test-LANUGAGE-ts-mode-parser-files/NAME.LANG\")"
+      \"test-LANGUAGE-ts-mode-parser-files/NAME.LANG\")"
 
   (let ((error-msgs '()))
     (dolist (lang-file lang-files)
@@ -2027,15 +2085,18 @@ To debug a specific -parser test file
                                (buffer-string))))
                  (got-file (concat expected-file "~"))
                  got)
+
             (t-utils--insert-file-for-test lang-file)
 
             (setq got (t-utils--get-syntax-tree))
 
-            (kill-buffer)
-
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
-                              lang-file got got-file expected expected-file)))
+                              lang-file got got-file expected expected-file
+                              #'t-utils--test-parser-error-node-checker)))
+
+              (kill-buffer)
+
               (when error-msg
                 (push error-msg error-msgs)))))))
 
@@ -2045,3 +2106,8 @@ To debug a specific -parser test file
 
 (provide 't-utils)
 ;;; t-utils.el ends here
+
+;; LocalWords:  lang defun alist eos treesit lf setq truename dolist nondirectory bos buf funcall
+;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib
+;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash
+;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow
