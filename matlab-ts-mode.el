@@ -82,7 +82,7 @@ Guidelines:
  - FIX" "ME" " and XX" "X markers should be fixed prior to committing
    code to a source repository.
  - TO" "DO markers can remain in code and be committed with the code to a
-   source repository.  TO" "DO markers should reflect improvements are are
+   source repository.  TO" "DO markers should reflect improvements are
    not problems with the existing code."))
 
 (defface matlab-ts-mode-operator-face
@@ -100,7 +100,7 @@ Guidelines:
 (defface matlab-ts-mode-system-command-face
   '((t :inherit font-lock-builtin-face
        :slant italic))
-  "*Face used to higlight \"!\" system commands.")
+  "*Face used to highlight \"!\" system commands.")
 
 (defface matlab-ts-mode-property-face
   '((t :inherit font-lock-property-name-face
@@ -277,7 +277,7 @@ content can crash Emacs via the matlab tree-sitter parser."
   "The matlab-ts-mode syntax table.")
 
 (defun matlab-ts-mode--put-char-category (pos category)
-  "At character POS, put text proerty CATEGORY."
+  "At character POS, put text property CATEGORY."
   (when (not (eobp))
     (put-text-property pos (1+ pos) 'category category)
     (put-text-property pos (1+ pos) 'mcm t)))
@@ -443,7 +443,7 @@ help doc comment."
                          (and prev-sibling
 	                      (string-match-p
                                (rx bos
-                                   (or "function"         ;; fcn wihtout in and out args
+                                   (or "function"         ;; fcn without in and out args
                                        "function_output"  ;; fcn w/out args and no in args
                                        "classdef")        ;; base class
                                    eos)
@@ -456,7 +456,7 @@ In MATLAB,
 
   function out = myFunction
   % The documentation help comment for myFunction immediately follows the
-  % function defintion.
+  % function definition.
 
       % code comments are preceded with a blank line
       out = 1;
@@ -464,9 +464,9 @@ In MATLAB,
 
   function out = myFunction
   % The documentation help comment for myFunction immediately follows the
-  % function defintion.
+  % function definition.
 
-  % copyright at column 0 and preceded by blank liness after the help comment
+  % copyright at column 0 and preceded by blank lines after the help comment
 
       % code comments are preceded with a blank line
       out = 1;
@@ -664,7 +664,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    :feature 'keyword
    `([,@matlab-ts-mode--keywords] @font-lock-keyword-face)
 
-   ;; F-Rule: function/classdef and items definiting them, e.g. the function arguments
+   ;; F-Rule: function/classdef and items defining them, e.g. the function arguments
    :language 'matlab
    :feature 'definition
    '(
@@ -718,7 +718,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    ;; Could add font-lock-variable-name-face to variable uses.  Consider
    ;;     i1 = [1, 2];
    ;;     i2 = i1(1) + i3 + i4(i3);
-   ;; we know i1 and i2 are varialbles from the (assignment left: (identifier))
+   ;; we know i1 and i2 are variables from the (assignment left: (identifier))
    ;; However, we don't know if i3 or i4 are variables or functions because a function
    ;; can be called with no arguments, e.g. to call i3 function use i3 or i3(). i4 could
    ;; be a variable indexed by i1 or a function.
@@ -732,7 +732,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
      (persistent_operator (identifier) @font-lock-variable-name-face)
      (for_statement (iterator (identifier) @font-lock-variable-name-face)))
 
-   ;; F-Rule: command dual arugments
+   ;; F-Rule: command dual arguments
    :language 'matlab
    :feature 'command-arg
    '((command_argument) @matlab-ts-mode-command-arg-face)
@@ -987,8 +987,8 @@ node."
 
 ;; `matlab-ts-mode--function-indent-level'
 ;;
-;; It is recommended that all function statemements have terminating end statements.  In some cases
-;; for compatibilty MATLAB doesn't require a function end statement.  When functions do not have an
+;; It is recommended that all function statements have terminating end statements.  In some cases
+;; for compatibility MATLAB doesn't require a function end statement.  When functions do not have an
 ;; end, we don't indent the body of the function per older MATLAB coding standard.  Example:
 ;;
 ;;     function a = fcn1    |    function a = fcn2
@@ -1082,7 +1082,7 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
 (defun matlab-ts-mode--row-indent-level (node parent _bol &rest _)
   "Indent level for a NODE in PARENT cell or matrix."
 
-  ;; first-entry is the 2nd element, i.e. child 1. Child 0 is is the "[" or "{".
+  ;; first-entry is the 2nd element, i.e. child 1. Child 0 is the "[" or "{".
   ;; first-entry could be "line_continuation" or "row"
   ;; "row" can also be empty, e.g. start-point == end-point as in
   ;;       C = [
@@ -1117,7 +1117,7 @@ are indenting.  If so, set
   Example:  switch fcn1(a)
       TAB>    ^
 
-Similar for for case and otherwise statements."
+Similar for case and otherwise statements."
   (when (not node)
     (save-excursion
       (goto-char bol)
@@ -1243,7 +1243,7 @@ Example: in this case NODE will be nil and PARENT is a newline.  Example:
    % -*- matlab-ts -*-
    classdef foo
        ^                     <== TAB or RET on prior line goes here.
-Heirarchy:
+Hierarchy:
   #<treesit-node source_file in 1-36>
     #<treesit-node ERROR in 21-36>
       #<treesit-node \"
@@ -1267,7 +1267,7 @@ Prev-siblings:
                                eos)))
           (node-to-check (or node parent))
           in-error ;; is node, parent, or one of it's ancestors an ERROR?
-          prev-sibling-has-error ;; is a previous sibliling an ERROR?
+          prev-sibling-has-error ;; is a previous sibling an ERROR?
           prev-sibling-to-check
           ancestor-to-check)
 
@@ -1369,7 +1369,7 @@ Prev-siblings:
      ;; I-Rule: within a code block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
 
-     ;; I-Rule: last line of code block coment "%{ ... %}"?
+     ;; I-Rule: last line of code block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
 
      ;; I-Rule: switch case and otherwise statements
@@ -1386,7 +1386,7 @@ Prev-siblings:
      ((node-is ,(rx bos (or "elseif_clause" "else_clause" "catch_clause" "end") eos)) parent 0)
 
 
-     ;; I-Rule: first line of code witin a switch case or otherwise statement, node is block
+     ;; I-Rule: first line of code within a switch case or otherwise statement, node is block
      ((parent-is ,(rx bos (or "switch_statement" "case_clause" "otherwise_clause") eos))
       parent ,matlab-ts-mode--switch-indent-level)
 
@@ -1559,7 +1559,7 @@ Prev-siblings:
      ;;         arguments
      ;;             a (1,1) ... comment
      ;;    TAB>        double
-     ;;         endo
+     ;;         end
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation.m
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation_row.m
      (,#'matlab-ts-mode--i-cont-matcher parent ,#'matlab-ts-mode--i-cont-offset)
@@ -1613,11 +1613,11 @@ Prev-siblings:
   "Move to the beginning of a statement.
 If optional GOTO-END is \\='end, move to end of the current statement.
 
-We define a command statement to be a complete syntatic unit that has
-a start and end.  For example, if point is in an assigment statement
+We define a command statement to be a complete syntactic unit that has
+a start and end.  For example, if point is in an assignment statement
     var = ...
       1;
-move point to the \"v\" when GOTO-END is nil, otherwise move to the the
+move point to the \"v\" when GOTO-END is nil, otherwise move to the
 point after \";\".  Likewise for other command statements.
 
 The point is moved to the start or end of the innermost statement that
@@ -1626,7 +1626,7 @@ statement.  This can occur when there are syntax errors or the buffer
 has no content.
 
 Optional STATEMENT-TYPE-RE is a regular expression matching the type of
-statement to look for.  For example, to move to the begining of the
+statement to look for.  For example, to move to the beginning of the
 current assignment statement, use
 
   (matlab-ts-mode-beginning-of-statement nil
@@ -1703,7 +1703,7 @@ not specified statement in `matlab-ts-mode--statements-ht' are used."
 
 (defun matlab-ts-mode-beginning-of-command ()
   "Move to the beginning of the command at point.
-Commands are either assignement or function_call statements that can be
+Commands are either assignment or function_call statements that can be
 evaluated at the matlab prompt.  Movement occurs only if the point is in
 an assignment or function call.  Note array indexing is considered a
 function call."
@@ -1713,7 +1713,7 @@ function call."
 
 (defun matlab-ts-mode-end-of-command ()
   "Move to the end of the command at point.
-Commands are either assignement or function_call statements that can be
+Commands are either assignment or function_call statements that can be
 evaluated at the matlab prompt.  Movement occurs only if the point is in
 an assignment or function call.  Note array indexing is considered a
 function call."
@@ -1939,7 +1939,7 @@ If optional NO-PROMPT is t, fix the name if needed without prompting."
                              (insert base-name-no-ext))))))
                    (cl-return))
 
-                  ;; Case: anthing except a comment
+                  ;; Case: anything except a comment
                   ((not (string= "comment" child-type))
                    (cl-return))))))))
 
@@ -2074,7 +2074,7 @@ THERE-END MISMATCH) or nil."
                 ;; See: tests/test-matlab-ts-mode-show-paren-files/show_paren_classdef_missing_end.m
                 (setq mismatch t))))
 
-           ;; Case: on a "end" node or an inner block that should be matcheed with parent
+           ;; Case: on a "end" node or an inner block that should be matched with parent
            ((and (string-match-p (rx bos (or "end" "elseif" "else" "case" "otherwise" "catch") eos)
                                  node-type)
                  ;; and we have a matching parent node
@@ -2442,8 +2442,8 @@ Click FlyC in the mode-line for more options."]
       :help "Comment Do What I Mean
 If region is active comment or uncomment it,
 Else insert comment if line is empty,
-Else call comemnt-indent.
-See `comment-dwim' for more capabilties."]
+Else call comment-indent.
+See `comment-dwim' for more capabilities."]
      ["Comment/uncomment current line " comment-line
       :help "Comment or uncomment current line and leave point after it."]
      ["Set comment column to point" comment-set-column
@@ -2567,7 +2567,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; give each file it's own parameter history
     (setq-local matlab-shell-save-and-go-history '("()"))
 
-    ;; Activate MATLAB script ";; heading" matlab-sectinos-minor-mode if needed
+    ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
     ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
@@ -2596,7 +2596,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      classdef mfile_type_classdef
     ;;          properties
     ;;              p1
-    ;;              ^              <== RET on previsous line should go here
+    ;;              ^              <== RET on previous line should go here
     ;;          end
     ;;      end
     ;;
@@ -2628,7 +2628,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;
     ;; TODO matlab-shell-mode: update help to have matlab-ts-mode or matlab-mode
     ;;
-    ;; TODO font-lock highlight variable refences to match variable assignements, e.g.
+    ;; TODO font-lock highlight variable references to match variable assignments, e.g.
     ;;      var = [1:10];
     ;;      disp(var)               % var usage has same face as var.
     ;;
@@ -2651,3 +2651,11 @@ is t, add the following to an Init File (e.g. `user-init-file' or
 
 (provide 'matlab-ts-mode)
 ;;; matlab-ts-mode.el ends here
+
+;; LocalWords:  SPDX gmail dylib libtree treesit builtins defface defcustom flycheck MLint MELPA
+;; LocalWords:  defun progn setq MEC propertize varname eobp mcm defmacro sexp defconst bos eos prev
+;; LocalWords:  classdef's Fontify fontified fontify gethash pragma's multioutput pred dir's bol cdr
+;; LocalWords:  NPS BUF myfcn pcase xr repeat:nil docstring numberp imenu alist nondirectory mapc
+;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
+;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
+;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode
