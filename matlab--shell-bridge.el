@@ -1,7 +1,7 @@
 ;;; matlab--shell-bridge.el --- -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; Utilities to brdige between the older matlab-mode and matlab-ts-mode
+;; Utilities to bridge between the older matlab-mode and matlab-ts-mode
 ;;
 
 ;;; Code:
@@ -86,3 +86,4 @@ to strings and comments."
 (provide 'matlab--shell-bridge)
 ;;; matlab--shell-bridge.el ends here
 
+;; LocalWords:  defun alist rassoc pcase
