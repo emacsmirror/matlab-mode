@@ -1,3 +1,0 @@
-Remove when these are addressed
-  https://github.com/acristoffers/tree-sitter-matlab/issues/50
-  https://github.com/acristoffers/tree-sitter-matlab/issues/36

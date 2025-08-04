@@ -1,32 +1,32 @@
 #+startup: showall
 
-* Executing commands from indent_xr_i_cont_incomplete2.m:2:2:
+* Executing commands from indent_xr_i_cont_incomplete2.m:5:2:
 
   (t-utils-xr "C-n" "C-e" "C-m" (insert "result = 1 + myfcn(a, b) + ...") "C-m" (insert "b);") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  205
-  Moved to point:  258
-  : 3:52: function result = indent_xr_i_cont_incomplete2(a, b)
+  Start point   :  277
+  Moved to point:  330
+  : 6:52: function result = indent_xr_i_cont_incomplete2(a, b)
   :                                                           ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  258
+  Start point   :  330
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  258
-  Moved to point:  263
-  : 4:4:     
+  Start point   :  330
+  Moved to point:  335
+  : 7:4:     
   :          ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,4 +1,5 @@
- % -*- matlab-ts -*-
+@@ -4,4 +4,5 @@
+ %
  % (t-utils-xr "C-n" "C-e" "C-m" (insert "result = 1 + myfcn(a, b) + ...") "C-m" (insert "b);") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function result = indent_xr_i_cont_incomplete2(a, b)
 +    
@@ -34,16 +34,16 @@
   #+end_src diff
 
 - Invoking      : (insert "result = 1 + myfcn(a, b) + ...")
-  Start point   :  263
-  Moved to point:  293
-  : 4:34:     result = 1 + myfcn(a, b) + ...
+  Start point   :  335
+  Moved to point:  365
+  : 7:34:     result = 1 + myfcn(a, b) + ...
   :                                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,5 +1,5 @@
- % -*- matlab-ts -*-
+@@ -4,5 +4,5 @@
+ %
  % (t-utils-xr "C-n" "C-e" "C-m" (insert "result = 1 + myfcn(a, b) + ...") "C-m" (insert "b);") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function result = indent_xr_i_cont_incomplete2(a, b)
 -    
@@ -52,15 +52,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  293
-  Moved to point:  302
-  : 5:8:         
+  Start point   :  365
+  Moved to point:  374
+  : 8:8:         
   :              ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -2,4 +2,5 @@
+@@ -5,4 +5,5 @@
  % (t-utils-xr "C-n" "C-e" "C-m" (insert "result = 1 + myfcn(a, b) + ...") "C-m" (insert "b);") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function result = indent_xr_i_cont_incomplete2(a, b)
      result = 1 + myfcn(a, b) + ...
@@ -69,15 +69,15 @@
   #+end_src diff
 
 - Invoking      : (insert "b);")
-  Start point   :  302
-  Moved to point:  305
-  : 5:11:         b);
+  Start point   :  374
+  Moved to point:  377
+  : 8:11:         b);
   :                  ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -2,5 +2,5 @@
+@@ -5,5 +5,5 @@
  % (t-utils-xr "C-n" "C-e" "C-m" (insert "result = 1 + myfcn(a, b) + ...") "C-m" (insert "b);") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function result = indent_xr_i_cont_incomplete2(a, b)
      result = 1 + myfcn(a, b) + ...
@@ -87,14 +87,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  305
-  Moved to point:  206
-  : 3:0: function result = indent_xr_i_cont_incomplete2(a, b)
+  Start point   :  377
+  Moved to point:  278
+  : 6:0: function result = indent_xr_i_cont_incomplete2(a, b)
   :      ^
   No buffer modifications
 
 - Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
-  Start point   :  206
+  Start point   :  278
   No point movement
   standard-output:
   #+begin_example
