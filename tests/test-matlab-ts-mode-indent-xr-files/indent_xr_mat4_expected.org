@@ -1,41 +1,41 @@
 #+startup: showall
 
-* Executing commands from indent_xr_mat4.m:2:2:
+* Executing commands from indent_xr_mat4.m:5:2:
 
   (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[1, 2];\n") "C-i" (insert "[3, 4];") "C-m" (insert "];") "C-m")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  131
-  Moved to point:   21
-  : 2:0: % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[1, 2];\n") "C-i" (insert "[3, 4];") "C-m" (insert "];") "C-m")
+  Start point   :  202
+  Moved to point:   92
+  : 5:0: % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[1, 2];\n") "C-i" (insert "[3, 4];") "C-m" (insert "];") "C-m")
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :   21
-  Moved to point:  132
-  : 3:0: mat4 = [
+  Start point   :   92
+  Moved to point:  203
+  : 6:0: mat4 = [
   :      ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  132
-  Moved to point:  140
-  : 3:8: mat4 = [
+  Start point   :  203
+  Moved to point:  211
+  : 6:8: mat4 = [
   :              ^
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  140
-  Moved to point:  150
-  : 4:9:          
+  Start point   :  211
+  Moved to point:  221
+  : 7:9:          
   :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,6 +1,7 @@
- % -*- matlab-ts -*-
+@@ -4,6 +4,7 @@
+ %
  % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[1, 2];\n") "C-i" (insert "[3, 4];") "C-m" (insert "];") "C-m")
  mat4 = [
 +         
@@ -46,16 +46,16 @@
 
 - Invoking      : (insert "[1, 2];
 ")
-  Start point   :  150
-  Moved to point:  158
-  : 5:0: 
+  Start point   :  221
+  Moved to point:  229
+  : 8:0: 
   :      ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,7 +1,8 @@
- % -*- matlab-ts -*-
+@@ -4,7 +4,8 @@
+ %
  % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[1, 2];\n") "C-i" (insert "[3, 4];") "C-m" (insert "];") "C-m")
  mat4 = [
 -         
@@ -67,15 +67,15 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  158
-  Moved to point:  167
-  : 5:9:          
+  Start point   :  229
+  Moved to point:  238
+  : 8:9:          
   :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -2,7 +2,7 @@
+@@ -5,7 +5,7 @@
  % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[1, 2];\n") "C-i" (insert "[3, 4];") "C-m" (insert "];") "C-m")
  mat4 = [
           [1, 2];
@@ -87,15 +87,15 @@
   #+end_src diff
 
 - Invoking      : (insert "[3, 4];")
-  Start point   :  167
-  Moved to point:  174
-  : 5:16:          [3, 4];
+  Start point   :  238
+  Moved to point:  245
+  : 8:16:          [3, 4];
   :                       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -2,7 +2,7 @@
+@@ -5,7 +5,7 @@
  % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "[1, 2];\n") "C-i" (insert "[3, 4];") "C-m" (insert "];") "C-m")
  mat4 = [
           [1, 2];
@@ -107,15 +107,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  174
-  Moved to point:  184
-  : 6:9:          
+  Start point   :  245
+  Moved to point:  255
+  : 9:9:          
   :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -3,6 +3,7 @@
+@@ -6,6 +6,7 @@
  mat4 = [
           [1, 2];
           [3, 4];
@@ -126,15 +126,15 @@
   #+end_src diff
 
 - Invoking      : (insert "];")
-  Start point   :  184
-  Moved to point:  186
-  : 6:11:          ];
+  Start point   :  255
+  Moved to point:  257
+  : 9:11:          ];
   :                  ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -3,7 +3,7 @@
+@@ -6,7 +6,7 @@
  mat4 = [
           [1, 2];
           [3, 4];
@@ -146,15 +146,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  186
-  Moved to point:  185
-  : 7:0: 
-  :      ^
+  Start point   :  257
+  Moved to point:  256
+  : 10:0: 
+  :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -3,7 +3,8 @@
+@@ -6,7 +6,8 @@
  mat4 = [
           [1, 2];
           [3, 4];
