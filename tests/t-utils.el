@@ -955,12 +955,15 @@ To debug a specific font-lock test file
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
 
-(defun t-utils--test-indent-typing (lang-file lang-file-mode
-                                              expected expected-file
-                                              &optional line-manipulator)
-  "Exercise indent by simulating the creation of LANG-FILE via typing.
-This compares the simulation of typing LANG-FILE against the
-EXPECTED content in EXPECTED-FILE.
+(defun t-utils--test-indent-typing-newline (lang-file lang-file-mode
+                                                      expected expected-file
+                                                      &optional line-manipulator)
+  "Inserting unindented LANG-FILE indenting and adding newlines.
+In a temporary buffer
+  - insert all non-empty non-blank lines unindented
+  - TAB on each line
+  - RET to add blank lines
+Validate resutl matches EXPECTED from EXPECTED-FILE.
 
 LANG-FILE-MODE is the mode to use for LANG-FILE.  See
 See `t-utils-test-indent' for LINE-MANIPULATOR."
@@ -1048,7 +1051,7 @@ Two methods are used to indent each file in LANG-FILES,
 
  2. Indent via typing simulation.  If lang-file has no error nodes in the
     parse tree, indent is simulated by \"typing lang-file\" to exercise
-    TAB and RET, see `t-utils--test-indent-typing'.  In tree-sitter
+    TAB and RET, see `t-utils--test-indent-typing-newline'.  In tree-sitter
     modes, TAB and RET need to be handled and this verifies they are
     handled.  Error nodes are identified by using
     ERROR-NODES-REGEXP which defaults to (rx bos \"ERROR\" eos).
@@ -1155,9 +1158,10 @@ To debug a specific indent test file
         (when (not error-node)
           (message "START: %s <indent-via-typing> %s" test-name lang-file)
           (let ((start-time (current-time))
-                (typing-error-msg (t-utils--test-indent-typing lang-file lang-file-major-mode
-                                                               expected expected-file
-                                                               line-manipulator)))
+                (typing-error-msg (t-utils--test-indent-typing-newline
+                                   lang-file lang-file-major-mode
+                                   expected expected-file
+                                   line-manipulator)))
             (message "%s: %s <indent-via-typing> %s %s" test-name lang-file
                      (if typing-error-msg "FAIL" "PASS")
                      (t-utils--took start-time))
