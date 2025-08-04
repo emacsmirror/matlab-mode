@@ -2631,12 +2631,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
     ;; TODO indent
-    ;;      classdef mfile_type_classdef
-    ;;          properties
-    ;;              p1
-    ;;              ^              <== RET on previous line should go here
-    ;;          end
-    ;;      end
+    ;;      improve t-utils-test-indent to have two typing modes:
+    ;;          - typing newlines
+    ;;          - typing line-by-line
     ;;
     ;; TODO font-lock
     ;;      classdef fooenum
