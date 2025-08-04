@@ -179,6 +179,18 @@
   (let ((delete-trailing-lines t))
     (delete-trailing-whitespace (point-min) (point-max))))
 
+(defun t-utils--skip-message (test-file skip-file &optional test-description)
+  "Display message, skipping TEST-FILE because of SKIP-FILE.
+Optional TEST-DESCRIPTION defaults to \"this test input\"."
+  (let ((skip-file-contents (with-temp-buffer
+                              (insert-file-contents-literally skip-file)
+                              (string-trim-right
+                               (replace-regexp-in-string "^" "    "
+                                                         (buffer-string))))))
+    (message "%s:1: warning: skipping %s because %s exists\n%s"
+             test-file (or test-description "this test input") skip-file skip-file-contents)))
+
+
 (defun t-utils-get-files (test-name base-regexp &optional skip-regexp file-to-use)
   "Return list of test input files, /abs/path/to/TEST-NAME-files/FILE.LANG.
 The basename of each returned file matches BASE-REGEXP and not optional
@@ -220,13 +232,7 @@ skipping all *_expected.lang files."
       (dolist (file files)
         (let ((skip-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.txt" file)))
           (if (file-exists-p skip-file)
-              (let ((skip-file-contents (with-temp-buffer
-                                          (insert-file-contents-literally skip-file)
-                                          (string-trim-right
-                                           (replace-regexp-in-string "^" "    "
-                                                                     (buffer-string))))))
-                (message "%s:1: warning: skipping this test input because %s exists\n%s"
-                         file skip-file skip-file-contents))
+              (t-utils--skip-message file skip-file)
             ;; Not skipped. Note we ignore hidden link files, e.g. .#foo.lang
             (when (not (string-match-p "\\`\\.#" file))
               (push file files-not-skipped)))))
@@ -1093,7 +1099,7 @@ Two methods are used to indent each file in LANG-FILES,
     the temporary buffer in context after the `indent-region'.
 
  2. Indent the unindented contents of lang-file when there are no
-    error nodes.  In a temporary buffer
+    error nodes in lang-file.  In a temporary buffer
       - Insert all non-empty non-blank lines unindented
       - TAB on each line
       - RET to add blank lines
@@ -1101,7 +1107,7 @@ Two methods are used to indent each file in LANG-FILES,
     verifies they are handled.  Error nodes are identified by using
     ERROR-NODES-REGEXP which defaults to (rx bos \"ERROR\" eos).
 
-    If the test fails, a file named NAME_indented_unindented.LANG~ is
+    If the test fails, a file named NAME_indent_unindented.LANG~ is
     created.
 
     The typing buffer is initialized with the string-trim'd version of
@@ -1116,7 +1122,25 @@ Two methods are used to indent each file in LANG-FILES,
     `indent-for-tab-command' and blank lines are inserted by calling
     `newline'.`
 
- 3. xxx line-by-line
+ 3. Indent the contents of lang-file line-by-line when there are no
+    error nodes in lang-file.  In a temporary buffer
+      - Insert the string-trim'd line of lang-file
+      - RET to indent via `newline'
+      - Repeat for each line of lang-file.
+    Validate result matches the EXPECTED.
+
+    If the test fails, a file named NAME_typing_line_by_line.LANG~ is
+    created.
+
+    It can be difficult to make the typing part of the test for
+    lang-file pass due to ERROR nodes in the tree-sitter parse tree.
+    Therefore, if you want to disable this part of the test for lang-file
+    with basename NAME.LANG create basename NAME.typing.skip.txt.
+    For example, if lang-file has name
+      .../tests/test-LANGUAGE-ts-mode-indent-files/indent_fcn.lang
+    create the following to skip it and put a comment in the .typing.skip.txt
+    file as to why it's skipped
+      .../tests/test-LANGUAGE-ts-mode-indent-files/indent_fcn.skip.typing.txt
 
 Example test setup:
 
@@ -1215,17 +1239,21 @@ To debug a specific indent test file
             (when unindented-error-msg
               (push unindented-error-msg error-msgs)))
 
-          ;; (message "START: %s <indent-via-typing-line-by-line> %s" test-name lang-file)
-          ;; (let ((start-time (current-time))
-          ;;       (typing-error-msg (t-utils--test-indent-typing-line-by-line
-          ;;                          lang-file lang-file-major-mode
-          ;;                          expected expected-file)))
-          ;;   (message "%s: %s <indent-via-typing-line-by-line> %s %s" test-name lang-file
-          ;;            (if typing-error-msg "FAIL" "PASS")
-          ;;            (t-utils--took start-time))
-          ;;   (when typing-error-msg
-          ;;     (push typing-error-msg error-msgs)))
-
+          (let ((skip-typing-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.typing.txt"
+                                                            lang-file)))
+            (if (file-exists-p skip-typing-file)
+                (t-utils--skip-message lang-file skip-typing-file
+                                       "typing line-by-line this test input")
+              (message "START: %s <indent-via-typing-line-by-line> %s" test-name lang-file)
+              (let ((start-time (current-time))
+                    (typing-error-msg (t-utils--test-indent-typing-line-by-line
+                                       lang-file lang-file-major-mode
+                                       expected expected-file)))
+                (message "%s: %s <indent-via-typing-line-by-line> %s %s" test-name lang-file
+                         (if typing-error-msg "FAIL" "PASS")
+                         (t-utils--took start-time))
+                (when typing-error-msg
+                  (push typing-error-msg error-msgs)))))
           )
         ))
     ;; Validate t-utils-test-indent result

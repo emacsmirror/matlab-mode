@@ -105,28 +105,28 @@
 
 - Invoking      : "C-m" = newline
   Start point   :  171
-  Moved to point:  172
-  : 6:0: 
-  :      ^
+  Moved to point:  174
+  : 6:2:   
+  :        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -5,6 +5,7 @@
+@@ -3,6 +3,7 @@
+ switch fcn1(a)
+   case 1
      disp('1');
++  
  
  
-+
    
- 
- 
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  172
-  Moved to point:  175
-  : 6:3: end
-  :         ^
+  Start point   :  174
+  Moved to point:  177
+  : 6:5:   end
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -135,15 +135,15 @@
  switch fcn1(a)
    case 1
      disp('1');
--
-+end
+-  
++  end
  
  
    
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  175
+  Start point   :  177
   Moved to point:  176
   : 7:0: 
   :      ^
@@ -151,12 +151,14 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -6,6 +6,7 @@
- end
- 
- 
+@@ -3,7 +3,8 @@
+ switch fcn1(a)
+   case 1
+     disp('1');
+-  end
++end
 +
+ 
+ 
    
- 
- 
   #+end_src diff

@@ -1267,7 +1267,13 @@ Prev-siblings:
                  (goto-char bol)
                  (beginning-of-line)
                  (looking-at "^[ \t]*$")))
-      ;; parent should be a newline
+      ;; Consider the one-liner:
+      ;;    classdef indent_xr_classdef1
+      ;;        ^                                 TAB should go here
+      ;;  on entry node is nil and parent is ERROR, so backup to the newline:
+      ;;   (source_file
+      ;;    (ERROR classdef (identifier) \n))
+      ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_classdef1.m
       (setq parent (treesit-node-at (point))))
 
     ;; Handle continuation where it's not part of the error node. Example:
@@ -1299,8 +1305,10 @@ Prev-siblings:
                                          "properties"
                                          "property"
                                          "methods"
+                                         "("
                                          "["
-                                         "{")
+                                         "{"
+                                         "row")
                                  eos)))
             (node-to-check (or last-child-of-error-node node parent))
             in-error ;; is node, parent, or one of it's ancestors an ERROR?
@@ -1329,7 +1337,9 @@ Prev-siblings:
 
         ;; prev-sibling-to-check
 
-        (let ((prev-sibling (treesit-node-prev-sibling node-to-check)))
+        (let ((prev-sibling (if last-child-of-error-node
+                                last-child-of-error-node ;; is our "prev-sibling"
+                              (treesit-node-prev-sibling node-to-check))))
           (while (and prev-sibling
                       (not prev-sibling-to-check)
                       (not prev-sibling-has-error))
@@ -1338,8 +1348,13 @@ Prev-siblings:
                ((string= prev-sibling-type "ERROR")
                 (setq prev-sibling-has-error t))
 
-               ((and (not prev-sibling-to-check)
-                     (string-match-p anchors-rx prev-sibling-type))
+               ((and (string-match-p anchors-rx prev-sibling-type)
+                     (or (not (string= prev-sibling-type "("))
+                         ;; Assueme nodes: identifer "(" is a function call and we don't want
+                         ;; to match that.
+                         (and (not (equal (treesit-node-type
+                                           (treesit-node-prev-sibling prev-sibling))
+                                          "identifier")))))
                 (setq prev-sibling-to-check prev-sibling)))
 
               (setq prev-sibling (if prev-sibling-has-error
@@ -1356,14 +1371,22 @@ Prev-siblings:
             (let ((indent-level (if (and node (string= (treesit-node-type node) "end"))
                                     0
                                   (pcase (treesit-node-type anchor-node)
-                                    ("property" (if last-child-of-error-node
-                                                    matlab-ts-mode--indent-level
-                                                  0))
-                                    ((rx (seq bos (or "[" "{" eos))) matlab-ts-mode--array-indent-level)
-                                    ("function_definition" matlab-ts-mode--function-indent-level)
-                                    (_ (if last-child-of-error-node
-                                           ;; Part of a line continuation so 4 for that plus 4 for parent
-                                           (* 2 matlab-ts-mode--indent-level)
+                                    ("property"
+                                     (if last-child-of-error-node
+                                         matlab-ts-mode--indent-level
+                                       0))
+                                    ("("
+                                     1)
+                                    ((rx (seq bos (or "[" "{" eos)))
+                                     matlab-ts-mode--array-indent-level)
+                                    ("function_definition"
+                                     matlab-ts-mode--function-indent-level)
+                                    ("row"
+                                     0)
+                                    (_
+                                     (if last-child-of-error-node
+                                         ;; Part of a continuation, so 4 for that plus 4 for parent
+                                         (* 2 matlab-ts-mode--indent-level)
                                          matlab-ts-mode--indent-level))))))
               (setq matlab-ts-mode--i-next-line-pair
                     (cons (treesit-node-start anchor-node) indent-level))
@@ -1390,14 +1413,6 @@ Prev-siblings:
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
-     ;; I-Rule: cell/matrix row matcher when in an error node
-     ;;         mat0 = [1, 2
-     ;;                 ^            <-- TAB or RET on prior line goes here
-     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_mat*.m
-     (,#'matlab-ts-mode--i-error-row-matcher
-      ,#'matlab-ts-mode--i-error-row-anchor
-      ,#'matlab-ts-mode--i-error-row-offset)
-
      ;; I-Rule: RET on an incomplete statement. Example:
      ;;         classdef foo
      ;;             ^                     <== TAB or RET on prior line goes here.
@@ -1406,7 +1421,11 @@ Prev-siblings:
       ,#'matlab-ts-mode--i-next-line-offset)
 
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
-     ((parent-is ,(rx bos "source_file" eos)) column-0 0)
+     ((lambda (node parent _bol &rest _)
+        (and node
+             (not (string= (treesit-node-type node) "line_continuation"))
+             (equal (treesit-node-type parent) "source_file")))
+      column-0 0)
 
      ;; I-Rule: within a function/classdef doc block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-doc-block-comment-matcher parent 2)
@@ -1461,7 +1480,7 @@ Prev-siblings:
      ;; I-Rule: property continuation
      ((n-p-gp nil ,(rx bos "default_value" eos) ,(rx bos "property" eos))
       grand-parent ,matlab-ts-mode--indent-level)
-     
+
      ;; I-Rule: property after a property
      ;;         properties
      ;;             p1
@@ -1602,6 +1621,14 @@ Prev-siblings:
      ;;         end
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_comment_after_prop.m
      ((node-is "comment") parent 0)
+
+     ;; I-Rule: cell/matrix row matcher when in an error node
+     ;;         mat0 = [1, 2
+     ;;                 ^            <-- TAB or RET on prior line goes here
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_mat*.m
+     (,#'matlab-ts-mode--i-error-row-matcher
+      ,#'matlab-ts-mode--i-error-row-anchor
+      ,#'matlab-ts-mode--i-error-row-offset)
 
      ;; I-Rule: error-switch-matcher
      ;;         switch fcn1(a)
