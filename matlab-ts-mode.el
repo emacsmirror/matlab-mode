@@ -2635,15 +2635,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;          - typing newlines
     ;;          - typing line-by-line
     ;;
-    ;; TODO font-lock
-    ;;      classdef fooenum
-    ;;          enumeration
-    ;;
-    ;;              red % parse error when the prior line is a blank line containing spaces or tabs
-    ;;          end
-    ;;      end
-    ;;      See: https://github.com/acristoffers/tree-sitter-matlab/issues/48
-    ;;
     ;; TODO font-lock when errors
     ;;      can we add light error indicator somewhere, e.g. put an underline marker on the error
     ;;      region?
