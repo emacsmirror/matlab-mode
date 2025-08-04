@@ -1,0 +1,243 @@
+#+startup: showall
+
+* Executing commands from indent_xr_classdef1.m:7:2:
+
+  (t-utils-xr
+  (re-search-forward "^classdef") "C-e" "C-m" "C-i" "C-i"
+  (insert "methods") "C-m"
+  (insert "function out=foo") "C-m"
+  (insert "end") "C-m"
+  (insert "end") "C-m"
+  (insert "end") "C-m"
+  (re-search-backward "^classdef")
+  (print (buffer-substring-no-properties (point) (point-max)))
+  )
+
+- Invoking      : (re-search-forward "^classdef")
+  Start point   :  458
+  Moved to point:  470
+  : 18:8: classdef indent_xr_classdef1
+  :               ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  470
+  Moved to point:  490
+  : 18:28: classdef indent_xr_classdef1
+  :                                    ^
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  490
+  Moved to point:  495
+  : 19:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -16,3 +16,4 @@
+   )
+ %}
+ classdef indent_xr_classdef1
++    
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  495
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  495
+  No point movement
+  No buffer modifications
+
+- Invoking      : (insert "methods")
+  Start point   :  495
+  Moved to point:  502
+  : 19:11:     methods
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -16,4 +16,4 @@
+   )
+ %}
+ classdef indent_xr_classdef1
+-    
++    methods
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  502
+  Moved to point:  511
+  : 20:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,3 +17,4 @@
+ %}
+ classdef indent_xr_classdef1
+     methods
++        
+  #+end_src diff
+
+- Invoking      : (insert "function out=foo")
+  Start point   :  511
+  Moved to point:  527
+  : 20:24:         function out=foo
+  :                                ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,4 +17,4 @@
+ %}
+ classdef indent_xr_classdef1
+     methods
+-        
++        function out=foo
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  527
+  Moved to point:  536
+  : 21:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -18,3 +18,4 @@
+ classdef indent_xr_classdef1
+     methods
+         function out=foo
++        
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   :  536
+  Moved to point:  539
+  : 21:11:         end
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -18,4 +18,4 @@
+ classdef indent_xr_classdef1
+     methods
+         function out=foo
+-        
++        end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  539
+  Moved to point:  540
+  : 22:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -19,3 +19,4 @@
+     methods
+         function out=foo
+         end
++
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   :  540
+  Moved to point:  543
+  : 22:3: end
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -19,4 +19,4 @@
+     methods
+         function out=foo
+         end
+-
++end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  543
+  Moved to point:  548
+  : 23:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -19,4 +19,5 @@
+     methods
+         function out=foo
+         end
+-end
++    end
++
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   :  548
+  Moved to point:  551
+  : 23:3: end
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -20,4 +20,4 @@
+         function out=foo
+         end
+     end
+-
++end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  551
+  Moved to point:  552
+  : 24:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -21,3 +21,4 @@
+         end
+     end
+ end
++
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^classdef")
+  Start point   :  552
+  Moved to point:  462
+  : 18:0: classdef indent_xr_classdef1
+  :       ^
+  No buffer modifications
+
+- Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
+  Start point   :  462
+  No point movement
+  standard-output:
+  #+begin_example
+classdef indent_xr_classdef1
+    methods
+        function out=foo
+        end
+    end
+end
+
+  #+end_example
+  No buffer modifications

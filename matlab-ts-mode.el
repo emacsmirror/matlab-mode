@@ -1237,10 +1237,15 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
 
 (defvar matlab-ts-mode--i-next-line-pair)
 
-(cl-defun matlab-ts-mode--i-next-line-matcher (node parent _bol &rest _)
+(cl-defun matlab-ts-mode--i-next-line-matcher (node parent bol &rest _)
   "Matcher for indent on a newline being inserted when in presence of errors.
 If so, set `matlab-ts-mode--i-next-line-pair'.
-NODE may or may not be nil.  PARENT will be a newline, so
+
+NODE may or may not be nil.  When NODE is nil in this case and BOL,
+beginning-of-line point, is where we are indenting.  If NODE is non-nil,
+we check if it is an ERROR node.  Another case is when PARENT is be a newline
+due to a RET on the prior line.
+
 Example: in this case NODE will be nil and PARENT is a newline.  Example:
    % -*- matlab-ts -*-
    classdef foo
@@ -1254,6 +1259,14 @@ Prev-siblings:
   > #<treesit-node \"classdef\" in 21-29>
     > #<treesit-node identifier in 30-33>
       > #<treesit-node \""
+
+  (when (and (not node)
+             (save-excursion
+               (goto-char bol)
+               (beginning-of-line)
+               (looking-at "^[ \t]*$")))
+    ;; parent should be a newline
+    (setq parent (treesit-node-at (point))))
 
   (when (or (and node
                  (string= (treesit-node-type node) "ERROR"))
@@ -2576,10 +2589,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      think it was missing a few toolboxes.
     ;;
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
-    ;;
-    ;; TODO indent
-    ;;      classdef foo
-    ;;          ^                  <== RET on previous line should go here (or TAB to here)
     ;;
     ;; TODO indent
     ;;      classdef mfile_type_classdef
