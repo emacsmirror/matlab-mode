@@ -955,12 +955,12 @@ To debug a specific font-lock test file
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
 
-(defun t-utils--test-indent-typing-newline (lang-file lang-file-mode
-                                                      expected expected-file
-                                                      &optional line-manipulator)
-  "Inserting unindented LANG-FILE indenting and adding newlines.
+(defun t-utils--test-indent-unindented (lang-file lang-file-mode
+                                                  expected expected-file
+                                                  &optional line-manipulator)
+  "Indent the unindented contents of LANG-FILE.
 In a temporary buffer
-  - insert all non-empty non-blank lines unindented
+  - Insert all non-empty non-blank lines unindented
   - TAB on each line
   - RET to add blank lines
 Validate resutl matches EXPECTED from EXPECTED-FILE.
@@ -968,13 +968,13 @@ Validate resutl matches EXPECTED from EXPECTED-FILE.
 LANG-FILE-MODE is the mode to use for LANG-FILE.  See
 See `t-utils-test-indent' for LINE-MANIPULATOR."
 
-  (let* ((typing-lang-file-name (concat "typing__" (file-name-nondirectory lang-file)))
-         (contents (with-temp-buffer
-                     (insert-file-contents-literally lang-file)
-                     (buffer-substring (point-min) (point-max))))
-         (lines (split-string (string-trim contents) "\n")))
-    (with-current-buffer (get-buffer-create typing-lang-file-name)
+  (let* ((lang-file-contents (with-temp-buffer
+                               (insert-file-contents-literally lang-file)
+                               (buffer-substring (point-min) (point-max))))
+         (lines (split-string (string-trim lang-file-contents) "\n")))
+    (with-temp-buffer
       (erase-buffer)
+      (set-buffer-file-coding-system 'utf-8-unix)
       (funcall lang-file-mode)
 
       ;; Insert the non-empty lines into typing-lang-file-name buffer
@@ -1016,12 +1016,13 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
         (when (not (string= typing-got expected))
           (let ((coding-system-for-write 'raw-text-unix)
                 (typing-got-file (replace-regexp-in-string "\\.\\([^.]+\\)\\'"
-                                                           "_typing.\\1~"
+                                                           "_indent_unindented.\\1~"
                                                            lang-file)))
             (write-region typing-got nil typing-got-file)
             (setq error-msg
                   (list
-                   (format "Typing %s line-by-line does not match %s" lang-file expected-file)
+                   (format "Indenting the unindented contents of %s does not match %s"
+                           lang-file expected-file)
                    (format "Got: %s" typing-got-file)))))
         ;; result is nil or an error message list of strings
         error-msg))))
@@ -1049,15 +1050,17 @@ Two methods are used to indent each file in LANG-FILES,
     If optional INDENT-CHECKER function is provided, that is called with
     the temporary buffer in context after the `indent-region'.
 
- 2. Indent via typing simulation.  If lang-file has no error nodes in the
-    parse tree, indent is simulated by \"typing lang-file\" to exercise
-    TAB and RET, see `t-utils--test-indent-typing-newline'.  In tree-sitter
-    modes, TAB and RET need to be handled and this verifies they are
-    handled.  Error nodes are identified by using
+ 2. Indent the unindented contents of lang-file when there are no
+    error nodes.  In a temporary buffer
+      - Insert all non-empty non-blank lines unindented
+      - TAB on each line
+      - RET to add blank lines
+    In tree-sitter modes, TAB and RET need to be handled and this
+    verifies they are handled.  Error nodes are identified by using
     ERROR-NODES-REGEXP which defaults to (rx bos \"ERROR\" eos).
 
-    The typing occurs in a temporary buffer partially named
-    \"typing__NAME.LANG\" where NAME.LANG is the basename of LANG-FILE.
+    If the test fails, a file named NAME_indented_unindented.LANG~ is
+    created.
 
     The typing buffer is initialized with the string-trim'd version of
     the non-empty lines of LANG-FILE.  If optional LINE-MANIPULATOR
@@ -1070,6 +1073,8 @@ Two methods are used to indent each file in LANG-FILES,
     In the typing buffer, each line is indented via
     `indent-for-tab-command' and blank lines are inserted by calling
     `newline'.`
+
+ 3. TODO line-by-line
 
 Example test setup:
 
@@ -1156,17 +1161,17 @@ To debug a specific indent test file
 
         ;; Now, simulate typing lang-file and indent it (exercise TAB and RET)
         (when (not error-node)
-          (message "START: %s <indent-via-typing> %s" test-name lang-file)
+          (message "START: %s <indent-using-unindented-contents> %s" test-name lang-file)
           (let ((start-time (current-time))
-                (typing-error-msg (t-utils--test-indent-typing-newline
+                (unindented-error-msg (t-utils--test-indent-unindented
                                    lang-file lang-file-major-mode
                                    expected expected-file
                                    line-manipulator)))
-            (message "%s: %s <indent-via-typing> %s %s" test-name lang-file
-                     (if typing-error-msg "FAIL" "PASS")
+            (message "%s: %s <indent-using-unindented-contents> %s %s" test-name lang-file
+                     (if unindented-error-msg "FAIL" "PASS")
                      (t-utils--took start-time))
-            (when typing-error-msg
-              (push typing-error-msg error-msgs))))
+            (when unindented-error-msg
+              (push unindented-error-msg error-msgs))))
         ))
     ;; Validate t-utils-test-indent result
     (setq error-msgs (reverse error-msgs))
