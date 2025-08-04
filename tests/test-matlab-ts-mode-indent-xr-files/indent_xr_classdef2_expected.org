@@ -1,0 +1,216 @@
+#+startup: showall
+
+* Executing commands from indent_xr_classdef2.m:5:2:
+
+  (t-utils-xr
+  (re-search-forward "^classdef") "C-e" "C-m"
+  (insert "properties") "C-m"
+  (insert "p1") "C-m"
+  (insert "p2 double;") "C-m"
+  (insert "end") "C-m"
+  (insert "end")
+  (re-search-backward "^classdef")
+  (print (buffer-substring-no-properties (point) (point-max)))
+  )
+
+- Invoking      : (re-search-forward "^classdef")
+  Start point   :  309
+  Moved to point:  321
+  : 16:8: classdef indent_xr_classdef2
+  :               ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  321
+  Moved to point:  341
+  : 16:28: classdef indent_xr_classdef2
+  :                                    ^
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  341
+  Moved to point:  346
+  : 17:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -14,3 +14,4 @@
+   )
+ %}
+ classdef indent_xr_classdef2
++    
+  #+end_src diff
+
+- Invoking      : (insert "properties")
+  Start point   :  346
+  Moved to point:  356
+  : 17:14:     properties
+  :                      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -14,4 +14,4 @@
+   )
+ %}
+ classdef indent_xr_classdef2
+-    
++    properties
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  356
+  Moved to point:  365
+  : 18:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -15,3 +15,4 @@
+ %}
+ classdef indent_xr_classdef2
+     properties
++        
+  #+end_src diff
+
+- Invoking      : (insert "p1")
+  Start point   :  365
+  Moved to point:  367
+  : 18:10:         p1
+  :                  ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -15,4 +15,4 @@
+ %}
+ classdef indent_xr_classdef2
+     properties
+-        
++        p1
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  367
+  Moved to point:  376
+  : 19:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -16,3 +16,4 @@
+ classdef indent_xr_classdef2
+     properties
+         p1
++        
+  #+end_src diff
+
+- Invoking      : (insert "p2 double;")
+  Start point   :  376
+  Moved to point:  386
+  : 19:18:         p2 double;
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -16,4 +16,4 @@
+ classdef indent_xr_classdef2
+     properties
+         p1
+-        
++        p2 double;
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  386
+  Moved to point:  395
+  : 20:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,3 +17,4 @@
+     properties
+         p1
+         p2 double;
++        
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   :  395
+  Moved to point:  398
+  : 20:11:         end
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,4 +17,4 @@
+     properties
+         p1
+         p2 double;
+-        
++        end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  398
+  Moved to point:  395
+  : 21:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,4 +17,5 @@
+     properties
+         p1
+         p2 double;
+-        end
++    end
++
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   :  395
+  Moved to point:  398
+  : 21:3: end
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -18,4 +18,4 @@
+         p1
+         p2 double;
+     end
+-
++end
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^classdef")
+  Start point   :  398
+  Moved to point:  313
+  : 16:0: classdef indent_xr_classdef2
+  :       ^
+  No buffer modifications
+
+- Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
+  Start point   :  313
+  No point movement
+  standard-output:
+  #+begin_example
+classdef indent_xr_classdef2
+    properties
+        p1
+        p2 double;
+    end
+end
+  #+end_example
+  No buffer modifications

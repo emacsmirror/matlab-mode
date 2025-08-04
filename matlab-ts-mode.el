@@ -1270,7 +1270,7 @@ Prev-siblings:
 
   (when (or (and node
                  (string= (treesit-node-type node) "ERROR"))
-            (string= (treesit-node-type parent) "\n"))
+            (string-match-p (treesit-node-type parent) (rx (seq bos (or "ERROR" "\n") eos))))
 
     (let ((anchors-rx (rx (seq bos (or "function_definition"
                                        "classdef"
@@ -1301,12 +1301,16 @@ Prev-siblings:
 
             (setq ancestor (if in-error
                                nil
-                             (treesit-node-parent ancestor))))))
+                             (treesit-node-parent ancestor)))))
+        (when (eq ancestor-to-check node-to-check)
+          (setq ancestor-to-check nil)))
 
       ;; prev-sibling-to-check
 
       (let ((prev-sibling (treesit-node-prev-sibling node-to-check)))
-        (while (and prev-sibling (not prev-sibling-has-error))
+        (while (and prev-sibling
+                    (not prev-sibling-to-check)
+                    (not prev-sibling-has-error))
           (let ((prev-sibling-type (treesit-node-type prev-sibling)))
             (cond
              ((string= prev-sibling-type "ERROR")
@@ -1426,8 +1430,8 @@ Prev-siblings:
       grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: continuation of properties
-     ((n-p-gp nil nil ,(rx bos "property" eos))
-      grand-parent ,matlab-ts-mode--indent-level)
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_classdef2.m
+     ((n-p-gp nil nil ,(rx bos "property" eos)) grand-parent 0)
 
      ;; I-Rule: code in if, for, methods, arguments statements, etc.
      ((parent-is ,(rx bos (or "if_statement" "for_statement" "while_statement"
