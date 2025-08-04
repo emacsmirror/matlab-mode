@@ -1,0 +1,80 @@
+#+startup: showall
+
+* Executing commands from indent_xr_fun2.m:8:2:
+
+  (t-utils-xr "C-n" "C-n" "C-e" "C-m" (insert "b);") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  356
+  Moved to point:  395
+  : 9:38: function outResult = indent_xr_fun2(b)
+  :                                             ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  395
+  Moved to point:  434
+  : 10:38:           outResult = longFunction(...
+  :                                              ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  434
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  434
+  Moved to point:  437
+  : 11:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -7,5 +7,6 @@
+ %
+ % (t-utils-xr "C-n" "C-n" "C-e" "C-m" (insert "b);") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+ function outResult = indent_xr_fun2(b)
+-          outResult = longFunction(...
++    outResult = longFunction(...
++        
+ end
+  #+end_src diff
+
+- Invoking      : (insert "b);")
+  Start point   :  437
+  Moved to point:  440
+  : 11:11:         b);
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -8,5 +8,5 @@
+ % (t-utils-xr "C-n" "C-n" "C-e" "C-m" (insert "b);") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+ function outResult = indent_xr_fun2(b)
+     outResult = longFunction(...
+-        
++        b);
+ end
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^fun")
+  Start point   :  440
+  Moved to point:  357
+  : 9:0: function outResult = indent_xr_fun2(b)
+  :      ^
+  No buffer modifications
+
+- Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
+  Start point   :  357
+  No point movement
+  standard-output:
+  #+begin_example
+function outResult = indent_xr_fun2(b)
+    outResult = longFunction(...
+        b);
+end
+  #+end_example
+  No buffer modifications

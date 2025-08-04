@@ -2578,19 +2578,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
     ;; TODO indent
-    ;;      function outResult = foo
-    ;;                  outResult = longFunction(...    <== TAB should shift, w/o "..." it shifts
-    ;;      end
-    ;;      Requires ERROR node be located under the function_output.
-    ;;      See https://github.com/acristoffers/tree-sitter-matlab/issues/47
-    ;;
-    ;; TODO indent
-    ;;      filesToCheck = ...
-    ;;          [
-    ;;            ^                <== RET on previous line or TAB should be here
-    ;;      See https://github.com/acristoffers/tree-sitter-matlab/issues/47
-    ;;
-    ;; TODO indent
     ;;      classdef foo
     ;;          ^                  <== RET on previous line should go here (or TAB to here)
     ;;
