@@ -963,7 +963,7 @@ In a temporary buffer
   - Insert all non-empty non-blank lines unindented
   - TAB on each line
   - RET to add blank lines
-Validate resutl matches EXPECTED from EXPECTED-FILE.
+Validate result matches EXPECTED from EXPECTED-FILE.
 
 LANG-FILE-MODE is the mode to use for LANG-FILE.  See
 See `t-utils-test-indent' for LINE-MANIPULATOR."
@@ -1027,6 +1027,48 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
         ;; result is nil or an error message list of strings
         error-msg))))
 
+(defun t-utils--test-indent-typing-line-by-line (lang-file lang-file-mode
+                                                      expected expected-file)
+  "Indent LANG-FILE by typing it line-by-line.
+Validate result matches EXPECTED from EXPECTED-FILE.
+
+LANG-FILE-MODE is the mode to use for LANG-FILE.  See
+See `t-utils-test-indent' for LINE-MANIPULATOR."
+
+  (let* ((contents (with-temp-buffer
+                     (insert-file-contents-literally lang-file)
+                     (buffer-substring (point-min) (point-max))))
+         (lines (split-string (string-trim contents) "\n")))
+    (with-temp-buffer
+      (erase-buffer)
+      (set-buffer-file-coding-system 'utf-8-unix)
+      (funcall lang-file-mode)
+
+      ;; Insert lines one a time and indent via newline (C-m)
+
+      (dolist (line lines)
+        (setq line (string-trim line))
+        (when (not (string= line ""))
+          (insert line))
+        (call-interactively #'newline))
+
+      (let ((typing-got (buffer-substring (point-min) (point-max)))
+            error-msg)
+        (set-buffer-modified-p nil)
+        (kill-buffer)
+        (when (not (string= typing-got expected))
+          (let ((coding-system-for-write 'raw-text-unix)
+                (typing-got-file (replace-regexp-in-string "\\.\\([^.]+\\)\\'"
+                                                           "_typing_line_by_line.\\1~"
+                                                           lang-file)))
+            (write-region typing-got nil typing-got-file)
+            (setq error-msg
+                  (list
+                   (format "Typing %s line-by-line does not match %s" lang-file expected-file)
+                   (format "Got: %s" typing-got-file)))))
+        ;; result is nil or an error message list of strings
+        error-msg))))
+
 (defun t-utils-test-indent (test-name lang-files
                                       &optional indent-checker line-manipulator error-nodes-regexp)
   "Test indent on each file in LANG-FILES list.
@@ -1074,7 +1116,7 @@ Two methods are used to indent each file in LANG-FILES,
     `indent-for-tab-command' and blank lines are inserted by calling
     `newline'.`
 
- 3. TODO line-by-line
+ 3. xxx line-by-line
 
 Example test setup:
 
@@ -1171,7 +1213,20 @@ To debug a specific indent test file
                      (if unindented-error-msg "FAIL" "PASS")
                      (t-utils--took start-time))
             (when unindented-error-msg
-              (push unindented-error-msg error-msgs))))
+              (push unindented-error-msg error-msgs)))
+
+          ;; (message "START: %s <indent-via-typing-line-by-line> %s" test-name lang-file)
+          ;; (let ((start-time (current-time))
+          ;;       (typing-error-msg (t-utils--test-indent-typing-line-by-line
+          ;;                          lang-file lang-file-major-mode
+          ;;                          expected expected-file)))
+          ;;   (message "%s: %s <indent-via-typing-line-by-line> %s %s" test-name lang-file
+          ;;            (if typing-error-msg "FAIL" "PASS")
+          ;;            (t-utils--took start-time))
+          ;;   (when typing-error-msg
+          ;;     (push typing-error-msg error-msgs)))
+
+          )
         ))
     ;; Validate t-utils-test-indent result
     (setq error-msgs (reverse error-msgs))
