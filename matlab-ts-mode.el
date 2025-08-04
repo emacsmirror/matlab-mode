@@ -1260,95 +1260,124 @@ Prev-siblings:
     > #<treesit-node identifier in 30-33>
       > #<treesit-node \""
 
-  (when (and (not node)
-             (save-excursion
-               (goto-char bol)
-               (beginning-of-line)
-               (looking-at "^[ \t]*$")))
-    ;; parent should be a newline
-    (setq parent (treesit-node-at (point))))
+  (let (last-child-of-error-node)
 
-  (when (or (and node
-                 (string= (treesit-node-type node) "ERROR"))
-            (string-match-p (treesit-node-type parent) (rx (seq bos (or "ERROR" "\n") eos))))
+    (when (and (not node)
+               (save-excursion
+                 (goto-char bol)
+                 (beginning-of-line)
+                 (looking-at "^[ \t]*$")))
+      ;; parent should be a newline
+      (setq parent (treesit-node-at (point))))
 
-    (let ((anchors-rx (rx (seq bos (or "function_definition"
-                                       "classdef"
-                                       "properties"
-                                       "property"
-                                       "methods"
-                                       "["
-                                       "{")
-                               eos)))
-          (node-to-check (or node parent))
-          in-error ;; is node, parent, or one of it's ancestors an ERROR?
-          prev-sibling-has-error ;; is a previous sibling an ERROR?
-          prev-sibling-to-check
-          ancestor-to-check)
+    ;; Handle continuation where it's not part of the error node. Example:
+    ;;    (source_file
+    ;;     (ERROR classdef (identifier) \n properties \n (identifier) =)
+    ;;     (line_continuation))
+    ;; For
+    ;;    classdef indent_xr_classdef2
+    ;;        properties
+    ;;            p3continued = ...
+    ;;                ^                       << RET on prior line should go here
+    ;; In this case, last-child-of-error-node will be the "=" node.
+    (when (and (not node)
+               (string= (treesit-node-type parent) "line_continuation"))
+      (let ((prev-sibling (treesit-node-prev-sibling parent)))
+        (when (equal (treesit-node-type prev-sibling) "ERROR")
+          (setq last-child-of-error-node (setq parent (treesit-node-child prev-sibling -1))))))
 
-      ;; ancestor-to-check
-      (let ((ancestor node-to-check))
-        (while (and ancestor (not in-error))
-          (let ((ancestor-type (treesit-node-type ancestor)))
-            (cond
+    (when (or last-child-of-error-node
+              (and node
+                   (string= (treesit-node-type node) "ERROR"))
+              (string-match-p (treesit-node-type parent) (rx (seq bos (or "ERROR"
+                                                                          "\n")
+                                                                  eos)))
+              (equal (treesit-node-type (treesit-node-parent parent)) "ERROR"))
 
-             ((string= ancestor-type "ERROR")
-              (setq in-error t))
+      (let ((anchors-rx (rx (seq bos (or "function_definition"
+                                         "classdef"
+                                         "properties"
+                                         "property"
+                                         "methods"
+                                         "["
+                                         "{")
+                                 eos)))
+            (node-to-check (or last-child-of-error-node node parent))
+            in-error ;; is node, parent, or one of it's ancestors an ERROR?
+            prev-sibling-has-error ;; is a previous sibling an ERROR?
+            prev-sibling-to-check
+            ancestor-to-check)
 
-             ((and (not ancestor-to-check)
-                   (string-match-p anchors-rx ancestor-type))
-              (setq ancestor-to-check ancestor)))
+        ;; ancestor-to-check
+        (let ((ancestor node-to-check))
+          (while (and ancestor (not in-error))
+            (let ((ancestor-type (treesit-node-type ancestor)))
+              (cond
 
-            (setq ancestor (if in-error
-                               nil
-                             (treesit-node-parent ancestor)))))
-        (when (eq ancestor-to-check node-to-check)
-          (setq ancestor-to-check nil)))
+               ((string= ancestor-type "ERROR")
+                (setq in-error t))
 
-      ;; prev-sibling-to-check
+               ((and (not ancestor-to-check)
+                     (string-match-p anchors-rx ancestor-type))
+                (setq ancestor-to-check ancestor)))
 
-      (let ((prev-sibling (treesit-node-prev-sibling node-to-check)))
-        (while (and prev-sibling
-                    (not prev-sibling-to-check)
-                    (not prev-sibling-has-error))
-          (let ((prev-sibling-type (treesit-node-type prev-sibling)))
-            (cond
-             ((string= prev-sibling-type "ERROR")
-              (setq prev-sibling-has-error t))
+              (setq ancestor (if in-error
+                                 nil
+                               (treesit-node-parent ancestor)))))
+          (when (eq ancestor-to-check node-to-check)
+            (setq ancestor-to-check nil)))
 
-             ((and (not prev-sibling-to-check)
-                   (string-match-p anchors-rx prev-sibling-type))
-              (setq prev-sibling-to-check prev-sibling)))
+        ;; prev-sibling-to-check
 
-            (setq prev-sibling (if prev-sibling-has-error
-                                   nil
-                                 (treesit-node-prev-sibling prev-sibling))))))
+        (let ((prev-sibling (treesit-node-prev-sibling node-to-check)))
+          (while (and prev-sibling
+                      (not prev-sibling-to-check)
+                      (not prev-sibling-has-error))
+            (let ((prev-sibling-type (treesit-node-type prev-sibling)))
+              (cond
+               ((string= prev-sibling-type "ERROR")
+                (setq prev-sibling-has-error t))
 
-      (when (and (not in-error)
-                 (not prev-sibling-has-error))
-        (cl-return-from matlab-ts-mode--i-next-line-matcher nil))
+               ((and (not prev-sibling-to-check)
+                     (string-match-p anchors-rx prev-sibling-type))
+                (setq prev-sibling-to-check prev-sibling)))
 
-      (let ((anchor-node (or ancestor-to-check
-                             prev-sibling-to-check)))
-        (when anchor-node
-          (let ((indent-level (pcase (treesit-node-type anchor-node)
-                                ("property" 0)
-                                ((rx (seq bos (or "[" "{" eos))) matlab-ts-mode--array-indent-level)
-                                ("function_definition" matlab-ts-mode--function-indent-level)
-                                (_ matlab-ts-mode--indent-level))))
-            (setq matlab-ts-mode--i-next-line-pair
-                  (cons (treesit-node-start anchor-node) indent-level))
+              (setq prev-sibling (if prev-sibling-has-error
+                                     nil
+                                   (treesit-node-prev-sibling prev-sibling))))))
 
-            ;; TODO Rough sketch of electric-ends
-            ;;      We need to look at the parse tree to see if we should insert it.
-            ;;      Also, we should verify this doesn't happen with indent-region, only on RET.
-            ;; (when matlab-ts-mode-electric-ends
-            ;;   (save-excursion
-            ;;     (let ((insert-column (save-excursion
-            ;;                            (goto-char (treesit-node-start anchor-node))
-            ;;                            (current-column))))
-            ;;       (insert "\n" (make-string insert-column ?\ ) "end\n")))
-            t))))))
+        (when (and (not in-error)
+                   (not prev-sibling-has-error))
+          (cl-return-from matlab-ts-mode--i-next-line-matcher nil))
+
+        (let ((anchor-node (or ancestor-to-check
+                               prev-sibling-to-check)))
+          (when anchor-node
+            (let ((indent-level (if (and node (string= (treesit-node-type node) "end"))
+                                    0
+                                  (pcase (treesit-node-type anchor-node)
+                                    ("property" (if last-child-of-error-node
+                                                    matlab-ts-mode--indent-level
+                                                  0))
+                                    ((rx (seq bos (or "[" "{" eos))) matlab-ts-mode--array-indent-level)
+                                    ("function_definition" matlab-ts-mode--function-indent-level)
+                                    (_ (if last-child-of-error-node
+                                           ;; Part of a line continuation so 4 for that plus 4 for parent
+                                           (* 2 matlab-ts-mode--indent-level)
+                                         matlab-ts-mode--indent-level))))))
+              (setq matlab-ts-mode--i-next-line-pair
+                    (cons (treesit-node-start anchor-node) indent-level))
+
+              ;; TODO Rough sketch of electric-ends
+              ;;      We need to look at the parse tree to see if we should insert it.
+              ;;      Also, we should verify this doesn't happen with indent-region, only on RET.
+              ;; (when matlab-ts-mode-electric-ends
+              ;;   (save-excursion
+              ;;     (let ((insert-column (save-excursion
+              ;;                            (goto-char (treesit-node-start anchor-node))
+              ;;                            (current-column))))
+              ;;       (insert "\n" (make-string insert-column ?\ ) "end\n")))
+              t)))))))
 
 (defun matlab-ts-mode--i-next-line-anchor (&rest _)
   "Return the anchor computed by `matlab-ts-mode--i-next-line-matcher'."
@@ -1361,13 +1390,6 @@ Prev-siblings:
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
-     ;; I-Rule: RET on an incomplete statement. Example:
-     ;;         classdef foo
-     ;;             ^                     <== TAB or RET on prior line goes here.
-     (,#'matlab-ts-mode--i-next-line-matcher
-      ,#'matlab-ts-mode--i-next-line-anchor
-      ,#'matlab-ts-mode--i-next-line-offset)
-
      ;; I-Rule: cell/matrix row matcher when in an error node
      ;;         mat0 = [1, 2
      ;;                 ^            <-- TAB or RET on prior line goes here
@@ -1375,6 +1397,13 @@ Prev-siblings:
      (,#'matlab-ts-mode--i-error-row-matcher
       ,#'matlab-ts-mode--i-error-row-anchor
       ,#'matlab-ts-mode--i-error-row-offset)
+
+     ;; I-Rule: RET on an incomplete statement. Example:
+     ;;         classdef foo
+     ;;             ^                     <== TAB or RET on prior line goes here.
+     (,#'matlab-ts-mode--i-next-line-matcher
+      ,#'matlab-ts-mode--i-next-line-anchor
+      ,#'matlab-ts-mode--i-next-line-offset)
 
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
      ((parent-is ,(rx bos "source_file" eos)) column-0 0)
@@ -1429,7 +1458,14 @@ Prev-siblings:
      ((n-p-gp nil ,(rx bos "property" eos) ,(rx bos "properties" eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
-     ;; I-Rule: continuation of properties
+     ;; I-Rule: property continuation
+     ((n-p-gp nil ,(rx bos "default_value" eos) ,(rx bos "property" eos))
+      grand-parent ,matlab-ts-mode--indent-level)
+     
+     ;; I-Rule: property after a property
+     ;;         properties
+     ;;             p1
+     ;;             ^              <= RET on prior line goes here
      ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_classdef2.m
      ((n-p-gp nil nil ,(rx bos "property" eos)) grand-parent 0)
 
@@ -1507,8 +1543,8 @@ Prev-siblings:
      ;; <TAB>        1;
      ((parent-is ,(rx bos "binary_operator" eos)) parent 0)
 
-     ;; I-Rule:  a = ( ...       |     a = [  ...     |     a = {    ...
-     ;;               1 ...      |          1 ...     |            1 ...
+     ;; I-Rule:  a = ( ...       |     a = [  ...     |     a = {  ...
+     ;;               1 ...      |          1 ...     |          1 ...
      ;; <TAB>        );          |         ];         |         };
      ((node-is ,(rx bos (or ")" "]" "}") eos)) parent 0)
 
@@ -2233,12 +2269,12 @@ Use \"%s\" to view mlint errors or click FlyC on the mode line."
     (let* ((first-code-node (let* ((root (treesit-buffer-root-node))
                                    (child-idx 0)
                                    (child (treesit-node-child root child-idx)))
-                              (while (string= (treesit-node-type child) "comment")
+                              (while (and child
+                                          (string= (treesit-node-type child) "comment"))
                                 (setq child-idx (1+ child-idx))
-                                (setq child (treesit-node-child root child-idx))
-                                (cl-assert child))
+                                (setq child (treesit-node-child root child-idx)))
                               child))
-           (first-code-type (treesit-node-type first-code-node)))
+           (first-code-type (or (treesit-node-type first-code-node) "comment")))
       (pcase first-code-type
         ("class_definition" 'class)
         ("function_definition" 'function)
