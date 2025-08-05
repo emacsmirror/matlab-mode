@@ -116,7 +116,7 @@ and run the test. The test will see there is no expected baseline to compare aga
 generate one for you and ask you to validate it. The expect baseline for =file.lang= is
 =file_expected.txt= and the contents of the =file_expected.txt= is of same length of =file.lang=,
 where each character's face is encoded in a single character. This makes it very easy to lock down
-the behavior of font-lock without having to write lisp code to add the expected rsults of the
+the behavior of font-lock without having to write lisp code to add the expected results of the
 test. The same test strategy is used for other aspects of our =LANGUAGE-ts-mode=.
 
 * Major Mode Conventions
@@ -239,8 +239,8 @@ You should now be able to use:
     : M-x eval-buffer-fully
 
   =M-x eval-buffer= will only re-evaluate defun definitions. It will not reevaluate already
-  defined =defvar=, =defvar-local=, and =defface= defintions. You can use =C-x C-e= or =C-M-x= on
-  each updated defintion to re-evaluate them. Alternatively, using [[file:eval-buffer-fully.el]], you
+  defined =defvar=, =defvar-local=, and =defface= definitions. You can use =C-x C-e= or =C-M-x= on
+  each updated definition to re-evaluate them. Alternatively, using [[file:eval-buffer-fully.el]], you
   can =M-x eval-buffer-fully=.
 
 - =M-x LANGUAGE-ts-mode=
@@ -274,12 +274,12 @@ You should now be able to use:
 
   1. ts-inspect-point
 
-     : M-: (ts-inpsect-point)
+     : M-: (ts-inspect-point)
 
      Display information about node at POSITION. \\
      POSITION defaults to the current point.
      Returns a string of the form:
-       : Heirarchy:
+       : Hierarchy:
        :   #<treesit-node ROOT in 1-67>
        :     #<treesit-node PARENT in 37-62>
        :       #<treesit-node NODE in 61-62>
@@ -873,27 +873,49 @@ where =test-LANGUAGE-ts-mode-indent-xr.el= contains:
       (t-utils-test-xr test-name lang-files)))
 #+end_src
 
-An example =./tests/test-LANGUAGE-ts-mode-indent-xr-files/indent_test1.lang= where =%= is starts a
-comment:
+An example =./tests/test-matlab-ts-mode-indent-xr-files/indent_cell1.m= where =%= is starts a
+comment and =%{ ... %}= is a block comment:
 
-#+begin_example
-  % -*- LANGUAGE-ts -*-
-  % (t-utils-xr "C-a" "C-n" (insert "someVariable = {") "C-e" "C-m" (insert "1234") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
-#+end_example
+#+begin_src matlab-ts
+  % -*- matlab-ts -*-
 
-The execute and record function, =t-utils-xr= runs the Emacs commands which creates below the
-comment line.
+  %{
+    (t-utils-xr
 
-#+begin_example
+    (re-search-forward "%}")  "C-n"
+    (insert "someVariable = {")      "C-m"
+    (insert "1234")                  "C-m"
+    (insert "};")                    "C-m"
+    (re-search-backward "^someVariable")
+    (t-utils-xr-print-code (point) (point-max))
+
+    )
+  %}
+#+end_src
+
+The execute and record function, =t-utils-xr= runs the Emacs commands. In this example,
+we are re-playing the actions of typing
+
+#+begin_src matlab-ts
   someVariable = {
                    1234
-                 }
-#+end_example
+                 };
+#+end_src
 
-The commands are recorded into
-=./tests/test-LANGUAGE-ts-mode-indent-xr-files/indent_test1_expected.org~= and compared against
-baseline =indent_test1_expected.org=. If the baseline doesn't exist you are asked to review
-=indent_test1_expected.org~= and rename it to indent_test1_expected.org if it looks good.
+Any standard Emacs commands are allowed, e.g. "C-m" for Enter/Return (RET). In addition, you can use
+=(t-utils-xr-print-code START-POINT END-POINT)= to capture the result of running the commands in the
+baseline.
+
+The commands are executed and recorded. The recorded results are compared against baseline:
+
+ : =./tests/test-matlab-ts-mode-indent-xr-files/indent_cell1_expected.org=
+
+If the baseline doesn't exist or result doesn't match the baseline, the test fails and
+the following tilde file is created:
+
+ : =./tests/test-matlab-ts-mode-indent-xr-files/indent_cell1_expected.org~=
+
+You can then rename the tilde file to =indent_cell1_expected.org= or fix the code as needed.
 
 ** Sweep test: Indent
 
@@ -2201,5 +2223,5 @@ Install, using default branch
 # LocalWords:  lang utils Imenu LSP defun ELPA tuils setq SLIB libtree dylib sexp xr defcusom
 # LocalWords:  defface EDebug ielm fontify Fontifying fontified defcustom alist eos bol NPS prev BUF
 # LocalWords:  caar cdar bos dwim propertize ppss SPC reindent defadvice IMenu imenu pred fn elec
-# LocalWords:  funcall myfcn prin asdf repeat:nil ABI abi MSYS pacman gpg bobp defclass
-# LocalWords:  fontification lsp
+# LocalWords:  funcall myfcn prin asdf repeat:nil ABI abi MSYS pacman gpg bobp defclass docstring
+# LocalWords:  fontification lsp numberp cdr keymap sudo nodejs npm linux gz

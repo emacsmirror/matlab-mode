@@ -1,273 +1,159 @@
 #+startup: showall
 
-* Executing commands from indent_xr_cell1.m:2:2:
+* Executing commands from indent_xr_cell1.m:4:2:
 
-  (t-utils-xr "C-a" "C-n" (insert "cell1 = { ...") "C-e" "C-m" (insert "{'one', ...") "C-m" (insert "'two'}, ...") "C-m" (insert "...") "C-m" (insert "{'three'}") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
+  (t-utils-xr
 
-- Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  300
-  Moved to point:   21
-  : 2:0: % (t-utils-xr "C-a" "C-n" (insert "cell1 = { ...") "C-e" "C-m" (insert "{'one', ...") "C-m" (insert "'two'}, ...") "C-m" (insert "...") "C-m" (insert "{'three'}") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
-  :      ^
+  (re-search-forward "%}")  "C-n"
+  (insert "someVariable = {")      "C-m"
+  (insert "1234")                  "C-m"
+  (insert "};")                    "C-m"
+  (re-search-backward "^someVariable")
+  (t-utils-xr-print-code (point) (point-max))
+
+  )
+
+- Invoking      : (re-search-forward "%}")
+  Start point   :  286
+  Moved to point:  289
+  : 14:2: %}
+  :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :   21
-  Moved to point:  301
-  : 3:0: 
-  :      ^
+  Start point   :  289
+  Moved to point:  290
+  : 15:0: 
+  :       ^
   No buffer modifications
 
-- Invoking      : (insert "cell1 = { ...")
-  Start point   :  301
-  Moved to point:  314
-  : 3:13: cell1 = { ...
-  :                    ^
+- Invoking      : (insert "someVariable = {")
+  Start point   :  290
+  Moved to point:  306
+  : 15:16: someVariable = {
+  :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,2 +1,3 @@
- % -*- matlab-ts -*-
- % (t-utils-xr "C-a" "C-n" (insert "cell1 = { ...") "C-e" "C-m" (insert "{'one', ...") "C-m" (insert "'two'}, ...") "C-m" (insert "...") "C-m" (insert "{'three'}") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
-+cell1 = { ...
-\ No newline at end of file
-  #+end_src diff
-
-- Invoking      : "C-e" = move-end-of-line
-  Start point   :  314
-  No point movement
-  No buffer modifications
-
-- Invoking      : "C-m" = newline
-  Start point   :  314
-  Moved to point:  325
-  : 4:10:           
-  :                 ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -1,3 +1,4 @@
- % -*- matlab-ts -*-
- % (t-utils-xr "C-a" "C-n" (insert "cell1 = { ...") "C-e" "C-m" (insert "{'one', ...") "C-m" (insert "'two'}, ...") "C-m" (insert "...") "C-m" (insert "{'three'}") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
--cell1 = { ...
-\ No newline at end of file
-+cell1 = { ...
-+          
-\ No newline at end of file
-  #+end_src diff
-
-- Invoking      : (insert "{'one', ...")
-  Start point   :  325
-  Moved to point:  336
-  : 4:21:           {'one', ...
-  :                            ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -1,4 +1,4 @@
- % -*- matlab-ts -*-
- % (t-utils-xr "C-a" "C-n" (insert "cell1 = { ...") "C-e" "C-m" (insert "{'one', ...") "C-m" (insert "'two'}, ...") "C-m" (insert "...") "C-m" (insert "{'three'}") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
- cell1 = { ...
--          
-\ No newline at end of file
-+          {'one', ...
+@@ -12,3 +12,4 @@
+ 
+   )
+ %}
++someVariable = {
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  336
-  Moved to point:  348
-  : 5:11:            
-  :                  ^
+  Start point   :  306
+  Moved to point:  324
+  : 16:17:                  
+  :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,4 +1,5 @@
- % -*- matlab-ts -*-
- % (t-utils-xr "C-a" "C-n" (insert "cell1 = { ...") "C-e" "C-m" (insert "{'one', ...") "C-m" (insert "'two'}, ...") "C-m" (insert "...") "C-m" (insert "{'three'}") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
- cell1 = { ...
--          {'one', ...
+@@ -12,4 +12,5 @@
+ 
+   )
+ %}
+-someVariable = {
 \ No newline at end of file
-+          {'one', ...
-+           
++someVariable = {
++                 
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : (insert "'two'}, ...")
-  Start point   :  348
-  Moved to point:  359
-  : 5:22:            'two'}, ...
+- Invoking      : (insert "1234")
+  Start point   :  324
+  Moved to point:  328
+  : 16:21:                  1234
   :                             ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -2,4 +2,4 @@
- % (t-utils-xr "C-a" "C-n" (insert "cell1 = { ...") "C-e" "C-m" (insert "{'one', ...") "C-m" (insert "'two'}, ...") "C-m" (insert "...") "C-m" (insert "{'three'}") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
- cell1 = { ...
-           {'one', ...
--           
+@@ -13,4 +13,4 @@
+   )
+ %}
+ someVariable = {
+-                 
 \ No newline at end of file
-+           'two'}, ...
-\ No newline at end of file
-  #+end_src diff
-
-- Invoking      : "C-m" = newline
-  Start point   :  359
-  Moved to point:  370
-  : 6:10:           
-  :                 ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -2,4 +2,5 @@
- % (t-utils-xr "C-a" "C-n" (insert "cell1 = { ...") "C-e" "C-m" (insert "{'one', ...") "C-m" (insert "'two'}, ...") "C-m" (insert "...") "C-m" (insert "{'three'}") "C-m" (insert "};") "C-m" (re-search-backward "^cell") (print (buffer-substring-no-properties (point) (point-max))))
- cell1 = { ...
-           {'one', ...
--           'two'}, ...
-\ No newline at end of file
-+           'two'}, ...
-+          
-\ No newline at end of file
-  #+end_src diff
-
-- Invoking      : (insert "...")
-  Start point   :  370
-  Moved to point:  373
-  : 6:13:           ...
-  :                    ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -3,4 +3,4 @@
- cell1 = { ...
-           {'one', ...
-            'two'}, ...
--          
-\ No newline at end of file
-+          ...
++                 1234
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  373
-  Moved to point:  384
-  : 7:10:           
-  :                 ^
+  Start point   :  328
+  Moved to point:  346
+  : 17:17:                  
+  :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -3,4 +3,5 @@
- cell1 = { ...
-           {'one', ...
-            'two'}, ...
--          ...
+@@ -13,4 +13,5 @@
+   )
+ %}
+ someVariable = {
+-                 1234
 \ No newline at end of file
-+          ...
-+          
-\ No newline at end of file
-  #+end_src diff
-
-- Invoking      : (insert "{'three'}")
-  Start point   :  384
-  Moved to point:  393
-  : 7:19:           {'three'}
-  :                          ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -4,4 +4,4 @@
-           {'one', ...
-            'two'}, ...
-           ...
--          
-\ No newline at end of file
-+          {'three'}
-\ No newline at end of file
-  #+end_src diff
-
-- Invoking      : "C-m" = newline
-  Start point   :  393
-  Moved to point:  404
-  : 8:10:           
-  :                 ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -4,4 +4,5 @@
-           {'one', ...
-            'two'}, ...
-           ...
--          {'three'}
-\ No newline at end of file
-+          {'three'}
-+          
++                 1234
++                 
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : (insert "};")
-  Start point   :  404
-  Moved to point:  406
-  : 8:12:           };
-  :                   ^
+  Start point   :  346
+  Moved to point:  348
+  : 17:19:                  };
+  :                           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -5,4 +5,4 @@
-            'two'}, ...
-           ...
-           {'three'}
--          
+@@ -14,4 +14,4 @@
+ %}
+ someVariable = {
+                  1234
+-                 
 \ No newline at end of file
-+          };
++                 };
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  406
-  Moved to point:  405
-  : 9:0: 
-  :      ^
+  Start point   :  348
+  Moved to point:  347
+  : 18:0: 
+  :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -5,4 +5,4 @@
-            'two'}, ...
-           ...
-           {'three'}
--          };
+@@ -14,4 +14,4 @@
+ %}
+ someVariable = {
+                  1234
+-                 };
 \ No newline at end of file
-+        };
++               };
   #+end_src diff
 
-- Invoking      : (re-search-backward "^cell")
-  Start point   :  405
-  Moved to point:  301
-  : 3:0: cell1 = { ...
-  :      ^
+- Invoking      : (re-search-backward "^someVariable")
+  Start point   :  347
+  Moved to point:  290
+  : 15:0: someVariable = {
+  :       ^
   No buffer modifications
 
-- Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
-  Start point   :  301
+- Invoking      : (t-utils-xr-print-code (point) (point-max))
+  Start point   :  290
   No point movement
   standard-output:
-  #+begin_example
-cell1 = { ...
-          {'one', ...
-           'two'}, ...
-          ...
-          {'three'}
-        };
-  #+end_example
+  #+begin_src matlab-ts
+someVariable = {
+                 1234
+               };
+  #+end_src
   No buffer modifications
