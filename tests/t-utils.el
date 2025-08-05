@@ -1054,7 +1054,7 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
             (write-region typing-got nil typing-got-file)
             (setq error-msg
                   (list
-                   (format "Indenting-unidented-contents-of: %s" lang-file)
+                   (format "Indenting-unindented-contents-of: %s" lang-file)
                    (format "Got: %s" typing-got-file)
                    (format "Expected: %s" expected-file)))))
         ;; result is nil or an error message list of strings
@@ -1152,9 +1152,9 @@ Two methods are used to indent each file in LANG-FILES,
 
  3. Indent the contents of lang-file line-by-line when there are no
     error nodes in lang-file.  In a temporary buffer
-      - Insert the string-trim'd line of lang-file
+      - Insert the string-trim'd first line of lang-file
       - RET to indent via `newline'
-      - Repeat for each line of lang-file.
+      - Repeat for each remaining line of lang-file.
     Validate result matches the EXPECTED.
 
     If the test fails, a file named NAME_typing_line_by_line.LANG~ is
@@ -1169,6 +1169,11 @@ Two methods are used to indent each file in LANG-FILES,
     create the following to skip it and put a comment in the .typing.skip.txt
     file as to why it's skipped
       .../tests/test-LANGUAGE-ts-mode-indent-files/indent_fcn.skip.typing.txt
+
+    If it is not possible to indent the file line-by-line, you can disable
+    the line-by-line indent without generating a warning by adding in a
+    comment to lang-file:
+      t-utils-test-indent: no-line-by-line-indent - <REASON>
 
 Example test setup:
 
@@ -1223,6 +1228,7 @@ To debug a specific indent test file
                          (with-temp-buffer
                            (insert-file-contents-literally expected-file)
                            (buffer-string))))
+             do-line-by-line-indent
              lang-file-major-mode
              error-node)
 
@@ -1244,6 +1250,10 @@ To debug a specific indent test file
             (t-utils--trim)
             (let ((got (buffer-substring (point-min) (point-max)))
                   (got-file (concat expected-file "~")))
+
+              (setq do-line-by-line-indent
+                    (not (string-match-p "t-utils-test-indent:[ \t]*no-line-by-line-indent" got)))
+
               (set-buffer-modified-p nil)
               (kill-buffer)
 
@@ -1267,21 +1277,22 @@ To debug a specific indent test file
             (when unindented-error-msg
               (push unindented-error-msg error-msgs)))
 
-          (let ((skip-typing-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.typing.txt"
-                                                            lang-file)))
-            (if (file-exists-p skip-typing-file)
-                (t-utils--skip-message lang-file skip-typing-file
-                                       "typing line-by-line this test input")
-              (message "START: %s <indent-via-typing-line-by-line> %s" test-name lang-file)
-              (let ((start-time (current-time))
-                    (typing-error-msg (t-utils--test-indent-typing-line-by-line
-                                       lang-file lang-file-major-mode
-                                       expected expected-file)))
-                (message "%s: %s <indent-via-typing-line-by-line> %s %s" test-name lang-file
-                         (if typing-error-msg "FAIL" "PASS")
-                         (t-utils--took start-time))
-                (when typing-error-msg
-                  (push typing-error-msg error-msgs)))))
+          (when do-line-by-line-indent
+            (let ((skip-typing-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.typing.txt"
+                                                              lang-file)))
+              (if (file-exists-p skip-typing-file)
+                  (t-utils--skip-message lang-file skip-typing-file
+                                         "typing line-by-line this test input")
+                (message "START: %s <indent-via-typing-line-by-line> %s" test-name lang-file)
+                (let ((start-time (current-time))
+                      (typing-error-msg (t-utils--test-indent-typing-line-by-line
+                                         lang-file lang-file-major-mode
+                                         expected expected-file)))
+                  (message "%s: %s <indent-via-typing-line-by-line> %s %s" test-name lang-file
+                           (if typing-error-msg "FAIL" "PASS")
+                           (t-utils--took start-time))
+                  (when typing-error-msg
+                    (push typing-error-msg error-msgs))))))
           )
         ))
     ;; Validate t-utils-test-indent result

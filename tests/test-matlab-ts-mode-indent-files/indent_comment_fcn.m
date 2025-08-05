@@ -1,4 +1,7 @@
 % -*- matlab-ts -*-
+%
+% t-utils-test-indent: no-line-by-line-indent - nested functions require an end
+
 function indent_comment_fcn
 % This is the
 % doc help comment
