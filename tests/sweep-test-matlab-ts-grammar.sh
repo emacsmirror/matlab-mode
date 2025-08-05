@@ -20,6 +20,12 @@
 #         Total-consistently-parsed-files: M of N
 #
 
+if ! command -v matlab > /dev/null 2>&1
+then
+    echo "matlab is not found (which matlab)"
+    exit 1
+fi
+
 EmacsMATLABModeDir=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && cd .. && pwd)
 
 emacs --batch \
