@@ -536,6 +536,15 @@ You can run `t-utils--diff-check' to debug"))))
           (save-excursion (goto-char point)
                           (current-column))))
 
+(defun t-utils-xr-print-code (start-point end-point)
+  "For use in `t-utils-xr' to print a code block.
+The buffer text from START-POINT to END-POINT is captured and placed in
+in a code block using the `major-mode' of the buffer:
+  #+begin_src MAJOR-MODE
+     <result>
+  #+end_src"
+  (print (buffer-substring-no-properties start-point end-point)))
+
 (defvar t-utils--xr-impl-result-active)
 (defvar t-utils--xr-impl-result)
 
@@ -576,7 +585,8 @@ You can run `t-utils--diff-check' to debug"))))
 
     (dolist (command commands)
       (setq cmd-num (1+ cmd-num))
-      (let ((standard-output (generate-new-buffer " *temp t-utils-xr-capture*" t)))
+      (let ((standard-output (generate-new-buffer " *temp t-utils-xr-capture*" t))
+            (buf-major-mode major-mode))
         (unwind-protect
             (let* ((start-pt (point))
                    (start-pt-str (t-utils--get-point-for-display start-pt))
@@ -587,7 +597,8 @@ You can run `t-utils--diff-check' to debug"))))
                                     (when (not cmd)
                                       (user-error "%s:%d: Command, %s, is not a known keybinding"
                                                   buf-file start-line command))
-                                    cmd))))
+                                    cmd)))
+                   print-code-active)
               (setq result (concat result "\n"
                                    (format "- Invoking      : %S%s\n"
                                            command (if key-command
@@ -599,6 +610,8 @@ You can run `t-utils--diff-check' to debug"))))
                   ;; a keybinding: (t-util-xr "C-M-a")
                   (call-interactively key-command)
                 ;; a command: (t-utils-xr (beginning-of-defun))
+                (setq print-code-active (string-match-p "\\`(t-utils-xr-print-code"
+                                                        (format "%S" command)))
                 (eval command))
 
               (let ((end-pt (point))
@@ -628,10 +641,18 @@ You can run `t-utils--diff-check' to debug"))))
                       (setq contents (replace-regexp-in-string "\"\\'" "" contents))
                       (setq result (concat result
                                            "  standard-output:\n"
-                                           "  #+begin_example\n"
+                                           (if print-code-active
+                                               (concat "  #+begin_src "
+                                                       (replace-regexp-in-string
+                                                        "-mode\\'" ""
+                                                        (symbol-name buf-major-mode))
+                                                       "\n")
+                                             "  #+begin_example\n")
                                            contents
                                            (if (string-match-p "\n\\'" contents) "" "\n")
-                                           "  #+end_example\n")))))
+                                           (if print-code-active
+                                               "  #+end_src\n"
+                                             "  #+end_example\n"))))))
 
                 ;; Record buffer modifications by adding what happened to result
                 (if (equal start-contents end-contents)
@@ -677,10 +698,15 @@ The commands that you can place within (t-utils-xr COMMANDS) are
       (t-utils-xr (beginning-of-defun))
  2. Keybindings.  For example,
       (t-utils-xr \"C-M-a\")
- 3. `standard-output' is captured.  You use (prin1 OBJECT) or (print OBJECT)
-    to write `standard-output', which lets you capture the results
-    of functions in the baseline.  For example,
-      (t-utils-xr (prin1 (a-buffer-query-function-special-to-your-mode)))
+ 3. `standard-output' is captured.
+    * `t-utils-xr-print-code' can be use to print part of the buffer
+      into a code block:
+        (t-utils-xr .... (t-utils-xr-print-code start-point end-point))
+    * (print OBJECT) or (print OBJECT) can also be used.  These
+      write to `standard-output' and that is captured into an example
+      block.  For example,
+        (t-utils-xr (prin1 (a-buffer-query-function-special-to-your-mode)))
+
 Multiple expressions or keybindings can be specified.
 
 Consider ./test-defun-movement/my_test.c:
