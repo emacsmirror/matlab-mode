@@ -1323,6 +1323,7 @@ Prev-siblings:
                                          "classdef"
                                          "properties"
                                          "property"
+                                         "enumeration"
                                          "events"
                                          "methods"
                                          "if"
@@ -1409,6 +1410,12 @@ Prev-siblings:
         (let ((anchor-node (or ancestor-to-check
                                prev-sibling-to-check)))
           (when anchor-node
+            (let ((anchor-last-child (treesit-node-child anchor-node -1)))
+              (when (and (equal (treesit-node-type anchor-last-child) "end")
+                         (or (not node)
+                             (< (treesit-node-start anchor-last-child) (treesit-node-start node))))
+                (setq anchor-node anchor-last-child)))
+
             (let ((indent-level (if (and node (string= (treesit-node-type node) "end"))
                                     (progn
                                       (when (string= "property" (treesit-node-type anchor-node))
@@ -1460,6 +1467,8 @@ Prev-siblings:
                                        matlab-ts-mode--indent-level))
                                     ((rx (seq bos (or "switch" "case" "otherwise") eos))
                                      matlab-ts-mode--switch-indent-level)
+                                    ("end"
+                                     0)
                                     (_
                                      (if last-child-of-error-node
                                          ;; Part of a continuation, so 4 for that plus 4 for parent
