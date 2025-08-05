@@ -339,11 +339,12 @@ baseline check fails."
         (let (baseline-errors)
           (if (not expected)
               (setq baseline-errors (list
-                                     (format "Baseline for %s does not exist." lang-file)
+                                     (format "Test: %s" lang-file)
                                      (format "Got: %s" got-file)
-                                     (format "If got looks good, rename it to: %s" expected-file)))
+                                     (format "NoBaseline: if \"Got\" is good, rename it to %s"
+                                             expected-file)))
             (setq baseline-errors (list
-                                   (format "Baseline for %s does not match expected." lang-file)
+                                   (format "Test: %s" lang-file)
                                    (format "Got: %s" got-file )
                                    (format "Expected: %s" expected-file))))
           (when baseline-errors
@@ -839,10 +840,10 @@ LANG-FILE GOT GOT-FILE EXPECTED EXPECTED-FILE CODE-TO-FACE."
            (expected-code (substring expected (1- diff-idx) diff-idx))
            (expected-face (cdr (assoc expected-code code-to-face))))
       (cons
-       (list (format "Baseline for %s does not match" lang-file)
+       (list (format "Test: %s" lang-file)
              (format "Got: %s" got-file)
              (format "Expected: %s" expected-file)
-             (format "Difference at point %d: \
+             (format "Difference-at-point: %d, \
 got code-to-face (\"%s\" . %S), expected code-to-face (\"%s\" . %S)"
                      diff-idx
                      got-code got-face
