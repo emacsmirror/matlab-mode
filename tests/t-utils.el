@@ -1054,9 +1054,9 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
             (write-region typing-got nil typing-got-file)
             (setq error-msg
                   (list
-                   (format "Indenting the unindented contents of %s does not match %s"
-                           lang-file expected-file)
-                   (format "Got: %s" typing-got-file)))))
+                   (format "Indenting-unidented-contents-of: %s" lang-file)
+                   (format "Got: %s" typing-got-file)
+                   (format "Expected: %s" expected-file)))))
         ;; result is nil or an error message list of strings
         error-msg))))
 
@@ -1097,8 +1097,9 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
             (write-region typing-got nil typing-got-file)
             (setq error-msg
                   (list
-                   (format "Typing %s line-by-line does not match %s" lang-file expected-file)
-                   (format "Got: %s" typing-got-file)))))
+                   (format "Typing-line-by-line: %s" lang-file)
+                   (format "Got: %s" typing-got-file)
+                   (format "Expected: %s" expected-file)))))
         ;; result is nil or an error message list of strings
         error-msg))))
 
