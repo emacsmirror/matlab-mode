@@ -1325,6 +1325,15 @@ Prev-siblings:
                                          "property"
                                          "events"
                                          "methods"
+                                         "if"
+                                         "switch"
+                                         "case"
+                                         "otherwise"
+                                         "for"
+                                         "parfor"
+                                         "while"
+                                         "try"
+                                         "catch"
                                          "("
                                          "["
                                          "{"
@@ -1434,6 +1443,23 @@ Prev-siblings:
                                        matlab-ts-mode--function-indent-level))
                                     ("row"
                                      0)
+                                    ("try"
+                                     (if (and node
+                                              (string-match-p (rx bos "catch_clause" eos)
+                                                              (treesit-node-type node)))
+                                         0
+                                       matlab-ts-mode--indent-level))
+
+                                    ("if"
+                                     (if (and node
+                                              (string-match-p (rx bos (or "elseif_clause"
+                                                                          "else_clause")
+                                                                  eos)
+                                                              (treesit-node-type node)))
+                                         0
+                                       matlab-ts-mode--indent-level))
+                                    ((rx (seq bos (or "switch" "case" "otherwise") eos))
+                                     matlab-ts-mode--switch-indent-level)
                                     (_
                                      (if last-child-of-error-node
                                          ;; Part of a continuation, so 4 for that plus 4 for parent
