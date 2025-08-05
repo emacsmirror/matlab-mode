@@ -893,7 +893,7 @@ comment and =%{ ... %}= is a block comment:
   %}
 #+end_src
 
-The execute and record function, =t-utils-xr= runs the Emacs commands. In this example,
+The execute and record function, =t-utils-xr= run the Emacs commands within it. In this example,
 we are re-playing the actions of typing
 
 #+begin_src matlab-ts
@@ -905,6 +905,13 @@ we are re-playing the actions of typing
 Any standard Emacs commands are allowed, e.g. "C-m" for Enter/Return (RET). In addition, you can use
 =(t-utils-xr-print-code START-POINT END-POINT)= to capture the result of running the commands in the
 baseline.
+
+You can interactively evaluate the =t-utils-xr= macro to debug the actions. Place the point
+just after the closing parenthesis and type =C-x C-e= or =M-x eval-last-sexp= and each
+command is run with a prompt showing what happened.
+
+ : (t-tuils-xr ... )
+ :                  ^   Put point here, and type C-x C-e to manually execute and record
 
 The commands are executed and recorded. The recorded results are compared against baseline:
 
