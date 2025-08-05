@@ -1260,6 +1260,22 @@ Prev-siblings:
     > #<treesit-node identifier in 30-33>
       > #<treesit-node \""
 
+  (when (and node
+             (string-match-p (rx (seq bos "comment" eos)) (treesit-node-type node)))
+    (let ((prev-sibling (treesit-node-prev-sibling node)))
+      (when (equal (treesit-node-type prev-sibling) "ERROR")
+        (let ((last-child (treesit-node-child prev-sibling -1)))
+          (when last-child
+            ;; classdef foo
+            ;;     properties
+            ;;         foo1;
+            ;;     end
+            ;;     % comment    <== RET on this node, last-child == "end"
+            ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_classdef3.m
+            (setq matlab-ts-mode--i-next-line-pair
+                  (cons (treesit-node-start last-child) 0))
+            (cl-return-from matlab-ts-mode--i-next-line-matcher t))))))
+
   (let (last-child-of-error-node)
 
     (when (and (not node)
@@ -1290,7 +1306,8 @@ Prev-siblings:
                (string= (treesit-node-type parent) "line_continuation"))
       (let ((prev-sibling (treesit-node-prev-sibling parent)))
         (when (equal (treesit-node-type prev-sibling) "ERROR")
-          (setq last-child-of-error-node (setq parent (treesit-node-child prev-sibling -1))))))
+          (setq parent (treesit-node-child prev-sibling -1))
+          (setq last-child-of-error-node parent))))
 
     (when (or last-child-of-error-node
               (and node
@@ -1301,9 +1318,12 @@ Prev-siblings:
               (equal (treesit-node-type (treesit-node-parent parent)) "ERROR"))
 
       (let ((anchors-rx (rx (seq bos (or "function_definition"
+                                         "function"
+                                         "arguments"
                                          "classdef"
                                          "properties"
                                          "property"
+                                         "events"
                                          "methods"
                                          "("
                                          "["
@@ -1336,7 +1356,6 @@ Prev-siblings:
             (setq ancestor-to-check nil)))
 
         ;; prev-sibling-to-check
-
         (let ((prev-sibling (if last-child-of-error-node
                                 last-child-of-error-node ;; is our "prev-sibling"
                               (treesit-node-prev-sibling node-to-check))))
@@ -1350,17 +1369,30 @@ Prev-siblings:
 
                ((and (string-match-p anchors-rx prev-sibling-type)
                      (or (not (string= prev-sibling-type "("))
-                         ;; Assueme nodes: identifer "(" is a function call and we don't want
-                         ;; to match that.
-                         (and (not (equal (treesit-node-type
-                                           (treesit-node-prev-sibling prev-sibling))
-                                          "identifier")))))
+                         ;; See: test-matlab-ts-mode-indent-xr-files/indent_xr_i_cont_incomplete5.m
+                         ;; result = longFunction( ...
+                         ;;     ^                           <== RET on prior line or TAB goes here
+                         ;;
+                         ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun3.m
+                         ;; function out=indent_xr_fun3(in1, ...
+                         ;;                             ^   <== RET on prior line or TAB goes here
+
+                         ;; do not have before paren: e.g. no longFunction(
+                         (not (equal (treesit-node-type
+                                      (treesit-node-prev-sibling prev-sibling))
+                                     "identifier"))
+                         ;; OR we have identifier after the paren: e.g. (in1, ...
+                         (equal (treesit-node-type
+                                 (treesit-node-next-sibling prev-sibling))
+                                "identifier")
+                          ))
                 (setq prev-sibling-to-check prev-sibling)))
 
               (setq prev-sibling (if prev-sibling-has-error
                                      nil
                                    (treesit-node-prev-sibling prev-sibling))))))
 
+        ;; We use regular matching rules if we don't have an error.
         (when (and (not in-error)
                    (not prev-sibling-has-error))
           (cl-return-from matlab-ts-mode--i-next-line-matcher nil))
@@ -1369,18 +1401,37 @@ Prev-siblings:
                                prev-sibling-to-check)))
           (when anchor-node
             (let ((indent-level (if (and node (string= (treesit-node-type node) "end"))
-                                    0
+                                    (progn
+                                      (when (string= "property" (treesit-node-type anchor-node))
+                                        (setq anchor-node (treesit-node-parent anchor-node)))
+                                      0)
                                   (pcase (treesit-node-type anchor-node)
                                     ("property"
                                      (if last-child-of-error-node
                                          matlab-ts-mode--indent-level
                                        0))
+                                    ((rx (seq bos (or "properties" "events" "methods"
+                                                      "arguments")
+                                              eos))
+                                     (if (and (or in-error prev-sibling-has-error)
+                                              (equal "end" (treesit-node-type
+                                                            (treesit-node-child anchor-node -1))))
+                                         ;; after properties, etc.
+                                         0
+                                       ;; else under properties, etc.
+                                       matlab-ts-mode--indent-level))
                                     ("("
                                      1)
                                     ((rx (seq bos (or "[" "{" eos)))
                                      matlab-ts-mode--array-indent-level)
-                                    ("function_definition"
-                                     matlab-ts-mode--function-indent-level)
+                                    ((rx (seq bos (or "function" "function_definition") eos))
+                                     (if (and (or in-error prev-sibling-has-error)
+                                              (equal "end" (treesit-node-type
+                                                            (treesit-node-child anchor-node -1))))
+                                         ;; after function
+                                         0
+                                       ;; else under function
+                                       matlab-ts-mode--function-indent-level))
                                     ("row"
                                      0)
                                     (_
@@ -2652,10 +2703,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
-    ;;      think it was missing a few toolboxes.
-    ;;
-    ;; TODO double check t-utils.el help, extract the help and put in treesit how to
+    ;; TODO t-utils
+    ;;      For print output, have (t-utils-print-code OBJECT) that will place the standard output
+    ;;      in a #+begin_src MAJOR-MODE code block.
     ;;
     ;; TODO indent
     ;;      improve t-utils-test-indent to have two typing modes:
@@ -2684,6 +2734,11 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO font-lock highlight variable references to match variable assignments, e.g.
     ;;      var = [1:10];
     ;;      disp(var)               % var usage has same face as var.
+    ;;
+    ;; TODO double check t-utils.el help, extract the help and put in treesit how to
+    ;;
+    ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
+    ;;      think it was missing a few toolboxes.
     ;;
     ;; TODO add rename identifier
 

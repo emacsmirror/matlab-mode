@@ -105,9 +105,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   :  527
-  Moved to point:  536
-  : 21:8:         
-  :               ^
+  Moved to point:  540
+  : 21:12:             
+  :                    ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -116,14 +116,14 @@
  classdef indent_xr_classdef1
      methods
          function out=foo
-+        
++            
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  536
-  Moved to point:  539
-  : 21:11:         end
-  :                   ^
+  Start point   :  540
+  Moved to point:  543
+  : 21:15:             end
+  :                       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -132,12 +132,12 @@
  classdef indent_xr_classdef1
      methods
          function out=foo
--        
-+        end
+-            
++            end
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  539
+  Start point   :  543
   Moved to point:  540
   : 22:0: 
   :       ^
@@ -145,10 +145,12 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -19,3 +19,4 @@
+@@ -18,4 +18,5 @@
+ classdef indent_xr_classdef1
      methods
          function out=foo
-         end
+-            end
++        end
 +
   #+end_src diff
 

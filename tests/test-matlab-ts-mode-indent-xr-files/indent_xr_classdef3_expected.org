@@ -1,0 +1,1139 @@
+#+startup: showall
+
+* Executing commands from indent_xr_classdef3.m:4:2:
+
+  (t-utils-xr
+  (re-search-forward "^%}") "C-n"                  "C-m"
+
+  (insert "% comment1")                            "C-m"
+  (insert "classdef indent_xr_classdef3 < handle") "C-m"
+  "C-m"
+  (insert     "% comment2")                        "C-m"
+  (insert     "properties")                        "C-m"
+  (insert         "foo;")                          "C-m"
+  (insert         "bar;")                          "C-m"
+  (insert         "% comment3")                    "C-m"
+  (insert     "end")                               "C-m"
+  "C-m"
+  (insert     "% comment4")                        "C-m"
+  (insert     "events")                            "C-m"
+  (insert          "goo;")                         "C-m"
+  (insert          "% comment5")                   "C-m"
+  (insert     "end")                               "C-m"
+  "C-m"
+  (insert     "% comment6")                        "C-m"
+  (insert     "methods")                           "C-m"
+  "C-m"
+  (insert         "% comment7")                    "C-m"
+  (insert         "function foo1(a)")              "C-m"
+  "C-m"
+  (insert             "% comment8")                "C-m"
+  (insert             "arguments")                 "C-m"
+  (insert             "a")                         "C-m"
+  (insert             "% comment9")                "C-m"
+  (insert             "end")                       "C-m"
+  (insert         "end")                           "C-m"
+  (insert      "end")                              "C-m"
+  (insert "end")                                   "C-m"
+  (re-search-backward "^classdef")
+  (print (buffer-substring-no-properties (point) (point-max)))
+  )
+
+- Invoking      : (re-search-forward "^%}")
+  Start point   : 1663
+  Moved to point: 1666
+  : 40:2: %}
+  :         ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1666
+  Moved to point: 1667
+  : 41:0: 
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   : 1667
+  Moved to point: 1668
+  : 42:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -38,3 +38,4 @@
+   (print (buffer-substring-no-properties (point) (point-max)))
+   )
+ %}
++
+  #+end_src diff
+
+- Invoking      : (insert "% comment1")
+  Start point   : 1668
+  Moved to point: 1678
+  : 42:10: % comment1
+  :                  ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -39,3 +39,4 @@
+   )
+ %}
+ 
++% comment1
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1678
+  Moved to point: 1679
+  : 43:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -39,4 +39,4 @@
+   )
+ %}
+ 
+-% comment1
+\ No newline at end of file
++% comment1
+  #+end_src diff
+
+- Invoking      : (insert "classdef indent_xr_classdef3 < handle")
+  Start point   : 1679
+  Moved to point: 1716
+  : 43:37: classdef indent_xr_classdef3 < handle
+  :                                             ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -40,3 +40,4 @@
+ %}
+ 
+ % comment1
++classdef indent_xr_classdef3 < handle
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1716
+  Moved to point: 1721
+  : 44:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -40,4 +40,5 @@
+ %}
+ 
+ % comment1
+-classdef indent_xr_classdef3 < handle
+\ No newline at end of file
++classdef indent_xr_classdef3 < handle
++    
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1721
+  Moved to point: 1722
+  : 45:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -41,4 +41,5 @@
+ 
+ % comment1
+ classdef indent_xr_classdef3 < handle
++
+     
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "% comment2")
+  Start point   : 1722
+  Moved to point: 1732
+  : 45:14:     % comment2
+  :                      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -42,4 +42,4 @@
+ % comment1
+ classdef indent_xr_classdef3 < handle
+ 
+-    
+\ No newline at end of file
++    % comment2
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1732
+  Moved to point: 1737
+  : 46:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -42,4 +42,5 @@
+ % comment1
+ classdef indent_xr_classdef3 < handle
+ 
+-    % comment2
+\ No newline at end of file
++    % comment2
++    
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "properties")
+  Start point   : 1737
+  Moved to point: 1747
+  : 46:14:     properties
+  :                      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -43,4 +43,4 @@
+ classdef indent_xr_classdef3 < handle
+ 
+     % comment2
+-    
+\ No newline at end of file
++    properties
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1747
+  Moved to point: 1756
+  : 47:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -43,4 +43,5 @@
+ classdef indent_xr_classdef3 < handle
+ 
+     % comment2
+-    properties
+\ No newline at end of file
++    properties
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "foo;")
+  Start point   : 1756
+  Moved to point: 1760
+  : 47:12:         foo;
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -44,4 +44,4 @@
+ 
+     % comment2
+     properties
+-        
+\ No newline at end of file
++        foo;
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1760
+  Moved to point: 1769
+  : 48:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -44,4 +44,5 @@
+ 
+     % comment2
+     properties
+-        foo;
+\ No newline at end of file
++        foo;
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "bar;")
+  Start point   : 1769
+  Moved to point: 1773
+  : 48:12:         bar;
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -45,4 +45,4 @@
+     % comment2
+     properties
+         foo;
+-        
+\ No newline at end of file
++        bar;
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1773
+  Moved to point: 1782
+  : 49:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -45,4 +45,5 @@
+     % comment2
+     properties
+         foo;
+-        bar;
+\ No newline at end of file
++        bar;
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "% comment3")
+  Start point   : 1782
+  Moved to point: 1792
+  : 49:18:         % comment3
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -46,4 +46,4 @@
+     properties
+         foo;
+         bar;
+-        
+\ No newline at end of file
++        % comment3
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1792
+  Moved to point: 1801
+  : 50:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -46,4 +46,5 @@
+     properties
+         foo;
+         bar;
+-        % comment3
+\ No newline at end of file
++        % comment3
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   : 1801
+  Moved to point: 1804
+  : 50:11:         end
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -47,4 +47,4 @@
+         foo;
+         bar;
+         % comment3
+-        
+\ No newline at end of file
++        end
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1804
+  Moved to point: 1801
+  : 51:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -47,4 +47,4 @@
+         foo;
+         bar;
+         % comment3
+-        end
+\ No newline at end of file
++    end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1801
+  Moved to point: 1802
+  : 52:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -48,3 +48,4 @@
+         bar;
+         % comment3
+     end
++
+  #+end_src diff
+
+- Invoking      : (insert "% comment4")
+  Start point   : 1802
+  Moved to point: 1812
+  : 52:10: % comment4
+  :                  ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -49,3 +49,4 @@
+         % comment3
+     end
+ 
++% comment4
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1812
+  Moved to point: 1817
+  : 53:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -49,4 +49,4 @@
+         % comment3
+     end
+ 
+-% comment4
+\ No newline at end of file
++    % comment4
+  #+end_src diff
+
+- Invoking      : (insert "events")
+  Start point   : 1817
+  Moved to point: 1823
+  : 53:6: events
+  :             ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -50,3 +50,4 @@
+     end
+ 
+     % comment4
++events
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1823
+  Moved to point: 1836
+  : 54:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -50,4 +50,5 @@
+     end
+ 
+     % comment4
+-events
+\ No newline at end of file
++    events
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "goo;")
+  Start point   : 1836
+  Moved to point: 1840
+  : 54:12:         goo;
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -51,4 +51,4 @@
+ 
+     % comment4
+     events
+-        
+\ No newline at end of file
++        goo;
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1840
+  Moved to point: 1849
+  : 55:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -51,4 +51,5 @@
+ 
+     % comment4
+     events
+-        goo;
+\ No newline at end of file
++        goo;
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "% comment5")
+  Start point   : 1849
+  Moved to point: 1859
+  : 55:18:         % comment5
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -52,4 +52,4 @@
+     % comment4
+     events
+         goo;
+-        
+\ No newline at end of file
++        % comment5
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1859
+  Moved to point: 1868
+  : 56:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -52,4 +52,5 @@
+     % comment4
+     events
+         goo;
+-        % comment5
+\ No newline at end of file
++        % comment5
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   : 1868
+  Moved to point: 1871
+  : 56:11:         end
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -53,4 +53,4 @@
+     events
+         goo;
+         % comment5
+-        
+\ No newline at end of file
++        end
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1871
+  Moved to point: 1868
+  : 57:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -53,4 +53,4 @@
+     events
+         goo;
+         % comment5
+-        end
+\ No newline at end of file
++    end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1868
+  Moved to point: 1869
+  : 58:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -54,3 +54,4 @@
+         goo;
+         % comment5
+     end
++
+  #+end_src diff
+
+- Invoking      : (insert "% comment6")
+  Start point   : 1869
+  Moved to point: 1879
+  : 58:10: % comment6
+  :                  ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -55,3 +55,4 @@
+         % comment5
+     end
+ 
++% comment6
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1879
+  Moved to point: 1884
+  : 59:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -55,4 +55,4 @@
+         % comment5
+     end
+ 
+-% comment6
+\ No newline at end of file
++    % comment6
+  #+end_src diff
+
+- Invoking      : (insert "methods")
+  Start point   : 1884
+  Moved to point: 1891
+  : 59:7: methods
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -56,3 +56,4 @@
+     end
+ 
+     % comment6
++methods
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1891
+  Moved to point: 1904
+  : 60:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -56,4 +56,5 @@
+     end
+ 
+     % comment6
+-methods
+\ No newline at end of file
++    methods
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1904
+  Moved to point: 1905
+  : 61:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -57,4 +57,5 @@
+ 
+     % comment6
+     methods
++
+         
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "% comment7")
+  Start point   : 1905
+  Moved to point: 1915
+  : 61:18:         % comment7
+  :                          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -58,4 +58,4 @@
+     % comment6
+     methods
+ 
+-        
+\ No newline at end of file
++        % comment7
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1915
+  Moved to point: 1924
+  : 62:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -58,4 +58,5 @@
+     % comment6
+     methods
+ 
+-        % comment7
+\ No newline at end of file
++        % comment7
++        
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "function foo1(a)")
+  Start point   : 1924
+  Moved to point: 1940
+  : 62:24:         function foo1(a)
+  :                                ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -59,4 +59,4 @@
+     methods
+ 
+         % comment7
+-        
+\ No newline at end of file
++        function foo1(a)
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1940
+  Moved to point: 1953
+  : 63:12:             
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -59,4 +59,5 @@
+     methods
+ 
+         % comment7
+-        function foo1(a)
+\ No newline at end of file
++        function foo1(a)
++            
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1953
+  Moved to point: 1954
+  : 64:12:             
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -60,4 +60,5 @@
+ 
+         % comment7
+         function foo1(a)
++
+             
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "% comment8")
+  Start point   : 1954
+  Moved to point: 1964
+  : 64:22:             % comment8
+  :                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -61,4 +61,4 @@
+         % comment7
+         function foo1(a)
+ 
+-            
+\ No newline at end of file
++            % comment8
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1964
+  Moved to point: 1977
+  : 65:12:             
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -61,4 +61,5 @@
+         % comment7
+         function foo1(a)
+ 
+-            % comment8
+\ No newline at end of file
++            % comment8
++            
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "arguments")
+  Start point   : 1977
+  Moved to point: 1986
+  : 65:21:             arguments
+  :                             ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -62,4 +62,4 @@
+         function foo1(a)
+ 
+             % comment8
+-            
+\ No newline at end of file
++            arguments
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1986
+  Moved to point: 1999
+  : 66:12:             
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -62,4 +62,5 @@
+         function foo1(a)
+ 
+             % comment8
+-            arguments
+\ No newline at end of file
++            arguments
++            
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "a")
+  Start point   : 1999
+  Moved to point: 2000
+  : 66:13:             a
+  :                     ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -63,4 +63,4 @@
+ 
+             % comment8
+             arguments
+-            
+\ No newline at end of file
++            a
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 2000
+  Moved to point: 2017
+  : 67:12:             
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -63,4 +63,5 @@
+ 
+             % comment8
+             arguments
+-            a
+\ No newline at end of file
++                a
++            
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "% comment9")
+  Start point   : 2017
+  Moved to point: 2027
+  : 67:22:             % comment9
+  :                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -64,4 +64,4 @@
+             % comment8
+             arguments
+                 a
+-            
+\ No newline at end of file
++            % comment9
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 2027
+  Moved to point: 2044
+  : 68:12:             
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -64,4 +64,5 @@
+             % comment8
+             arguments
+                 a
+-            % comment9
+\ No newline at end of file
++                % comment9
++            
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   : 2044
+  Moved to point: 2047
+  : 68:15:             end
+  :                       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -65,4 +65,4 @@
+             arguments
+                 a
+                 % comment9
+-            
+\ No newline at end of file
++            end
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 2047
+  Moved to point: 2048
+  : 69:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -65,4 +65,4 @@
+             arguments
+                 a
+                 % comment9
+-            end
+\ No newline at end of file
++            end
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   : 2048
+  Moved to point: 2051
+  : 69:3: end
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -66,3 +66,4 @@
+                 a
+                 % comment9
+             end
++end
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 2051
+  Moved to point: 2060
+  : 70:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -66,4 +66,4 @@
+                 a
+                 % comment9
+             end
+-end
+\ No newline at end of file
++        end
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   : 2060
+  Moved to point: 2063
+  : 70:3: end
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -67,3 +67,4 @@
+                 % comment9
+             end
+         end
++end
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 2063
+  Moved to point: 2068
+  : 71:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -67,4 +67,4 @@
+                 % comment9
+             end
+         end
+-end
+\ No newline at end of file
++    end
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   : 2068
+  Moved to point: 2071
+  : 71:3: end
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -68,3 +68,4 @@
+             end
+         end
+     end
++end
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 2071
+  Moved to point: 2072
+  : 72:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -68,4 +68,4 @@
+             end
+         end
+     end
+-end
+\ No newline at end of file
++end
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^classdef")
+  Start point   : 2072
+  Moved to point: 1679
+  : 43:0: classdef indent_xr_classdef3 < handle
+  :       ^
+  No buffer modifications
+
+- Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
+  Start point   : 1679
+  No point movement
+  standard-output:
+  #+begin_example
+classdef indent_xr_classdef3 < handle
+
+    % comment2
+    properties
+        foo;
+        bar;
+        % comment3
+    end
+
+    % comment4
+    events
+        goo;
+        % comment5
+    end
+
+    % comment6
+    methods
+
+        % comment7
+        function foo1(a)
+
+            % comment8
+            arguments
+                a
+                % comment9
+            end
+        end
+    end
+end
+  #+end_example
+  No buffer modifications
