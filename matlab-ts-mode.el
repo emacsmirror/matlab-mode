@@ -1181,51 +1181,72 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
   ;;        x = 1 + myfcn(a, ...
   ;;   TAB>               ^       NODE is nil and PARENT is line_continuation
 
-  (when (and (not node)
-             (string= (treesit-node-type parent) "line_continuation"))
+  (let ((check-node
+         (cond ((and (not node)
+                     (string= (treesit-node-type parent) "line_continuation"))
+                parent)
+               ((and node
+                     (let ((prev-sibling (treesit-node-prev-sibling node)))
+                       (when (equal (treesit-node-type prev-sibling) "line_continuation")
+                         (treesit-node-prev-sibling node))))))))
+
     (save-excursion
-      (let ((check-node parent))
-        ;; Walk over line_continuation and identify the "check node" we should be looking at.
-        (while (string-match-p (rx bos "line_continuation" eos)
-                               (treesit-node-type check-node))
-          (goto-char (treesit-node-start check-node))
-          (if (re-search-backward "[^ \t\n\r]" nil t)
-              (setq check-node (treesit-node-at (point)))
-            ;; at start of buffer
-            (setq check-node nil)))
+      ;; Walk over line_continuation and identify the "check node" we should be looking at.
+      (while (equal "line_continuation" (treesit-node-type check-node))
+        (goto-char (treesit-node-start check-node))
+        (if (re-search-backward "[^ \t\n\r]" nil t)
+            (setq check-node (treesit-node-at (point)))
+          ;; at start of buffer
+          (setq check-node nil)))
 
-        (when check-node
-          (let ((anchor-node check-node)
-                paren-with-args)
+      (when check-node
+        (let ((anchor-node check-node)
+              saw-close-paren)
 
-            ;; Look for open paren of a function-call, index, or expression grouping
+          ;; Look for open paren of a function-call, index, or expression grouping
+          (while (and anchor-node
+                      (let ((anchor-type (treesit-node-type anchor-node)))
+                        (pcase anchor-type
+                          (")"
+                           (setq saw-close-paren t)
+                           t)
+                          ("("
+                           (if saw-close-paren
+                               (progn
+                                 (setq saw-close-paren nil)
+                                 t)
+                             nil ;; found an unbalanced open parenthesis
+                             ))
+                          (_
+                           t))))
+            (setq anchor-node (treesit-node-prev-sibling anchor-node)))
+
+          ;; If we found "( ..." then we anchor parent and not the "("
+          (when (and anchor-node
+                     (save-excursion
+                       (goto-char (treesit-node-start anchor-node))
+                       ;; When not an argument after the "("
+                       ;; Examples: "(-1,..." "(+1,...") "(a, ..."  "((1+2),..."  "({1},..."
+                       (not (looking-at "([ \t]*[-+a-zA-Z0-9{(]"))))
+            (setq anchor-node nil))
+
+          ;; Look for parent that we can use for indent
+          (when (not anchor-node)
+            (setq anchor-node check-node)
             (while (and anchor-node
-                        (not (string-match-p (rx bos "(" eos)
+                        (not (string-match-p (rx bos (or "ERROR" "arguments") eos)
                                              (treesit-node-type anchor-node))))
-              (setq paren-with-args t)
-              (setq anchor-node (treesit-node-prev-sibling anchor-node)))
+              (setq anchor-node (treesit-node-parent anchor-node))))
 
-            ;; If we found "( ..." then we anchor off parent
-            (when (and anchor-node (not paren-with-args))
-              (setq anchor-node nil))
-
-            ;; Look for parent that we can use for indent
-            (when (not anchor-node)
-              (setq anchor-node check-node)
-              (while (and anchor-node
-                          (not (string-match-p (rx bos (or "ERROR" "arguments") eos)
-                                               (treesit-node-type anchor-node))))
-                (setq anchor-node (treesit-node-parent anchor-node))))
-
-            (when anchor-node
-              (setq matlab-ts-mode--i-cont-incomplete-matcher-pair
-                    (cons (treesit-node-start anchor-node)
-                          (pcase (treesit-node-type anchor-node)
-                            ("(" 1)
-                            ("arguments" 0)
-                            ("ERROR" matlab-ts-mode--indent-level)
-                            (_ (error "Assert - unhandled anchor-node, %S" anchor-node)))))
-              )))))))
+          (when anchor-node
+            (setq matlab-ts-mode--i-cont-incomplete-matcher-pair
+                  (cons (treesit-node-start anchor-node)
+                        (pcase (treesit-node-type anchor-node)
+                          ("(" 1)
+                          ("arguments" 0)
+                          ("ERROR" matlab-ts-mode--indent-level)
+                          (_ (error "Assert - unhandled anchor-node, %S" anchor-node)))))
+            ))))))
 
 (defun matlab-ts-mode--i-cont-incomplete-anchor (&rest _)
   "Return the anchor computed by `matlab-ts-mode--i-cont-incomplete-matcher'."
@@ -1757,15 +1778,6 @@ Example:
       ,#'matlab-ts-mode--i-error-switch-anchor
       ,#'matlab-ts-mode--i-error-switch-offset)
 
-     ;; I-Rule: line continuation for valid statements
-     ;;         arguments
-     ;;             a (1,1) ... comment
-     ;;    TAB>        double
-     ;;         end
-     ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation.m
-     ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation_row.m
-     (,#'matlab-ts-mode--i-cont-matcher parent ,#'matlab-ts-mode--i-cont-offset)
-
      ;; I-Rule: line continuations for incomplete continuations
      ;;            myVariable = 1 + myfcn(a, ...
      ;;                                   ^              <== TAB or RET on prior line goes here
@@ -1776,6 +1788,17 @@ Example:
      (,#'matlab-ts-mode--i-cont-incomplete-matcher
       ,#'matlab-ts-mode--i-cont-incomplete-anchor
       ,#'matlab-ts-mode--i-cont-incomplete-offset)
+
+     ;; I-Rule: line continuation for valid statements
+     ;;             a1 = { ...
+     ;;                    1 ...
+     ;;                    + ...
+     ;;                    2                    <== TAB or RET on prior line to here
+     ;;                  };
+     ;; See: test-matlab-ts-mode-indent-files/indent_cell.m
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation.m
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation_row.m
+     (,#'matlab-ts-mode--i-cont-matcher parent ,#'matlab-ts-mode--i-cont-offset)
 
      ;; I-Rule: Assert if no rule matched and asserts are enabled.
      ,matlab-ts-mode--indent-assert-rule

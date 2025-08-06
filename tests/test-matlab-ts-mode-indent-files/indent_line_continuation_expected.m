@@ -1,7 +1,8 @@
 % -*- matlab-ts -*-
-function indent_line_continuation(a)
+function indent_line_continuation(inArg)
     arguments
-        a (1,1) ... comment
+        inArg (1,1) ... comment
             double
     end
+    disp(inArg)
 end
