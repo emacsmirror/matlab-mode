@@ -1496,6 +1496,32 @@ Prev-siblings:
   "Return the offset computed by `matlab-ts-mode--i-next-line-matcher'."
   (cdr matlab-ts-mode--i-next-line-pair))
 
+(defvar matlab-ts-mode--i-comment-under-fcn-pair)
+
+(defun matlab-ts-mode--i-comment-under-fcn-matcher (node _parent _bol &rest _)
+  "Matcher when NODE is a comment and under a function.
+Example:
+   function a=foo
+       a=1;
+       %comment <== TAB goes here."
+  (when (and node
+             (string= (treesit-node-type node) "comment"))
+    (let ((prev-sibling (treesit-node-prev-sibling node)))
+      (when (and prev-sibling
+                 (string= (treesit-node-type prev-sibling) "function_definition"))
+        (when (not (equal (treesit-node-type (treesit-node-child prev-sibling -1)) "end"))
+          (setq matlab-ts-mode--i-comment-under-fcn-pair
+                (cons (treesit-node-start prev-sibling) matlab-ts-mode--indent-level))
+          t)))))
+
+(defun matlab-ts-mode--i-comment-under-fcn-anchor (&rest _)
+  "Return the anchor computed by `matlab-ts-mode--i-comment-under-fcn-matcher'."
+  (car matlab-ts-mode--i-comment-under-fcn-pair))
+
+(defun matlab-ts-mode--i-comment-under-fcn-offset (&rest _)
+  "Return the offset computed by `matlab-ts-mode--i-comment-under-fcn-matcher'."
+  (cdr matlab-ts-mode--i-comment-under-fcn-pair))
+
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
@@ -1505,6 +1531,14 @@ Prev-siblings:
      (,#'matlab-ts-mode--i-next-line-matcher
       ,#'matlab-ts-mode--i-next-line-anchor
       ,#'matlab-ts-mode--i-next-line-offset)
+
+     ;; I-Rule: comment under function, e.g. typing the following (no end):
+     ;;         function a=foo
+     ;;             a=1;
+     ;;             %comment    <== TAB goes here
+     (,#'matlab-ts-mode--i-comment-under-fcn-matcher
+      ,#'matlab-ts-mode--i-comment-under-fcn-anchor
+      ,#'matlab-ts-mode--i-comment-under-fcn-offset)
 
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
      ((lambda (node parent _bol &rest _)
