@@ -2861,10 +2861,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO t-utils
-    ;;      For print output, have (t-utils-print-code OBJECT) that will place the standard output
-    ;;      in a #+begin_src MAJOR-MODE code block.
-    ;;
     ;; TODO font-lock when errors
     ;;      can we add light error indicator somewhere, e.g. put an underline marker on the error
     ;;      region?
