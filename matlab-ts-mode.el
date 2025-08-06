@@ -1296,7 +1296,15 @@ Returns indent-level relative to ANCHOR-NODE."
        matlab-ts-mode--array-indent-level))
 
     ("{"
-     matlab-ts-mode--array-indent-level)
+     (if (save-excursion
+           (goto-char (treesit-node-start anchor-node))
+           (when (> (point) 1)
+             (goto-char (1- (point)))
+             (looking-at "%")))
+         ;; Ancored under a block comment:   %{
+         ;;                                    ^    <== TAB to here
+         1
+       matlab-ts-mode--array-indent-level))
 
     ((rx (seq bos (or "function" "function_definition") eos))
      (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
