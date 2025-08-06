@@ -2428,11 +2428,11 @@ THERE-END MISMATCH) or nil."
   "Ensure buffer always has a newline.
 The matlab tree-sitter requires a newline, see
 https://github.com/acristoffers/tree-sitter-matlab/issues/34"
-  (when (and (eq this-command 'self-insert-command)
-             (eq major-mode 'matlab-ts-mode))
+  (when (eq major-mode 'matlab-ts-mode)
     (save-excursion
       (goto-char (point-max))
       (when (not (= (char-before) ?\n))
+        (message "xxx adding newline")
         (insert "\n")))))
 
 ;;; MLint Flycheck
@@ -2851,9 +2851,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Final newline.  The matlab tree-sitter requires a final newline, see
     ;;    https://github.com/acristoffers/tree-sitter-matlab/issues/34
     ;; Setting require-final-newline to 'visit-save doesn't guarantee we have a newline when typing
-    ;; (inserting text), so we also setup a post-command-hook to insert a newline if needed.
+    ;; code into the buffer, so we also setup a post-command-hook to insert a newline if needed.
     (setq-local require-final-newline 'visit-save)
-    (add-hook 'post-command-hook #'matlab-ts-mode--post-command-newline -99 t)
+    (add-hook 'post-self-insert-hook #'matlab-ts-mode--post-command-newline -99 t)
 
     ;; give each file it's own parameter history
     (setq-local matlab-shell-save-and-go-history '("()"))
@@ -2890,7 +2890,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      think it was missing a few toolboxes.
     ;;
     ;; TODO add rename identifier
-
 
     (treesit-major-mode-setup)
 
