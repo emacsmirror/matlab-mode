@@ -1256,7 +1256,6 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
   "Return the offset computed by `matlab-ts-mode--i-cont-incomplete-matcher'."
   (cdr matlab-ts-mode--i-cont-incomplete-matcher-pair))
 
-
 (defun matlab-ts-mode--i-next-line-indent-level (node anchor-node last-child-of-error-node)
   "Get indent level for `matlab-ts-mode--i-cont-incomplete-matcher'.
 
@@ -1487,7 +1486,7 @@ Prev-siblings:
                       (not prev-sibling-has-error))
             (let ((prev-sibling-type (treesit-node-type prev-sibling)))
 
-              ;; Backup over "..." continuations becasue they may not be prev-sibling's.
+              ;; Backup over "..." continuations because they may not be prev-sibling's.
               ;; Consider:
               ;;    function ...
               ;;        [    ...    <== TAB here
@@ -1507,7 +1506,8 @@ Prev-siblings:
 
                  ((and (string-match-p anchors-rx prev-sibling-type)
                        (or (not (string= prev-sibling-type "("))
-                           ;; See: test-matlab-ts-mode-indent-xr-files/indent_xr_i_cont_incomplete5.m
+                           ;; See: test/test-matlab-ts-mode-indent-xr-files/
+                           ;;      indent_xr_i_cont_incomplete5.m
                            ;; result = longFunction( ...
                            ;;     ^                           <== RET on prior line or TAB goes here
                            ;;
