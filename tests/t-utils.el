@@ -1277,8 +1277,13 @@ To debug a specific indent test file
             (when unindented-error-msg
               (push unindented-error-msg error-msgs)))
 
-          ;; Indent line-by-line if lang-file does not contain:
-          ;;    t-utils-test-indent: no-line-by-line-indent - <reason>
+          ;; Indent line-by-line if
+          ;;  1)  lang-file does not contain:
+          ;;          t-utils-test-indent: no-line-by-line-indent - <reason>
+          ;;      No message produced about skipping it.
+          ;; and
+          ;;  2) LANG-FILE-NO-EXT.skip.typing.txt does not exist
+          ;;     where LANG-FILE-NO-EXT is the lang-file without the extension.
           (when do-line-by-line-indent
             (let ((skip-typing-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.typing.txt"
                                                               lang-file)))
