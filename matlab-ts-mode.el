@@ -1556,7 +1556,7 @@ Prev-siblings:
             (let ((indent-level
                    (if (and node (string= (treesit-node-type node) "end"))
                        (progn
-                         (when (string= "property" (treesit-node-type anchor-node)) ;; xxx needed?
+                         (when (string= "property" (treesit-node-type anchor-node))
                            (setq anchor-node (treesit-node-parent anchor-node)))
                          0)
                      (matlab-ts-mode--i-next-line-indent-level node anchor-node
@@ -2864,11 +2864,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO t-utils
     ;;      For print output, have (t-utils-print-code OBJECT) that will place the standard output
     ;;      in a #+begin_src MAJOR-MODE code block.
-    ;;
-    ;; TODO indent
-    ;;      improve t-utils-test-indent to have two typing modes:
-    ;;          - typing newlines
-    ;;          - typing line-by-line
     ;;
     ;; TODO font-lock when errors
     ;;      can we add light error indicator somewhere, e.g. put an underline marker on the error
