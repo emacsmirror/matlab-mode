@@ -1040,6 +1040,8 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
           (call-interactively #'indent-for-tab-command))
         (forward-line))
 
+      ;; By design indent-for-tab-command adds whitespace up to the indent level for code insertion
+      ;; on a "blank" line. To simplify our baselines, we remove this extra space.
       (t-utils--trim)
 
       (let ((typing-got (buffer-substring (point-min) (point-max)))
@@ -1247,7 +1249,10 @@ To debug a specific indent test file
             (when indent-checker
               (funcall indent-checker))
 
+            ;; By design indent-for-tab-command adds whitespace up to the indent level for code
+            ;; insertion on a "blank" line. To simplify our baselines, we remove this extra space.
             (t-utils--trim)
+
             (let ((got (buffer-substring (point-min) (point-max)))
                   (got-file (concat expected-file "~")))
 
