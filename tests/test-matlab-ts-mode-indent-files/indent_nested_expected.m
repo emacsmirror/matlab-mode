@@ -1,4 +1,7 @@
 % -*- matlab-ts -*-
+
+% t-utils-test-indent: no-line-by-line-indent - nested functions require an end
+
 function b = indent_nested(a)
 
     x = 1;
