@@ -2432,7 +2432,6 @@ https://github.com/acristoffers/tree-sitter-matlab/issues/34"
     (save-excursion
       (goto-char (point-max))
       (when (not (= (char-before) ?\n))
-        (message "xxx adding newline")
         (insert "\n")))))
 
 ;;; MLint Flycheck
