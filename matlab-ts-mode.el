@@ -1394,34 +1394,49 @@ Prev-siblings:
                       (not prev-sibling-to-check)
                       (not prev-sibling-has-error))
             (let ((prev-sibling-type (treesit-node-type prev-sibling)))
-              (cond
-               ((string= prev-sibling-type "ERROR")
-                (setq prev-sibling-has-error t))
 
-               ((and (string-match-p anchors-rx prev-sibling-type)
-                     (or (not (string= prev-sibling-type "("))
-                         ;; See: test-matlab-ts-mode-indent-xr-files/indent_xr_i_cont_incomplete5.m
-                         ;; result = longFunction( ...
-                         ;;     ^                           <== RET on prior line or TAB goes here
-                         ;;
-                         ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun3.m
-                         ;; function out=indent_xr_fun3(in1, ...
-                         ;;                             ^   <== RET on prior line or TAB goes here
+              ;; Backup over "..." continuations becasue they may not be prev-sibling's.
+              ;; Consider:
+              ;;    function ...
+              ;;        [    ...    <== TAB here
+              ;; (source_file (ERROR function) (line_continuation) (ERROR [) (line_continuation))
+              (save-excursion
+                (while (and prev-sibling
+                            (string= prev-sibling-type "line_continuation"))
+                  (goto-char (treesit-node-start prev-sibling))
+                  (when (re-search-backward "[^ \t\n\r]" nil t)
+                    (setq prev-sibling (treesit-node-at (point))
+                          prev-sibling-type (when prev-sibling
+                                              (treesit-node-type prev-sibling))))))
+              (when prev-sibling
+                (cond
+                 ((string= prev-sibling-type "ERROR")
+                  (setq prev-sibling-has-error t))
 
-                         ;; do not have before paren: e.g. no longFunction(
-                         (not (equal (treesit-node-type
-                                      (treesit-node-prev-sibling prev-sibling))
-                                     "identifier"))
-                         ;; OR we have identifier after the paren: e.g. (in1, ...
-                         (equal (treesit-node-type
-                                 (treesit-node-next-sibling prev-sibling))
-                                "identifier")
-                          ))
-                (setq prev-sibling-to-check prev-sibling)))
+                 ((and (string-match-p anchors-rx prev-sibling-type)
+                       (or (not (string= prev-sibling-type "("))
+                           ;; See: test-matlab-ts-mode-indent-xr-files/indent_xr_i_cont_incomplete5.m
+                           ;; result = longFunction( ...
+                           ;;     ^                           <== RET on prior line or TAB goes here
+                           ;;
+                           ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun3.m
+                           ;; function out=indent_xr_fun3(in1, ...
+                           ;;                             ^   <== RET on prior line or TAB goes here
+                           
+                           ;; do not have before paren: e.g. no longFunction(
+                           (not (equal (treesit-node-type
+                                        (treesit-node-prev-sibling prev-sibling))
+                                       "identifier"))
+                           ;; OR we have identifier after the paren: e.g. (in1, ...
+                           (equal (treesit-node-type
+                                   (treesit-node-next-sibling prev-sibling))
+                                  "identifier")
+                           ))
+                  (setq prev-sibling-to-check prev-sibling)))
 
-              (setq prev-sibling (if prev-sibling-has-error
-                                     nil
-                                   (treesit-node-prev-sibling prev-sibling))))))
+                (setq prev-sibling (if prev-sibling-has-error
+                                       nil
+                                     (treesit-node-prev-sibling prev-sibling)))))))
 
         ;; We use regular matching rules if we don't have an error.
         (when (and (not in-error)
@@ -1459,7 +1474,16 @@ Prev-siblings:
                                        matlab-ts-mode--indent-level))
                                     ("("
                                      1)
-                                    ((rx (seq bos (or "[" "{" eos)))
+                                    ("[" ;; either a matrix or function output
+                                     (if (save-excursion
+                                           (goto-char (treesit-node-start anchor-node))
+                                           (while (and (re-search-backward "[^ \t\r\n]" nil t)
+                                                       (string= (treesit-node-type (treesit-node-at (point))) "line_continuation")))
+                                           (string= (treesit-node-type (treesit-node-at (point))) "function"))
+                                         ;; function output
+                                         1
+                                       matlab-ts-mode--array-indent-level))
+                                    ("{"
                                      matlab-ts-mode--array-indent-level)
                                     ((rx (seq bos (or "function" "function_definition") eos))
                                      (if (and (or in-error prev-sibling-has-error)
