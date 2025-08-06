@@ -1478,8 +1478,11 @@ Prev-siblings:
                                      (if (save-excursion
                                            (goto-char (treesit-node-start anchor-node))
                                            (while (and (re-search-backward "[^ \t\r\n]" nil t)
-                                                       (string= (treesit-node-type (treesit-node-at (point))) "line_continuation")))
-                                           (string= (treesit-node-type (treesit-node-at (point))) "function"))
+                                                       (string= (treesit-node-type
+                                                                 (treesit-node-at (point)))
+                                                                "line_continuation")))
+                                           (string= (treesit-node-type (treesit-node-at (point)))
+                                                    "function"))
                                          ;; function output
                                          1
                                        matlab-ts-mode--array-indent-level))
@@ -1504,9 +1507,8 @@ Prev-siblings:
 
                                     ("if"
                                      (if (and node
-                                              (string-match-p (rx bos (or "elseif_clause"
-                                                                          "else_clause")
-                                                                  eos)
+                                              ;; else, else_clause, elseif, or elseif_clause
+                                              (string-match-p (rx bos "else")
                                                               (treesit-node-type node)))
                                          0
                                        matlab-ts-mode--indent-level))

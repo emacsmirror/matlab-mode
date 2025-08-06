@@ -1,21 +1,16 @@
 % -*- matlab-ts -*-
 
-% t-utils-test-indent: no-line-by-line-indent - continued "fcn_call(arg1, ..."
-% isn't identified as a function call, so indenting line by line fails on this.
-
-function indent_if_continued
+function indent_if_continued2
 
     if condition1 || ...
        condition2 || ...
-       fcn_call(arg1, ... 
-                arg2)
+       fcn_call(arg1, arg2)
 
         line_in_if();
 
     elseif condition1 + condition2 == ...
            2770000 || ...
-           fcn_call(arg1, ... 
-                    arg2)  
+           fcn_call(arg1, arg2)
         line_in_if();
     elseif (condition2 || ...
             (condition3 && ...
@@ -28,12 +23,12 @@ function indent_if_continued
 
         disp('hello')
     else ...
-        
+
 
     end
 
     if  a
-        
+
 
     end
 
