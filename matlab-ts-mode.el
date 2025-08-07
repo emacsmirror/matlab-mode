@@ -112,9 +112,12 @@ Guidelines:
   "*Face used for numbers.")
 
 (defcustom matlab-ts-mode-font-lock-level 3
-  "*Level of font lock for MATLAB code."
-  ;; Setting to 4 to results in parse errors causing too much "red". See 'syntax-error
-  ;; font-lock feature below.
+  "*Level of font lock for MATLAB code.
+The \"Standard\" level plus either MLint flycheck or the MATLAB Lanugage
+Server gives all syntatic faces along with error indicators.
+
+The \"Standard plus parse errors\" can result in too much use of the
+`font-lock-warning-face' when there are syntax errors."
   :type '(choice (const :tag "Minimal" 1)
 		 (const :tag "Low" 2)
 		 (const :tag "Standard" 3)
@@ -2971,10 +2974,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;          x > 1) ...
     ;;         ^                  <== TAB or RET on prior line to here (e.g. to enter "&& y")
     ;;      end
-    ;;
-    ;; TODO font-lock when errors
-    ;;      can we add light error indicator somewhere, e.g. put an underline marker on the error
-    ;;      region?
     ;;
     ;; TODO on load enter matlab-ts-mode when file contains mcode and
     ;;      (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
