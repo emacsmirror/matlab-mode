@@ -1054,14 +1054,6 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
   "Set and return offset for parent of PARENT (grand-parent of NODE) at BOL."
   (matlab-ts-mode--set-function-indent-level node (treesit-node-parent parent) bol))
 
-;; TODO - keep or rm matlab-ts-mode--do-functions-have-end (it's not currently used)
-(defun matlab-ts-mode--do-functions-have-end ()
-  "Are functions terminated with an end keyword?"
-  ;; matlab-ts-mode--function-indent-level is setup when we enter matlab-ts-mode
-  (cl-assert (not (eq matlab-ts-mode--function-indent-level 'unset)))
-  ;; A 0 indicates functions are not terminated by an end keyword
-  (not (= matlab-ts-mode--function-indent-level 0)))
-
 (defvar matlab-ts--indent-debug-rule
   '((lambda (node parent bol)
       (message "-->N:%S P:%S BOL:%S GP:%S NPS:%S"
