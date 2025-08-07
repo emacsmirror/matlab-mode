@@ -113,8 +113,8 @@ Guidelines:
 
 (defcustom matlab-ts-mode-font-lock-level 3
   "*Level of font lock for MATLAB code.
-The \"Standard\" level plus either MLint flycheck or the MATLAB Lanugage
-Server gives all syntatic faces along with error indicators.
+The \"Standard\" level plus either MLint flycheck or the MATLAB Language
+Server gives all syntactic faces along with error indicators.
 
 The \"Standard plus parse errors\" can result in too much use of the
 `font-lock-warning-face' when there are syntax errors."
@@ -1235,6 +1235,19 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
                        (not (looking-at "([ \t]*[-+a-zA-Z0-9{(]"))))
             (setq anchor-node nil))
 
+          ;; An expression of an if, while, or switch statement? Consider:
+          ;;   if a > 1 && ...
+          ;;      ^                     <== TAB goes here
+          ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_if_cond.m
+          (when (not anchor-node)
+            (setq anchor-node check-node)
+            (while (and anchor-node
+                        (not (string-match-p (rx bos (or "if_statement" "while_statement" "switch_statement") eos)
+                                             (treesit-node-type anchor-node))))
+              (setq anchor-node (treesit-node-parent anchor-node)))
+            (when anchor-node
+              (setq anchor-node (treesit-node-child-by-field-name anchor-node "condition"))))
+
           ;; Look for parent that we can use for indent
           (when (not anchor-node)
             (setq anchor-node check-node)
@@ -1243,15 +1256,15 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
                                              (treesit-node-type anchor-node))))
               (setq anchor-node (treesit-node-parent anchor-node))))
 
+          ;; Setup to indent if we found an anchor-node
           (when anchor-node
             (setq matlab-ts-mode--i-cont-incomplete-matcher-pair
                   (cons (treesit-node-start anchor-node)
                         (pcase (treesit-node-type anchor-node)
                           ("(" 1)
-                          ("arguments" 0)
                           ("ERROR" matlab-ts-mode--indent-level)
-                          (_ (error "Assert - unhandled anchor-node, %S" anchor-node)))))
-            ))))))
+                          (_ 0)))))
+          )))))
 
 (defun matlab-ts-mode--i-cont-incomplete-anchor (&rest _)
   "Return the anchor computed by `matlab-ts-mode--i-cont-incomplete-matcher'."
@@ -2452,7 +2465,7 @@ THERE-END MISMATCH) or nil."
         (not (= node-indent-level end-indent-level)))
       t)
 
-     ;; Case: newely added statement casues a parse error, so it's missing the end, Consider:
+     ;; Case: newly added statement causes a parse error, so it's missing the end, Consider:
      ;;   classdef foo
      ;;       properties                   <== properties typed, followed by RET
      ;;       methods
@@ -2964,17 +2977,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO indent
-    ;;      if a > 1 && ...
-    ;;         ^                  <== TAB or RET on prior line to here
-    ;;      end
-    ;;
-    ;; TODO indent
-    ;;      if (a > 1 && ...
-    ;;          x > 1) ...
-    ;;         ^                  <== TAB or RET on prior line to here (e.g. to enter "&& y")
-    ;;      end
-    ;;
     ;; TODO on load enter matlab-ts-mode when file contains mcode and
     ;;      (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
     ;;      is active. Also look at matlab-mode magic-mode-alist setup.
