@@ -1,0 +1,143 @@
+#+startup: showall
+
+* Executing commands from electric_ends_classdef.m:4:2:
+
+  (t-utils-xr
+  (re-search-forward "%}") "C-n"
+
+  (insert "classdef electric_ends_classdef")    "C-m"
+  (insert     "enumeration")                    "C-m"
+  (insert          "red")
+
+  (re-search-backward "^classdef")
+  (t-utils-xr-print-code (point) (point-max))
+  )
+
+- Invoking      : (re-search-forward "%}")
+  Start point   :  292
+  Moved to point:  295
+  : 14:2: %}
+  :         ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  295
+  Moved to point:  296
+  : 15:0: 
+  :       ^
+  No buffer modifications
+
+- Invoking      : (insert "classdef electric_ends_classdef")
+  Start point   :  296
+  Moved to point:  327
+  : 15:31: classdef electric_ends_classdef
+  :                                       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -12,3 +12,4 @@
+   (t-utils-xr-print-code (point) (point-max))
+   )
+ %}
++classdef electric_ends_classdef
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  327
+  Moved to point:  332
+  : 16:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -12,4 +12,6 @@
+   (t-utils-xr-print-code (point) (point-max))
+   )
+ %}
+-classdef electric_ends_classdef
+\ No newline at end of file
++classdef electric_ends_classdef
++    
++end
+  #+end_src diff
+
+- Invoking      : (insert "enumeration")
+  Start point   :  332
+  Moved to point:  343
+  : 16:15:     enumeration
+  :                       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -13,5 +13,5 @@
+   )
+ %}
+ classdef electric_ends_classdef
+-    
++    enumeration
+ end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  343
+  Moved to point:  352
+  : 17:8:         
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -14,4 +14,7 @@
+ %}
+ classdef electric_ends_classdef
+     enumeration
++        
++    end
++
+ end
+  #+end_src diff
+
+- Invoking      : (insert "red")
+  Start point   :  352
+  Moved to point:  355
+  : 17:11:         red
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -14,7 +14,7 @@
+ %}
+ classdef electric_ends_classdef
+     enumeration
+-        
++        red
+     end
+ 
+ end
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^classdef")
+  Start point   :  355
+  Moved to point:  296
+  : 15:0: classdef electric_ends_classdef
+  :       ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (point-max))
+  Start point   :  296
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+classdef electric_ends_classdef
+    enumeration
+        red
+    end
+
+end
+  #+end_src
+  No buffer modifications

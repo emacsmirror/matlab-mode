@@ -147,16 +147,18 @@ Then restart Emacs and run
 You can also install via use-package or other methods."
   :type 'boolean)
 
-;; TODO
-;; (defcustom matlab-ts-mode-electric-ends t
-;;   "*If t, insert end keywords to complete statements.
-;; For example, if you type
-;;    classdef foo<RET>
-;; an end statement will be inserted resulting in:
-;;    classdef foo<RET>
-;;        ^                  <== point here
-;;    end"
-;;   :type 'boolean)
+(defcustom matlab-ts-mode-electric-ends t
+  "*If t, insert end keywords to complete statements.
+For example, if you type
+   classdef foo<RET>
+an end statement will be inserted resulting in:
+   classdef foo<RET>
+       ^                  <== point here
+   end
+Insertion of end keywords works well when the code is
+indented.  If you are editing code that is not indented,
+you may wish to turn this off."
+  :type 'boolean)
 
 ;;; Global variables used in multiple code ";;; sections"
 
@@ -1301,8 +1303,8 @@ Returns indent-level relative to ANCHOR-NODE."
            (when (> (point) 1)
              (goto-char (1- (point)))
              (looking-at "%")))
-         ;; Ancored under a block comment:   %{
-         ;;                                    ^    <== TAB to here
+         ;; Anchored under a block comment:   %{
+         ;;                                     ^    <== TAB to here, one more than the "{"
          1
        matlab-ts-mode--array-indent-level))
 
@@ -1563,16 +1565,6 @@ Prev-siblings:
                                                                last-child-of-error-node))))
               (setq matlab-ts-mode--i-next-line-pair
                     (cons (treesit-node-start anchor-node) indent-level))
-
-              ;; TODO Rough sketch of electric-ends
-              ;;      We need to look at the parse tree to see if we should insert it.
-              ;;      Also, we should verify this doesn't happen with indent-region, only on RET.
-              ;; (when matlab-ts-mode-electric-ends
-              ;;   (save-excursion
-              ;;     (let ((insert-column (save-excursion
-              ;;                            (goto-char (treesit-node-start anchor-node))
-              ;;                            (current-column))))
-              ;;       (insert "\n" (make-string insert-column ?\ ) "end\n")))
               t)))))))
 
 (defun matlab-ts-mode--i-next-line-anchor (&rest _)
@@ -2422,17 +2414,144 @@ THERE-END MISMATCH) or nil."
         (list here-begin here-end there-begin there-end mismatch)
      (funcall #'show-paren--default))))
 
-;;; post-command-hook
+;;; post-self-command-hook
 
-(defun matlab-ts-mode--post-command-newline ()
-  "Ensure buffer always has a newline.
-The matlab tree-sitter requires a newline, see
-https://github.com/acristoffers/tree-sitter-matlab/issues/34"
-  (when (eq major-mode 'matlab-ts-mode)
+(defun matlab-ts-mode--is-electric-end-missing (node)
+  "Is statement NODE missing an \"end\"."
+  (let ((last-child (treesit-node-child (treesit-node-parent node) -1)))
+    (cond
+     ;; Case: no end keyword for the node in the parse tree
+     ((not (equal (treesit-node-type last-child) "end"))
+      t)
+
+     ;; Case: see if this is an end for a different statement. Consider:
+     ;;   function foo(a)
+     ;;       if a > 0            <== When RET typed, we want the electric end to be inserted
+     ;;   end
+     ;; The parse tree is:
+     ;;   (function_definition function name: (identifier)
+     ;;    (function_arguments ( arguments: (identifier) ))
+     ;;    \n
+     ;;    (block
+     ;;     (if_statement if
+     ;;      condition: (comparison_operator (identifier) > (number))
+     ;;      \n end)
+     ;;     \n))
+     ;; Notice the end is attached to the if_statement.  Therefore, we use indent level
+     ;; to see if it is really attached.
+     ;; This works well assuming that the code is indented when one is editing it.
+     ((let ((node-indent-level (save-excursion
+                                  (goto-char (treesit-node-start node))
+                                 (current-indentation)))
+            (end-indent-level (save-excursion
+                                 (goto-char (treesit-node-start last-child))
+                                 (current-indentation))))
+        (not (= node-indent-level end-indent-level)))
+      t)
+
+     ;; Case: newely added statement casues a parse error, so it's missing the end, Consider:
+     ;;   classdef foo
+     ;;       properties                   <== properties typed, followed by RET
+     ;;       methods
+     ;;       end
+     ;;   end
+     ;; which gives us parse tree:
+     ;;   (source_file
+     ;;    (class_definition classdef name: (identifier) \n
+     ;;     (properties properties \n
+     ;;      (ERROR , methods)
+     ;;      \n end)
+     ;;     end)
+     ;;    \n)
+     ((let* ((statement-node (treesit-node-parent node))
+             (child-idx 0)
+             (child (treesit-node-child statement-node child-idx))
+             (node-type (treesit-node-type node)))
+
+        (while (and child
+                    (string-match-p (rx-to-string `(seq bos (or ,node-type "\n" "comment") eos) t)
+                                    (treesit-node-type child)))
+          (setq child-idx (1+ child-idx))
+          (setq child (treesit-node-child statement-node child-idx)))
+        (and child (string= (treesit-node-type child) "ERROR")))
+      ;; An ERROR immediately after node
+      t)
+
+     ;; Otherwise: statement has an end
+     (t
+      nil
+     ))))
+
+(defun matlab-ts-mode--insert-electric-ends ()
+  "A RET was type, insert the electric \"end\" if needed."
+
+  (let (end-indent-level
+        extra-insert
+        move-point-to-extra-insert)
+
     (save-excursion
-      (goto-char (point-max))
-      (when (not (= (char-before) ?\n))
-        (insert "\n")))))
+      (forward-line -1)
+      (back-to-indentation)
+      (let* ((node (treesit-node-at (point)))
+             (node-type (treesit-node-type node)))
+        (when (and node
+                   ;; AND: Was a statement entered that requires and end?
+                   (string-match-p
+                    (rx bos (or "function" "arguments" "if" "switch" "while" "for" "parfor"
+                                "spmd" "try" "classdef" "enumeration" "properties" "methods"
+                                "events")
+                        eos)
+                    node-type)
+                   ;; AND: Is the statement missing an end?
+                   (matlab-ts-mode--is-electric-end-missing node))
+
+          ;; Statement for the RET doesn't have an end, so add one at end-indent-level
+          (setq end-indent-level (current-indentation))
+
+          ;; Extra insert, e.g. case for the switch statement.
+          (pcase node-type
+            ("switch"
+             (setq extra-insert "  case "
+                   move-point-to-extra-insert t))
+            ("try"
+             (setq extra-insert "catch me"))
+          ))))
+
+    (when end-indent-level
+      (let ((indent-level-spaces (make-string end-indent-level ? )))
+        (save-excursion
+          (when extra-insert
+            (when (not move-point-to-extra-insert)
+              (insert "\n"))
+            (insert indent-level-spaces extra-insert))
+          (insert "\n" indent-level-spaces "end\n"))
+        ))))
+
+(defun matlab-ts-mode--post-insert-callback ()
+  "Callback attached to `post-self-insert-hook'.
+
+The matlab tree-sitter requires a final newline.  Setting
+`require-final-newline' to \\='visit-save doesn't guarantee we have a newline
+when typing code into the buffer, so we leverage `post-self-command-hook'
+to insert a newline if needed.
+
+  https://github.com/acristoffers/tree-sitter-matlab/issues/34
+
+This callback also implements `matlab-ts-mode-electric-ends'."
+
+  (when (eq major-mode 'matlab-ts-mode)
+    (let ((ret-typed (eq last-command-event ?\n)))
+
+      ;; Add final newline to the buffer?
+      (save-excursion
+        (goto-char (point-max))
+        (when (not (= (char-before) ?\n))
+          (insert "\n")))
+
+      ;; Add "end" (for `matlab-ts-mode-electric-ends')
+      (when (and ret-typed
+                   matlab-ts-mode-electric-ends)
+        (matlab-ts-mode--insert-electric-ends)))))
 
 ;;; MLint Flycheck
 
@@ -2696,21 +2815,6 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
       :help "When MATLAB debugger is active, stop debugging"]
      )
 
-    ;; TODO - how to autoload these?  Do we want this menu?
-    ;;     ("Insert"
-    ;;      ["Complete Symbol" matlab-complete-symbol t]
-    ;;      ["Comment" matlab-comment t]
-    ;;      ["if end" tempo-template-matlab-if t]
-    ;;      ["if else end" tempo-template-matlab-if-else t]
-    ;;      ["for end" tempo-template-matlab-for t]
-    ;;      ["switch otherwise end" tempo-template-matlab-switch t]
-    ;;      ["Next case" matlab-insert-next-case t]
-    ;;      ["try catch end" tempo-template-matlab-try t]
-    ;;      ["while end" tempo-template-matlab-while t]
-    ;;      ["End of block" matlab-insert-end-block t]
-    ;;      ["Function" tempo-template-matlab-function t]
-    ;;      ["Stringify Region" matlab-stringify-region t]
-    ;;      )
     "----"
     ["View mlint code analyzer messages" (flycheck-list-errors)
      :help "View mlint code analyzer messages.
@@ -2847,12 +2951,9 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; See: tests/test-matlab-ts-mode-show-paren.el
     (setq-local show-paren-data-function #'matlab-ts-mode--show-paren-or-block)
 
-    ;; Final newline.  The matlab tree-sitter requires a final newline, see
-    ;;    https://github.com/acristoffers/tree-sitter-matlab/issues/34
-    ;; Setting require-final-newline to 'visit-save doesn't guarantee we have a newline when typing
-    ;; code into the buffer, so we also setup a post-command-hook to insert a newline if needed.
+    ;; Final newline and electric ends.
     (setq-local require-final-newline 'visit-save)
-    (add-hook 'post-self-insert-hook #'matlab-ts-mode--post-command-newline -99 t)
+    (add-hook 'post-self-insert-hook #'matlab-ts-mode--post-insert-callback -99 t)
 
     ;; give each file it's own parameter history
     (setq-local matlab-shell-save-and-go-history '("()"))
@@ -2860,12 +2961,20 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO indent
+    ;;      if a > 1 && ...
+    ;;         ^                  <== TAB or RET on prior line to here
+    ;;      end
+    ;;
+    ;; TODO indent
+    ;;      if (a > 1 && ...
+    ;;          x > 1) ...
+    ;;         ^                  <== TAB or RET on prior line to here (e.g. to enter "&& y")
+    ;;      end
+    ;;
     ;; TODO font-lock when errors
     ;;      can we add light error indicator somewhere, e.g. put an underline marker on the error
     ;;      region?
-    ;;
-    ;; TODO create defcustom matlab-ts-mode-electric-ends that inserts end statements
-    ;;      when a function, switch, while, for, etc. is entered. This should handle continuations.
     ;;
     ;; TODO on load enter matlab-ts-mode when file contains mcode and
     ;;      (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
