@@ -54,7 +54,8 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-indent-xr-files/NAME_expected.org"
 
-  (let* ((test-name "test-matlab-ts-mode-indent-xr")
+  (let* ((matlab-ts-mode-electric-ends nil)
+         (test-name "test-matlab-ts-mode-indent-xr")
          (m-files (t-utils-get-files
                    test-name
                    (rx ".m" eos)
