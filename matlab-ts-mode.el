@@ -839,10 +839,223 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 
 ;;; Indent
 
-;; TODO add indent standard here.
+;; MATLAB Indent Standard
+;;
+;; Having one-style of consistent indentation makes reading others' code easier and thus
+;; we do not provide indent customization.
+;;
+;; 1. Indent level of 4 spaces, no TAB characters, unicode, LF line-endings (no CRLF)
+;;
+;; 2. Code and comments should fit within 100 columns.A line may exceed 100 characters if it
+;;    improves code readability.
+;;
+;;    In general, too much logic on a given line hurts readability.  Reading the first part of a
+;;    line should convey the operation being performed by the line.  Adding unrelated concepts on a
+;;    give line hurts readability. Hence the recommendation that lines are not too long.
+;;
+;;    The indent engine should NOT automatically re-flow lines to fit within 100 columns.
+;;
+;;    Consider the following where the row content causes the column width to be 105.
+;;    Re-flowing would hurt readability.
+;;
+;;        mat = [ ...
+;;                <row-1>;
+;;                <row-2>;
+;;                ...
+;;                <row-N>;
+;;              ]
+;;
+;;    Consider the following where the model/path/to/block causes the line to be greater than
+;;    100. Re-flowing will hurt readability.
+;;
+;;      set_param(...
+;;          'model/path/to/block', ...
+;;          'Parameter', 'Value')
+;;
+;;    Adding the ability to explicitly re-flowing of code in a region, similar to the way M-q or
+;;    `fill-paragraph' works in a comment, would be a nice addition.
+;;
+;; 3. Use 2-space offset for case labels.  The code under case or otherwise statements is one
+;;    condition and hence should have the same indent level anchored from the switch statement.
+;;    The level of complexity of the following two statements is the same which is clear from
+;;    the level of indent of the doIt function call.
+;;
+;;    if condition1 == 1      |     switch condition1
+;;       doIt                 |       case 1
+;;    end                     |         doIt
+;;                            |     end
+;;
+;; 4. Cells and arrays contain data and have indent level of 2 spaces.
+;;
+;;    Indents cells and array with an inner indent level of 2 spaces for the data. Cells and arrays
+;;    which are structured data. Since there's no "conditionals" within structured data, we treat
+;;    the nesting in structured data like labels and indent by 2 spaces. Also, data is aligned with
+;;    the opening parenthesis or bracket. Example:
+;;
+;;      myCell = { ...
+;;                 {1, 2, 3}, ...
+;;                 { ...
+;;                   [4, 5; ...
+;;                    6, 7] ...
+;;                 } ...
+;;               }
+;;
+;; 5. Operator padding.
+;;
+;;    - Use a single space after (but not before) a comma.
+;;
+;;    - Use a single space on each side of binary operators (such as +), except for member
+;;      operators.
+;;
+;;    - Do not use any space between member operators and their operands. For example: a.b
+;;
+;;    - Do not use any space between a unary operator and its operand. For example: -10
+;;
+;;    - Language keywords should have a space after them. For example: if (cond)
+;;
+;;    Example:
+;;
+;;        function out2 = myFcn(in1, in2)
+;;            if (in1 > 1 && in2 > 1) || in2 > -10
+;;                out1 = in1 * in2;
+;;            else
+;;                out1 = 0;
+;;            end
+;;        end
+;;
+;; 6. Function call formats
+;;    - On a single line:
+;;
+;;         [result1, result2] = myFunction(arg1, arg2)
+;;
+;;    - On multiple lines, aligning subsequent lines after the opening parenthesis:
+;;
+;;         [result1, result2] = myFunction(arg1, ...
+;;                                         arg2)
+;;
+;;
+;;
+;;    - On multiple lines, aligning subsequent lines with 4 additional spaces
+;;
+;;         [result1, result2] = myFunction( ...
+;;             arg1, arg2)
+;;
+;;    This is invalid:
+;;       [result1, result2] = myFunction(arg1, ...
+;;           arg2)                                     % arg2 should be aligned with arg1
+;;
+;; 7. Function definition formats
+;;
+;;    - On a single line
+;;         function [out1, out2] = myFunction(in1, in2)
+;;
+;;    - Aligned on multiple lines
+;;
+;;         function ...
+;;             [out1, ...         % comment
+;;              out2] ...         % comment
+;;             = myFunction ...
+;;             (in1, ...          % comment
+;;              in2)              % comment
+;;
+;; 8. Expressions
+;;
+;;    When you have long expressions, be consistent in how you break up the lines and minimize use
+;;    of newlines. Use newlines to help with readability. Place operators at the end of a line,
+;;    rather than at the beginning of a line.
+;;
+;;    Operators should never be at the start of a line in an expression which indicates that
+;;    the expression continues. For example the && is at the end of the 1st line
+;;    and not the start of the 2nd line:
+;;
+;;     if (thisOneThing > thisOtherLongLongLongLongLongLongThing &&
+;;         aThirdThing == aFourthLongLongLongLongLongLongThing)
+;;
+;;         % code
+;;     end
+;;
+;;    You can use extra newlines when it helps with readability, e.g.
+;;
+;;     if (c > 30 &&  % is cost per unit must be high?
+;;         d > 40)    % and distance traveled high?
+;;
+;;         // code
+;;     end
+;;
+;;    Use parentheses to clarify the intended precedence of "&&" and "||".
+;;    For example:
+;;
+;;     if (c > 30 || (a > 10 && b > 20))
+;;
+;;     end
+;;
+;;    Do not overuse parentheses. Don't add them when they are not needed.  Overuse of parentheses
+;;    can clutter code and reduce its readability.  Use of parentheses is a indicator that standard
+;;    operator precedence rules are not in use, for example, "a = b * (c + d)" indicates to the
+;;    reader that standard operator precedence is not in use.
+;;
+;;    As a guideline, use the minimum number of parentheses, except for
+;;    parenthesis to clarify the precedence of "&&" and "||" or more
+;;    generally, if in doubt about operator precedence, parenthesize.
+;;
+;;    Examples:
+;;
+;;     % Good                           % Bad: too many parens
+;;     if (c > 30 && d > 40) || e       if (((c > 30) && (d > 40)) || e)
+;;     end                              end
+;;
+;; 9. Consecutive statement alignment
+;;
+;;    Be consistent in the alignment of consecutive statements. For example,
+;;
+;;        width  = 5;
+;;        length = 10;
+;;        area   = width * length;
+;;
+;;    alternatively you can un-align them:
+;;
+;;        width = 5;
+;;        length = 10;
+;;        area = width * length;
+;;
+;;    Don't mix the alignment
+;;
+;;        width  = 5;
+;;        length = 10;
+;;        area = width * length;   % Bad partially aligned
+;;
+;; 10. Align consecutive trailing comments
+;;
+;; 11. Function/classdef doc help should be aligned with the function/classdef keyword.
+;;
+;; 12. Tabular data alignment
+;;
+;;     Be consistent in data alignment, either aligned:
+;;
+;;      table1 = [1,      2;
+;;                1000,   1.9;
+;;                100000, 1.875];
+;;     or un-aligned
+;
+;;      table1 = [1, 2;
+;;                1000, 1.9;
+;;                100000, 1.875];
+;;
+;;     TODO add an alignment directive, %$align
+;;
+;;     Alignment of tabular data should be done when there's an indent
+;;     directive, perhaps named %$align which must precede the data to be
+;;     aligned. For example, table1 would have it's columns aligned,
+;;     whereas table2 would not:
+;;
+;;      %         Units   Cost   (%$align)
+;;      %         -----   -----
+;;      table1 = [1,      2;
+;;                1000,   1.9;
+;;                100000, 1.875];
+;;
+;; 13. Indent must follow the above rules when the code has syntax errors.
 
-;; We discourage customizing the indentation rules. Having one-style of consistent indentation makes
-;; reading others' code easier.
 (defvar matlab-ts-mode--indent-level 4
   "Indentation level.")
 (defvar matlab-ts-mode--switch-indent-level (/ matlab-ts-mode--indent-level 2)
@@ -3009,10 +3222,10 @@ is t, add the following to an Init File (e.g. `user-init-file' or
 (provide 'matlab-ts-mode)
 ;;; matlab-ts-mode.el ends here
 
-;; LocalWords:  SPDX gmail dylib libtree treesit builtins defface defcustom flycheck MLint MELPA
+;; LocalWords:  SPDX gmail dylib libtree treesit builtins defface defcustom flycheck MLint MELPA LF
 ;; LocalWords:  defun progn setq MEC propertize varname eobp mcm defmacro sexp defconst bos eos prev
 ;; LocalWords:  classdef's Fontify fontified fontify gethash pragma's multioutput pred dir's bol cdr
 ;; LocalWords:  NPS BUF myfcn pcase xr repeat:nil docstring numberp imenu alist nondirectory mapc
 ;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
-;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode
+;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF
