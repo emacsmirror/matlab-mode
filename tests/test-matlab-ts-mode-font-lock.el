@@ -78,6 +78,7 @@ after validating it, rename it to
                          ("k" . font-lock-keyword-face)
                          ("M" . matlab-ts-mode-comment-to-do-marker-face)
                          ("n" . matlab-ts-mode-number-face)
+                         ("N" . matlab-ts-mode-end-number-face)
                          ("o" . matlab-ts-mode-operator-face)
                          ("p" . matlab-ts-mode-pragma-face)
                          ("P" . matlab-ts-mode-property-face)

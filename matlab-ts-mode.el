@@ -112,6 +112,11 @@ Guidelines:
   '((t :inherit font-lock-constant-face))
   "*Face used for numbers.")
 
+(defface matlab-ts-mode-end-number-face
+  '((t :inherit matlab-ts-mode-number-face
+       :slant italic))
+  "*Face used for \"end\" when used as an array or cell dimension number index.")
+
 (defcustom matlab-ts-mode-font-lock-level 3
   "*Level of font lock for MATLAB code.
 The \"Standard\" level plus either MLint flycheck or the MATLAB Language
@@ -790,7 +795,8 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_numbers.m
    :language 'matlab
    :feature 'number
-   '((number) @matlab-ts-mode-number-face)
+   '(((number) @matlab-ts-mode-number-face)
+     ((end_keyword) @matlab-ts-mode-end-number-face))
 
    ;; F-Rule: Brackets
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_brackets.m
@@ -3199,7 +3205,7 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      - Test LSP vs MLint
     ;;      - Rename menu item "Check MLint Setup" to "Check setup" and have it
     ;;        look at both LSP and MLint. Place menu item at bottom.
-    ;;    
+    ;;
     ;; TODO check abbrev mode - think this is setup by prog-mode, also see matlab-mode
     ;;
     ;; TODO org mode matlab-ts-mode blocks testing
