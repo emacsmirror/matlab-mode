@@ -273,7 +273,7 @@ is known to work with Emacs 30 as of July 2025"
     (setq dir (file-truename dir)))
 
   (let* ((latest-url (matlab--ts-langs-download-url))
-	 (latest-buf (if (y-or-n-p (format "Download \n %s\n and extract to %s/? "
+	 (latest-buf (if (y-or-n-p (format "Download \n %s\nand extract to %s/? "
 					   latest-url dir))
 			 (let ((buf (url-retrieve-synchronously latest-url)))
 			   (message "Downloaded %s (to buffer %S)" latest-url buf)

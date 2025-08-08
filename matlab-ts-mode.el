@@ -39,8 +39,9 @@
 
 (require 'matlab--access)
 (require 'matlab--shared)
-(require 'matlab-ts-mode--builtins)
+(require 'matlab-is-matlab-file)
 (require 'matlab-sections)
+(require 'matlab-ts-mode--builtins)
 
 ;;; Customizations
 
@@ -923,6 +924,8 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 ;;            end
 ;;        end
 ;;
+;;    TODO: add operator padding to indent engine
+;;
 ;; 6. Function call formats
 ;;    - On a single line:
 ;;
@@ -1004,6 +1007,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 ;;     if (c > 30 && d > 40) || e       if (((c > 30) && (d > 40)) || e)
 ;;     end                              end
 ;;
+;;
 ;; 9. Consecutive statement alignment
 ;;
 ;;    Be consistent in the alignment of consecutive statements. For example,
@@ -1024,6 +1028,8 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 ;;        length = 10;
 ;;        area = width * length;   % Bad partially aligned
 ;;
+;;     TODO: add consecutive statement alignment to the indent engine
+;;
 ;; 10. Align consecutive trailing comments
 ;;
 ;; 11. Function/classdef doc help should be aligned with the function/classdef keyword.
@@ -1041,7 +1047,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 ;;                1000, 1.9;
 ;;                100000, 1.875];
 ;;
-;;     TODO add an alignment directive, %$align
+;;     TODO: add an alignment directive, %$align
 ;;
 ;;     Alignment of tabular data should be done when there's an indent
 ;;     directive, perhaps named %$align which must precede the data to be
@@ -3186,11 +3192,17 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
     ;;      is active. Also look at matlab-mode magic-mode-alist setup.
     ;;
+    ;; TODO matlab.el, matlab-is-matlab-file - handle matlab-ts-mode
+    ;;
+    ;; TODO LSP
+    ;;      - Configure LSP
+    ;;      - Test LSP vs MLint
+    ;;      - Rename menu item "Check MLint Setup" to "Check setup" and have it
+    ;;        look at both LSP and MLint. Place menu item at bottom.
+    ;;    
     ;; TODO check abbrev mode - think this is setup by prog-mode, also see matlab-mode
     ;;
     ;; TODO org mode matlab-ts-mode blocks testing
-    ;;
-    ;; TODO matlab.el, matlab-is-matlab-file - handle matlab-ts-mode
     ;;
     ;; TODO matlab-shell-mode: update help to have matlab-ts-mode or matlab-mode
     ;;

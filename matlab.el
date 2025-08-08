@@ -51,12 +51,13 @@
 
 ;;; Code:
 
+(require 'matlab--shared)
 (require 'matlab-compat)
+(require 'matlab-is-matlab-file)
 (require 'matlab-org)
 (require 'matlab-scan)
 (require 'matlab-sections)
 (require 'matlab-syntax)
-(require 'matlab--shared)
 
 (require 'derived)
 (require 'easymenu)
@@ -73,21 +74,6 @@
   "MATLAB(R) mode."
   :prefix "matlab-"
   :group 'languages)
-
-(defcustom matlab-mode-for-new-mfiles 'maybe
-  "*Enter `matlab-mode' for new *.m files.
-Enter `matlab-mode' when the first part of a *.m file is not
-Objective-C comments or # characters.  If you want new (empty)
-files to automatically enter `matlab-mode', specify this item as
-t (always).  If you specify \\='maybe, new files will enter
-`matlab-mode' when you have an existing MATLAB buffer.
-Specifying nil (never) means that new *.m files will not enter
-`matlab-mode', and with default Emacs settings they will enter
-`objc-mode'"
-  :group 'matlab
-  :type '(choice (const :tag "Always" t)
-                 (const :tag "Never" nil)
-                 (const :tag "Maybe" maybe)))
 
 (defcustom matlab-indent-level 4
   "*The basic indentation amount in `matlab-mode'."
@@ -1234,59 +1220,6 @@ This matcher will handle a range of variable features."
 
 
 ;;; MATLAB mode entry point ==================================================
-
-;; Choose matlab-mode if when loading MATLAB *.m files
-;; See "How Emacs Chooses a Major Mode"
-;;    https://www.gnu.org/software/emacs/manual/html_node/elisp/Auto-Major-Mode.html
-
-;;;###autoload
-(defun matlab-is-matlab-file ()
-  "Enter `matlab-mode' when file content is likely a MATLAB *.m file.
-This will also enter `matlab-mode' for empty files *.m files when
-`matlab-mode-for-new-mfiles' indicates as such."
-  (and buffer-file-name ;; have a file?
-       ;; AND a valid MATLAB file name
-       (string-match
-        "^\\(?:.*/\\)?[a-zA-Z][a-zA-Z0-9_]*\\.m\\'"  ;; /path/to/file.m ?
-        (file-name-sans-versions
-         (if (and (boundp 'archive-subfile-mode) archive-subfile-mode)
-             (aref archive-subfile-mode 0)   ;; Will just be file.m without the directory
-           buffer-file-name)))
-       ;; AND (have MATLAB code OR an empty file that should enter matlab-mode)
-       (or
-        ;; Is content MATLAB code? We can definitely identify *some* MATLAB content using
-        ;;    (looking-at "^[[:space:]\n]*\\(%\\|function\\|classdef\\)")
-        ;; i.e. '%', '%{' comments, or function/classdef start, but this fails to find MATLAB
-        ;; scripts. Thus, if buffer is NOT Objective-C and has something in it, we assume MATLAB.
-        ;; Objective-c is identified by
-        ;;   - comment start chars: // or /*,
-        ;;   - # char (as in #import)
-        ;;   - @ char (as in @interface)
-        ;; MATLAB scripts are identified by the start of a valid identifier, i.e. a letter or
-        ;; some math operation, e.g. [1,2,3]*[1,2,3]', thus all we really need to look for
-        ;; is a non-whitespace character which could be a MATLAB comment, generic MATLAB commands,
-        ;; function/classdef, etc.
-        (and (not (looking-at "^[[:space:]\n]*\\(//\\|/\\*\\|#\\|@\\)"))
-             (looking-at "^[[:space:]\n]*[^[:space:]\n]"))
-        ;; Empty file - enter matlab-mode based on `matlab-mode-for-new-mfiles' setting
-        (and (= (buffer-size) 0)
-             (or (equal matlab-mode-for-new-mfiles t)
-                 (and (equal matlab-mode-for-new-mfiles 'maybe)
-                      ;; Enter matlab-mode if we already have a buffer in matlab-mode
-                      (let ((buffers (buffer-list))
-                            enter-matlab-mode)
-                        (while buffers
-                          (with-current-buffer (car buffers)
-                            ;; TODO - handle matlab-ts-mode
-                            (when (or (eq major-mode 'matlab-mode)
-                                      (eq major-mode 'matlab-shell-mode))
-                              (setq enter-matlab-mode t)
-                              (setq buffers nil)))
-                          (setq buffers (cdr buffers)))
-                        enter-matlab-mode)))))))
-
-;;;###autoload
-(add-to-list 'magic-mode-alist '(matlab-is-matlab-file . matlab-mode))
 
 (defvar mlint-minor-mode)
 (declare-function mlint-minor-mode "mlint.el")
