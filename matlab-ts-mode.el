@@ -3214,6 +3214,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO add rename identifier
     ;;
     ;; TODO check C-h f RET matlab-ts-mode RET help and validate all listed items are valid.
+    ;;
+    ;; TODO in matlab-shell, fix/verify [[:space:]] matches newline.
 
     (treesit-major-mode-setup)
 
