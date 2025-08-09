@@ -3212,6 +3212,8 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;;      think it was missing a few toolboxes.
     ;;
     ;; TODO add rename identifier
+    ;;
+    ;; TODO check C-h f RET matlab-ts-mode RET help and validate all listed items are valid.
 
     (treesit-major-mode-setup)
 
