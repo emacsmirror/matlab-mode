@@ -1219,7 +1219,7 @@ STR is a command substring to complete."
 
       (cond
        ;; Case: R2025a and later
-       ((string-match "^\s*Completions-Lisp:[[:space:]]*\\('(\\(?:.\\|\n\\)+)\\)[[:space:]]*$"
+       ((string-match "^\s*Completions-Lisp:[ \t\n\r]*\\('(\\(?:.\\|\n\\)+)\\)[ \t\n\r]*$"
                       output)
         ;; Completions that can be provided to `display-completion-list'
         (let ((completions-str (match-string 1 output)))
