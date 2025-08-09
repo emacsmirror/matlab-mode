@@ -3194,12 +3194,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO on load enter matlab-ts-mode when file contains mcode and
-    ;;      (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
-    ;;      is active. Also look at matlab-mode magic-mode-alist setup.
-    ;;
-    ;; TODO matlab.el, matlab-is-matlab-file - handle matlab-ts-mode
-    ;;
     ;; TODO LSP
     ;;      - Configure LSP
     ;;      - Test LSP vs MLint
@@ -3211,10 +3205,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO org mode matlab-ts-mode blocks testing
     ;;
     ;; TODO matlab-shell-mode: update help to have matlab-ts-mode or matlab-mode
-    ;;
-    ;; TODO font-lock highlight variable references to match variable assignments, e.g.
-    ;;      var = [1:10];
-    ;;      disp(var)               % var usage has same face as var.
     ;;
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
