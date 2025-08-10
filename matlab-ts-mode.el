@@ -225,7 +225,10 @@ content can crash Emacs via the matlab tree-sitter parser."
 
   (let ((bad-char-point (save-excursion
                           (goto-char (point-min))
-                          (when (re-search-forward "[^[:print:][:space:]]" nil t)
+                          ;; Due to the matlab-ts-mode syntax table entry
+                          ;;      (modify-syntax-entry ?\n ">"     st)
+                          ;; [:space:] doesn't match newlines.
+                          (when (re-search-forward "[^[:print:][:space:]\n\r]" nil t)
                             (point)))))
     (when bad-char-point
       (fundamental-mode)
@@ -248,6 +251,7 @@ content can crash Emacs via the matlab tree-sitter parser."
     (modify-syntax-entry ?%  "< 13"  st)
     (modify-syntax-entry ?{  "(} 2c" st)
     (modify-syntax-entry ?}  "){ 4c" st)
+    ;; \n is a comment ender. Therefore, regex [:space:] won't recognize \n
     (modify-syntax-entry ?\n ">"     st)
 
     ;; String Handling:
@@ -3214,8 +3218,6 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO add rename identifier
     ;;
     ;; TODO check C-h f RET matlab-ts-mode RET help and validate all listed items are valid.
-    ;;
-    ;; TODO in matlab-shell, fix/verify [[:space:]] matches newline.
 
     (treesit-major-mode-setup)
 
