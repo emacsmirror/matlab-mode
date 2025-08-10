@@ -46,8 +46,6 @@
     (define-key km "w" 'tempo-template-matlab-while)
     (define-key km "F" 'tempo-template-matlab-function)
     (define-key km "'" 'matlab-stringify-region)
-    ;; Not really inserts, but auto coding stuff
-    (define-key km "\C-s" 'matlab-ispell-strings-and-comments)
     km)
   "Keymap used for inserting simple texts based on context.")
 
