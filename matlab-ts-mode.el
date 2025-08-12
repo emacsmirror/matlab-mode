@@ -3287,6 +3287,13 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; TODO add rename identifier
     ;;
     ;; TODO check C-h f RET matlab-ts-mode RET help and validate all listed items are valid.
+    ;;
+    ;; TODO add matlab-sections-minor-mode indicator in mode line and make it clickable so it can
+    ;;      be turned off
+    ;;
+    ;; TODO add error indicator in mode line and make it clickable so one can see the errors.
+    ;;      Also underline them.
+    ;;
 
     (treesit-major-mode-setup)
 
