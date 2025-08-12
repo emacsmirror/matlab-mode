@@ -20,7 +20,7 @@ function emacsrun(mfile, varargin)
 %
 % Command sent by Emacs for save-and-go functionality
 
-    mfile = emacsstripremote(mfile)
+    mfile = emacsstripremote(mfile);
     % Now figure out if shortFileName is on the path.
     [ fullFilePath, shortFileName ] = fileparts(mfile);
     onpath = ~isempty(which(shortFileName));
