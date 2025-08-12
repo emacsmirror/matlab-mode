@@ -2129,11 +2129,11 @@ Value is set to COMMAND."
   (interactive (list (read-string "sCommand: "
                                   (file-name-sans-extension
                                    (file-name-nondirectory (buffer-file-name))))))
-  (unless (eq major-mode 'matlab-mode)
-    (error "Cannot set save-and-go command for buffer in %s" major-mode))
+  (when (and (not (eq major-mode 'matlab-ts-mode))
+             (not (eq major-mode 'matlab-mode)))
+      (user-error "Current buffer is not a MATLAB mode"))
 
-  (add-dir-local-variable 'matlab-mode 'matlab-shell-save-and-go-command
-                          command))
+  (add-dir-local-variable major-mode 'matlab-shell-save-and-go-command command))
 
 (defun matlab-shell-add-to-input-history (string)
   "Add STRING to the input-ring and run `comint-input-filter-functions' on it.
@@ -2153,10 +2153,11 @@ Similar to  `comint-send-input'."
 (defun matlab-shell-save-and-go ()
   "Save this M file, and evaluate it in a MATLAB shell."
   (interactive)
-  (if (not (eq major-mode 'matlab-mode))
-      (error "Save and go is only useful in a MATLAB buffer!"))
-  (if (not (buffer-file-name (current-buffer)))
-      (call-interactively 'write-file))
+  (when (and (not (eq major-mode 'matlab-ts-mode))
+             (not (eq major-mode 'matlab-mode)))
+    (user-error "Current buffer is not a MATLAB mode"))
+  (when (not (buffer-file-name (current-buffer)))
+    (call-interactively 'write-file))
 
   (let* ((fn-name (file-name-sans-extension
                    (file-name-nondirectory (buffer-file-name))))
