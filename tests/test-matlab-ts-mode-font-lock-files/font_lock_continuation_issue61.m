@@ -1,0 +1,9 @@
+% -*- matlab-ts -*-
+
+% See: https://github.com/acristoffers/tree-sitter-matlab/issues/61
+
+c1 ...
+    = { ...
+        'a'; ...
+      };
+
