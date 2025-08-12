@@ -2918,10 +2918,11 @@ Within comments, the following markers will be highlighted:
   :doc "Keymap for `matlab-ts-mode' buffers."
   :parent prog-mode-map
 
-  ;; Navigation Commands
-  "C-c C-c" 'matlab-insert-map-fcn
+  ;; Editing commands
   "C-c C-j" #'matlab-justify-line
+
   ;; TODO - add these?
+  ;; Navigation commands
   ;; (define-key km [(meta a)] 'matlab-beginning-of-command)
   ;; (define-key km [(meta e)] 'matlab-end-of-command)
 
@@ -3198,6 +3199,74 @@ is t, add the following to an Init File (e.g. `user-init-file' or
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO indent
+    ;;      classdef Shape
+    ;;          methods(Abstract)
+    ;;              [area, desc] = getArea(obj)
+    ;;              ^                                   <== RET/TAB to here
+    ;;          end
+    ;;      end
+    ;;
+    ;; TODO indent on incomplete code
+    ;;      c1 = { ...
+    ;;             'foo', ...                      <== RET/TAB to here
+    ;;             ^
+    ;;
+    ;; TODO indent on incomplete code
+    ;;      c1 = ...
+    ;;          { ...
+    ;;            'foo', ...
+    ;;      'bar'                                 <== TAB here
+    ;;
+    ;; TODO indent / type
+    ;;      c1 = ...
+    ;;          { ...
+    ;;            'foo', ...
+    ;;            'bar', ...
+    ;;            { ...
+    ;;              'a'; ...
+    ;;              'b'; ...
+    ;;            } ...
+    ;;            ''; ...
+    ;;          }
+    ;;
+    ;; TODO indent /type
+    ;;      c1 ...
+    ;;          = { ...
+    ;;              'a'; ...
+    ;;            };
+    ;;
+    ;; TODO indent / type
+    ;;      function foo(a)
+    ;;          arguments
+    ;;              a ...
+    ;;                  { ...
+    ;;              mustBeReal ...
+    ;;              }
+    ;;          end
+    ;;      end
+    ;;
+    ;; TODO indent
+    ;;      function [a, b] = foo(...
+    ;;           c, d)                              <== RET/TAB to here
+    ;;
+    ;; TODO indent
+    ;;         function foo(p1, p2)
+    ;;             arguments
+    ;;                 p1 string {mustBeScalarOrEmpty}
+    ;;                 p2 double {...
+    ;;                 mustBeReal ...
+    ;;                 } = 0
+    ;;             end
+    ;;             disp(p1)
+    ;;             disp(p2)
+    ;;         end
+    ;;
+    ;; TODO font-lock
+    ;;      Pick a font for assignment to a "built-in"
+    ;;         disp = 1:10;
+    ;;      Perhaps use font-lock-builtin-face but with an italic and underline face
+    ;;
     ;; TODO LSP
     ;;      - Configure LSP
     ;;      - Test LSP vs MLint
