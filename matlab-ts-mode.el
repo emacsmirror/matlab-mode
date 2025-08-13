@@ -3100,15 +3100,15 @@ See `comment-dwim' for more capabilities."]
 (define-derived-mode matlab-ts-mode prog-mode "MATLAB:ts"
   "Major mode for editing MATLAB files, powered by tree-sitter.
 
-This mode is independent from the classic matlab-mode.el, `matlab-mode',
-so configuration variables of that mode, like do not affect this mode.
-
 If you have the MATLAB tree-sitter grammar installed,
   (treesit-ready-p \\='matlab)
 is t, add the following to an Init File (e.g. `user-init-file' or
 `site-run-file') to enter the MATLAB tree-sitter mode by default:
 
   (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))
+
+This mode is independent from the classic matlab-mode.el, `matlab-mode',
+so configuration variables of that mode, do not affect this mode.
 
 \\{matlab-ts-mode-map}"
 

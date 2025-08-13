@@ -120,7 +120,7 @@
        (step 1) and restarting Emacs:
 
        :  M-x matlab-ts-langs-install
-   
+
        and install matlab (and other languages tree-sitter shared objects if you'd like).
 
      - Method 2 ::
@@ -142,7 +142,8 @@
        compiler, you'll see undefined errors. For example, Windows Emacs doesn't work with gcc from
        MSys2.
 
-   * Tell Emacs to use *matlab-ts-mode* for MATLAB files by adding the following to =~/.emacs=
+   * Tell Emacs to use *matlab-ts-mode* for MATLAB files by adding the following to your
+     =user-init-file= which is typically =~/.emacs=, or add it to your =site-run-file=
 
      #+begin_src emacs-lisp
        (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
