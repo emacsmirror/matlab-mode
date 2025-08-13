@@ -1,0 +1,2 @@
+See https://github.com/acristoffers/tree-sitter-matlab/issues/53
+where myfcn({'str'}); is no longer parsed correctly

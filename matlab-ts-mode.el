@@ -671,7 +671,19 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    :override t
    '(((comment) @matlab-ts-mode--comment-to-do-capture))
 
-   ;; F-Rule: keywords: if, else, etc.
+   ;; F-Rule: Constant literal numbers, e.g. 1234, 12.34, 10e10
+   ;; We could use this for items like true, false, pi, etc. See some of these numbers in:
+   ;; https://www.mathworks.com/content/dam/mathworks/fact-sheet/matlab-basic-functions-reference.pdf
+   ;; however, they do show up as builtins, which to me seems more accurate.
+   ;; This rule needs to come before the "F-Rule: keyworks: if, else, end, etc." because
+   ;; we want the end_keyword when used as a number index into a cell/matrix to be a number font.
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_numbers.m
+   :language 'matlab
+   :feature 'number
+   '(((number) @matlab-ts-mode-number-face)
+     ((end_keyword) @matlab-ts-mode-end-number-face))
+
+   ;; F-Rule: keywords: if, else, end, etc.
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_keywords.m
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_methods.m
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_keyword_spmd.m
@@ -791,16 +803,6 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
                                                  eos)
                                            t)
                             @font-lock-type-face)))
-
-   ;; F-Rule: Constant literal numbers, e.g. 1234, 12.34, 10e10
-   ;; We could use this for items like true, false, pi, etc. See some of these numbers in:
-   ;; https://www.mathworks.com/content/dam/mathworks/fact-sheet/matlab-basic-functions-reference.pdf
-   ;; however, they do show up as builtins, which to me seems more accurate.
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_numbers.m
-   :language 'matlab
-   :feature 'number
-   '(((number) @matlab-ts-mode-number-face)
-     ((end_keyword) @matlab-ts-mode-end-number-face))
 
    ;; F-Rule: Brackets
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_brackets.m
