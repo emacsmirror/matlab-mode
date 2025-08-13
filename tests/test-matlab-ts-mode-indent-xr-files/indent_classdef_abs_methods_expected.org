@@ -1,0 +1,154 @@
+#+startup: showall
+
+* Executing commands from indent_classdef_abs_methods.m:5:10:
+
+  (t-utils-xr "C-n" "C-e" "C-m" "C-a" "C-i" "C-a" "C-k" "C-o" "C-i" (insert "%comment"))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  177
+  Moved to point:  213
+  : 6:35:         [area, desc] = getArea(obj)
+  :                                          ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  213
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  213
+  Moved to point:  222
+  : 7:8:         
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -4,6 +4,7 @@
+     methods(Abstract)
+         % (t-utils-xr "C-n" "C-e" "C-m" "C-a" "C-i" "C-a" "C-k" "C-o" "C-i" (insert "%comment"))
+         [area, desc] = getArea(obj)
++        
+     end
+ end
+ 
+  #+end_src diff
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  222
+  Moved to point:  214
+  : 7:0:         
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  214
+  Moved to point:  222
+  : 7:8:         
+  :              ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  222
+  Moved to point:  214
+  : 7:0:         
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-k" = kill-line
+  Start point   :  214
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -4,7 +4,6 @@
+     methods(Abstract)
+         % (t-utils-xr "C-n" "C-e" "C-m" "C-a" "C-i" "C-a" "C-k" "C-o" "C-i" (insert "%comment"))
+         [area, desc] = getArea(obj)
+-        
+     end
+ end
+ 
+  #+end_src diff
+
+- Invoking      : "C-o" = open-line
+  Start point   :  214
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -4,6 +4,7 @@
+     methods(Abstract)
+         % (t-utils-xr "C-n" "C-e" "C-m" "C-a" "C-i" "C-a" "C-k" "C-o" "C-i" (insert "%comment"))
+         [area, desc] = getArea(obj)
++
+     end
+ end
+ 
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  214
+  Moved to point:  222
+  : 7:8:         
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -4,7 +4,7 @@
+     methods(Abstract)
+         % (t-utils-xr "C-n" "C-e" "C-m" "C-a" "C-i" "C-a" "C-k" "C-o" "C-i" (insert "%comment"))
+         [area, desc] = getArea(obj)
+-
++        
+     end
+ end
+ 
+  #+end_src diff
+
+- Invoking      : (insert "%comment")
+  Start point   :  222
+  Moved to point:  230
+  : 7:16:         %comment
+  :                       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -4,7 +4,7 @@
+     methods(Abstract)
+         % (t-utils-xr "C-n" "C-e" "C-m" "C-a" "C-i" "C-a" "C-k" "C-o" "C-i" (insert "%comment"))
+         [area, desc] = getArea(obj)
+-        
++        %comment
+     end
+ end
+ 
+  #+end_src diff
+
+* Executing commands from indent_classdef_abs_methods.m:11:1:
+
+  (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :  305
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+classdef indent_classdef_abs_methods
+    methods(Abstract)
+        % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" \"C-a\" \"C-i\" \"C-a\" \"C-k\" \"C-o\" \"C-i\" (insert \"%comment\"))
+        [area, desc] = getArea(obj)
+        %comment
+    end
+end
+
+%(t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src
+  No buffer modifications

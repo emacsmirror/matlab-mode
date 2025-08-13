@@ -1912,12 +1912,16 @@ Example:
      ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos (or "function_definition") eos))
       grand-parent ,#'matlab-ts-mode--set-function-indent-level)
 
-
      ;; I-Rule: constructs within classdef or function's.
      ((node-is ,(rx bos (or "arguments_statement" "block" "enumeration" "enum" "methods" "events"
                             "function_definition" "property" "properties")
                     eos))
       parent ,matlab-ts-mode--indent-level)
+
+     ;; I-Rule: classdef abstract methods
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_classdef_abs_methods.m
+     ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos "function_signature" eos)) grand-parent 0)
+     ((n-p-gp ,(rx bos "\n" eos) ,(rx bos "function_signature" eos) nil) parent 0)
 
      ;; I-Rule: items in blocks
      ((n-p-gp nil ,(rx bos "property" eos) ,(rx bos "properties" eos))
@@ -3209,14 +3213,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO indent
-    ;;      classdef Shape
-    ;;          methods(Abstract)
-    ;;              [area, desc] = getArea(obj)
-    ;;              ^                                   <== RET/TAB to here
-    ;;          end
-    ;;      end
-    ;;
     ;; TODO indent on incomplete code
     ;;      c1 = { ...
     ;;             'foo', ...                      <== RET/TAB to here
