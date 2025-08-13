@@ -117,6 +117,12 @@ Guidelines:
        :slant italic))
   "*Face used for \"end\" when used as an array or cell dimension number index.")
 
+(defface matlab-function-signature-face
+  '((t :inherit font-lock-type-face
+       :weight bold
+       :slant italic))
+  "*Face used for classdef abstract method function signature declarations.")
+
 (defcustom matlab-ts-mode-font-lock-level 3
   "*Level of font lock for MATLAB code.
 The \"Standard\" level plus either MLint flycheck or the MATLAB Language
@@ -695,6 +701,8 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    :language 'matlab
    :feature 'definition
    '(
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_issue55_abstract.m
+     (function_signature name: (identifier) @matlab-function-signature-face)
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_no_args.m
      (function_definition name: (identifier) @font-lock-function-name-face)
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_symPosDef.m

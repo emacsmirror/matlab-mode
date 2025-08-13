@@ -8,7 +8,7 @@ classdef font_lock_class_issue55_abstract
     end
 
     methods(Abstract)
-        a = f(obj);
-        b = g(obj);
+        a = foo(obj);
+        b = goo(obj);
     end
 end

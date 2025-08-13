@@ -8,11 +8,11 @@ classdef font_lock_class_issue55_subclass < font_lock_class_issue55_abstract
     end
 
     methods
-        function a = f(obj)
+        function a = foo(obj)
             a = obj.p1 + 10;
         end
 
-        function b = g(obj)
+        function b = goo(obj)
             b = obj.p1 + 20;
         end
     end

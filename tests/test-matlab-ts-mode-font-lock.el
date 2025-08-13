@@ -73,6 +73,7 @@ after validating it, rename it to
                          ("E" . font-lock-escape-face)
                          ("F" . font-lock-function-call-face)
                          ("f" . font-lock-function-name-face)
+                         ("g" . matlab-function-signature-face)
                          ("h" . font-lock-doc-face) ;; function doc help comment
                          ("H" . matlab-ts-mode-comment-heading-face)
                          ("k" . font-lock-keyword-face)
