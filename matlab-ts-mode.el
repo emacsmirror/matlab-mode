@@ -1473,7 +1473,9 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
           (when (not anchor-node)
             (setq anchor-node check-node)
             (while (and anchor-node
-                        (not (string-match-p (rx bos (or "if_statement" "while_statement" "switch_statement") eos)
+                        (not (string-match-p (rx bos (or "if_statement" "while_statement"
+                                                         "switch_statement")
+                                                 eos)
                                              (treesit-node-type anchor-node))))
               (setq anchor-node (treesit-node-parent anchor-node)))
             (when anchor-node
@@ -1514,95 +1516,112 @@ are in.
 
 Returns indent-level relative to ANCHOR-NODE."
 
-  (pcase (treesit-node-type anchor-node)
+  (let ((anchor-type (treesit-node-type anchor-node)))
+    (pcase anchor-type
 
-    ("property"
-     (if last-child-of-error-node
-         matlab-ts-mode--indent-level
-       0))
+      ("property"
+       (if (or last-child-of-error-node
+               ;; Continuation:    arguments
+               ;;                     firstArgument ...
+               ;;         TAB>            doube
+               (let ((prev-sibling (treesit-node-prev-sibling node)))
+                        (and prev-sibling
+                             (string= (treesit-node-type prev-sibling) "line_continuation"))))
+               matlab-ts-mode--indent-level
+         0))
 
-    ((rx (seq bos (or "properties" "events" "methods" "arguments") eos))
-     (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
-         ;; after properties, etc.
-         0
-       ;; else under properties, etc.
-       matlab-ts-mode--indent-level))
+      ((rx (seq bos (or "properties" "events" "methods" "arguments") eos))
+       (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
+           ;; after properties, etc.
+           0
+         ;; else under properties, etc.
 
-    ("("
-     1)
+         (if (and (string= anchor-type "arguments")
+                  (or (not node)
+                      (let ((prev-sibling (treesit-node-prev-sibling node)))
+                        (and prev-sibling
+                             (string= (treesit-node-type prev-sibling) "line_continuation")))))
+             ;; Continuation:    arguments
+             ;;                     firstArgument ...
+             ;;         TAB>            ^
+             (* 2 matlab-ts-mode--indent-level)
+           matlab-ts-mode--indent-level)))
 
-    ("[" ;; either a matrix or function output
-     (if (save-excursion
-           (goto-char (treesit-node-start anchor-node))
-           (while (and (re-search-backward "[^ \t\r\n]" nil t)
-                       (string= (treesit-node-type
-                                 (treesit-node-at (point)))
-                                "line_continuation")))
-           (string= (treesit-node-type (treesit-node-at (point)))
-                    "function"))
-         ;; function output
-         1
-       matlab-ts-mode--array-indent-level))
+      ("("
+       1)
 
-    ("{"
-     (if (save-excursion
-           (goto-char (treesit-node-start anchor-node))
-           (when (> (point) 1)
-             (goto-char (1- (point)))
-             (looking-at "%")))
-         ;; Anchored under a block comment:   %{
-         ;;                                     ^    <== TAB to here, one more than the "{"
-         1
-       matlab-ts-mode--array-indent-level))
+      ("[" ;; either a matrix or function output
+       (if (save-excursion
+             (goto-char (treesit-node-start anchor-node))
+             (while (and (re-search-backward "[^ \t\r\n]" nil t)
+                         (string= (treesit-node-type
+                                   (treesit-node-at (point)))
+                                  "line_continuation")))
+             (string= (treesit-node-type (treesit-node-at (point)))
+                      "function"))
+           ;; function output
+           1
+         matlab-ts-mode--array-indent-level))
 
-    ((rx (seq bos (or "function" "function_definition") eos))
-     (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
-         ;; after function
-         0
-       ;; else under function
-       matlab-ts-mode--function-indent-level))
+      ("{"
+       (if (save-excursion
+             (goto-char (treesit-node-start anchor-node))
+             (when (> (point) 1)
+               (goto-char (1- (point)))
+               (looking-at "%")))
+           ;; Anchored under a block comment:   %{
+           ;;                                     ^    <== TAB to here, one more than the "{"
+           1
+         matlab-ts-mode--array-indent-level))
 
-    ("row"
-     0)
+      ((rx (seq bos (or "function" "function_definition") eos))
+       (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
+           ;; after function
+           0
+         ;; else under function
+         matlab-ts-mode--function-indent-level))
 
-    ("try"
-     (if (and node
-              (string-match-p (rx bos "catch_clause" eos)
-                              (treesit-node-type node)))
-         0
-       matlab-ts-mode--indent-level))
+      ("row"
+       0)
 
-    ("if"
-     (if (and node
-              ;; else, else_clause, elseif, or elseif_clause
-              (string-match-p (rx bos "else")
-                              (treesit-node-type node)))
-         0
-       matlab-ts-mode--indent-level))
+      ("try"
+       (if (and node
+                (string-match-p (rx bos "catch_clause" eos)
+                                (treesit-node-type node)))
+           0
+         matlab-ts-mode--indent-level))
 
-    ((rx (seq bos (or "switch" "case" "otherwise") eos))
-     matlab-ts-mode--switch-indent-level)
+      ("if"
+       (if (and node
+                ;; else, else_clause, elseif, or elseif_clause
+                (string-match-p (rx bos "else")
+                                (treesit-node-type node)))
+           0
+         matlab-ts-mode--indent-level))
 
-    ("end"
-     0)
+      ((rx (seq bos (or "switch" "case" "otherwise") eos))
+       matlab-ts-mode--switch-indent-level)
 
-    ("classdef"
-     (if (and (string= (treesit-node-type node) "comment")
-              (save-excursion
-                (goto-char (treesit-node-start node))
-                (beginning-of-line)
-                (forward-line -1)
-                (back-to-indentation)
-                (equal (treesit-node-at (point)) anchor-node)))
-         ;; function doc comment
-         0
-       matlab-ts-mode--indent-level))
+      ("end"
+       0)
 
-    (_
-     (if last-child-of-error-node
-         ;; Part of a continuation, so 4 for that plus 4 for parent
-         (* 2 matlab-ts-mode--indent-level)
-       matlab-ts-mode--indent-level))))
+      ("classdef"
+       (if (and (string= (treesit-node-type node) "comment")
+                (save-excursion
+                  (goto-char (treesit-node-start node))
+                  (beginning-of-line)
+                  (forward-line -1)
+                  (back-to-indentation)
+                  (equal (treesit-node-at (point)) anchor-node)))
+           ;; function doc comment
+           0
+         matlab-ts-mode--indent-level))
+
+      (_
+       (if last-child-of-error-node
+           ;; Part of a continuation, so 4 for that plus 4 for parent
+           (* 2 matlab-ts-mode--indent-level)
+         matlab-ts-mode--indent-level)))))
 
 (defvar matlab-ts-mode--i-next-line-pair)
 
@@ -1927,10 +1946,31 @@ Example:
      ((n-p-gp nil ,(rx bos "property" eos) ,(rx bos "properties" eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
+     ;; ;; I-Rule: property/argument continuation
+     ;; ;;         arguments
+     ;; ;;             a ...
+     ;; ;;                 ^   RET/TAB to here
+     ;; ;;         end
+     ;; ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_classdef_abs_methods.m
+     ;; xxx
+     ;; ((n-p-gp nil ,(rx bos "line_continuation" eos) ,(rx bos "property" eos))
+     ;;  grand-parent ,matlab-ts-mode--indent-level)
+
      ;; I-Rule: property continuation
      ((n-p-gp nil ,(rx bos "default_value" eos) ,(rx bos "property" eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
+     ;; I-Rule: end argument/property continuation
+     ((n-p-gp ,(rx bos "}" eos) ,(rx bos "validation_functions" eos) nil) parent 0)
+
+     ;; I-Rule: argument/property continuation
+     ;;         arguments
+     ;;             a ...
+     ;;                 { ...
+     ;;                   mustBeReal ...
+     ;;                   ^                     <== TAB/RET to here
+     ((parent-is ,(rx bos "validation_functions" eos)) parent 2)
+     
      ;; I-Rule: property after a property
      ;;         properties
      ;;             p1
@@ -3213,31 +3253,9 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO indent / type
-    ;;      function foo(a)
-    ;;          arguments
-    ;;              a ...
-    ;;                  { ...
-    ;;              mustBeReal ...
-    ;;              }
-    ;;          end
-    ;;      end
-    ;;
     ;; TODO indent
     ;;      function [a, b] = foo(...
     ;;           c, d)                              <== RET/TAB to here
-    ;;
-    ;; TODO indent
-    ;;         function foo(p1, p2)
-    ;;             arguments
-    ;;                 p1 string {mustBeScalarOrEmpty}
-    ;;                 p2 double {...
-    ;;                 mustBeReal ...
-    ;;                 } = 0
-    ;;             end
-    ;;             disp(p1)
-    ;;             disp(p2)
-    ;;         end
     ;;
     ;; TODO font-lock
     ;;      Pick a font for assignment to a "built-in"
