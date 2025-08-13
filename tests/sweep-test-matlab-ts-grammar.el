@@ -157,7 +157,8 @@ On large directory trees, run via
         -l /path/to/Emacs-MATLAB-Mode/tests/t-utils.el \\
         -l /path/to/Emacs-MATLAB-Mode/tests/sweep-test-matlab-ts-grammar \\
         -f sweep-test-matlab-ts-grammar
-to see the progress messages in your terminal."
+to see the progress messages in your terminal.
+See ./sweep-test-matlab-ts-grammar.sh"
   (interactive)
   (let ((test-name "sweep-test-matlab-ts-grammar"))
     (t-utils-error-if-no-treesit-for 'matlab test-name)

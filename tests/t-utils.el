@@ -1881,32 +1881,39 @@ ERROR-INFO is \"at line NUM:COL<optional-text\""
    (t
     (error "%s bad error-info, %s" lang-file error-info))))
 
-(defun t-utils--err-loc (error-node)
-  "Get \"type at line N1:C1 to N2:C2\" string for ERROR-NODE."
+(defun t-utils--err-locs (capture-errors)
+  "Get list of \"type at line N1:C1 to N2:C2\" for each error.
+CAPTURE-ERRORS is result of `treesit-query-capture' and
+each elelment is a cons pair (NAME . NODE)."
 
-  (let* ((start-point (treesit-node-start error-node))
-         (start-line (line-number-at-pos start-point))
-         (start-col (save-excursion ;; error messages are one based columns
-                      (goto-char start-point)
-                      (1+ (current-column))))
-         (end-point (treesit-node-end error-node))
-         (end-line (line-number-at-pos end-point))
-         (end-col (save-excursion
-                    (goto-char end-point)
-                    (1+ (current-column)))))
-    (format "%s node at line %d:%d to %d:%d (point %d to %d)"
-            (treesit-node-type error-node)
-            start-line start-col
-            end-line end-col
-            start-point
-            end-point)))
+  (let ((result-list '()))
+    (dolist (capture-error capture-errors)
+      (let* ((error-node (cdr capture-error))
+             (start-point (treesit-node-start error-node))
+             (start-line (line-number-at-pos start-point))
+             (start-col (save-excursion ;; error messages are one based columns
+                          (goto-char start-point)
+                          (1+ (current-column))))
+             (end-point (treesit-node-end error-node))
+             (end-line (line-number-at-pos end-point))
+             (end-col (save-excursion
+                        (goto-char end-point)
+                        (1+ (current-column)))))
+       (push (format "%s node at line %d:%d to %d:%d (point %d to %d)"
+                     (treesit-node-type error-node)
+                     start-line start-col
+                     end-line end-col
+                     start-point
+                     end-point)
+             result-list)))
+    (reverse result-list)))
 
 (defun t-utils-sweep-test-ts-grammar (test-name
                                       directory
                                       lang-file-regexp
                                       major-mode-fun
                                       syntax-checker-fun
-                                      &optional error-nodes-regexp
+                                      &optional error-node-type
                                       log-file
                                       result-file)
   "Sweep test a tree-sitter grammar shared library looking for parse issues.
@@ -1918,8 +1925,8 @@ Each matching file is read into a temporary buffer and then
 MAJOR-MODE-FUN is called.  This should be a mode that activates
 a tree-sitter grammar, i.e. calls (treesit-parser-create \\='LANGUAGE).
 
-ERROR-NODES-REGEXP, defaulting to (rx bol \"ERROR\" eos), is provided to
-`treesit-search-subtree' to look for syntax errors in the parse tree.
+ERROR-NODE-TYPE, defaulting to \"ERROR\", is provided to
+`treesit-query-capture' to look for syntax errors in the parse tree.
 
 SYNTAX-CHECKER-FUN is a function that takes a list of files and should
 return a hash table with files as the keys and the value of each key is
@@ -1946,8 +1953,8 @@ When run in an interactive Emacs session, e.g.
 the result is shown in \"*TEST-NAME*\" buffer,
 otherwise the result is displayed on stdout."
 
-  (when (not error-nodes-regexp)
-    (setq error-nodes-regexp (rx bos "ERROR" eos)))
+  (when (not error-node-type)
+    (setq error-node-type "ERROR"))
 
   (setq log-file (t-utils--log-create test-name log-file))
 
@@ -1977,9 +1984,10 @@ otherwise the result is displayed on stdout."
           (when ok
             (push lang-file lang-files-to-check)
             (let* ((root (treesit-buffer-root-node))
-                   (error-node (treesit-search-subtree root error-nodes-regexp nil t))
-                   (syntax-status-pair (if error-node
-                                           (cons "has-syntax-errors" (t-utils--err-loc error-node))
+                   (error-nodes (treesit-query-capture root `((,error-node-type) @e)))
+                   (syntax-status-pair (if error-nodes
+                                           (cons "has-syntax-errors" (t-utils--err-locs
+                                                                      error-nodes))
                                          (cons "no-syntax-errors" nil))))
               (puthash lang-file syntax-status-pair ts-parse-result-ht)
               (t-utils--log log-file (format "ts-parse: %s > %S\n"
@@ -2010,11 +2018,12 @@ otherwise the result is displayed on stdout."
               (setq n-consistent-files (1+ n-consistent-files))
             (pcase (car ts-parse-file-result-pair)
               ("has-syntax-errors" ;; ts says syntax errors, syntax-check says no errors
-               (setq files-with-bad-ts-error-parse
-                     (concat files-with-bad-ts-error-parse
-                             (t-utils--bad-parse-msg lang-file
-                                                     "bad tree-sitter parse"
-                                                     (cdr ts-parse-file-result-pair)))))
+               (dolist (error-info (cdr ts-parse-file-result-pair))
+                 (setq files-with-bad-ts-error-parse
+                       (concat files-with-bad-ts-error-parse
+                               (t-utils--bad-parse-msg lang-file
+                                                       "bad tree-sitter parse"
+                                                       error-info)))))
               ("no-syntax-errors";; ts says no syntax errors, syntax-check says have errors
                (setq files-with-bad-ts-success-parse
                      (concat files-with-bad-ts-success-parse
