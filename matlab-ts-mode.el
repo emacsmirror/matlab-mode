@@ -1867,6 +1867,77 @@ Example:
   "Return the offset computed by `matlab-ts-mode--i-comment-under-fcn-matcher'."
   (cdr matlab-ts-mode--i-comment-under-fcn-pair))
 
+(defvar matlab-ts-mode--i-fcn-args-next-line-pair)
+
+(defun matlab-ts-mode--i-fcn-args-next-line-matcher (_node parent _bol &rest _)
+  "Is NODE/PARENT for function definition arguments?
+Example:
+   function someFunction( ...
+       a, b)                        <== TAB to here"
+
+  (let ((parent-type (treesit-node-type parent)))
+
+    (cond
+     ((and (string= parent-type "function_arguments")
+           (or
+            ;; function someFunction(...
+            ;;    a, b)                     <== TAB to here
+            (save-excursion
+              (goto-char (1+ (treesit-node-start parent)))
+              (and (re-search-forward "[^ \t]" nil t)
+                   (equal (treesit-node-type (treesit-node-at (point))) "line_continuation")))
+            ;; I-Rule: function args next line
+            ;;            function [a, b] = foo( ...
+            ;;  TAB>      a, b)                          // should move over by 4
+            ;;            end
+            (save-excursion
+              (goto-char (1+ (treesit-node-start parent)))
+              (and (re-search-forward "[^ \t]" nil t)
+                   (string= "line_continuation" (treesit-node-type (treesit-node-at (point)))))))
+           ;; AND not
+           ;;     function ...
+           ;;         out ...
+           ;;         = ...
+           ;;         indent_ellipsis ...
+           ;;         ( ...
+           ;;          arg ...                 <== TAB here
+           (save-excursion
+             (goto-char (1- (treesit-node-start parent)))
+             (not (looking-at "[ \t]"))))
+      (setq matlab-ts-mode--i-fcn-args-next-line-pair
+            (cons (treesit-node-start (treesit-node-parent parent))
+                  matlab-ts-mode--indent-level))
+      t)
+
+     ;; function someFunction(...
+     ;;     in1, ...                  <== RET type "in1, ..." or TAB to here
+     ;;     a, b)
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fcn_args.m
+     ((and (string= parent-type "line_continuation")
+           (let ((gp (treesit-node-parent parent)))
+             (and (equal (treesit-node-type gp) "function_arguments")
+                  (save-excursion
+                    (goto-char (1+ (treesit-node-start gp)))
+                    (and (re-search-forward "[^ \t]" nil t)
+                         (string= "line_continuation" (treesit-node-type
+                                                       (treesit-node-at (point)))))))))
+      (setq matlab-ts-mode--i-fcn-args-next-line-pair
+            (cons (treesit-node-start (treesit-node-parent (treesit-node-parent parent)))
+                  matlab-ts-mode--indent-level))
+      t)
+
+     (t
+      ;; no match
+      nil))))
+
+(defun matlab-ts-mode--i-fcn-args-next-line-anchor (&rest _)
+  "Return the anchor computed by `matlab-ts-mode--i-fcn-args-next-line-matcher'."
+  (car matlab-ts-mode--i-fcn-args-next-line-pair))
+
+(defun matlab-ts-mode--i-fcn-args-next-line-offset (&rest _)
+  "Return the offset computed by `matlab-ts-mode--i-fcn-args-next-line-matcher'."
+  (cdr matlab-ts-mode--i-fcn-args-next-line-pair))
+
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
@@ -1970,7 +2041,7 @@ Example:
      ;;                   mustBeReal ...
      ;;                   ^                     <== TAB/RET to here
      ((parent-is ,(rx bos "validation_functions" eos)) parent 2)
-     
+
      ;; I-Rule: property after a property
      ;;         properties
      ;;             p1
@@ -2071,8 +2142,18 @@ Example:
      ((n-p-gp nil ,(rx bos "line_continuation" eos) ,(rx bos (or "cell" "matrix") eos))
       grand-parent ,#'matlab-ts-mode--row-indent-level)
 
-     ;; I-Rule:  function [   ...              |    function name (   ...
-     ;; <TAB>              a, ... % comment    |                   a, ... % comment
+     ;; I-Rule: function args next line
+     ;;           function someFunction(...
+     ;;               a, b)                          <== TAB/RET to here
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fcn_args.m
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_fcn_args_on_next_line.m
+     (,#'matlab-ts-mode--i-fcn-args-next-line-matcher
+      ,#'matlab-ts-mode--i-fcn-args-next-line-anchor
+      ,#'matlab-ts-mode--i-fcn-args-next-line-offset)
+
+     ;;
+     ;; I-Rule:  function [   ...              |    function name (a, ... % comment
+     ;; <TAB>              a, ... % comment    |                   b, ... % comment
      ((parent-is ,(rx bos (or "multioutput_variable" "function_arguments") eos)) parent 1)
 
      ;; I-Rule:  a = [    2 ...       |   function a ...
@@ -3253,10 +3334,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO indent
-    ;;      function [a, b] = foo(...
-    ;;           c, d)                              <== RET/TAB to here
-    ;;
     ;; TODO font-lock
     ;;      Pick a font for assignment to a "built-in"
     ;;         disp = 1:10;

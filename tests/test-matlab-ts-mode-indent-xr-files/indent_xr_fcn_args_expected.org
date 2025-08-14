@@ -1,0 +1,82 @@
+#+startup: showall
+
+* Executing commands from indent_xr_fcn_args.m:3:2:
+
+  (t-utils-xr "C-n" "C-e" "C-m" (insert "in1, ...") "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :   80
+  Moved to point:  122
+  : 4:41: function [a, b] = indent_xr_fcn_args( ...
+  :                                                ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  122
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  122
+  Moved to point:  127
+  : 5:4:     
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,6 +2,7 @@
+ 
+ % (t-utils-xr "C-n" "C-e" "C-m" (insert "in1, ...") "C-i")
+ function [a, b] = indent_xr_fcn_args( ...
++    
+     a, b)
+ end
+ 
+  #+end_src diff
+
+- Invoking      : (insert "in1, ...")
+  Start point   :  127
+  Moved to point:  135
+  : 5:12:     in1, ...
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ 
+ % (t-utils-xr "C-n" "C-e" "C-m" (insert "in1, ...") "C-i")
+ function [a, b] = indent_xr_fcn_args( ...
+-    
++    in1, ...
+     a, b)
+ end
+ 
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  135
+  No point movement
+  No buffer modifications
+
+* Executing commands from indent_xr_fcn_args.m:9:2:
+
+  (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :  213
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+% (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"in1, ...\") \"C-i\")
+function [a, b] = indent_xr_fcn_args( ...
+    in1, ...
+    a, b)
+end
+
+% (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src
+  No buffer modifications
