@@ -3364,11 +3364,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO font-lock
-    ;;      Pick a font for assignment to a "built-in"
-    ;;         disp = 1:10;
-    ;;      Perhaps use font-lock-builtin-face but with an italic and underline face
-    ;;
     ;; TODO LSP
     ;;      - Configure LSP
     ;;      - Test LSP vs MLint
