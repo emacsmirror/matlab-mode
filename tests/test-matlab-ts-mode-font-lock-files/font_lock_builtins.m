@@ -4,4 +4,3 @@ function varargout = font_lock_builtins(vararin)
     disp(nargin)
     varargout = varargin
 end
-

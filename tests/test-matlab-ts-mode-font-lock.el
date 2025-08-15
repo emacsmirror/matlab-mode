@@ -87,6 +87,7 @@ after validating it, rename it to
                          ("S" . matlab-ts-mode-string-delimiter-face)
                          ("t" . font-lock-type-face)
                          ("v" . font-lock-variable-name-face)
+                         ("V" . matlab-ts-mode-variable-override-builtin-face)
                          ("w" . font-lock-warning-face)
                          ))
          (test-buf-setup (lambda () (matlab-sections-minor-mode -1))))

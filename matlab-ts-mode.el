@@ -123,6 +123,14 @@ Guidelines:
        :slant italic))
   "*Face used for classdef abstract method function signature declarations.")
 
+(defface matlab-ts-mode-variable-override-builtin-face
+  '((t :inherit font-lock-variable-name-face
+       :underline t))
+  "*Face used for variable overriding a builtin.
+For example, it is valid to override the disp command:
+  disp = 1:10;
+and then trying to use disp to display results will not work.")
+
 (defcustom matlab-ts-mode-font-lock-level 3
   "*Level of font lock for MATLAB code.
 The \"Standard\" level plus either MLint flycheck or the MATLAB Language
@@ -639,6 +647,13 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
   (let ((command (treesit-node-text command-node)))
     (gethash command matlab-ts-mode--builtins-ht)))
 
+(defun matlab-ts-mode--is-variable-overriding-builtin (variable-node)
+  "Is VARIABLE-NODE overriding a builtin?
+Example, disp variable is overriding the disp builtin functin:
+   disp = 1:10;"
+  (let ((variable (treesit-node-text variable-node)))
+    (gethash variable matlab-ts-mode--builtins-ht)))
+
 (defvar matlab-ts-mode--font-lock-settings
   (treesit-font-lock-rules
 
@@ -761,10 +776,25 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_variable.m
    :language 'matlab
    :feature 'variable
-   '((assignment left: (identifier) @font-lock-variable-name-face)
+   '(((assignment left: (identifier) @matlab-ts-mode-variable-override-builtin-face
+                  (:pred matlab-ts-mode--is-variable-overriding-builtin
+                         @matlab-ts-mode-variable-override-builtin-face)))
+     (assignment left: (identifier) @font-lock-variable-name-face)
+     (multioutput_variable (identifier) @matlab-ts-mode-variable-override-builtin-face
+                  (:pred matlab-ts-mode--is-variable-overriding-builtin
+                         @matlab-ts-mode-variable-override-builtin-face))
      (multioutput_variable (identifier) @font-lock-variable-name-face)
+     (global_operator (identifier) @matlab-ts-mode-variable-override-builtin-face
+                  (:pred matlab-ts-mode--is-variable-overriding-builtin
+                         @matlab-ts-mode-variable-override-builtin-face))
      (global_operator (identifier) @font-lock-variable-name-face)
+     (persistent_operator (identifier) @matlab-ts-mode-variable-override-builtin-face
+                  (:pred matlab-ts-mode--is-variable-overriding-builtin
+                         @matlab-ts-mode-variable-override-builtin-face))
      (persistent_operator (identifier) @font-lock-variable-name-face)
+     (for_statement (iterator (identifier) @matlab-ts-mode-variable-override-builtin-face
+                              (:pred matlab-ts-mode--is-variable-overriding-builtin
+                                     @matlab-ts-mode-variable-override-builtin-face)))
      (for_statement (iterator (identifier) @font-lock-variable-name-face)))
 
    ;; F-Rule: command dual arguments

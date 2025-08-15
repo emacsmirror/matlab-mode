@@ -1,17 +1,54 @@
 c ccc ccccccccc ccc
 kkkkkkkk ffffffffffffffffff
 
-    kkkkkk vvv vvvv
-    kkkkkkkkkk vvvvD
+    c cccccccccccc ccccc cccccccccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c              cccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c                     ccccccccccccccccccccccccccccccccccccccccccccccccc
+    VVVV o nnD
 
+    c ccccccccccc ccccc cccccccccccc cccccccccccccccccccccccccccccc
     vvvv o SsS
 
+    c ccccccccccccccccccccc cccccccccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c              cccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c                     cccccccccccccccccccccccccccccccccccccccccccccccc
+    bVVVVD VVVVb o ddddbbD
+
+    c ccccccccccccccccccccc cccccccccccc cccccccccccccccccccccccccccccc
+    bvD vb o ddddbbD
+
+    c cccccccccccccccc cccccccccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c               cccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c                      cccccccccccccccccccccccccccccccccccccccccccccccc
+    kkkkkk VVVV VVVV
+
+    c cccccccccccccccc cccccccccccc cccccccccccccccccccccccccccccc
+    kkkkkk vvvv vvvv
+
+    c cccccccccccccccccccc cccccccccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c              cccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c                     cccccccccccccccccccccccccccccccccccccccccccccccc
+    kkkkkkkkkk VVVVD
+
+    c cccccccccccccccccccc cccccccccccc cccccccccccccccccccccccccccccc
+    kkkkkkkkkk vvvvD
+
     vvvvv o nD
+
+    c cccccccccccccc ccccccccc cccccccccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c                          cccccc cccccccccccccccccccccccccccccccccccccccccccccc
+    c                                 ccccccccccccccccccccccccccccccccccccccccccccccccc
+    kkk VVVV o nDnn
+        vvvvv o ddddd o BBBBD
+    kkk
+
+
+    c cccccccccccccc ccccccccc cccccccccccc ccccccccccccccccccccccccccccccc
     kkk vvv o nDnn
         vvvvv o ddddd o dddD
     kkk
 
-    bvD vb o ddddbbD
+
 kkk
 
 kkkkkkkk bvD vb o ffff
