@@ -1803,12 +1803,16 @@ Prev-siblings:
               ;; (source_file (ERROR function) (line_continuation) (ERROR [) (line_continuation))
               (save-excursion
                 (while (and prev-sibling
-                            (string= prev-sibling-type "line_continuation"))
+                            (string= prev-sibling-type "line_continuation")
+                            (let ((prev-sibling2 (treesit-node-prev-sibling prev-sibling)))
+                              (or (not prev-sibling2)
+                                  (string= (treesit-node-type prev-sibling2) "ERROR"))))
                   (goto-char (treesit-node-start prev-sibling))
                   (when (re-search-backward "[^ \t\n\r]" nil t)
                     (setq prev-sibling (treesit-node-at (point))
                           prev-sibling-type (when prev-sibling
                                               (treesit-node-type prev-sibling))))))
+
               (when prev-sibling
                 (cond
                  ((string= prev-sibling-type "ERROR")
