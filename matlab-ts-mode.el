@@ -740,8 +740,11 @@ Example, disp variable is overriding the disp builtin functin:
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_properties.m
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_MultiplePropBlocks.m
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_prop_access.m
-     (property (validation_functions (property_name (identifier)
-                                                    @font-lock-function-call-face)))
+     (property (validation_functions (identifier) @font-lock-function-call-face))
+     (property (validation_functions (field_expression (identifier) @font-lock-function-call-face)))
+     (property (validation_functions ((field_expression
+                                       (function_call name: (identifier)
+                                                      @font-lock-function-call-face)))))
      (property name: (identifier) @matlab-ts-mode-property-face
                (identifier) @font-lock-type-face :?)
      (property name: (property_name (identifier) @matlab-ts-mode-property-face)
@@ -3371,6 +3374,7 @@ so configuration variables of that mode, do not affect this mode.
     ;;              in1 {f1, f2, f3, mustBeReal}
     ;;          end
     ;;      end
+    ;;      See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_arguments2_issue57.m
     ;;
     ;; TODO font-lock keywords uses as variables, struct fields, or namespaces
     ;;      Improve face used, see

@@ -1,3 +1,7 @@
+% -*- matlab-ts -*-
+
+% see https://github.com/acristoffers/tree-sitter-matlab/issues/77
+
 idx = 1:100;
 a   = 10;
 b   = 2;
