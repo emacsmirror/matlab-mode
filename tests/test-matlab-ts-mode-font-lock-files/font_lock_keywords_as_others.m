@@ -1,3 +1,5 @@
+% -*- matlab-ts -*-
+
 % See https://github.com/acristoffers/tree-sitter-matlab/issues/73
 
 arguments = 1

@@ -1,3 +1,5 @@
+% -*- matlab-ts -*-
+
 % Take from myBar in
 % https://www.mathworks.com/help/matlab/matlab_prog/validate-name-value-arguments.html
 %

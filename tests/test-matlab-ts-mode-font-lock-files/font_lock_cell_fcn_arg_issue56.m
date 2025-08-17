@@ -1,0 +1,3 @@
+% -*- matlab-ts -*-
+
+myfcn({'str'});

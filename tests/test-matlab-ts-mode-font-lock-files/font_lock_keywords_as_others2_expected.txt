@@ -1,0 +1,76 @@
+c ccc ccccccccc ccc
+
+kkkkkkkk bttttttttb fffffffffffffffffffffffffffff o ffffff o fffffffffffffffffffffffffffff
+    kkkkkkkkkk bttttttoSssssssSb
+        PP o bbD
+        PP o Ssssssss ssss sssssSD
+        PP o Sssssss ssss sssss sss s SD
+        PP o ddddddddbnDnbD
+        PP bnDDb tttttt bFFFFFFFFFFFFFFb o nD
+    kkk
+
+    kkkkkkkkkk bttttttttoBBBBD tttttttttttoBBBBb
+        PP bnDnb tttt bBBBBBBBBBBBBbddD bSssssSDSssssssSDSsssSbbb o SsssSD
+        PP bnDnb BBBBBBDddddDdddddddddddddddd o SssSD
+    kkk
+
+    kkkkkk
+        PPPPPP
+        PPPPPP
+    kkk
+
+    kkkkkkk
+        kkkkkkkk vvv o ffffffbb
+            dddDdd o dddDddbnDNNNbD
+            vvvvvvvvv o nD
+            BBBBbSssssssss ssss ss sss sss sssss s ss ssSbD
+            ddddddbdddDSssssssSDccc
+                       Sssssss ssssSbD
+            ddddddbdddD SssssssSD Sssssss ssssSbD
+            kkkkk dddDdd
+                BBBBbSsssss ssss sssss ss ssss sSbD
+            kkk
+            BBBBBbSssssssss ssssss ss sssssss sSbD
+        kkk
+    kkk
+    kkkkkkk bttttttoSssssssSb
+        kkkkkkkk ffffbvvvb
+            kk dddDdd
+                BBBBbSsssssss sss ssss sss ssssSbD
+            kkkk
+                kkk
+                kkkkk
+                kkk
+            kkk
+        kkk
+    kkk
+    kkkkkkk bttttttttD ttttttoBBBBb
+        vvvvvv o ggggggggbvDvb
+        vvvvvv o gggggggggggggbvDvb
+    kkk
+    kkkkkkk
+        kkkkkkkk fffffffffffffffffbob
+        kkk
+        kkkkkkkk fffffffffffffbobD kkk
+        kkkkkkkk fffffffffffffffffffbobD kkk
+    kkk
+    kkkkkkk
+        kkkkkkkk ffffffffffbob
+        kkk
+        kkkkkkkk kkkkkkkbob
+        kkk
+        kkkkkkkk kkkkkkbob
+        kkk
+        kkkkkkkk kkkkkkkkkbob
+        kkk
+        kkkkkkkk kkkkkkkkkkkbob
+        kkk
+        kkkkkkkk ffffffffbvvvb
+            dddDddddddddddbbD
+            dddDkkkkkkkbbD
+            dddDkkkkkkbbD
+            dddDkkkkkkkkkbbD
+            dddDkkkkkkkkkkkbbD
+        kkk
+    kkk
+kkk

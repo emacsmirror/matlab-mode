@@ -6,6 +6,7 @@ Node                properties at   54 to  102: defun-name = nil
 Node                  property at   73 to   95: defun-name = nil
 Node                identifier at   73 to   78: defun-name = nil
 Node      validation_functions at   79 to   94: defun-name = nil
+Node             property_name at   80 to   93: defun-name = nil
 Node                identifier at   80 to   93: defun-name = nil
 Node                   methods at  107 to  293: defun-name = nil
 Node       function_definition at  123 to  200: defun-name = roundOff

@@ -1,1 +1,3 @@
 See https://github.com/acristoffers/tree-sitter-matlab/issues/75
+The matlab tree-sitter issue is fixed.
+Need to update matlab-ts-mode to support thios case.

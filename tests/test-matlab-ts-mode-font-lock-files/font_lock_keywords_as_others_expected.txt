@@ -1,0 +1,66 @@
+c ccc ccccccccc ccc
+
+c ccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+kkkkkkkkk o n
+c ccccc c c
+c cccc c c
+c ccccc c c
+c cccccccc c c
+c cccccccc c c
+c cccc c c
+c cccccc c c
+c ccc c c
+kkkkkkkkkkk o n
+kkkkkk o n
+c ccc c c
+c cccccccc c c
+c cccccc c c
+c cc c c
+kkkkkkk o n
+c ccccccccc c c
+c cccccc c c
+c cccccccccc c c
+VVVVVVVVVV o n
+c cccccc c c
+c cccc c c
+c cccccc c c
+c ccc c c
+c ccccc c c
+
+c cccccccccc ccccccc cc cccccc cccccc ccc cccc ccccccccccc cccc
+c   ccccccc ccccccccccccccccccccccccccccc
+c   ccccccccccc
+c     cccccccc ccc
+c         cccc
+c     ccc
+c   ccccc
+c      c c cccccccccccccccccccccc
+
+dDkkkkkkkkk o n
+dDddddd o n
+dDkkkk o n
+dDkkkkk o n
+dDkkkkkkkk o n
+dDdddddddd o n
+dDkkkk o n
+dDkkkkkk o n
+dDkkk o n
+dDkkkkkkkkkkk o n
+dDkkkkkk o n
+dDkkk o n
+dDkkkkkkkk o n
+dDkkkkkk o n
+dDkk o n
+dDkkkkkkk o n
+dDkkkkkkkkk o n
+dDkkkkkk o n
+dDkkkkkkkkkk o n
+dDdddddddddd o n
+dDdddddd o n
+dDkkkk o n
+dDkkkkkk o n
+dDkkk o n
+dDkkkkk o n
+
+

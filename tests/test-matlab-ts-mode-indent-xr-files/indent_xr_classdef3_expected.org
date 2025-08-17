@@ -1008,41 +1008,45 @@
 
 - Invoking      : "C-m" = newline
   Start point   : 2051
-  Moved to point: 2060
-  : 70:0: 
-  :       ^
+  Moved to point: 2068
+  : 70:8:         
+  :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -66,4 +66,4 @@
+@@ -66,4 +66,5 @@
                  a
                  % comment9
              end
 -end
 \ No newline at end of file
 +        end
++        
+\ No newline at end of file
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 2060
-  Moved to point: 2063
-  : 70:3: end
-  :          ^
+  Start point   : 2068
+  Moved to point: 2071
+  : 70:11:         end
+  :                   ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -67,3 +67,4 @@
+@@ -67,4 +67,4 @@
                  % comment9
              end
          end
-+end
+-        
+\ No newline at end of file
++        end
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 2063
+  Start point   : 2071
   Moved to point: 2068
   : 71:0: 
   :       ^
@@ -1054,7 +1058,7 @@
                  % comment9
              end
          end
--end
+-        end
 \ No newline at end of file
 +    end
   #+end_src diff

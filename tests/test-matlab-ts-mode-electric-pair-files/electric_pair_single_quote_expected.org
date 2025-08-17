@@ -76,7 +76,7 @@ t
   No point movement
   standard-output:
   #+begin_example
-nil
+t
   #+end_example
   No buffer modifications
 

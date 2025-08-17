@@ -964,7 +964,8 @@ To debug a specific font-lock test file
                                (match-string 1)
                              (cdr (assoc face face-to-code)))))
                 (when (not code)
-                  (error "Face, %S, is not in code-to-face alist" face))
+                  (error "Face, %S, is not in code-to-face alist (lang-file = %s)"
+                         face lang-file))
                 (setq got (concat got code))
                 (forward-char)
                 (when (looking-at "\n")

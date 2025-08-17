@@ -1,4 +1,4 @@
-% -*- matlab -*-
+% -*- matlab-ts -*-
 
 % See: https://github.com/acristoffers/tree-sitter-matlab/issues/62
 

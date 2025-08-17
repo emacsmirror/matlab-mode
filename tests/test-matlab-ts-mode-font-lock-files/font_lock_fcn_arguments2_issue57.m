@@ -1,3 +1,5 @@
+% -*- matlab-ts -*-
+
 function font_lock_fcn_arguments2_issue57(a,b)
     arguments
         a (1,:) double {mustBeReal}
