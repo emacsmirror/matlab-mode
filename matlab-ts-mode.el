@@ -712,62 +712,6 @@ Example, disp variable is overriding the disp builtin functin:
    :feature 'keyword
    `([,@matlab-ts-mode--keywords] @font-lock-keyword-face)
 
-   ;; F-Rule: function/classdef and items defining them, e.g. the function arguments
-   :language 'matlab
-   :feature 'definition
-   '(
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_issue55_abstract.m
-     (function_signature name: (identifier) @matlab-function-signature-face)
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_no_args.m
-     (function_definition name: (identifier) @font-lock-function-name-face)
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_symPosDef.m
-     (class_definition name: (identifier) @font-lock-function-name-face)
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_MySubClass.m
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_MySubSubClass.m
-     (superclasses (property_name (identifier)) @font-lock-function-name-face)
-     ;; Function inputs: functionName(in1, in2, in3)
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_in_args.m
-     (function_arguments arguments:
-                         (identifier)      @font-lock-variable-name-face
-                         ("," (identifier) @font-lock-variable-name-face) :*)
-     ;; Function single output argument: function out = functionName(in1, in2)
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_out_args.m
-     (function_output (identifier) @font-lock-variable-name-face)
-     ;; Function multiple output arguments: function [out1, out2] = functionName(in1, in2)
-     (function_output (multioutput_variable (identifier) @font-lock-variable-name-face))
-     ;; Fields of: arguments ... end , properties ... end
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_arguments.m
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_properties.m
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_MultiplePropBlocks.m
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_prop_access.m
-     (property (validation_functions (identifier) @font-lock-function-call-face))
-     (property (validation_functions (field_expression (identifier) @font-lock-function-call-face)))
-     (property (validation_functions ((field_expression
-                                       (function_call name: (identifier)
-                                                      @font-lock-function-call-face)))))
-     (property name: (identifier) @matlab-ts-mode-property-face
-               (identifier) @font-lock-type-face :?)
-     (property name: (property_name (identifier) @matlab-ts-mode-property-face)
-               (identifier) @font-lock-type-face :?)
-     ;; Enumeration's
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_enum.m
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_enum_FlowRate.m
-     (enum (identifier) @matlab-ts-mode-property-face)
-     ;; Events block in classdef
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_events.m
-     (events (identifier) @matlab-ts-mode-property-face)
-     ;; Attributes of properties, methods
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_attributes.m
-     (attribute (identifier) @font-lock-type-face "=" (identifier) @font-lock-builtin-face)
-     (attribute (identifier) @font-lock-type-face))
-
-   ;; F-Rule: Function Name = Value arguments
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_name_value_properties.m
-   :language 'matlab
-   :feature 'fcn-name-value
-   '(((function_call (arguments (identifier) @matlab-ts-mode-property-face))
-      (:pred matlab-ts-mode--is-fcn-name-value @matlab-ts-mode-property-face)))
-
    ;; F-Rule: variable
    ;; Could add font-lock-variable-name-face to variable uses.  Consider
    ;;     i1 = [1, 2];
@@ -799,7 +743,93 @@ Example, disp variable is overriding the disp builtin functin:
      (for_statement (iterator (identifier) @matlab-ts-mode-variable-override-builtin-face
                               (:pred matlab-ts-mode--is-variable-overriding-builtin
                                      @matlab-ts-mode-variable-override-builtin-face)))
-     (for_statement (iterator (identifier) @font-lock-variable-name-face)))
+     (for_statement (iterator (identifier) @font-lock-variable-name-face))
+     ;; Function inputs: functionName(in1, in2, in3)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_in_args.m
+     (function_arguments arguments:
+                         (identifier)      @font-lock-variable-name-face
+                         ("," (identifier) @font-lock-variable-name-face) :*)
+     ;; Function single output argument: function out = functionName(in1, in2)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_out_args.m
+     (function_output (identifier) @font-lock-variable-name-face)
+     ;; Function multiple output arguments: function [out1, out2] = functionName(in1, in2)
+     (function_output (multioutput_variable (identifier) @font-lock-variable-name-face))
+     ;; Enumeration's
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_enum.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_enum_FlowRate.m
+     (enum (identifier) @matlab-ts-mode-property-face)
+     ;; Events block in classdef
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_events.m
+     (events (identifier) @matlab-ts-mode-property-face))
+
+   ;; F-Rule: Types, e.g. int32()
+   :language 'matlab
+   :feature 'type
+   `((function_call name: (identifier)
+                    @font-lock-type-face
+                    (:match ,(rx-to-string `(seq bos
+                                                 (or ,@matlab-ts-mode--type-functions)
+                                                 eos)
+                                           t)
+                            @font-lock-type-face))
+     (property name: (identifier) (identifier) @font-lock-type-face :?)
+     (property name: (property_name (identifier)) (identifier) @font-lock-type-face :?))
+     
+
+   ;; F-Rule: factory items that come with MATLAB, Simulink, or add-on products
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_builtins.m
+   :language 'matlab
+   :feature 'builtins
+   `(((identifier) @font-lock-builtin-face
+      (:pred matlab-ts-mode--is-identifier-builtin @font-lock-builtin-face))
+     ((command_name) @font-lock-builtin-face
+      (:pred matlab-ts-mode--is-command-builtin @font-lock-builtin-face))
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_boolean.m
+     ((boolean) @font-lock-builtin-face))
+
+   ;; F-Rule: namespaces (the +dir's, class methods, etc.)
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m
+   :language 'matlab
+   :feature 'namespace-builtins
+   :override t
+   `((field_expression) @matlab-ts-mode--namespace-builtins-capture)
+
+   ;; F-Rule: function/classdef and items defining them, e.g. the function arguments
+   :language 'matlab
+   :feature 'definition
+   '(
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_issue55_abstract.m
+     (function_signature name: (identifier) @matlab-function-signature-face)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_small_no_args.m
+     (function_definition name: (identifier) @font-lock-function-name-face)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_symPosDef.m
+     (class_definition name: (identifier) @font-lock-function-name-face)
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_MySubClass.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_MySubSubClass.m
+     (superclasses (property_name (identifier)) @font-lock-function-name-face)
+     ;; Fields of: arguments ... end , properties ... end
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_arguments.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_properties.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_MultiplePropBlocks.m
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_prop_access.m
+     (property (validation_functions (identifier) @font-lock-function-call-face))
+     (property (validation_functions (field_expression (identifier) @font-lock-function-call-face)))
+     (property (validation_functions ((field_expression
+                                       (function_call name: (identifier)
+                                                      @font-lock-function-call-face)))))
+     (property name: (identifier) @matlab-ts-mode-property-face)
+     (property name: (property_name (identifier) @matlab-ts-mode-property-face))
+     ;; Attributes of properties, methods
+     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_attributes.m
+     (attribute (identifier) @font-lock-type-face "=" (identifier) @font-lock-builtin-face)
+     (attribute (identifier) @font-lock-type-face))
+
+   ;; F-Rule: Function Name = Value arguments
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_name_value_properties.m
+   :language 'matlab
+   :feature 'fcn-name-value
+   '(((function_call (arguments (identifier) @matlab-ts-mode-property-face))
+      (:pred matlab-ts-mode--is-fcn-name-value @matlab-ts-mode-property-face)))
 
    ;; F-Rule: command dual arguments
    :language 'matlab
@@ -835,17 +865,6 @@ Example, disp variable is overriding the disp builtin functin:
    :feature 'operator
    `([,@matlab-ts-mode--operators] @matlab-ts-mode-operator-face)
 
-   ;; F-Rule: Types, e.g. int32()
-   :language 'matlab
-   :feature 'type
-   `((function_call name: (identifier)
-                    @font-lock-type-face
-                    (:match ,(rx-to-string `(seq bos
-                                                 (or ,@matlab-ts-mode--type-functions)
-                                                 eos)
-                                           t)
-                            @font-lock-type-face)))
-
    ;; F-Rule: Brackets
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_brackets.m
    :language 'matlab
@@ -857,24 +876,6 @@ Example, disp variable is overriding the disp builtin functin:
    :language 'matlab
    :feature 'delimiter
    '((["." "," ":" ";"]) @font-lock-delimiter-face)
-
-   ;; F-Rule: factory items that come with MATLAB, Simulink, or add-on products
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_builtins.m
-   :language 'matlab
-   :feature 'builtins
-   `(((identifier) @font-lock-builtin-face
-      (:pred matlab-ts-mode--is-identifier-builtin @font-lock-builtin-face))
-     ((command_name) @font-lock-builtin-face
-      (:pred matlab-ts-mode--is-command-builtin @font-lock-builtin-face))
-     ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_boolean.m
-     ((boolean) @font-lock-builtin-face))
-
-   ;; F-Rule: namespaces (the +dir's, class methods, etc.)
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m
-   :language 'matlab
-   :feature 'namespace-builtins
-   :override t
-   `((field_expression) @matlab-ts-mode--namespace-builtins-capture)
 
    ;; F-Rule: Syntax errors
    ;; Some errors span too much of the buffer's text, so one will probably not want this
@@ -3438,15 +3439,9 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO font-lock: f1, f2, f3 in fcn-name face, mustBeReal builtin face
-    ;;      function fcnarg(in1)
-    ;;          arguments
-    ;;              in1 {f1, f2, f3, mustBeReal}
-    ;;          end
-    ;;      end
-    ;;      See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_arguments2_issue57.m
+    ;; TODO font-lock: matlab.mixin.SetGetExactNames is not in matlab-ts-mode--builtins.el?
     ;;
-    ;; TODO font-lock keywords uses as variables, struct fields, or namespaces
+    ;; TODO font-lock keywords used as variables, struct fields, or namespaces
     ;;      Improve face used, see
     ;;      tests/test-matlab-ts-mode-font-lock-files/font_lock_keywords_as_others.m
     ;;

@@ -4,7 +4,7 @@ c ccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 kkkkkkkk fffffffffffffffffffffffffffffffffffffffffffbvvvvvD vvvvb
     kkkkkkkkk
-        PPPPP bnD Db tttttt bFFFFFFFFFFb
-        PPPP  bnD Db tttttt bFFFFFFFFFFD FFFFFFFDFFFFFFFFFFFFFFbBBBBD BBBBBD SssssSD SsssssSbb
+        BBBBB bnD Db tttttt bBBBBBBBBBBb
+        BBBB  bnD Db tttttt bBBBBBBBBBBD FFFFFFFDFFFFFFFFFFFFFFbBBBBD BBBBBD SssssSD SsssssSbb
     kkk
 kkk

@@ -2,8 +2,8 @@ c ccc ccccccccc ccc
 
 kkkkkkkk ffffffffffffffffffffffffffffffffbvDvb
     kkkkkkkkk
-        P bnDDb tttttt bFFFFFFFFFFb
-        P bnDDb tttttt bFFFFFFFFFFD FFFFFFFDFFFFFFFFFFFFFFbdD dbb
+        P bnDDb tttttt bBBBBBBBBBBb
+        P bnDDb tttttt bBBBBBBBBBBD FFFFFFFDFFFFFFFFFFFFFFbdD dbb
     kkk
 
     BBBBbdb

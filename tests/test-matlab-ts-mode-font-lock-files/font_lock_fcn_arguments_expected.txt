@@ -1,12 +1,12 @@
 c ccc ccccccccc ccc
 kkkkkkkk fffffffffffffffffffffffbvvvD vvvvvvvvvvD vvvD vvvvvvvb
     kkkkkkkkk
-        PPP bnDDb bFFFFFFFFFFFFFb
-        PPPPPPPPPP tttttt
+        PPP bnDDb bBBBBBBBBBBBBBb
+        BBBBBBBBBB tttttt
         PPP bnDnb tttttt
         PPPPPPPDPPP
-        PPPPPPPDPPP tttttt
+        PPPPPPPDBBB tttttt
         PPPPPPPDPPPPPPPPP bnDnb tttttt o SsS
-        PPPPPPPDPPPPPPPPP bnDnb bFFFFFFFFFFFFFb o n
+        PPPPPPPDPPPPPPPPP bnDnb bBBBBBBBBBBBBBb o n
     kkk
 kkk
