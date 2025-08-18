@@ -3470,8 +3470,6 @@ so configuration variables of that mode, do not affect this mode.
     ;;
     ;; TODO add rename identifier
     ;;
-    ;; TODO check C-h f RET matlab-ts-mode RET help and validate all listed items are valid.
-    ;;
     ;; TODO add matlab-sections-minor-mode indicator in mode line and make it clickable so it can
     ;;      be turned off
     ;;
