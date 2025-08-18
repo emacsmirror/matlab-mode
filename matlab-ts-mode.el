@@ -3459,6 +3459,9 @@ so configuration variables of that mode, do not affect this mode.
 
     ;; TODO font-lock: matlab.mixin.SetGetExactNames is not in matlab-ts-mode--builtins.el?
     ;;
+    ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
+    ;;      think it was missing a few toolboxes.
+    ;;
     ;; TODO LSP
     ;;      - Configure LSP
     ;;      - Test LSP vs MLint
@@ -3469,11 +3472,6 @@ so configuration variables of that mode, do not affect this mode.
     ;;
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
-    ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
-    ;;      think it was missing a few toolboxes.
-    ;;
-    ;; TODO add rename identifier
-    ;;
     ;; TODO add matlab-sections-minor-mode indicator in mode line and make it clickable so it can
     ;;      be turned off
     ;;
@@ -3483,6 +3481,12 @@ so configuration variables of that mode, do not affect this mode.
     ;; TODO t-utils
     ;;      For (t-utils-xr ...), get the line:col of all before running them this way the
     ;;      *.org files will match up with the original test file.
+    ;;
+    ;; TODO add matlab-ts-mode-rename-variable C-c C-v
+    ;;      Menu: Rename variable
+    ;;      When invoked, see if node-at-point is an identifier, then do a rename within
+    ;;      the scope, changing the variable name in a loop.
+    ;;
 
     (treesit-major-mode-setup)
 

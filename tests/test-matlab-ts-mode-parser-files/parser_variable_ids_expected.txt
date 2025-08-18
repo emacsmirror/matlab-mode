@@ -1,0 +1,22 @@
+# tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}
+(source_file (comment[1,20]{% -*- matlab-ts -*-})
+ (function_definition function
+  (function_output (identifier[31,35]{out1}) =)
+  name: (identifier[38,57]{parser_variable_ids})
+  (function_arguments ( arguments: (identifier[58,61]{in1}) ))
+  \n
+  (block
+   (assignment left: (identifier[68,72]{out1}) =
+    right: 
+     (binary_operator
+      left: (binary_operator left: (identifier[75,78]{in1}) * right: (number[81,82]{2}))
+      +
+      right: (field_expression object: (identifier[85,88]{foo}) field: . (identifier[89,93]{out1}))))
+   ;
+   (assignment left: (identifier[99,103]{out1}) =
+    right: 
+     (binary_operator left: (identifier[106,110]{out1}) +
+      right: (binary_operator left: (number[113,114]{2}) * right: (identifier[117,121]{out1}))))
+   ;)
+  end)
+ \n)
