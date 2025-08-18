@@ -1,7 +1,9 @@
 % -*- matlab-ts -*-
-% See ../indents.m which is used in testing matlab-mode
-% t-utils-test-indent: no-line-by-line-indent - contains %{ block comments %}
-function indent_old_indents(a,b,stuff,cmddual1fake,cmddual2fake)
+
+%  To be used for "typing" line-by-line. Same as ./indent_old_indents.m, but no
+%  %{ block comments %} and no nested functions. These do not support indenting line-by-line.
+
+function indent_old_indents_for_typing(a,b,stuff,cmddual1fake,cmddual2fake)
 % Help text
 % !!0
 % of many lines
@@ -269,24 +271,9 @@ function B = continuations_and_block_comments
 % !!0
 % !!0
 % !!0
-%{
-  !!2  {  }
-  !!2
-%}
     
-    %{
-      blank line means this block comment is not part of help and is for following code
-      !!6  {  }
-      !!6
-    %}
-
     arg1=1;
     
-    %{
-    %  !!4
-      !!6
-    % !!4
-    %}
     
     % Block comment indicators MUST be on a line by themselves.
     %{ Not a block comment }
@@ -335,15 +322,6 @@ function has_nested_fcn
     
     A = 1;
     
-    function am_nested_fcn() %!!4
-                             % help
-                             % !!4
-        code(A);
-    %!!8
-    end
-    
-    %!!4
-    am_nested_fcn();
     function_end_same_line(1);
     function_after_end_same_line();
 end

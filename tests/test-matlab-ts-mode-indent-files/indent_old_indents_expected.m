@@ -1,5 +1,6 @@
 % -*- matlab-ts -*-
 % See ../indents.m which is used in testing matlab-mode
+% t-utils-test-indent: no-line-by-line-indent - contains %{ block comments %}
 function indent_old_indents(a,b,stuff,cmddual1fake,cmddual2fake)
 % Help text
 % !!0

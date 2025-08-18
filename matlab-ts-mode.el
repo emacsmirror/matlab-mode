@@ -225,7 +225,7 @@ content can crash Emacs via the matlab tree-sitter parser."
   ;; R2025a example: V2MCC8000MEC2000MCR2000<binary-data>
   (save-excursion
     (goto-char (point-min))
-    (when (looking-at "^V[0-9A-Z]+MCR[0-9]+")
+    (when (looking-at "^V[0-9A-Z]+MCR[0-9]+" t)
       (fundamental-mode)
       (user-error "Not activating matlab-ts-mode because this is MATLAB Compiler Runtime content")))
 
@@ -1240,7 +1240,7 @@ node."
   (and (not node)
        (string= "comment" (treesit-node-type parent))
        (not (save-excursion (goto-char bol)
-                            (looking-at "%")))
+                            (looking-at "%" t)))
        (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent))))
 
 (defun matlab-ts-mode--i-doc-comment-matcher (node parent _bol &rest _)
@@ -1256,14 +1256,14 @@ node."
   (and (not node)
        (string= "comment" (treesit-node-type parent))
        (not (save-excursion (goto-char bol)
-                            (looking-at "%")))))
+                            (looking-at "%" t)))))
 
 (defun matlab-ts-mode--i-block-comment-end-matcher (node parent bol &rest _)
   "Is NODE, PARENT, BOL last line of \"{% ... %)\"?"
   (and (not node)
        (string= "comment" (treesit-node-type parent))
        (save-excursion (goto-char bol)
-                       (looking-at "%"))))
+                       (looking-at "%" t))))
 
 ;; `matlab-ts-mode--function-indent-level'
 ;;
@@ -1497,7 +1497,7 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
                        (goto-char (treesit-node-start anchor-node))
                        ;; When not an argument after the "("
                        ;; Examples: "(-1,..." "(+1,...") "(a, ..."  "((1+2),..."  "({1},..."
-                       (not (looking-at "([ \t]*[-+a-zA-Z0-9{(]"))))
+                       (not (looking-at "([ \t]*[-+a-zA-Z0-9{(]" t))))
             (setq anchor-node nil))
 
           ;; An expression of an if, while, or switch statement? Consider:
@@ -1541,123 +1541,181 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
   "Return the offset computed by `matlab-ts-mode--i-cont-incomplete-matcher'."
   (cdr matlab-ts-mode--i-cont-incomplete-matcher-pair))
 
-(defun matlab-ts-mode--i-next-line-indent-level (node anchor-node last-child-of-error-node)
+(defun matlab-ts-mode--is-next-line-fcn-args-anchor-node (anchor-node)
+  "Is ANCHOR-NODE for a  \"fcn(\ ...?"
+  (when (string= (treesit-node-type anchor-node) "(")
+    (save-excursion
+      (goto-char (treesit-node-start anchor-node))
+      (and (< (point) (point-max))
+           (goto-char (1+ (point)))
+           (re-search-forward "[^ \t]" nil t)
+           (equal (treesit-node-type (treesit-node-at (point))) "line_continuation")
+           (goto-char (treesit-node-start anchor-node))
+           (> (point) 1)
+           (goto-char (1- (point)))
+           (looking-at "[.a-z0-9_]" t)))))
+
+(defvar matlab-ts-mode--i-next-line-pair)
+
+(defun matlab-ts-mode--i-next-line-indent-level (node bol anchor-node last-child-of-error-node)
   "Get indent level for `matlab-ts-mode--i-cont-incomplete-matcher'.
 
 NODE is the node being indented using ANCHOR-NODE.
 LAST-CHILD-OF-ERROR-NODE is nil or the last child of the error node we
 are in.
 
-Returns indent-level relative to ANCHOR-NODE."
+BOL, is the beginning-of-line that is being indented.
 
-  (let ((anchor-type (treesit-node-type anchor-node)))
-    (pcase anchor-type
+Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
 
-      ("property"
-       (if (or last-child-of-error-node
-               ;; Continuation:    arguments
-               ;;                     firstArgument ...
-               ;;         TAB>            doube
-               (let ((prev-sibling (treesit-node-prev-sibling node)))
-                        (and prev-sibling
-                             (string= (treesit-node-type prev-sibling) "line_continuation"))))
-               matlab-ts-mode--indent-level
-         0))
+  (let ((anchor-last-child (treesit-node-child anchor-node -1)))
+    (when (and (equal (treesit-node-type anchor-last-child) "end")
+               (or (not node)
+                   (< (treesit-node-start anchor-last-child) (treesit-node-start node))))
+      (setq anchor-node anchor-last-child)))
 
-      ((rx (seq bos (or "properties" "events" "methods" "arguments") eos))
-       (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
-           ;; after properties, etc.
-           0
-         ;; else under properties, etc.
+  (when (matlab-ts-mode--is-next-line-fcn-args-anchor-node anchor-node)
+    ;; Case: var_b = my_function( ...
+    ;;           ^                        <== RET/TAB to here
+    ;; See:  tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun_call1.m
+    (setq anchor-node (treesit-node-parent anchor-node)
+          last-child-of-error-node nil))
 
-         (if (and (string= anchor-type "arguments")
-                  (or (not node)
-                      (let ((prev-sibling (treesit-node-prev-sibling node)))
-                        (and prev-sibling
-                             (string= (treesit-node-type prev-sibling) "line_continuation")))))
-             ;; Continuation:    arguments
-             ;;                     firstArgument ...
-             ;;         TAB>            ^
-             (* 2 matlab-ts-mode--indent-level)
-           matlab-ts-mode--indent-level)))
+  (let ((indent-level
+         (if (and node (string= (treesit-node-type node) "end"))
+             (progn
+               (when (string= "property" (treesit-node-type anchor-node))
+                 (setq anchor-node (treesit-node-parent anchor-node)))
+               0)
+           (let ((anchor-type (treesit-node-type anchor-node)))
+             (pcase anchor-type
 
-      ("("
-       1)
+               ("property"
+                (if (or last-child-of-error-node
+                        ;; Continuation:    arguments
+                        ;;                     firstArgument ...
+                        ;;         TAB>            doube
+                        (let ((prev-sibling (treesit-node-prev-sibling node)))
+                          (and prev-sibling
+                               (string= (treesit-node-type prev-sibling) "line_continuation"))))
+                    matlab-ts-mode--indent-level
+                  0))
 
-      ("[" ;; either a matrix or function output
-       (if (save-excursion
-             (goto-char (treesit-node-start anchor-node))
-             (while (and (re-search-backward "[^ \t\r\n]" nil t)
-                         (string= (treesit-node-type
-                                   (treesit-node-at (point)))
-                                  "line_continuation")))
-             (string= (treesit-node-type (treesit-node-at (point)))
-                      "function"))
-           ;; function output
-           1
-         matlab-ts-mode--array-indent-level))
+               ((rx (seq bos (or "properties" "events" "methods" "arguments") eos))
+                (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
+                    ;; after properties, etc.
+                    0
+                  ;; else under properties, etc.
 
-      ("{"
-       (if (save-excursion
-             (goto-char (treesit-node-start anchor-node))
-             (when (> (point) 1)
-               (goto-char (1- (point)))
-               (looking-at "%")))
-           ;; Anchored under a block comment:   %{
-           ;;                                     ^    <== TAB to here, one more than the "{"
-           1
-         matlab-ts-mode--array-indent-level))
+                  (if (and (string= anchor-type "arguments")
+                           (or (not node)
+                               (let ((prev-sibling (treesit-node-prev-sibling node)))
+                                 (and prev-sibling
+                                      (string= (treesit-node-type prev-sibling)
+                                               "line_continuation")))))
+                      ;; Continuation:    arguments
+                      ;;                     firstArgument ...
+                      ;;         TAB>            ^
+                      (* 2 matlab-ts-mode--indent-level)
+                    matlab-ts-mode--indent-level)))
 
-      ((rx (seq bos (or "function" "function_definition") eos))
-       (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
-           ;; after function
-           0
-         ;; else under function
-         matlab-ts-mode--function-indent-level))
+               ("("
+                1)
 
-      ("row"
-       0)
+               ("[" ;; either a matrix or function output
+                (if (save-excursion
+                      (goto-char (treesit-node-start anchor-node))
+                      (while (and (re-search-backward "[^ \t\r\n]" nil t)
+                                  (string= (treesit-node-type
+                                            (treesit-node-at (point)))
+                                           "line_continuation")))
+                      (string= (treesit-node-type (treesit-node-at (point)))
+                               "function"))
+                    ;; function output
+                    1
+                  matlab-ts-mode--array-indent-level))
 
-      ("try"
-       (if (and node
-                (string-match-p (rx bos "catch_clause" eos)
-                                (treesit-node-type node)))
-           0
-         matlab-ts-mode--indent-level))
+               ("{"
+                (if (save-excursion
+                      (goto-char (treesit-node-start anchor-node))
+                      (when (> (point) 1)
+                        (goto-char (1- (point)))
+                        (looking-at "%" t)))
+                    ;; Anchored under a block comment: %{
+                    ;;                                   ^    <== TAB to here, one more than the "{"
+                    1
+                  matlab-ts-mode--array-indent-level))
 
-      ("if"
-       (if (and node
-                ;; else, else_clause, elseif, or elseif_clause
-                (string-match-p (rx bos "else")
-                                (treesit-node-type node)))
-           0
-         matlab-ts-mode--indent-level))
+               ((rx (seq bos (or "function" "function_definition") eos))
+                (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
+                    ;; after function
+                    0
+                  ;; else under function
+                  matlab-ts-mode--function-indent-level))
 
-      ((rx (seq bos (or "switch" "case" "otherwise") eos))
-       matlab-ts-mode--switch-indent-level)
+               ("row"
+                0)
 
-      ("end"
-       0)
+               ("try"
+                (if (and node
+                         (string-match-p (rx bos "catch_clause" eos)
+                                         (treesit-node-type node)))
+                    0
+                  matlab-ts-mode--indent-level))
 
-      ("classdef"
-       (if (and (string= (treesit-node-type node) "comment")
-                (save-excursion
-                  (goto-char (treesit-node-start node))
-                  (beginning-of-line)
-                  (forward-line -1)
-                  (back-to-indentation)
-                  (equal (treesit-node-at (point)) anchor-node)))
-           ;; function doc comment
-           0
-         matlab-ts-mode--indent-level))
+               ((rx (seq bos (or "if" "elseif") eos))
+                (if (and node
+                         ;; else, else_clause, elseif, or elseif_clause
+                         (string-match-p (rx bos "else")
+                                         (treesit-node-type node)))
+                    0
+                  (if (save-excursion
+                        (goto-char bol)
+                        (let ((prev-node (treesit-node-at (point))))
+                          (when (looking-at "[^ \t\n\r]")
+                            (setq prev-node (treesit-node-prev-sibling prev-node)))
+                          (when (equal (treesit-node-type prev-node) "line_continuation")
+                            (goto-char (treesit-node-start prev-node))
+                            (back-to-indentation)
+                            ;; move to first item after the if or elseif condition
+                            (when (looking-at (rx (or "if" "elseif") (or " " "\t")))
+                              (re-search-forward "[ \t]" nil t))
+                            (let ((condition-node (treesit-node-at (point))))
+                              (when (not (string= (treesit-node-type condition-node)
+                                                  "line_continuation"))
+                                (setq anchor-node condition-node))))))
+                      ;; Case:   if condition || ...
+                      ;;            ^                       <== TAB to here
+                      0
+                   ;; Case: if condition
+                   ;;           ^                           <== TAB to here
+                    matlab-ts-mode--indent-level)))
 
-      (_
-       (if last-child-of-error-node
-           ;; Part of a continuation, so 4 for that plus 4 for parent
-           (* 2 matlab-ts-mode--indent-level)
-         matlab-ts-mode--indent-level)))))
+               ((rx (seq bos (or "switch" "case" "otherwise") eos))
+                matlab-ts-mode--switch-indent-level)
 
-(defvar matlab-ts-mode--i-next-line-pair)
+               ("end"
+                0)
+
+               ("classdef"
+                (if (and (string= (treesit-node-type node) "comment")
+                         (save-excursion
+                           (goto-char (treesit-node-start node))
+                           (beginning-of-line)
+                           (forward-line -1)
+                           (back-to-indentation)
+                           (equal (treesit-node-at (point)) anchor-node)))
+                    ;; function doc comment
+                    0
+                  matlab-ts-mode--indent-level))
+
+               (_
+                (if last-child-of-error-node
+                    ;; Part of a continuation, so 4 for that plus 4 for parent
+                    (* 2 matlab-ts-mode--indent-level)
+                  matlab-ts-mode--indent-level)))))))
+    (setq matlab-ts-mode--i-next-line-pair
+          (cons (treesit-node-start anchor-node) indent-level))))
 
 (cl-defun matlab-ts-mode--i-next-line-matcher (node parent bol &rest _)
   "Matcher for indent on a newline being inserted when in presence of errors.
@@ -1687,6 +1745,15 @@ Prev-siblings:
     (let ((prev-sibling (treesit-node-prev-sibling node)))
       (when (equal (treesit-node-type prev-sibling) "ERROR")
         (let ((last-child (treesit-node-child prev-sibling -1)))
+
+          ;; function foo(a,b,stuff,cmddual1fake,cmddual2fake)
+          ;;     if foo %!!4
+          ;;         C = "this is the end of the line";
+          ;;         % !!8                                      <== TAB to here
+          (when (and last-child
+                     (string= (treesit-node-type last-child) ";"))
+            (setq last-child (treesit-node-prev-sibling last-child)))
+
           (when last-child
             ;; classdef foo
             ;;     properties
@@ -1704,7 +1771,7 @@ Prev-siblings:
                (save-excursion
                  (goto-char bol)
                  (beginning-of-line)
-                 (looking-at "^[ \t]*$")))
+                 (looking-at "^[ \t]*$" t)))
       ;; Consider the one-liner:
       ;;    classdef indent_xr_classdef1
       ;;        ^                                 TAB should go here
@@ -1749,6 +1816,7 @@ Prev-siblings:
                                          "events"
                                          "methods"
                                          "if"
+                                         "elseif"
                                          "switch"
                                          "case"
                                          "otherwise"
@@ -1833,10 +1901,10 @@ Prev-siblings:
                            (not (equal (treesit-node-type
                                         (treesit-node-prev-sibling prev-sibling))
                                        "identifier"))
-                           ;; OR we have identifier after the paren: e.g. (in1, ...
-                           (equal (treesit-node-type
-                                   (treesit-node-next-sibling prev-sibling))
-                                  "identifier")
+                           ;; OR we have something after the paren: e.g. (in1, ...
+                           (not (equal (treesit-node-type
+                                        (treesit-node-next-sibling prev-sibling))
+                                       "line_continuation"))
                            ))
                   (setq prev-sibling-to-check prev-sibling)))
 
@@ -1852,24 +1920,9 @@ Prev-siblings:
         (let ((anchor-node (or ancestor-to-check
                                prev-sibling-to-check)))
           (when anchor-node
-            (let ((anchor-last-child (treesit-node-child anchor-node -1)))
-              (when (and (equal (treesit-node-type anchor-last-child) "end")
-                         (or (not node)
-                             (< (treesit-node-start anchor-last-child) (treesit-node-start node))))
-                (setq anchor-node anchor-last-child)))
-
-
-            (let ((indent-level
-                   (if (and node (string= (treesit-node-type node) "end"))
-                       (progn
-                         (when (string= "property" (treesit-node-type anchor-node))
-                           (setq anchor-node (treesit-node-parent anchor-node)))
-                         0)
-                     (matlab-ts-mode--i-next-line-indent-level node anchor-node
-                                                               last-child-of-error-node))))
-              (setq matlab-ts-mode--i-next-line-pair
-                    (cons (treesit-node-start anchor-node) indent-level))
-              t)))))))
+            (matlab-ts-mode--i-next-line-indent-level node bol anchor-node last-child-of-error-node)
+            ;; t ==> matched
+            t))))))
 
 (defun matlab-ts-mode--i-next-line-anchor (&rest _)
   "Return the anchor computed by `matlab-ts-mode--i-next-line-matcher'."
@@ -1887,15 +1940,21 @@ Example:
    function a=foo
        a=1;
        %comment <== TAB goes here."
-  (when (and node
-             (string= (treesit-node-type node) "comment"))
-    (let ((prev-sibling (treesit-node-prev-sibling node)))
-      (when (and prev-sibling
-                 (string= (treesit-node-type prev-sibling) "function_definition"))
-        (when (not (equal (treesit-node-type (treesit-node-child prev-sibling -1)) "end"))
-          (setq matlab-ts-mode--i-comment-under-fcn-pair
-                (cons (treesit-node-start prev-sibling) matlab-ts-mode--indent-level))
-          t)))))
+  (let ((comment-or-ellipsis-re (rx bos (or "comment" "line_continuation"))))
+
+    (when (and node
+               (string-match-p comment-or-ellipsis-re (treesit-node-type node)))
+      (let ((prev-sibling (treesit-node-prev-sibling node)))
+        (while (and prev-sibling
+                    (string-match-p comment-or-ellipsis-re (treesit-node-type prev-sibling)))
+          (setq prev-sibling (treesit-node-prev-sibling prev-sibling)))
+
+        (when (and prev-sibling
+                   (string= (treesit-node-type prev-sibling) "function_definition"))
+          (when (not (equal (treesit-node-type (treesit-node-child prev-sibling -1)) "end"))
+            (setq matlab-ts-mode--i-comment-under-fcn-pair
+                  (cons (treesit-node-start prev-sibling) matlab-ts-mode--indent-level))
+            t))))))
 
 (defun matlab-ts-mode--i-comment-under-fcn-anchor (&rest _)
   "Return the anchor computed by `matlab-ts-mode--i-comment-under-fcn-matcher'."
@@ -1941,7 +2000,7 @@ Example:
            ;;          arg ...                 <== TAB here
            (save-excursion
              (goto-char (1- (treesit-node-start parent)))
-             (not (looking-at "[ \t]"))))
+             (not (looking-at "[ \t]" t))))
       (setq matlab-ts-mode--i-fcn-args-next-line-pair
             (cons (treesit-node-start (treesit-node-parent parent))
                   matlab-ts-mode--indent-level))
@@ -1979,6 +2038,9 @@ Example:
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
+     ;; I-Rule: last line of code block comment "%{ ... %}"?
+     (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
+
      ;; I-Rule: RET on an incomplete statement. Example:
      ;;         classdef foo
      ;;             ^                     <== TAB or RET on prior line goes here.
@@ -2010,8 +2072,9 @@ Example:
      ;; I-Rule: within a code block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
 
-     ;; I-Rule: last line of code block comment "%{ ... %}"?
-     (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
+     ;; xxx
+     ;; ;; I-Rule: last line of code block comment "%{ ... %}"?
+     ;; (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
 
      ;; I-Rule: switch case and otherwise statements
      ((node-is ,(rx bos (or "case_clause" "otherwise_clause") eos))
@@ -2577,7 +2640,7 @@ Returns t if tree-sitter NODE defines an outline heading."
              (save-excursion
                (goto-char (treesit-node-start node))
                (beginning-of-line)
-               (looking-at matlab-ts-mode--comment-heading-re))))))
+               (looking-at matlab-ts-mode--comment-heading-re t))))))
 
 ;;; Save hooks
 
@@ -2674,7 +2737,7 @@ single quote string."
        ((string-match-p (rx bos (or "comment" "line_continuation") eos) type-back1)
         (save-excursion
           (forward-char -1)
-          (looking-at "\\w\\|\\s_\\|\\.")))
+          (looking-at "\\w\\|\\s_\\|\\." t)))
 
        ;; Case: string delimiter
        ;;    double up if starting a new string => return nil
@@ -2894,6 +2957,9 @@ THERE-END MISMATCH) or nil."
 
 (defun matlab-ts-mode--insert-electric-ends ()
   "A RET was type, insert the electric \"end\" if needed."
+
+  ;; We could also insert the end of a block comment, "%}", when "%{" is seen but that would likely
+  ;; be annoying because often %{ block comments %} are used to comment out sections of code.
 
   (let (end-indent-level
         extra-insert
