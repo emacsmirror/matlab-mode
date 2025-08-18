@@ -3467,8 +3467,6 @@ so configuration variables of that mode, do not affect this mode.
     ;;
     ;; TODO check abbrev mode - think this is setup by prog-mode, also see matlab-mode
     ;;
-    ;; TODO matlab-shell-mode: update help to have matlab-ts-mode or matlab-mode
-    ;;
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
     ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I

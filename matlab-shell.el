@@ -345,29 +345,9 @@ These will differ when MATLAB code changes directory without notifying Emacs."]
 
 This mode will allow standard Emacs shell commands/completion to occur
 with MATLAB running as an inferior process.  Additionally, this shell
-mode is integrated with `matlab-mode', a major mode for editing M
-code.
-
-> From an M file buffer:
-\\<matlab-mode-map>
-\\[matlab-shell-save-and-go] - Save the current M file, and run it in a \
-MATLAB shell.
-
-> From Shell mode:
-\\<matlab-shell-mode-map>
-\\[matlab-shell-last-error] - find location of last MATLAB runtime error \
-in the offending M file.
-
-> From an M file, or from Shell mode:
-\\<matlab-mode-map>
-\\[matlab-shell-run-command] - Run COMMAND and show result in a popup buffer.
-\\[matlab-shell-describe-variable] - Show variable contents in a popup buffer.
-\\[matlab-shell-describe-command] - Show online documentation for a command \
-in a popup buffer.
-\\[matlab-shell-apropos] - Show output from LOOKFOR command in a popup buffer.
-
-> Keymap:
-\\{matlab-mode-map}"
+mode is integrated with `matlab-ts-mode' or the older `matlab-mode', a
+major mode for editing *.m files.  See the MATLAB menu in these
+buffers for the integration with matlab-shell-mode."
   (setq major-mode 'matlab-shell-mode
         mode-name "M-Shell"
         comint-prompt-regexp "^\\(K\\|EDU\\)?>> *"
