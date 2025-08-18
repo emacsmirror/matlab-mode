@@ -149,6 +149,17 @@
        (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
      #+end_src
 
+   * Tell =org-mode= that =#+begin_src matlab ... #end_src= blocks should use
+     *matlab-ts-mode*:
+
+      : M-x customize-variable RET org-src-lang-modes RET
+
+     and map matlab to matlab-ts:
+
+      : Language name: matlab
+      : Major mode: matlab-ts
+
+
 3. [Optional]. Install the [[file:doc/matlab-language-server-lsp-mode.org][MATLAB Language Server]].
 
 4. Check your installation setup.

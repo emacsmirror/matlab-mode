@@ -3342,10 +3342,22 @@ See `comment-dwim' for more capabilities."]
 
 If you have the MATLAB tree-sitter grammar installed,
   (treesit-ready-p \\='matlab)
-is t, add the following to an Init File (e.g. `user-init-file' or
-`site-run-file') to enter the MATLAB tree-sitter mode by default:
+is t
 
-  (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))
+1. Tell Emacs to use matlab-ts-mode for MATLAB files by adding the following to your
+   `user-init-file' which is typically ~/.emacs, or add it to your `site-run-file'
+
+    (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))
+
+2. Tell `org-mode' that #+begin_src matlab ... #end_src blocks should use
+   matlab-ts-mode:
+
+     \\[customize-variable] RET org-src-lang-modes RET
+
+   and map matlab to matlab-ts:
+
+      Language name: matlab
+      Major mode: matlab-ts
 
 This mode is independent from the classic matlab-mode.el, `matlab-mode',
 so configuration variables of that mode, do not affect this mode.
@@ -3448,8 +3460,6 @@ so configuration variables of that mode, do not affect this mode.
     ;;        look at both LSP and MLint. Place menu item at bottom.
     ;;
     ;; TODO check abbrev mode - think this is setup by prog-mode, also see matlab-mode
-    ;;
-    ;; TODO org mode matlab-ts-mode blocks testing
     ;;
     ;; TODO matlab-shell-mode: update help to have matlab-ts-mode or matlab-mode
     ;;
