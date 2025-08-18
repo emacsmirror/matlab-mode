@@ -3166,53 +3166,60 @@ Within comments, the following markers will be highlighted:
   ;; (define-key km [(meta a)] 'matlab-beginning-of-command)
   ;; (define-key km [(meta e)] 'matlab-end-of-command)
 
-    ;; Connecting to MATLAB Shell
+  ;; Integration with `matlab-shell'
   "C-c C-s" 'matlab-shell-save-and-go
   "C-c C-r" 'matlab-shell-run-region
   "C-<return>" 'matlab-shell-run-region-or-line
-  "C-c C-t" 'matlab-show-line-info
   "C-c ?" 'matlab-shell-locate-fcn
   "C-h C-m" matlab--shell-help-map
   "M-s" 'matlab-show-matlab-shell-buffer
-  "C-M-<mouse-2>" 'matlab-find-file-click)
+  "C-M-<mouse-2>" 'matlab-shell-find-file-click)
 
 ;;; Menu
 
 (easy-menu-define matlab-mode-menu matlab-ts-mode-map
   "Menu for `matlab-ts-mode'."
   '("MATLAB"
-    ["Start MATLAB (M-x matlab-shell)" matlab-shell
+    "---" "MATLAB shell"
+    ["     Start MATLAB (M-x matlab-shell)" matlab-shell
      :active (not (matlab-shell-active-p))
      :visible (not (matlab-shell-active-p))
      :help "Run MATLAB in a *MATLAB* shell buffer"]
-    ["Switch to MATLAB (M-x matlab-shell)" matlab-shell
+    ["     Switch to MATLAB (M-x matlab-shell)" matlab-shell
      :active (matlab-any-shell-active-p)
      :visible (matlab-any-shell-active-p)
      :help "Switch to the *MATLAB* shell buffer"]
-    ["Save and go" matlab-shell-save-and-go
+    ["     Save and go" matlab-shell-save-and-go
      :active (matlab-any-shell-active-p)
      :help "Save this *.m file and evaluate it in the *MATLAB* shell"]
-    ["Run region" matlab-shell-run-region
+    ["     Run region" matlab-shell-run-region
      :active (matlab-any-shell-active-p)
      :help "Evaluate the active region in the *MATLAB* shell buffer"]
-    ["Run command" matlab-shell-run-command
+    ["     Run region or line" matlab-shell-run-region-or-line
+     :active (matlab-any-shell-active-p)
+     :help "Evaluate active region or current line in the *MATLAB* shell buffer"]
+    ["     Run command" matlab-shell-run-command
      :active (matlab-shell-active-p)
      :help "Prompt for a command and run it in the *MATLAB* shell buffer.
 Result is shown in a *MATLAB Run Command Result* buffer."]
-    ["Describe command" matlab-shell-describe-command
+    ["     Describe command" matlab-shell-describe-command
      :active (matlab-shell-active-p)
      :help "Run \"help COMMAND\" in the *MATLAB* shell buffer
 and display in a help buffer."]
-    ["Describe variable" matlab-shell-describe-variable
+    ["     Describe variable" matlab-shell-describe-variable
      :active (matlab-shell-active-p)
      :help "Evaluate VARIABLE in the *MATLAB* shell buffer and
 display result in a buffer"]
-    ["Command Apropos" matlab-shell-apropos
+    ["     Command Apropos" matlab-shell-apropos
      :active (matlab-shell-active-p)
      :help "Look for active command in *MATLAB* shell buffer matching a regex"]
-    ["Locate MATLAB function" matlab-shell-locate-fcn
+    ["     Locate MATLAB function" matlab-shell-locate-fcn
      :active (matlab-shell-active-p)
      :help "Run 'which FCN' in the *MATLAB* shell, and if it's a *.m file open it in a buffer"]
+    ["     Switch to *MATLAB* shell" matlab-show-matlab-shell-buffer
+     :active (matlab-shell-active-p)
+     :help "Switch to the buffer containing the MATLAB process"]
+    "---"
     ("Code Sections"
      ["Run section" matlab-sections-run-section
       :active matlab-sections-minor-mode
@@ -3301,11 +3308,10 @@ Click FlyC in the mode-line for more options."]
     "----"
     ["Jump to function" imenu]
     "----"
-    ["Grep comment markers" matlab-ts-mode-grep-comment-markers
-     :help "Run grep to find triple-x, fix-me, and to do comment markers."]
-    ["Comment marker help" matlab-ts-mode-comment-marker-help]
-    "----"
-    ("Format"
+    ("Editing"
+     ["Grep comment markers" matlab-ts-mode-grep-comment-markers
+      :help "Run grep to find triple-x, fix-me, and to do comment markers."]
+     ["Comment marker help" matlab-ts-mode-comment-marker-help]
      ["Fill comment / string / indent function" prog-fill-reindent-defun]
      ["Indent region" indent-region
       :help "Indent active region"]

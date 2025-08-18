@@ -564,7 +564,7 @@ point, but it will be restored for them."
     (define-key km [(control c) ?. ] 'matlab-shell-locate-fcn)
     (define-key km [(control h) (control m)] matlab--shell-help-map)
     (define-key km [(meta s)] 'matlab-show-matlab-shell-buffer)
-    (define-key km [(control meta mouse-2)] 'matlab-find-file-click)
+    (define-key km [(control meta mouse-2)] 'matlab-shell-find-file-click)
     ;; Debugger interconnect
     (substitute-key-definition 'read-only-mode 'matlab-toggle-read-only
                                km global-map)

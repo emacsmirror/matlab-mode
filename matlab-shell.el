@@ -2503,7 +2503,7 @@ Argument FNAME specifies if we should echo the region to the command line."
                `(lambda () (matlab-shell-cleanup-extracted-region ,fname)))
   )
 
-(defun matlab-find-file-click (e)
+(defun matlab-shell-find-file-click (e)
   "Find the file clicked on with event E on the current path."
   (interactive "e")
   (mouse-set-point e)
