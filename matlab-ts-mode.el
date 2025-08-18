@@ -3441,10 +3441,6 @@ so configuration variables of that mode, do not affect this mode.
 
     ;; TODO font-lock: matlab.mixin.SetGetExactNames is not in matlab-ts-mode--builtins.el?
     ;;
-    ;; TODO font-lock keywords used as variables, struct fields, or namespaces
-    ;;      Improve face used, see
-    ;;      tests/test-matlab-ts-mode-font-lock-files/font_lock_keywords_as_others.m
-    ;;
     ;; TODO LSP
     ;;      - Configure LSP
     ;;      - Test LSP vs MLint
