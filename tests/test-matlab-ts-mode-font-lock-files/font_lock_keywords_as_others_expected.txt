@@ -2,7 +2,7 @@ c ccc ccccccccc ccc
 
 c ccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-kkkkkkkkk o n
+VVVVVVVVV o n
 c ccccc c c
 c cccc c c
 c ccccc c c
@@ -11,13 +11,13 @@ c cccccccc c c
 c cccc c c
 c cccccc c c
 c ccc c c
-kkkkkkkkkkk o n
-kkkkkk o n
+VVVVVVVVVVV o n
+VVVVVV o n
 c ccc c c
 c cccccccc c c
 c cccccc c c
 c cc c c
-kkkkkkk o n
+VVVVVVV o n
 c ccccccccc c c
 c cccccc c c
 c cccccccccc c c
@@ -37,30 +37,30 @@ c     ccc
 c   ccccc
 c      c c cccccccccccccccccccccc
 
-dDkkkkkkkkk o n
+dDddddddddd o n
 dDddddd o n
-dDkkkk o n
-dDkkkkk o n
-dDkkkkkkkk o n
+dDdddd o n
+dDddddd o n
 dDdddddddd o n
-dDkkkk o n
-dDkkkkkk o n
-dDkkk o n
-dDkkkkkkkkkkk o n
-dDkkkkkk o n
-dDkkk o n
-dDkkkkkkkk o n
-dDkkkkkk o n
-dDkk o n
-dDkkkkkkk o n
-dDkkkkkkkkk o n
-dDkkkkkk o n
-dDkkkkkkkkkk o n
+dDdddddddd o n
+dDdddd o n
+dDdddddd o n
+dDddd o n
+dDddddddddddd o n
+dDdddddd o n
+dDddd o n
+dDdddddddd o n
+dDdddddd o n
+dDdd o n
+dDddddddd o n
+dDddddddddd o n
+dDdddddd o n
+dDdddddddddd o n
 dDdddddddddd o n
 dDdddddd o n
-dDkkkk o n
-dDkkkkkk o n
-dDkkk o n
-dDkkkkk o n
+dDdddd o n
+dDdddddd o n
+dDddd o n
+dDddddd o n
 
 

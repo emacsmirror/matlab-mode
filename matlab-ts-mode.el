@@ -649,10 +649,14 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
 
 (defun matlab-ts-mode--is-variable-overriding-builtin (variable-node)
   "Is VARIABLE-NODE overriding a builtin?
-Example, disp variable is overriding the disp builtin functin:
+Example, disp variable is overriding the disp builtin function:
    disp = 1:10;"
   (let ((variable (treesit-node-text variable-node)))
-    (gethash variable matlab-ts-mode--builtins-ht)))
+    (or (gethash variable matlab-ts-mode--builtins-ht)
+        ;; Initially arguments, etc. capabilities didn't exist in MATLAB. When they were added,
+        ;; compatibility was kept when these were used as variables. So, they are "semi-keywords".
+        (string-match-p (rx bos (or "arguments" "enumeration" "events" "methods" "properties") eos)
+                        (treesit-node-text variable-node)))))
 
 (defvar matlab-ts-mode--font-lock-settings
   (treesit-font-lock-rules
@@ -696,21 +700,13 @@ Example, disp variable is overriding the disp builtin functin:
    ;; We could use this for items like true, false, pi, etc. See some of these numbers in:
    ;; https://www.mathworks.com/content/dam/mathworks/fact-sheet/matlab-basic-functions-reference.pdf
    ;; however, they do show up as builtins, which to me seems more accurate.
-   ;; This rule needs to come before the "F-Rule: keyworks: if, else, end, etc." because
+   ;; This rule needs to come before the "F-Rule: keywords: if, else, end, etc." because
    ;; we want the end_keyword when used as a number index into a cell/matrix to be a number font.
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_numbers.m
    :language 'matlab
    :feature 'number
    '(((number) @matlab-ts-mode-number-face)
      ((end_keyword) @matlab-ts-mode-end-number-face))
-
-   ;; F-Rule: keywords: if, else, end, etc.
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_keywords.m
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_methods.m
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_keyword_spmd.m
-   :language 'matlab
-   :feature 'keyword
-   `([,@matlab-ts-mode--keywords] @font-lock-keyword-face)
 
    ;; F-Rule: variable
    ;; Could add font-lock-variable-name-face to variable uses.  Consider
@@ -760,7 +756,18 @@ Example, disp variable is overriding the disp builtin functin:
      (enum (identifier) @matlab-ts-mode-property-face)
      ;; Events block in classdef
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_events.m
-     (events (identifier) @matlab-ts-mode-property-face))
+     (events (identifier) @matlab-ts-mode-property-face)
+     ;; Namespaces, structs, classdef methods/property access. Note any keyword is allowed,
+     ;; e.g. foo.methods.function = 1;
+     (field_expression (identifier) @default))
+
+   ;; F-Rule: keywords: if, else, end, etc.
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_keywords.m
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_methods.m
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_keyword_spmd.m
+   :language 'matlab
+   :feature 'keyword
+   `([,@matlab-ts-mode--keywords] @font-lock-keyword-face)
 
    ;; F-Rule: Types, e.g. int32()
    :language 'matlab
@@ -774,7 +781,6 @@ Example, disp variable is overriding the disp builtin functin:
                             @font-lock-type-face))
      (property name: (identifier) (identifier) @font-lock-type-face :?)
      (property name: (property_name (identifier)) (identifier) @font-lock-type-face :?))
-     
 
    ;; F-Rule: factory items that come with MATLAB, Simulink, or add-on products
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_builtins.m
@@ -813,16 +819,22 @@ Example, disp variable is overriding the disp builtin functin:
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_MultiplePropBlocks.m
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_prop_access.m
      (property (validation_functions (identifier) @font-lock-function-call-face))
-     (property (validation_functions (field_expression (identifier) @font-lock-function-call-face)))
-     (property (validation_functions ((field_expression
-                                       (function_call name: (identifier)
-                                                      @font-lock-function-call-face)))))
      (property name: (identifier) @matlab-ts-mode-property-face)
      (property name: (property_name (identifier) @matlab-ts-mode-property-face))
      ;; Attributes of properties, methods
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_class_attributes.m
      (attribute (identifier) @font-lock-type-face "=" (identifier) @font-lock-builtin-face)
      (attribute (identifier) @font-lock-type-face))
+
+   ;; F-Rule: validation functions from namespace
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_arguments2_issue57.m
+   :language 'matlab
+   :feature 'definition
+   :override t
+   '((property (validation_functions (field_expression (identifier) @font-lock-function-call-face)))
+     (property (validation_functions ((field_expression
+                                       (function_call name: (identifier)
+                                                      @font-lock-function-call-face))))))
 
    ;; F-Rule: Function Name = Value arguments
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_fcn_name_value_properties.m
@@ -1595,7 +1607,7 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                 (if (or last-child-of-error-node
                         ;; Continuation:    arguments
                         ;;                     firstArgument ...
-                        ;;         TAB>            doube
+                        ;;         TAB>            double
                         (let ((prev-sibling (treesit-node-prev-sibling node)))
                           (and prev-sibling
                                (string= (treesit-node-type prev-sibling) "line_continuation"))))
@@ -3511,4 +3523,4 @@ so configuration variables of that mode, do not affect this mode.
 ;; LocalWords:  NPS BUF myfcn pcase xr repeat:nil docstring numberp imenu alist nondirectory mapc
 ;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
-;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF
+;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang
