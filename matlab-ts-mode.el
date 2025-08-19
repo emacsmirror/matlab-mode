@@ -3480,8 +3480,6 @@ so configuration variables of that mode, do not affect this mode.
     ;;      - Rename menu item "Check MLint Setup" to "Check setup" and have it
     ;;        look at both LSP and MLint. Place menu item at bottom.
     ;;
-    ;; TODO check abbrev mode - think this is setup by prog-mode, also see matlab-mode
-    ;;
     ;; TODO double check t-utils.el help, extract the help and put in treesit how to
     ;;
     ;; TODO add matlab-sections-minor-mode indicator in mode line and make it clickable so it can

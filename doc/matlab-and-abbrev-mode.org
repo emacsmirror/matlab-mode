@@ -1,0 +1,32 @@
+# File: doc/matlab-mode-on-windows.org
+
+# Copyright 2016-2025 Free Software Foundation, Inc.
+
+#+startup: showall
+#+options: toc:nil
+
+#+title: MATLAB and abbrev-mode
+
+When editing *.m (or any language file, e.g. *.tlc, *.org, etc., you can save typing by using abbrev mode to
+automatically expand text.  An example usage is auto-correcting typos. This is no replacement for a
+spell checker, but it can save some time. For example, it's not uncommon to mistype the spelling of
+matlab by toggling the 't' and 'l'.
+
+ | Key binding | Description                                        |
+ |-------------+----------------------------------------------------|
+ | C-x a g     | Define an abbrev globally                          |
+ | C-x a i g   | Define an inverted abbrev globally                 |
+ | C-x a l     | Define an abbrev locally for current mode          |
+ | C-x a i l   | Define an inverted abbrev locally for current mode |
+
+The "inverted" approach to defining an abbrev is to mistype the word and then with the point after
+the mistyped word, type =C-x a i g" or =C-x a i l= to define the correction.
+
+If you define local mode abbrev's, you need to explicitly save them using:
+
+ : M-x write-abbrev-file
+
+and they will be automatically loaded when you restart Emacs. The default save, M-x
+abbrev-edit-save-buffer, does not save the local mode abbrev's.
+ 
+# LocalWords:  showall abbrev's
