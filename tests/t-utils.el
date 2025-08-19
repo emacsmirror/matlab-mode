@@ -2132,6 +2132,8 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
     (with-temp-buffer
       (insert "# tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}\n")
       (t-utils--syntax-tree-draw-node root)
+      (goto-char (point-max))
+      (insert "\n")
       (buffer-string))))
 
 (defun t-utils--test-parser-error-node-checker (lang-file _got _got-file _expected _expected-file)
