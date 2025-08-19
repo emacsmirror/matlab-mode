@@ -991,7 +991,7 @@ Example, disp variable is overriding the disp builtin function:
 ;;            end
 ;;        end
 ;;
-;;    TODO: add operator padding to indent engine
+;;    TODO [future] add operator padding to indent engine
 ;;
 ;; 6. Function call formats
 ;;    - On a single line:
@@ -1095,7 +1095,7 @@ Example, disp variable is overriding the disp builtin function:
 ;;        length = 10;
 ;;        area = width * length;   % Bad partially aligned
 ;;
-;;     TODO: add consecutive statement alignment to the indent engine
+;;     TODO [future] add consecutive statement alignment to the indent engine
 ;;
 ;; 10. Align consecutive trailing comments
 ;;
@@ -1114,7 +1114,7 @@ Example, disp variable is overriding the disp builtin function:
 ;;                1000, 1.9;
 ;;                100000, 1.875];
 ;;
-;;     TODO: add an alignment directive, %$align
+;;     TODO [future] add an alignment directive, %$align
 ;;
 ;;     Alignment of tabular data should be done when there's an indent
 ;;     directive, perhaps named %$align which must precede the data to be
@@ -3298,7 +3298,7 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
       :active gud-matlab-debug-active
       :help "When MATLAB debugger is active, show the stack in a buffer."]
 
-     ;; TODO
+     ;; TODO [future] gud up/down
      ;;  Advertise these more if we can get them working w/ mlgud's frame show.
      ;;      ["Up Call Stack (dbup)" mlgud-up
      ;;       :active gud-matlab-debug-active
@@ -3480,19 +3480,13 @@ so configuration variables of that mode, do not affect this mode.
     ;;      - Rename menu item "Check MLint Setup" to "Check setup" and have it
     ;;        look at both LSP and MLint. Place menu item at bottom.
     ;;
-    ;; TODO double check t-utils.el help, extract the help and put in treesit how to
-    ;;
     ;; TODO add matlab-sections-minor-mode indicator in mode line and make it clickable so it can
     ;;      be turned off
     ;;
     ;; TODO add error indicator in mode line and make it clickable so one can see the errors.
     ;;      Also underline them.
     ;;
-    ;; TODO t-utils
-    ;;      For (t-utils-xr ...), get the line:col of all before running them this way the
-    ;;      *.org files will match up with the original test file.
-    ;;
-    ;; TODO add matlab-ts-mode-rename-variable C-c C-v
+    ;; TODO [future] add matlab-ts-mode-rename-variable C-c C-v
     ;;      Menu: Rename variable
     ;;      When invoked, see if node-at-point is an identifier, then do a rename within
     ;;      the scope, changing the variable name in a loop.

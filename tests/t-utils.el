@@ -157,6 +157,7 @@
 ;; `t-utils-test-font-lock' above for this setup.
 ;;
 
+;; TODO double check t-utils.el help, extract the help and put in treesit how to.
 
 ;;; Code:
 
@@ -571,6 +572,11 @@ in a code block using the `major-mode' of the buffer:
               (error "`backward-list from point, %d, didn't not jump to (t-utils-xr" xr-end-point))
             (point)))
          (xr-cmd (buffer-substring-no-properties xr-start-point xr-end-point))
+
+         ;; TODO Before running any t-utils-xr's, record the LINE:COL in an property each t-tuils-xr
+         ;;      command then use that for the %d:%d below. This way the *.org files will match up
+         ;;      with the original test file.
+
          (result (format "\n* Executing commands from %s:%d:%d:\n\n  %s\n"
                          (file-name-nondirectory buf-file)
                          (line-number-at-pos xr-start-point)
