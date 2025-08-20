@@ -3478,17 +3478,11 @@ so configuration variables of that mode, do not affect this mode.
     ;;      - Rename menu item "Check MLint Setup" to "Check setup" and have it
     ;;        look at both LSP and MLint. Place menu item at bottom.
     ;;
-    ;; TODO add matlab-sections-minor-mode indicator in mode line and make it clickable so it can
-    ;;      be turned off
+    ;; TODO [future] add matlab-sections-minor-mode indicator in mode line and make it clickable so
+    ;;      it can be turned off
     ;;
-    ;; TODO add error indicator in mode line and make it clickable so one can see the errors.
-    ;;      Also underline them.
-    ;;
-    ;; TODO [future] add matlab-ts-mode-rename-variable C-c C-v
-    ;;      Menu: Rename variable
-    ;;      When invoked, see if node-at-point is an identifier, then do a rename within
-    ;;      the scope, changing the variable name in a loop.
-    ;;
+    ;; TODO [future] add error indicator in mode line and make it clickable so one can see the
+    ;;      errors.  Also underline them.
 
     (treesit-major-mode-setup)
 
