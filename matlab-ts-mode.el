@@ -3049,8 +3049,6 @@ This callback also implements `matlab-ts-mode-electric-ends'."
 (declare-function flycheck-define-command-checker "flycheck")
 (declare-function flycheck-buffer-saved-p "flycheck")
 
-;; TODO - do we need to disable when lsp is active?
-
 (when (and matlab-ts-mode-enable-mlint-flycheck
            (require 'flycheck nil 'noerror))
   (let* ((mlint (matlab--get-mlint-exe)))
@@ -3475,8 +3473,8 @@ so configuration variables of that mode, do not affect this mode.
     ;;      think it was missing a few toolboxes.
     ;;
     ;; TODO LSP
-    ;;      - Configure LSP
-    ;;      - Test LSP vs MLint
+    ;;      - [done] LSP
+    ;;      - [done] Test LSP vs MLint
     ;;      - Rename menu item "Check MLint Setup" to "Check setup" and have it
     ;;        look at both LSP and MLint. Place menu item at bottom.
     ;;

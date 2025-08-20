@@ -54,6 +54,10 @@ type =M-,= to jump back.
 
 [[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-find-references.png]]
 
+* Rename identifiers, M-x lsp-rename
+
+[[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-rename.png]]
+
 * Viewing Issues Without the lsp-ui Package
 
 [[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-flycheck.png]]
@@ -90,9 +94,10 @@ type =M-,= to jump back.
    Download the language server (clone or unzip):
    - git clone https://github.com/mathworks/MATLAB-language-server.git
    or
-   - Download zip from https://github.com/mathworks/MATLAB-language-server and unzip.
+   - Download the release zip file from https://github.com/mathworks/MATLAB-language-server and
+     unzip.
 
-   In the downloaded directory,
+   In the cloned or unziped directory,
     #+begin_src bash
       npm install
       npm run compile
@@ -108,7 +113,7 @@ type =M-,= to jump back.
     : M-: (require 'lsp-matlab)
     : M-x customize-variable RET lsp-clients-matlab-server RET
 
-    and set to your install directory, e.g. =/usr/local/apps/matlabls=
+    and set to your installation, e.g. =/usr/local/apps/matlabls/out/index.js=
 
 3. Tell lsp-mode where MATLAB is if MATLAB not on the PATH (~which matlab~ does not find MATLAB).
 
@@ -121,11 +126,17 @@ type =M-,= to jump back.
 
 4. Activate lsp-mode when you open *.m files.
 
-   Add to your ~/.emacs
+   Add to your =~/.emacs=
 
-   #+begin_example
-     (add-hook 'matlab-mode-hook 'lsp)
-   #+end_example
+   - If using matlab-ts-mode
+     #+begin_example
+       (add-hook 'matlab-ts-mode-hook 'lsp)
+     #+end_example
+
+   - If using matlab-mode
+     #+begin_example
+       (add-hook 'matlab-mode-hook 'lsp)
+     #+end_example
 
 5. After loading a ~*.m~ file, the MATLAB language server will run MATLAB in the "background" and
    use that MATLAB for language server features such as ~xref-find-definitions~.  It can take a
