@@ -2408,9 +2408,6 @@ Example:
        eos))
   "MATLAB command statements.")
 
-;; TODO should we use following for M-a, M-e?
-;; This needs tune up, but could workout better than using matlab-ts-mode--thing-settings
-
 (cl-defun matlab-ts-mode-beginning-of-statement (&optional goto-end statement-type-re)
   "Move to the beginning of a statement.
 If optional GOTO-END is \\='end, move to end of the current statement.
@@ -2523,6 +2520,15 @@ function call."
                                                                "function_call")
                                                        eos))))
 
+;; matlab-ts-mode--thing-settings used for:
+;;   C-M-a  - M-x beginning-of-defun
+;;   C-M-e  - M-x end-of-defun
+;;   C-M-b  - M-x backward-sexp
+;;   C-M-f  - M-x forward-sexp
+;;   M-e    - M-x forward-sentence
+;;   M-a    - M-x backward-sentence
+;;   C-M-u  - M-x backward-up-list
+;;
 (defvar matlab-ts-mode--thing-settings
   `((matlab
      (defun ,(rx bos "function_definition" eos))
@@ -2596,7 +2602,7 @@ function call."
                             "methods"
                             "events"
                             "enumeration")))
-     ;; TODO is "line_continuation" correct here - add test
+
      (text ,(rx bos (or "comment" "string" "line_continuation") eos))
 
      ))
