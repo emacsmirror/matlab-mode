@@ -1755,28 +1755,8 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                                                                 "row")
                                                         eos)))
 
-(cl-defun matlab-ts-mode--i-next-line-matcher (node parent bol &rest _)
-  "Matcher for indent on a newline being inserted when in presence of errors.
-If so, set `matlab-ts-mode--i-next-line-pair'.
-
-NODE may or may not be nil.  When NODE is nil in this case and BOL,
-beginning-of-line point, is where we are indenting.  If NODE is non-nil,
-we check if it is an ERROR node.  Another case is when PARENT is be a newline
-due to a RET on the prior line.
-
-Example: in this case NODE will be nil and PARENT is a newline.  Example:
-   % -*- matlab-ts -*-
-   classdef foo
-       ^                     <== TAB or RET on prior line goes here.
-Hierarchy:
-  #<treesit-node source_file in 1-36>
-    #<treesit-node ERROR in 21-36>
-      #<treesit-node \"
-\" in 33-36>
-Prev-siblings:
-  > #<treesit-node \"classdef\" in 21-29>
-    > #<treesit-node identifier in 30-33>
-      > #<treesit-node \""
+(defun matlab-ts-mode--i-next-line-matcher-comment (node)
+  "Is NODE a comment we should indent when in context of an error?"
 
   (when (and node
              (string-match-p (rx (seq bos "comment" eos)) (treesit-node-type node)))
@@ -1801,45 +1781,78 @@ Prev-siblings:
             ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_classdef3.m
             (setq matlab-ts-mode--i-next-line-pair
                   (cons (treesit-node-start last-child) 0))
-            (cl-return-from matlab-ts-mode--i-next-line-matcher t))))))
+            (cl-return-from matlab-ts-mode--i-next-line-matcher t)))))))
 
-  (let (last-child-of-error-node)
+(defun matlab-ts-mode--not-node-and-blank (node bol)
+  "Is NODE nil with BOL on a blank line?"
+  ;; Consider the one-liner:
+  ;;    classdef indent_xr_classdef1
+  ;;        ^                                 TAB should go here
+  ;;  on entry node is nil and parent is ERROR, so backup to the newline:
+  ;;   (source_file
+  ;;    (ERROR classdef (identifier) \n))
+  ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_classdef1.m
+  (and (not node)
+       (save-excursion
+         (goto-char bol)
+         (beginning-of-line)
+         (looking-at "^[ \t]*$" t))))
 
-    (when (and (not node)
-               (save-excursion
-                 (goto-char bol)
-                 (beginning-of-line)
-                 (looking-at "^[ \t]*$" t)))
-      ;; Consider the one-liner:
-      ;;    classdef indent_xr_classdef1
-      ;;        ^                                 TAB should go here
-      ;;  on entry node is nil and parent is ERROR, so backup to the newline:
-      ;;   (source_file
-      ;;    (ERROR classdef (identifier) \n))
-      ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_classdef1.m
-      (setq parent (treesit-node-at (point))))
+(defun matlab-ts-mode--last-child-of-error (node parent)
+  "Get updated parent if ellipsis NODE with PARENT is not part of an error."
 
-    ;; Handle continuation where it's not part of the error node. Example:
-    ;;    (source_file
-    ;;     (ERROR classdef (identifier) \n properties \n (identifier) =)
-    ;;     (line_continuation))
-    ;; For
-    ;;    classdef indent_xr_classdef2
-    ;;        properties
-    ;;            p3continued = ...
-    ;;                ^                       << RET on prior line should go here
-    ;; In this case, last-child-of-error-node will be the "=" node.
-    (when (and (not node)
-               (string= (treesit-node-type parent) "line_continuation"))
-      (let ((prev-sibling (treesit-node-prev-sibling parent)))
-        (when (equal (treesit-node-type prev-sibling) "ERROR")
-          (setq parent (treesit-node-child prev-sibling -1))
-          (setq last-child-of-error-node parent))))
+  ;; Handle continuation where the node is not part of the error node. Example:
+  ;;    (source_file
+  ;;     (ERROR classdef (identifier) \n properties \n (identifier) =)
+  ;;     (line_continuation))
+  ;; For
+  ;;    classdef indent_xr_classdef2
+  ;;        properties
+  ;;            p3continued = ...
+  ;;                ^                       << RET on prior line should go here
+  ;; In this case, last-child-of-error-node will be the "=" node.
+  (when (and (not node)
+             (string= (treesit-node-type parent) "line_continuation"))
+    (let ((prev-sibling (treesit-node-prev-sibling parent)))
+      (when (equal (treesit-node-type prev-sibling) "ERROR")
+        (treesit-node-child prev-sibling -1)))))
+
+(cl-defun matlab-ts-mode--i-next-line-matcher (node parent bol &rest _)
+  "Matcher for indent on a newline being inserted when in presence of errors.
+If so, set `matlab-ts-mode--i-next-line-pair'.
+
+NODE may or may not be nil.  When NODE is nil in this case and BOL,
+beginning-of-line point, is where we are indenting.  If NODE is non-nil,
+we check if it is an ERROR node.  Another case is when PARENT is be a newline
+due to a RET on the prior line.
+
+Example: in this case NODE will be nil and PARENT is a newline.  Example:
+   % -*- matlab-ts -*-
+   classdef foo
+       ^                     <== TAB or RET on prior line goes here.
+Hierarchy:
+  #<treesit-node source_file in 1-36>
+    #<treesit-node ERROR in 21-36>
+      #<treesit-node \"
+\" in 33-36>
+Prev-siblings:
+  > #<treesit-node \"classdef\" in 21-29>
+    > #<treesit-node identifier in 30-33>
+      > #<treesit-node \""
+
+  (when (matlab-ts-mode--i-next-line-matcher-comment node)
+    (cl-return-from matlab-ts-mode--i-next-line-matcher t))
+
+  (when (matlab-ts-mode--not-node-and-blank node bol)
+    (setq parent (treesit-node-at (point))))
+
+  (let ((last-child-of-error-node (matlab-ts-mode--last-child-of-error node parent)))
+    (when last-child-of-error-node
+      (setq parent last-child-of-error-node))
 
     (when (or last-child-of-error-node
-              (and node
-                   (string= (treesit-node-type node) "ERROR"))
-              (string-match-p (rx (seq bos (or "ERROR" "\n") eos)) (treesit-node-type parent) )
+              (and node (string= (treesit-node-type node) "ERROR"))
+              (string-match-p (rx (seq bos (or "ERROR" "\n") eos)) (treesit-node-type parent))
               (equal (treesit-node-type (treesit-node-parent parent)) "ERROR"))
 
       (let ((node-to-check (or last-child-of-error-node node parent))
@@ -1945,7 +1958,7 @@ Prev-siblings:
                              (not (equal node error-node)))
                          (> (treesit-node-start error-node) (treesit-node-start anchor-node)))
                 (setq anchor-node error-node)))
-            
+
             (matlab-ts-mode--i-next-line-indent-level node bol anchor-node last-child-of-error-node)
             ;; t ==> matched
             t))))))
