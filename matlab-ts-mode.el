@@ -2675,6 +2675,24 @@ This will return alist of functions and classes in the current buffer:
          nil)))
     index))
 
+(defun matlab-ts-mode--imenu-setup ()
+  "Configure imenu to use tree-sitter, even when lsp-mode is available."
+
+  ;; Test, see: ./tests/test-matlab-ts-mode-imenu.el
+  ;;
+  ;; When lsp-mode is active, it takes over imenu-create-index-function. To prevent this,
+  ;; we could have people do:
+  ;;   (add-hook 'matlab-ts-mode-hook (lambda ()
+  ;;                                     (setq-local lsp-enable-imenu nil)
+  ;;                                     (lsp) ;; or (lsp-deferred)
+  ;;                                     ))
+  ;; However, tree-sitter is faster and more robust, so always use that.
+  ;;
+  ;; See:
+  ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist
+  (setq-local lsp-enable-imenu nil)
+  (setq-local imenu-create-index-function #'matlab-ts-mode--imenu-create-index))
+
 ;;; Outline minor mode, M-x outline-minor-mode
 
 (defun matlab-ts-mode--outline-predicate (node)
@@ -3452,16 +3470,7 @@ so configuration variables of that mode, do not affect this mode.
     (setq-local treesit-defun-name-function #'matlab-ts-mode--defun-name)
 
     ;; M-x imenu
-    ;; See: ./tests/test-matlab-ts-mode-imenu.el
-    ;;
-    ;; When lsp-mode is active, it takes over imenu-create-index-function. To prevent this,
-    ;;   (add-hook 'matlab-ts-mode-hook (lambda ()
-    ;;                                     (setq-local lsp-enable-imenu nil)
-    ;;                                     (lsp) ;; or (lsp-deferred)
-    ;;                                     ))
-    ;; See:
-    ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist
-    (setq-local imenu-create-index-function #'matlab-ts-mode--imenu-create-index)
+    (matlab-ts-mode--imenu-setup)
 
     ;; M-x outline-minor-mode
     ;; See: ./tests/test-matlab-ts-mode-outline.el
