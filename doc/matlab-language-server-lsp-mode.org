@@ -128,17 +128,29 @@ type =M-,= to jump back.
    Add to your =~/.emacs=
 
    - If using matlab-ts-mode
-     #+begin_example
+     #+begin_src emacs-lisp
        (add-hook 'matlab-ts-mode-hook #'lsp)
-     #+end_example
+     #+end_src
 
    - If using matlab-mode
-     #+begin_example
+     #+begin_src emacs-lisp
        (add-hook 'matlab-mode-hook #'lsp)
-     #+end_example
+     #+end_src
 
    Replace =#'lsp= with =#'lsp-deferred= which defers the language server start to after the buffer
    is visible.
+
+   Note, when using lsp, =M-x imenu= (or =M-g g i=) to jump to function defintions, imenu will use
+   the language server to get functions to jump to. If you want to use local and likely faster
+   indexing, you should:
+
+   #+begin_src emacs-lisp
+     (add-hook 'matlab-ts-mode-hook (lambda ()
+                                      (setq-local lsp-enable-imenu nil)
+                                       (lsp) ;; or (lsp-deferred)
+                                       ))
+   #+end_src
+
 
 5. After loading a ~*.m~ file, the MATLAB language server will run MATLAB in the "background" and
    use that MATLAB for language server features such as ~xref-find-definitions~.  It can take a

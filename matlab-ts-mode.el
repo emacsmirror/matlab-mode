@@ -3454,11 +3454,13 @@ so configuration variables of that mode, do not affect this mode.
     ;; M-x imenu
     ;; See: ./tests/test-matlab-ts-mode-imenu.el
     ;;
-    ;; TODO - lsp-mode and imenu
-    ;; I think we need (setq-local lsp-enable-imenu nil) when lsp-mode is used.  Can we find a
-    ;; automatic way to do this? See:
-    ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist/
-    ;; At minimum we should doc this.
+    ;; When lsp-mode is active, it takes over imenu-create-index-function. To prevent this,
+    ;;   (add-hook 'matlab-ts-mode-hook (lambda ()
+    ;;                                     (setq-local lsp-enable-imenu nil)
+    ;;                                     (lsp) ;; or (lsp-deferred)
+    ;;                                     ))
+    ;; See:
+    ;; https://www.reddit.com/r/emacs/comments/1c216kr/experimenting_with_tree_sitter_and_imenulist
     (setq-local imenu-create-index-function #'matlab-ts-mode--imenu-create-index)
 
     ;; M-x outline-minor-mode

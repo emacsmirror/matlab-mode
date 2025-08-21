@@ -159,12 +159,7 @@
       : Language name: matlab
       : Major mode: matlab-ts
 
-   * Setup =lsp-mode=. If using [[file:matlab-language-server-lsp-mode.org]] (recommended), you should
-     add to your =~/.emacs=
-
-     #+begin_src
-       (add-hook 'matlab-ts-mode-hook 'lsp)
-     #+end_src
+   * Setup =lsp-mode=. See [[file:doc/matlab-language-server-lsp-mode.org]].
 
 3. [Optional]. Install the [[file:doc/matlab-language-server-lsp-mode.org][MATLAB Language Server]].
 
