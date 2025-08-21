@@ -54,7 +54,7 @@ type =M-,= to jump back.
 
 [[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-find-references.png]]
 
-* Rename identifiers, M-x lsp-rename
+* Rename symbols and identifiers, M-x lsp-rename
 
 [[file:matlab-language-server-lsp-mode-files/matlab-and-lsp-mode-rename.png]]
 
@@ -83,37 +83,36 @@ type =M-,= to jump back.
 
    : M-x list-packages
 
-   and click on =lsp-mode= and install it.  You may also want to install
+   and click on =lsp-mode= and install it.  Also install:
 
    - =company= for completions.
+   - =flycheck= for diagnostics (mlint warnings).
    - =lsp-ui= for improved visualization of information provided by lsp-mode. See
      https://github.com/emacs-lsp/lsp-ui.
 
 2. Download and install the MATLAB language server
 
-   Download the language server (clone or unzip):
-   - git clone https://github.com/mathworks/MATLAB-language-server.git
-   or
-   - Download the release zip file from https://github.com/mathworks/MATLAB-language-server and
-     unzip.
+   + Download the language server (clone or unzip):
+      : git clone https://github.com/mathworks/MATLAB-language-server.git
+     or download and unzip a release from https://github.com/mathworks/MATLAB-language-server
 
-   In the cloned or unziped directory,
-    #+begin_src bash
-      npm install
-      npm run compile
-      npm run package  # optional JavaScript minimization
+   + In the cloned or unzipped directory,
+     #+begin_src bash
+       npm install
+       npm run compile
+       npm run package  # optional JavaScript minimization
 
-      # Install by copying built items into an install directory, e.g. /usr/local/apps/matlabls
-      cp -r ./out/ /usr/local/apps/matlabls/out/
-      cp -r ./matlab/ /usr/local/apps/matlabls/matlab/
-    #+end_src
+       # Install by copying built items into an install directory, e.g. /usr/local/apps/matlabls
+       cp -r ./out/ /usr/local/apps/matlabls/out/
+       cp -r ./matlab/ /usr/local/apps/matlabls/matlab/
+     #+end_src
 
-    In Emacs:
+    + In Emacs:
 
-    : M-: (require 'lsp-matlab)
-    : M-x customize-variable RET lsp-clients-matlab-server RET
+      : M-: (require 'lsp-matlab)
+      : M-x customize-variable RET lsp-clients-matlab-server RET
 
-    and set to your installation, e.g. =/usr/local/apps/matlabls/out/index.js=
+      and set to your installation, e.g. =/usr/local/apps/matlabls/out/index.js=
 
 3. Tell lsp-mode where MATLAB is if MATLAB not on the PATH (~which matlab~ does not find MATLAB).
 
@@ -124,25 +123,28 @@ type =M-,= to jump back.
 
    and set to your MATLAB installation e.g. =/usr/local/MATLAB/R2025a=
 
-4. Activate lsp-mode when you open *.m files.
+4. Activate lsp-mode when you open =*.m= files.
 
    Add to your =~/.emacs=
 
    - If using matlab-ts-mode
      #+begin_example
-       (add-hook 'matlab-ts-mode-hook 'lsp)
+       (add-hook 'matlab-ts-mode-hook #'lsp)
      #+end_example
 
    - If using matlab-mode
      #+begin_example
-       (add-hook 'matlab-mode-hook 'lsp)
+       (add-hook 'matlab-mode-hook #'lsp)
      #+end_example
+
+   Replace =#'lsp= with =#'lsp-deferred= which defers the language server start to after the buffer
+   is visible.
 
 5. After loading a ~*.m~ file, the MATLAB language server will run MATLAB in the "background" and
    use that MATLAB for language server features such as ~xref-find-definitions~.  It can take a
-   while for this background MATLAB to start.  After it starts, the supported language server
-   features will work.  See https://github.com/mathworks/MATLAB-language-server for features
-   supported.
+   *long time* for this background MATLAB to start. On some systems, this can be seconds and others
+   minutes.  After the server starts, the supported language server features will work.  See
+   https://github.com/mathworks/MATLAB-language-server for features supported.
 
    Some lsp features:
 
@@ -161,3 +163,5 @@ The examples above were created on Windows 11 using Emacs 30.1.  The setup I use
    PATH before the gpg from MSYS2.
 4. Install the Emacs packages listed above.
 5. Install the MATLAB Language Server as shown above.
+
+# LocalWords:  showall inlineimages matlabls func flycheck imenu MELPA melpa npm usr cp MSYS gpg
