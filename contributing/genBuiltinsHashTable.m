@@ -15,25 +15,40 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function genBuiltinsHashTable(outFile)
-% Generate in outFile a lisp hash-table of all functions to have font-lock-builtin-face
+function genBuiltinsHashTable
+% Generate a lisp hash-table file containing of all functions to have font-lock-builtin-face
 %
-% Leverage emacsdocomplete to locate all functions in a MATLAB installation. The install
-% should be the latest release with all products.
+% Leverage emacsdocomplete to locate all functions in a MATLAB installation. The install should be
+% the latest release with all products.
 %
-% Running
-%   genBuiltinsHashTable('fcns.el')
-% will create fcns.el that should be placed in ../matlab-ts-mode--buildins.el.
+% 1. Create /tmp/builtins-ht.el
 %
-% When running this, the MATLAB path should not include user directories.  You can use
-% restoredefaultpath to fix up things and then add the Emacs-MATLAB-Mode/toolbox direcotry to the
-% path.
+%      matlab -nodesktop
+%      >> run /path/to/Emacs-MATLAB-Mode/contributing/genBuiltinsHashTable.m
+%      <snip>
+%      Created: /tmp/builtins-ht.el
+%      >> quit
 %
-% The MATLAB-only functions are documented here:
-% https://www.mathworks.com/help/matlab/referencelist.html
+%    This will restore the MATLAB path to the default path and then add the path to
+%    emacsdocomplete. This is so we don't capture non-builtin items. Thus, after running, you should
+%    quit MATLAB.
 %
-% Note, we can't use the system find on *.m, *.p, *.mex* because some functions such as sin do not
-% have a file on disk.
+% 2. Place the contents of /tmp/builtins-ht.el in ../matlab-ts-mode--builtins.el
+%
+% 3. rm /tmp/builtins-he.el
+%
+% Other implementation options:
+% - The MATLAB-only functions are documented here in
+%   https://www.mathworks.com/help/matlab/referencelist.html, but this is very incomplete so we
+%   can't use it.
+% - We can't use the system find on *.m, *.p, *.mex* because some functions such as sin do not have
+%   a file on disk.
+
+    restoredefaultpath
+    emacsToolbox = [fileparts(fileparts(mfilename('fullpath'))), filesep, 'toolbox'];
+    addpath(emacsToolbox);
+
+    outFile = [tempdir, 'builtins-ht.el'];
 
     ht = ''; % lisp hash-table string representation
     nEntries = 0;
@@ -57,6 +72,7 @@ function genBuiltinsHashTable(outFile)
           '\".<property|enumeration>\"")', newline];
 
     writelines(ht, outFile, LineEnding = '\n');
+    fprintf(1, "Created: %s\n", outFile);
 end
 
 function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
@@ -76,7 +92,10 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
             continue
         end
 
-        % A function, class, or namespace.
+        % c is of format:
+        %    ("<THING>" . "<OPTIONAL_DESCRIPTION>(<ENTRY_TYPE>)")
+        % where THING is a function, class, namespace, etc.
+
         % We have items that are demo launchers, e.g.
         %   toolbox\simulink\simulink\keymodels\vdp.m
         %   toolbox\vdynblks\vdynsolution\vdynblksBrakingStart.m
@@ -84,12 +103,12 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
         % path location. However, these are commands that come with MATLAB, so we'll treat
         % them as such.
         m = regexp(c, ...
-                   ['^[ \t]*\("',...
-                    '([^"]+)', ...                                  % capture fcn (no quotes)
+                   ['^[ \t]*\("', ...
+                    '([^"]+)', ...                                 % capture THING (no quotes)
                     '"[ \t]+\.[ \t]+"', ...
-                     '(.*)', ...                                    % capture optional description
-                     '\(', ...
-                    '(', ['mFile|pFile|mex|function|method|', ...   % capture entryType
+                    '(.*)', ...                                    % capture OPTIONAL_DESCRIPTION
+                    '\(', ...
+                    '(', ['mFile|pFile|mex|function|method|', ...  % capture ENTRY_TYPE
                           'property|enumeration|', ...
                           'class|namespace|', ...
                           'keyword|variable|pathItem|mlappFile|mlxFile|', ...
@@ -97,33 +116,50 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
                     '\)"\)$'], ...
                    'tokens');
 
-        % Enhancement: it would be nice to hide items that aren't documented, etc. but it's not
-        % clear how to do that.
-
         if ~isempty(m)
-            fcn = m{1}{1};
-            if isequal(fcn, mfilename)
+            thing = m{1}{1};
+            if isequal(thing, mfilename)
                 continue; % skip ourself
             end
-            desc = strtrim(m{1}{2});
+
             entryType = m{1}{3};
+
             switch entryType
               case {'mFile', 'pFile', 'mex', 'function', 'method'}
+                desc = strtrim(m{1}{2});
                 if ~isempty(desc)
-                    desc = [' ;;', desc];
+                    desc = [' ;;', desc]; %#ok<AGROW>
                 end
-                ht = [ht, '           "', fcn, '" t', desc, newline];
+                ht = [ht, '           "', thing, '" t', desc, newline]; %#ok<AGROW>
                 nEntries = nEntries + 1;
+                if strcmp(entryType, 'mFile')
+                    % Consider mFile = matlab (toolbox/matlab/general/matlab.m)
+                    % We also have matlab.<namespace>, so also look for that.
+                    entryType = 'namespace';
+                end
+            end
+
+            switch entryType
+              case {'pFile', 'mex', 'function', 'method'}
+                % handled above
+              case {'namespace'}
+                % Ignore items under foo.bar.internal namespaces. These can appear/disappear and
+                % should only be used by code provided by MathWorks.
+                if isempty(regexp(thing, '\.internal$', 'once'))
+                    for fcnStart = 'a' : 'z'
+                        [ht, nEntries] = getHashTableEntries([thing, '.', fcnStart], ht, nEntries);
+                    end
+                end
               case {'property', 'enumeration'}
-                ht = [ht, '           "', fcn, '" ''', entryType, newline];
+                ht = [ht, '           "', thing, '" ''', entryType, newline]; %#ok<AGROW>
                 nEntries = nEntries + 1;
-              case {'class', 'namespace', ...
+              case {'class', ...
                     'keyword', 'variable', 'pathItem', 'mlappFile', 'mlxFile', ...
                     'mdlFile', 'slxFile', 'sscFile', 'sfxFile'}
                 % 'class' and 'namespace' likely have items in them. Though variables, models,
                 % etc. can hide namespaces. For example, simulink.slx is a model and we have
-                % simulink namspace giving items like simulink.compiler.genapp.
-                [ht, nEntries] = getHashTableEntries([fcn, '.'], ht, nEntries);
+                % simulink namespace giving items like simulink.compiler.genapp.
+                [ht, nEntries] = getHashTableEntries([thing, '.'], ht, nEntries);
               otherwise
                 error(['assert - unhandled entryType: ', entryType]);
             end
@@ -134,3 +170,5 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
 
     disp(['nEntries = ', num2str(nEntries)]);
 end
+
+% LocalWords:  emacsdocomplete builtins keymodels vdynblks vdynsolution mlapp mlx ssc sfx genapp
