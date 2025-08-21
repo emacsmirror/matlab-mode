@@ -1730,6 +1730,31 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
     (setq matlab-ts-mode--i-next-line-pair
           (cons (treesit-node-start anchor-node) indent-level))))
 
+(defvar matlab-ts-mode--i-next-line-anchors-rx (rx (seq bos (or "function_definition"
+                                                                "function"
+                                                                "arguments"
+                                                                "classdef"
+                                                                "properties"
+                                                                "property"
+                                                                "enumeration"
+                                                                "events"
+                                                                "methods"
+                                                                "if"
+                                                                "elseif"
+                                                                "switch"
+                                                                "case"
+                                                                "otherwise"
+                                                                "for"
+                                                                "parfor"
+                                                                "while"
+                                                                "try"
+                                                                "catch"
+                                                                "("
+                                                                "["
+                                                                "{"
+                                                                "row")
+                                                        eos)))
+
 (cl-defun matlab-ts-mode--i-next-line-matcher (node parent bol &rest _)
   "Matcher for indent on a newline being inserted when in presence of errors.
 If so, set `matlab-ts-mode--i-next-line-pair'.
@@ -1814,55 +1839,29 @@ Prev-siblings:
     (when (or last-child-of-error-node
               (and node
                    (string= (treesit-node-type node) "ERROR"))
-              (string-match-p (treesit-node-type parent) (rx (seq bos (or "ERROR"
-                                                                          "\n")
-                                                                  eos)))
+              (string-match-p (rx (seq bos (or "ERROR" "\n") eos)) (treesit-node-type parent) )
               (equal (treesit-node-type (treesit-node-parent parent)) "ERROR"))
 
-      (let ((anchors-rx (rx (seq bos (or "function_definition"
-                                         "function"
-                                         "arguments"
-                                         "classdef"
-                                         "properties"
-                                         "property"
-                                         "enumeration"
-                                         "events"
-                                         "methods"
-                                         "if"
-                                         "elseif"
-                                         "switch"
-                                         "case"
-                                         "otherwise"
-                                         "for"
-                                         "parfor"
-                                         "while"
-                                         "try"
-                                         "catch"
-                                         "("
-                                         "["
-                                         "{"
-                                         "row")
-                                 eos)))
-            (node-to-check (or last-child-of-error-node node parent))
-            in-error ;; is node, parent, or one of it's ancestors an ERROR?
-            prev-sibling-has-error ;; is a previous sibling an ERROR?
+      (let ((node-to-check (or last-child-of-error-node node parent))
+            ancestor-error-node ;; is node, parent, or one of it's ancestors an ERROR?
+            prev-sibling-error-node ;; is a previous sibling under an ERROR?
             prev-sibling-to-check
             ancestor-to-check)
 
         ;; ancestor-to-check
         (let ((ancestor node-to-check))
-          (while (and ancestor (not in-error))
+          (while (and ancestor (not ancestor-error-node))
             (let ((ancestor-type (treesit-node-type ancestor)))
               (cond
 
                ((string= ancestor-type "ERROR")
-                (setq in-error t))
+                (setq ancestor-error-node ancestor))
 
                ((and (not ancestor-to-check)
-                     (string-match-p anchors-rx ancestor-type))
+                     (string-match-p matlab-ts-mode--i-next-line-anchors-rx ancestor-type))
                 (setq ancestor-to-check ancestor)))
 
-              (setq ancestor (if in-error
+              (setq ancestor (if ancestor-error-node
                                  nil
                                (treesit-node-parent ancestor)))))
           (when (eq ancestor-to-check node-to-check)
@@ -1874,7 +1873,7 @@ Prev-siblings:
                               (treesit-node-prev-sibling node-to-check))))
           (while (and prev-sibling
                       (not prev-sibling-to-check)
-                      (not prev-sibling-has-error))
+                      (not prev-sibling-error-node))
             (let ((prev-sibling-type (treesit-node-type prev-sibling)))
 
               ;; Backup over "..." continuations because they may not be prev-sibling's.
@@ -1897,9 +1896,9 @@ Prev-siblings:
               (when prev-sibling
                 (cond
                  ((string= prev-sibling-type "ERROR")
-                  (setq prev-sibling-has-error t))
+                  (setq prev-sibling-error-node prev-sibling))
 
-                 ((and (string-match-p anchors-rx prev-sibling-type)
+                 ((and (string-match-p matlab-ts-mode--i-next-line-anchors-rx prev-sibling-type)
                        (or (not (string= prev-sibling-type "("))
                            ;; See: test/test-matlab-ts-mode-indent-xr-files/
                            ;;      indent_xr_i_cont_incomplete5.m
@@ -1921,18 +1920,32 @@ Prev-siblings:
                            ))
                   (setq prev-sibling-to-check prev-sibling)))
 
-                (setq prev-sibling (if prev-sibling-has-error
+                (setq prev-sibling (if prev-sibling-error-node
                                        nil
                                      (treesit-node-prev-sibling prev-sibling)))))))
 
-        ;; We use regular matching rules if we don't have an error.
-        (when (and (not in-error)
-                   (not prev-sibling-has-error))
+        ;; We use regular matching rules when there is NO error.
+        (when (and (not ancestor-error-node)
+                   (not prev-sibling-error-node))
           (cl-return-from matlab-ts-mode--i-next-line-matcher nil))
 
         (let ((anchor-node (or ancestor-to-check
                                prev-sibling-to-check)))
           (when anchor-node
+            (let* ((a-error-start (when ancestor-error-node
+                                    (treesit-node-start ancestor-error-node)))
+                   (p-error-start (when prev-sibling-error-node
+                                    (treesit-node-start prev-sibling-error-node)))
+                   (error-node (if (or (not p-error-start)
+                                       (and a-error-start
+                                            (> a-error-start p-error-start)))
+                                   ancestor-error-node
+                                 prev-sibling-error-node)))
+              (when (and (or (not node)
+                             (not (equal node error-node)))
+                         (> (treesit-node-start error-node) (treesit-node-start anchor-node)))
+                (setq anchor-node error-node)))
+            
             (matlab-ts-mode--i-next-line-indent-level node bol anchor-node last-child-of-error-node)
             ;; t ==> matched
             t))))))
@@ -3440,20 +3453,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO indent
-    ;;      function foo(completions)
-    ;;          for cIdx = 1 : length(completions)
-    ;;              switch completions{cIdx}
-    ;;                case {'foo'}
-    ;;                  for fcnStart = 'a' : 'z'
-    ;;                      disp('foo');
-    ;;                      ^                         <= RET/TAB to here
-    ;;                otherwise
-    ;;                  error('assert - unhandled entryType');
-    ;;              end
-    ;;          end
-    ;;      end
-    ;;
     ;; TODO font-lock: matlab.mixin.SetGetExactNames is not in matlab-ts-mode--builtins.el?
     ;;
     ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
