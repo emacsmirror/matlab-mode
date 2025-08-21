@@ -139,9 +139,9 @@ Server gives all syntactic faces along with error indicators.
 The \"Standard plus parse errors\" can result in too much use of the
 `font-lock-warning-face' when there are syntax errors."
   :type '(choice (const :tag "Minimal" 1)
-		 (const :tag "Low" 2)
-		 (const :tag "Standard" 3)
-		 (const :tag "Standard plus parse errors" 4)))
+                 (const :tag "Low" 2)
+                 (const :tag "Standard" 3)
+                 (const :tag "Standard plus parse errors" 4)))
 
 (defcustom matlab-ts-mode-on-save-fixes
   '(matlab-ts-mode-on-save-fix-name)
@@ -171,7 +171,7 @@ You can also install via use-package or other methods."
   :type 'boolean)
 
 (defcustom matlab-ts-mode-electric-ends t
-  "*If t, insert end keywords to complete statements.
+  "*If t, insert end keywords to complete statements and insert % for doc comments.
 For example, if you type
    classdef foo<RET>
 an end statement will be inserted resulting in:
@@ -180,7 +180,14 @@ an end statement will be inserted resulting in:
    end
 Insertion of end keywords works well when the code is
 indented.  If you are editing code that is not indented,
-you may wish to turn this off."
+you may wish to turn this off.
+
+This will also add \"% \" for documentation comments.  For example,
+   function foo
+   % help for foo<RET>
+   %
+     ^                  <== \"% \" is inserted and point is here
+   end"
   :type 'boolean)
 
 ;;; Global variables used in multiple code ";;; sections"
@@ -315,11 +322,11 @@ content can crash Emacs via the matlab tree-sitter parser."
   "Create a new SYMBOL with DOC used as a text property category with SYNTAX."
   (declare (indent defvar) (debug (sexp form sexp)) (doc-string 3))
   `(progn (defconst ,symbol ,syntax ,doc)
-	  (put ',symbol 'syntax-table ,symbol)))
+          (put ',symbol 'syntax-table ,symbol)))
 
 ;; In the Syntax Table descriptors, "<" is for comments
 (matlab-ts-mode--syntax-symbol matlab-ts-mode--ellipsis-syntax (string-to-syntax "<")
-  "Syntax placed on ellipsis to treat them as comments.")
+                               "Syntax placed on ellipsis to treat them as comments.")
 
 (defun matlab-ts-mode--syntax-propertize (&optional start end)
   "Scan region between START and END to add properties.
@@ -335,15 +342,15 @@ as comments which is how they are treated by MATLAB."
 
       ;; Edits can change what properties characters can have so remove ours and reapply
       (remove-text-properties (point) (save-excursion (goto-char (or end (point-max)))
-						      (end-of-line) (point))
-			      '(category nil mcm nil))
+                                                      (end-of-line) (point))
+                              '(category nil mcm nil))
 
       ;; Tell Emacs that ellipsis (...) line continuations are comments.
       (while (and (not (>= (point) (or end (point-max)))) (not (eobp)))
         (if (treesit-search-forward-goto (treesit-node-at (point))
                                          (rx bos "line_continuation" eos)
                                          t) ;; goto start of: ... optional text
-	    (matlab-ts-mode--put-char-category (point) 'matlab-ts-mode--ellipsis-syntax)
+            (matlab-ts-mode--put-char-category (point) 'matlab-ts-mode--ellipsis-syntax)
           (goto-char (point-max)))))))
 
 ;;; font-lock
@@ -408,12 +415,12 @@ as comments which is how they are treated by MATLAB."
     ">"         ;; Greater than
     ">="        ;; Greater than or equal to
     "<"         ;; Less than
-    "<=" 	;; Less than or equal to
+    "<="        ;; Less than or equal to
     "&"         ;; Find logical AND
     "|"         ;; Find logical OR
     "&&"        ;; Find logical AND (with short-circuiting)
     "||"        ;; Find logical OR (with short-circuiting)
-    "~"	        ;; Find logical NOT
+    "~"         ;; Find logical NOT
     "@"         ;; Create anonymous functions and function handles, call superclass methods
     ;; "!"      ;; "!" is like an operator, but has command-dual like syntax, so handled elsewhere
     "?"         ;; Retrieve metaclass information for class name
@@ -455,7 +462,7 @@ help doc comment."
   (let ((prev-node (treesit-node-prev-sibling comment-node)))
     (when prev-node
       (while (string-match-p (rx bos "line_continuation" eos)
-			     (treesit-node-type prev-node))
+                             (treesit-node-type prev-node))
         (setq prev-node (treesit-node-prev-sibling prev-node)))
       (let ((prev-type (treesit-node-type prev-node)))
         ;; The true (t) cases. Note line continuation ellipsis are allowed.
@@ -467,10 +474,10 @@ help doc comment."
                                            "superclasses")      ;; subclass
                                       eos)
                                   prev-type)
-	          (and (string= prev-type "identifier")           ;; id could be a fcn or class id
+                  (and (string= prev-type "identifier")           ;; id could be a fcn or class id
                        (let ((prev-sibling (treesit-node-prev-sibling prev-node)))
                          (and prev-sibling
-	                      (string-match-p
+                              (string-match-p
                                (rx bos
                                    (or "function"         ;; fcn without in and out args
                                        "function_output"  ;; fcn w/out args and no in args
@@ -725,16 +732,16 @@ Example, disp variable is overriding the disp builtin function:
                          @matlab-ts-mode-variable-override-builtin-face)))
      (assignment left: (identifier) @font-lock-variable-name-face)
      (multioutput_variable (identifier) @matlab-ts-mode-variable-override-builtin-face
-                  (:pred matlab-ts-mode--is-variable-overriding-builtin
-                         @matlab-ts-mode-variable-override-builtin-face))
+                           (:pred matlab-ts-mode--is-variable-overriding-builtin
+                                  @matlab-ts-mode-variable-override-builtin-face))
      (multioutput_variable (identifier) @font-lock-variable-name-face)
      (global_operator (identifier) @matlab-ts-mode-variable-override-builtin-face
-                  (:pred matlab-ts-mode--is-variable-overriding-builtin
-                         @matlab-ts-mode-variable-override-builtin-face))
+                      (:pred matlab-ts-mode--is-variable-overriding-builtin
+                             @matlab-ts-mode-variable-override-builtin-face))
      (global_operator (identifier) @font-lock-variable-name-face)
      (persistent_operator (identifier) @matlab-ts-mode-variable-override-builtin-face
-                  (:pred matlab-ts-mode--is-variable-overriding-builtin
-                         @matlab-ts-mode-variable-override-builtin-face))
+                          (:pred matlab-ts-mode--is-variable-overriding-builtin
+                                 @matlab-ts-mode-variable-override-builtin-face))
      (persistent_operator (identifier) @font-lock-variable-name-face)
      (for_statement (iterator (identifier) @matlab-ts-mode-variable-override-builtin-face
                               (:pred matlab-ts-mode--is-variable-overriding-builtin
@@ -1109,7 +1116,7 @@ Example, disp variable is overriding the disp builtin function:
 ;;                1000,   1.9;
 ;;                100000, 1.875];
 ;;     or un-aligned
-;
+                                        ;
 ;;      table1 = [1, 2;
 ;;                1000, 1.9;
 ;;                100000, 1.875];
@@ -1230,10 +1237,10 @@ is where we start looking for the error node."
                (t
                 ;; Find first row to anchor against
                 (let ((prev-sibling (treesit-node-prev-sibling check-node)))
-                 (while prev-sibling
-                   (when (string= (treesit-node-type prev-sibling) "row")
-                     (setq check-node prev-sibling))
-                   (setq prev-sibling (treesit-node-prev-sibling prev-sibling))))
+                  (while prev-sibling
+                    (when (string= (treesit-node-type prev-sibling) "row")
+                      (setq check-node prev-sibling))
+                    (setq prev-sibling (treesit-node-prev-sibling prev-sibling))))
                 ;; In an ERROR node of a matrix or cell, return anchor
                 (setq matlab-ts-mode--i-error-row-matcher-pair
                       (cons (treesit-node-start check-node) 0)))))))))))
@@ -1700,8 +1707,8 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                       ;; Case:   if condition || ...
                       ;;            ^                       <== TAB to here
                       0
-                   ;; Case: if condition
-                   ;;           ^                           <== TAB to here
+                    ;; Case: if condition
+                    ;;           ^                           <== TAB to here
                     matlab-ts-mode--indent-level)))
 
                ((rx (seq bos (or "switch" "case" "otherwise") eos))
@@ -2618,10 +2625,10 @@ the normal s-expression movement by calling
 
 (defun matlab-ts-mode--defun-name (node)
   "Return the defun name of NODE for Change Log entries."
-    (when (string-match-p
-           (rx bos (or "function_definition" "class_definition") eos)
-           (treesit-node-type node))
-      (treesit-node-text (treesit-node-child-by-field-name node "name"))))
+  (when (string-match-p
+         (rx bos (or "function_definition" "class_definition") eos)
+         (treesit-node-type node))
+    (treesit-node-text (treesit-node-child-by-field-name node "name"))))
 
 ;;; imenu
 
@@ -2924,7 +2931,7 @@ THERE-END MISMATCH) or nil."
 
     (if (or here-begin here-end)
         (list here-begin here-end there-begin there-end mismatch)
-     (funcall #'show-paren--default))))
+      (funcall #'show-paren--default))))
 
 ;;; post-self-command-hook
 
@@ -2953,11 +2960,11 @@ THERE-END MISMATCH) or nil."
      ;; to see if it is really attached.
      ;; This works well assuming that the code is indented when one is editing it.
      ((let ((node-indent-level (save-excursion
-                                  (goto-char (treesit-node-start node))
+                                 (goto-char (treesit-node-start node))
                                  (current-indentation)))
             (end-indent-level (save-excursion
-                                 (goto-char (treesit-node-start last-child))
-                                 (current-indentation))))
+                                (goto-char (treesit-node-start last-child))
+                                (current-indentation))))
         (not (= node-indent-level end-indent-level)))
       t)
 
@@ -2992,7 +2999,7 @@ THERE-END MISMATCH) or nil."
      ;; Otherwise: statement has an end
      (t
       nil
-     ))))
+      ))))
 
 (defun matlab-ts-mode--insert-electric-ends ()
   "A RET was type, insert the electric \"end\" if needed."
@@ -3002,35 +3009,47 @@ THERE-END MISMATCH) or nil."
 
   (let (end-indent-level
         extra-insert
-        move-point-to-extra-insert)
+        item-to-insert
+        move-point-to-extra-insert
+        (pre-insert ""))
 
     (save-excursion
       (forward-line -1)
       (back-to-indentation)
-      (let* ((node (treesit-node-at (point)))
-             (node-type (treesit-node-type node)))
-        (when (and node
-                   ;; AND: Was a statement entered that requires and end?
-                   (string-match-p
-                    (rx bos (or "function" "arguments" "if" "switch" "while" "for" "parfor"
-                                "spmd" "try" "classdef" "enumeration" "properties" "methods"
-                                "events")
-                        eos)
-                    node-type)
-                   ;; AND: Is the statement missing an end?
-                   (matlab-ts-mode--is-electric-end-missing node))
+      (let* ((node (treesit-node-at (point))))
+        (when node
+          (let ((node-type (treesit-node-type node)))
 
-          ;; Statement for the RET doesn't have an end, so add one at end-indent-level
-          (setq end-indent-level (current-indentation))
+            (cond
 
-          ;; Extra insert, e.g. case for the switch statement.
-          (pcase node-type
-            ("switch"
-             (setq extra-insert "  case "
-                   move-point-to-extra-insert t))
-            ("try"
-             (setq extra-insert "catch me"))
-          ))))
+             ;; Case: Was a statement entered that requires and end?
+             ((string-match-p (rx bos (or "function" "arguments" "if" "switch" "while" "for" "parfor"
+                                          "spmd" "try" "classdef" "enumeration" "properties" "methods"
+                                          "events")
+                                  eos)
+                              node-type)
+              (when (matlab-ts-mode--is-electric-end-missing node) ;; Is the statement missing an end?
+                ;; Statement for the RET doesn't have an end, so add one at end-indent-level
+                (setq end-indent-level (current-indentation))
+                (setq pre-insert "\n")
+                (setq item-to-insert "end\n")
+
+                ;; Extra insert, e.g. case for the switch statement.
+                (pcase node-type
+                  ("switch"
+                   (setq extra-insert "  case "
+                         move-point-to-extra-insert t))
+                  ("try"
+                   (setq extra-insert "catch me"))
+                  )))
+
+             ;; Case: Single-line doc comment?
+             ((and (string= node-type "comment")
+                   (eq (get-char-property (point) 'face) 'font-lock-doc-face)
+                   (looking-at "%[ \t]*[^ \t\r\n]"))
+              (setq end-indent-level (current-indentation))
+              (setq item-to-insert "% ")
+              ))))))
 
     (when end-indent-level
       (let ((indent-level-spaces (make-string end-indent-level ? )))
@@ -3039,7 +3058,9 @@ THERE-END MISMATCH) or nil."
             (when (not move-point-to-extra-insert)
               (insert "\n"))
             (insert indent-level-spaces extra-insert))
-          (insert "\n" indent-level-spaces "end\n"))
+          (insert pre-insert indent-level-spaces item-to-insert))
+        (setq unread-command-events (nconc (listify-key-sequence (kbd "C-e"))
+                                           unread-command-events))
         ))))
 
 (defun matlab-ts-mode--post-insert-callback ()
@@ -3065,7 +3086,7 @@ This callback also implements `matlab-ts-mode-electric-ends'."
 
       ;; Add "end" (for `matlab-ts-mode-electric-ends')
       (when (and ret-typed
-                   matlab-ts-mode-electric-ends)
+                 matlab-ts-mode-electric-ends)
         (matlab-ts-mode--insert-electric-ends)))))
 
 ;;; MLint Flycheck
@@ -3471,14 +3492,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
     ;;      think it was missing a few toolboxes.
     ;;
-    ;; TODO electric-ends
-    ;;      When writing help doc a return should insert "% "
-    ;;         function foo
-    ;;         % help line 1
-    ;;         % help line 2
-    ;;         %
-    ;;           ^                      <= RET on help line 2, should insert "% "
-    ;;
     ;; TODO [future] add matlab-sections-minor-mode indicator in mode line and make it clickable so
     ;;      it can be turned off
     ;;
@@ -3559,4 +3572,4 @@ https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/matlab-language-
 ;; LocalWords:  NPS BUF myfcn pcase xr repeat:nil docstring numberp imenu alist nondirectory mapc
 ;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
-;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang
+;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd

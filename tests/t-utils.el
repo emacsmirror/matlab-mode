@@ -773,6 +773,11 @@ TODO should example test setup, see t-utils-test-font-lock."
 
         (t-utils--insert-file-for-test lang-file)
 
+        ;; Font lock may be required by commands exercised by t-utils-xr.
+        (font-lock-mode 1)
+        (font-lock-flush (point-min) (point-max))
+        (font-lock-ensure (point-min) (point-max))
+
         (let* ((start-time (current-time))
                (expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.org"
                                                         lang-file))

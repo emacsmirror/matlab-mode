@@ -12,7 +12,9 @@ classdef electric_ends_cases
 
         %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
 
+        %(t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
         function foo(a)
+        % foo help
 
             %(t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
 
