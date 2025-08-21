@@ -65,4 +65,17 @@ the resource requires on MATLAB:
 
 See [[https://www.mathworks.com/help/matlab/startup-and-shutdown.html][MATLAB Startup and Shutdown]] for other options.
 
+* Testing Emacs via a custom HOME
+
+On Linux or Mac:
+
+#+begin_src bash
+  mkdir ~/test-home
+  env HOME=~/test-home emacs
+#+end_src
+
+will run Emacs with a clean environment.  Within Emacs, "~" will expand to =/home/USER/test-home=
+and if =test-home= is empty, then =~/.emacs= will not exist and you can create it. Likewise, =M-x
+package-install=, etc. will install into =/home/USER/test-home/.emacs.d=.
+
 # LocalWords:  showall env nodesktop nosplash
