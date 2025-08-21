@@ -2668,7 +2668,7 @@ Returns t if tree-sitter NODE defines an outline heading."
           (setq ans (y-or-n-p prompt))
           (delete-overlay mo))
       (quit (delete-overlay mo)
-            (error "Quit")))
+            (user-error "Quit")))
     ans))
 
 (defun matlab-ts-mode-on-save-fix-name (&optional no-prompt)
@@ -3071,34 +3071,6 @@ This callback also implements `matlab-ts-mode-electric-ends'."
       ;; Register matlab-mlint with flycheck
       (add-to-list 'flycheck-checkers 'matlab-mlint))))
 
-(defvar flycheck-mode) ;; from flycheck.el
-(declare-function flycheck-list-errors "flycheck.el")
-
-;; TODO what about if lsp is active, matlab-ts-mode-check-mlint-setup should defer to that
-(defun matlab-ts-mode-check-mlint-setup ()
-  "Check the mlint setup and then view mlint messages."
-  (interactive)
-
-  (when (not matlab-ts-mode-enable-mlint-flycheck)
-    (error "MATLAB mlint is disabled.  To enable,
-M-x customize-variable RET matlab-ts-mode-enable-mlint-flycheck"))
-
-  (when (not (featurep 'flycheck))
-    (error "Package flycheck is not installed.  To install, see
-C-h v matlab-ts-mode-enable-mlint-flycheck"))
-
-  (when (not (matlab--get-mlint-exe))
-    (error "MATLAB mlint is not found"))
-
-  (when (not flycheck-mode)
-    (error "M-x flycheck-mode is not enabled.
-A fix is to add to ~/.emacs
-  (global-flycheck-mode)"))
-
-  (message "matlab-mlint flycheck is active.
-Use \"%s\" to view mlint errors or click FlyC on the mode line."
-           (substitute-command-keys "\\[flycheck-list-errors]")))
-
 ;;; MATLAB Code sections, `matlab-sections-minor-mode'
 
 (defun matlab-ts-mode--mfile-type ()
@@ -3153,11 +3125,11 @@ Within comments, the following markers will be highlighted:
   "Run grep on current file to find the triple-x, fix-me, and to do markers."
   (interactive)
   (when (not (buffer-file-name))
-    (error "Buffer %s is not associated with a file" (buffer-name)))
+    (user-error "Buffer %s is not associated with a file" (buffer-name)))
   (when (buffer-modified-p)
     (if (y-or-n-p (format "Save %s? " (buffer-name)))
         (save-buffer)
-      (error "Save %s before grep'ing for comment markers" (buffer-name))))
+      (user-error "Save %s before grep'ing for comment markers" (buffer-name))))
   (let ((pattern (mapconcat #'identity matlab-ts-mode--comment-markers "\\|")))
     (grep (concat grep-command "-wie \"" pattern "\" "
                   (file-name-nondirectory (buffer-file-name))))))
@@ -3314,7 +3286,6 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
     ["View mlint code analyzer messages" (flycheck-list-errors)
      :help "View mlint code analyzer messages.
 Click FlyC in the mode-line for more options."]
-    ["Check mlint setup" matlab-ts-mode-check-mlint-setup]
     "----"
     ["Jump to function" imenu]
     "----"
@@ -3338,6 +3309,7 @@ See `comment-dwim' for more capabilities."]
       :help "Set the column for when M-; inserts a column"])
 
     "----"
+    ["Check setup" matlab-ts-mode-check-setup]
     ("Customize"
      ["Customize matlab-ts-mode" (lambda ()
                                    (interactive)
@@ -3360,8 +3332,9 @@ If you have the MATLAB tree-sitter grammar installed,
   (treesit-ready-p \\='matlab)
 is t
 
-1. Tell Emacs to use matlab-ts-mode for MATLAB files by adding the following to your
-   `user-init-file' which is typically ~/.emacs, or add it to your `site-run-file'
+1. Tell Emacs to use matlab-ts-mode for MATLAB files by adding the
+   following to your `user-init-file' which is typically ~/.emacs, or
+   add it to your `site-run-file'
 
     (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))
 
@@ -3467,16 +3440,32 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO indent
+    ;;      function foo(completions)
+    ;;          for cIdx = 1 : length(completions)
+    ;;              switch completions{cIdx}
+    ;;                case {'foo'}
+    ;;                  for fcnStart = 'a' : 'z'
+    ;;                      disp('foo');
+    ;;                      ^                         <= RET/TAB to here
+    ;;                otherwise
+    ;;                  error('assert - unhandled entryType');
+    ;;              end
+    ;;          end
+    ;;      end
+    ;;
     ;; TODO font-lock: matlab.mixin.SetGetExactNames is not in matlab-ts-mode--builtins.el?
     ;;
     ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
     ;;      think it was missing a few toolboxes.
     ;;
-    ;; TODO LSP
-    ;;      - [done] LSP
-    ;;      - [done] Test LSP vs MLint
-    ;;      - Rename menu item "Check MLint Setup" to "Check setup" and have it
-    ;;        look at both LSP and MLint. Place menu item at bottom.
+    ;; TODO electric-ends
+    ;;      When writing help doc a return should insert "% "
+    ;;         function foo
+    ;;         % help line 1
+    ;;         % help line 2
+    ;;         %
+    ;;           ^                      <= RET on help line 2, should insert "% "
     ;;
     ;; TODO [future] add matlab-sections-minor-mode indicator in mode line and make it clickable so
     ;;      it can be turned off
@@ -3497,6 +3486,57 @@ so configuration variables of that mode, do not affect this mode.
       (substitute-key-definition 'read-only-mode #'matlab-toggle-read-only km global-map))
 
     ))
+
+;;; Check setup
+
+(defvar flycheck-mode) ;; from flycheck.el
+(declare-function flycheck-list-errors "flycheck.el")
+
+(defun matlab-ts-mode-check-setup ()
+  "Check the mlint setup and then view mlint messages."
+  (interactive)
+
+  ;;--------------------;;
+  ;; mlint and flycheck ;;
+  ;;--------------------;;
+  (when (not matlab-ts-mode-enable-mlint-flycheck)
+    (user-error "MATLAB mlint is disabled.  To enable,
+M-x customize-variable RET matlab-ts-mode-enable-mlint-flycheck"))
+
+  (when (not (featurep 'flycheck))
+    (user-error "Package flycheck is not installed.
+Flycheck is used to view code issues as you type.
+To install, see
+C-h v matlab-ts-mode-enable-mlint-flycheck"))
+
+  (when (not (matlab--get-mlint-exe))
+    (user-error "MATLAB mlint is not found, to fix place /path/to/MATLAB-install on your system path"))
+
+  (when (not flycheck-mode)
+    (user-error "M-x flycheck-mode is not enabled.
+A fix is to add to ~/.emacs
+  (global-flycheck-mode)"))
+
+  (message "matlab-mlint flycheck is active.
+Use \"%s\" to view mlint errors or click FlyC on the mode line."
+           (substitute-command-keys "\\[flycheck-list-errors]"))
+
+  ;;----------;;
+  ;; lsp-mode ;;
+  ;;----------;;
+  (when (not (featurep 'lsp-mode))
+    (user-error "Package lsp-mode is not installed.
+Package lsp-mode provides code navigation capabilities, symbol rename, and more.  See:
+https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/matlab-language-server-lsp-mode.org"
+                ))
+
+  (when (and (not (member 'lsp         matlab-ts-mode-hook))
+             (not (member 'lsp-deferred matlab-ts-mode-hook)))
+    (user-error "The matlab-ts-mode-hook does not contain #'lsp or #'lsp-deferred.  See:
+https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/matlab-language-server-lsp-mode.org"
+                ))
+
+  (message "All good, matlab-ts-mode is configured to work with mlint and lsp-mode"))
 
 (provide 'matlab-ts-mode)
 ;;; matlab-ts-mode.el ends here
