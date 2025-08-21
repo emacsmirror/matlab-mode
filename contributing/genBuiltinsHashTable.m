@@ -125,7 +125,10 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
             entryType = m{1}{3};
 
             switch entryType
-              case {'mFile', 'pFile', 'mex', 'function', 'method'}
+              case {'mFile', 'pFile', 'mex', 'function', 'method', ...
+                    'class', ...
+                    'keyword', 'variable', 'pathItem', 'mlappFile', 'mlxFile', ...
+                    'mdlFile', 'slxFile', 'sscFile', 'sfxFile'}
                 desc = strtrim(m{1}{2});
                 if ~isempty(desc)
                     desc = [' ;;', desc]; %#ok<AGROW>
@@ -159,7 +162,9 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
                 % 'class' and 'namespace' likely have items in them. Though variables, models,
                 % etc. can hide namespaces. For example, simulink.slx is a model and we have
                 % simulink namespace giving items like simulink.compiler.genapp.
-                [ht, nEntries] = getHashTableEntries([thing, '.'], ht, nEntries);
+                for fcnStart = 'a' : 'z'
+                    [ht, nEntries] = getHashTableEntries([thing, '.', fcnStart], ht, nEntries);
+                end
               otherwise
                 error(['assert - unhandled entryType: ', entryType]);
             end
@@ -171,4 +176,5 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries)
     disp(['nEntries = ', num2str(nEntries)]);
 end
 
-% LocalWords:  emacsdocomplete builtins keymodels vdynblks vdynsolution mlapp mlx ssc sfx genapp
+% LocalWords:  emacsdocomplete builtins keymodels vdynblks vdynsolution mlapp mlx ssc sfx genapp tmp
+% LocalWords:  nodesktop
