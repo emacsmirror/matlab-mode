@@ -37,7 +37,7 @@ system, you can leverage Windows Subsystem for Linux, wsl, to install Debian alo
 This guide is a template, and may will need adjustments for your environment or updates as systems
 evolve.
 
-[[https://www.mathworks.com/matlabcentral/answers/1881447-can-i-use-matlab-or-other-mathworks-products-with-windows-subsystem-for-linux-wsl-wsl2][MATLAB is not offically supported under wsl]], so MATLAB may not run correctly under wsl.  For
+[[https://www.mathworks.com/matlabcentral/answers/1881447-can-i-use-matlab-or-other-mathworks-products-with-windows-subsystem-for-linux-wsl-wsl2][MATLAB is not officially supported under wsl]], so MATLAB may not run correctly under wsl.  For
 me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
 
 1. Install wsl. The first time you install wsl, you will need to do the following, reboot, then
@@ -59,7 +59,7 @@ me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
 
 3. Install packages
 
-   Noice we are installing emacs from Debian 12 backports to get Emacs 30.1
+   Notice we are installing emacs from Debian 12 backports to get Emacs 30.1
 
    #+begin_src bash
      sudo apt update
@@ -95,7 +95,7 @@ me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
 
 5. Install MATLAB R2025a
 
-   From http://www.mathworks.com, download R2025a linux zip file and unzip. I unzipped it to
+   From http://www.mathworks.com, download R2025a Linux zip file and unzip. I unzipped it to
    =~/matlab-installs/R2025a.u0.install/=, where in my terminology u0 is the first release (update
    0).
 
@@ -207,7 +207,7 @@ me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
 
    : M-x package-install
 
-   and install from melpa both magit and flycheck, and then update your ~/.emacs to contain
+   and install from melpa both =magit= and =flycheck=, and then update your =~/.emacs= to contain
 
    #+begin_src emacs-lisp
      (global-flycheck-mode)
@@ -236,6 +236,11 @@ me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
 
     : M-x matlab-shell
 
-
-
-
+# LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
+# LocalWords:  backports sudo shellcheck Debain ibverbs libasound libatomic libc libcairo gobject
+# LocalWords:  libcap libcrypt libcups libdrm libfontconfig libfribidi libgbm libgdk pixbuf libgl
+# LocalWords:  libglib libgstreamer libgtk libibverbs libice libltdl libnspr libnss libnuma libpam
+# LocalWords:  libpango libpangocairo libpangoft libpixman libpsm librdmacm libsndfile libtirpc
+# LocalWords:  libucx libuuid libwayland libxcomposite libxcursor libxdamage libxfixes libxfont
+# LocalWords:  libxft libxinerama libxrandr libxt libxtst libxxf vm procps wget xkb utils zlib mw
+# LocalWords:  mci bashrc esac libtree mnt setq magit flycheck melpa listp defun
