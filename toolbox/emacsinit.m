@@ -64,10 +64,10 @@ function emacsinit()
         % debugging.
 
         % Disable built-in editor showing up for debugging
-        com.mathworks.services.Prefs.setBooleanPref('EditorGraphicalDebugging', false);
+        com.mathworks.services.Prefs.setBooleanPref('EditorGraphicalDebugging', false); %#ok
 
         % Disable wrapping of text lines.  Emacs will wrap or not based on user preference.
-        com.mathworks.services.Prefs.setBooleanPref('WrapLines',false)
+        com.mathworks.services.Prefs.setBooleanPref('WrapLines', false); %#ok
     end
 
     % Check if we're running inside emacs.  If we are NOT, then force the enablement of
