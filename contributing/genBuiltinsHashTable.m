@@ -61,7 +61,7 @@ function genBuiltinsHashTable
     nEntries = 0;
 
     for fcnStart = 'a' : 'z'
-        [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID);
+        [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID, 0);
     end
 
     ht = ['(defvar matlab-ts-mode--builtins-ht', newline, ...
@@ -82,10 +82,11 @@ function genBuiltinsHashTable
     fprintf(1, "Created: %s\n", outFile);
 end
 
-function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID)
+function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID, frame)
 % Call emacsdocomplete(fcnStart) to get hash-table entries
 
-    fprintf(logFID, 'Capturing completions for: %s\n', fcnStart);
+    frame = frame + 1;
+    fprintf(logFID, '[%d] Capturing completions for: %s\n', frame, fcnStart);
 
     completionStr = evalc(['emacsdocomplete(''', fcnStart, ''')']);
     completions   = split(completionStr, newline);
@@ -137,12 +138,13 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID)
                     'class', ...
                     'keyword', 'variable', 'pathItem', 'mlappFile', 'mlxFile', ...
                     'mdlFile', 'slxFile', 'sscFile', 'sfxFile'}
+                comment = [' ;; (', entryType, ')'];
                 desc = strtrim(m{1}{2});
                 if ~isempty(desc)
-                    desc = [' ;;', desc]; %#ok<AGROW>
+                    comment = [comment ' ', desc]; %#ok<AGROW>
                 end
-                entry = ['           "', thing, '" t', desc];
-                fprintf(logFID, '%s\n', entry);
+                entry = ['           "', thing, '" t', comment];
+                fprintf(logFID, '[%d] entry: %s\n', frame, entry);
                 ht = [ht, entry, newline]; %#ok<AGROW>
                 nEntries = nEntries + 1;
                 if strcmp(entryType, 'mFile')
@@ -161,23 +163,23 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID)
                 if isempty(regexp(thing, '\.internal$', 'once'))
                     for fcnStart = 'a' : 'z'
                         [ht, nEntries] = getHashTableEntries([thing, '.', fcnStart], ht, ...
-                                                             nEntries, logFID);
+                                                             nEntries, logFID, frame);
                     end
                 end
               case {'property', 'enumeration'}
                 entry = ['           "', thing, '" ''', entryType];
-                fprintf(logFID, '%s\n', entry);
+                fprintf(logFID, '[%d] p/e-entry: %s\n', frame, entry);
                 ht = [ht, entry, newline]; %#ok<AGROW>
                 nEntries = nEntries + 1;
               case {'class', ...
                     'keyword', 'variable', 'pathItem', 'mlappFile', 'mlxFile', ...
                     'mdlFile', 'slxFile', 'sscFile', 'sfxFile'}
-                % 'class' and 'namespace' likely have items in them. Though variables, models,
+                % 'class' likely have items in them. Though variables, models,
                 % etc. can hide namespaces. For example, simulink.slx is a model and we have
                 % simulink namespace giving items like simulink.compiler.genapp.
                 for fcnStart = 'a' : 'z'
                     [ht, nEntries] = getHashTableEntries([thing, '.', fcnStart], ht, ...
-                                                         nEntries, logFID);
+                                                         nEntries, logFID, frame);
                 end
               otherwise
                 error(['assert - unhandled entryType: ', entryType]);
@@ -187,7 +189,7 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID)
         end
     end
 
-    fprintf(logFID, 'nEntries = %d\n', nEntries);
+    fprintf(logFID, '[%d] nEntries = %d\n', frame, nEntries);
 end
 
 % LocalWords:  emacsdocomplete builtins keymodels vdynblks vdynsolution mlapp mlx ssc sfx genapp tmp
