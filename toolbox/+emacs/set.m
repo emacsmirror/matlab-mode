@@ -43,14 +43,14 @@ function set(varargin)
             % Use clientcommand (e.g. emacsclient -n) for text editing
             if verLessThan('MATLAB','9.4')
                 % Before settings API was introduced
-                com.mathworks.services.Prefs.setBooleanPref('EditorBuiltinEditor',false);
+                com.mathworks.services.Prefs.setBooleanPref('EditorBuiltinEditor',false); %#ok
             else
                 s = settings;
                 s.matlab.editor.UseMATLABEditor.TemporaryValue = 0;
             end
-            if verLessThan('MATLAB','9.9')
+            if verLessThan('MATLAB','9.9') %#ok
                 % Before OtherEditor was read from settings API
-                com.mathworks.services.Prefs.setStringPref('EditorOtherEditor', clientcommand);
+                com.mathworks.services.Prefs.setStringPref('EditorOtherEditor', clientcommand); %#ok
             else
                 s = settings;
                 s.matlab.editor.OtherEditor.TemporaryValue = clientcommand;
