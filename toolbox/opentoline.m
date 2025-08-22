@@ -20,9 +20,14 @@ function opentoline(file, line, column)
 %
 %   Remove this M file from your path to get the old behavior.
 
-    file = emacsstripremote(file)
-    editor = system_dependent('getpref', 'EditorOtherEditor');
-    editor = editor(2:end);
+    file = emacsstripremote(file);
+
+    if verLessThan('MATLAB','9.9') %#ok
+        editor = system_dependent('getpref', 'EditorOtherEditor');
+        editor = editor(2:end);
+    else
+        editor = settings().matlab.editor.OtherEditor.TemporaryValue;
+    end
 
     if nargin==3
         linecol = sprintf('+%d:%d',line,column);
@@ -32,7 +37,7 @@ function opentoline(file, line, column)
 
     f = which(file);
     if ~isempty(f)
-        file=f;
+        file = f;
     end
 
     if ispc
