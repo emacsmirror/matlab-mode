@@ -3535,50 +3535,83 @@ so configuration variables of that mode, do not affect this mode.
 (declare-function flycheck-list-errors "flycheck.el")
 
 (defun matlab-ts-mode-check-setup ()
-  "Check the mlint setup and then view mlint messages."
+  "Check that Emacs has been setup fully for use with MATLAB."
   (interactive)
+
+  ;; TODO [future] check that we have the latest versions of packages
+
+  (let ((msg ""))
+
+    ;;---------;;
+    ;; company ;;
+    ;;---------;;
+    (if (not (featurep 'flycheck))
+        (setq msg (concat msg "\
+- [ ] Package company is not installed (needed for TAB completions).
+      To install: M-x package-install RET company RET\n"))
+      (setq msg (concat msg "\
+- [x] Package company is installed (needed for TAB completions)\n")))
 
   ;;--------------------;;
   ;; mlint and flycheck ;;
   ;;--------------------;;
-  (when (not matlab-ts-mode-enable-mlint-flycheck)
-    (user-error "MATLAB mlint is disabled.  To enable,
-M-x customize-variable RET matlab-ts-mode-enable-mlint-flycheck"))
+  (cond
+   ((not matlab-ts-mode-enable-mlint-flycheck)
+    (setq msg (concat msg "\
+- MATLAB mlint is disabled.  To enable,
+  M-x customize-variable RET matlab-ts-mode-enable-mlint-flycheck\n")))
 
-  (when (not (featurep 'flycheck))
-    (user-error "Package flycheck is not installed.
-Flycheck is used to view code issues as you type.
-To install, see
-C-h v matlab-ts-mode-enable-mlint-flycheck"))
+   ((not (featurep 'flycheck))
+    (setq msg (concat msg "\
+- [ ] Package flycheck is not installed (needed to view code issues as you type).
+      To install, see C-h v matlab-ts-mode-enable-mlint-flycheck\n")))
 
-  (when (not (matlab--get-mlint-exe))
-    (user-error "MATLAB mlint is not found, to fix place /path/to/MATLAB-install on your system path"))
+   ((not (matlab--get-mlint-exe))
+    (setq msg (concat msg "\
+- [ ] MATLAB mlint is not found, to fix place /path/to/MATLAB-install on your system path\n")))
 
-  (when (not flycheck-mode)
-    (user-error "M-x flycheck-mode is not enabled.
-A fix is to add to ~/.emacs
-  (global-flycheck-mode)"))
+   ((not flycheck-mode)
+    (setq msg (concat msg "\
+- [ ] M-x flycheck-mode is not enabled.  A fix is to add to ~/.emacs
+      (global-flycheck-mode)\n")))
 
-  (message "matlab-mlint flycheck is active.
-Use \"%s\" to view mlint errors or click FlyC on the mode line."
-           (substitute-command-keys "\\[flycheck-list-errors]"))
+   (t
+    (setq msg (concat msg (format "\
+- [x] matlab-mlint flycheck is setup.
+      Use \"%s\" to view mlint errors or click FlyC on the mode line.\n"
+                      (substitute-command-keys "\\[flycheck-list-errors]"))))))
 
   ;;----------;;
   ;; lsp-mode ;;
   ;;----------;;
-  (when (not (featurep 'lsp-mode))
-    (user-error "Package lsp-mode is not installed.
-Package lsp-mode provides code navigation capabilities, symbol rename, and more.  See:
-https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/matlab-language-server-lsp-mode.org"
-                ))
 
-  (when (and (not (member 'lsp         matlab-ts-mode-hook))
-             (not (member 'lsp-deferred matlab-ts-mode-hook)))
-    (user-error "The matlab-ts-mode-hook does not contain #'lsp or #'lsp-deferred.  See:
-https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/matlab-language-server-lsp-mode.org"
-                ))
+  ;; TODO [future] check lsp-matlab configuration, location of matlabls index.js
+  ;; TODO [future] check that we have latest matlabls version
+  ;; TODO [future] add auto-install of the language server, perhaps using the vscode bundle?
 
-  (message "All good, matlab-ts-mode is configured to work with mlint and lsp-mode"))
+  (cond
+   ((not (featurep 'lsp-mode))
+    (setq msg (concat msg "\
+- [ ] Package lsp-mode is not installed.
+      lsp-mode provides code navigation, symbol rename, and more.
+      To install, see
+         https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/\
+matlab-language-server-lsp-mode.org\n")))
+
+   ((and (not (member 'lsp          matlab-ts-mode-hook))
+         (not (member 'lsp-deferred matlab-ts-mode-hook)))
+    (setq msg (concat msg "\
+- The matlab-ts-mode-hook does not contain #'lsp or #'lsp-deferred.  To fix, see
+  https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/\
+matlab-language-server-lsp-mode.org\n"
+                      )))
+
+   (t
+    (setq msg (concat msg "\
+- [x] lsp-mode for code navigation, symbol rename, and more is setup\n"))))
+
+  ;; Display check result
+  (message "%s" msg)))
 
 (provide 'matlab-ts-mode)
 ;;; matlab-ts-mode.el ends here
