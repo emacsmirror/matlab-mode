@@ -84,21 +84,26 @@
 
 * Installation
 
-1. Install the MATLAB package "matlab-mode" via [[https://elpa.gnu.org/][ELPA]] or [[https://melpa.org][MELPA]]. The "matlab-mode" package contains
-   the commands matlab-ts-mode, matlab-mode, tlc-mode, and more.  MELPA contains the latest version
-   of the MATLAB package. To install from MELPA (which always has the latest), add to your
-   =~/.emacs=
+1. Install the MATLAB package via [[https://elpa.gnu.org/][ELPA]] or [[https://melpa.org][MELPA]]. MELPA contains the latest version.  To install from
+   MELPA, add to your =~/.emacs=
 
    #+begin_src emacs-lisp
      (require 'package)
      (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
    #+end_src
 
-   then click on matlab-mode to install
+   Restart Emacs and then
 
-   : M-x RET list-packages RET
+   : M-x package-install RET matlab-mode RET
 
-2. [Optional, but recommended] install MATLAB tree-sitter for matlab-ts-mode.
+   Note: to all available packages, =M-x RET list-packages RET=
+
+2  [Optional] Install the =company= package which is used for TAB completions.
+
+   : M-x package-install RET company RET
+
+3. [Optional] Install MATLAB tree-sitter for matlab-ts-mode, which provides improved performance
+   improved editing capabilities, and more.
 
    The MATLAB tree-sitter leverages [[https://tree-sitter.github.io/tree-sitter/][Tree-sitter]] to create a parse tree for MATLAB code.  The parse
    tree is updated incrementally and is robust to syntax errors. It is highly performant and
@@ -106,7 +111,7 @@
    process.  *matlab-ts-mode* leverages the MATLAB tree-sitter to give an improved MATLAB editing
    experience when compared with matlab-mode.
 
-   As of Aug-8-2025 matlab-ts-mode works with *Emacs 30.1* (the latest Emacs release).  By default,
+   As of Aug-8-2025 matlab-ts-mode works with *Emacs 30* (the latest Emacs release).  By default,
    the MATLAB tree-sitter shared object is placed in
 
    : ~/.emacs.d/tree-sitter/libtree-sitter-matlab.so        (.dll on Windows, or .dylib on Mac)
@@ -161,9 +166,9 @@
 
    * Setup =lsp-mode=. See [[file:doc/matlab-language-server-lsp-mode.org]].
 
-3. [Optional]. Install the [[file:doc/matlab-language-server-lsp-mode.org][MATLAB Language Server]].
+4. [Optional]. Install the [[file:doc/matlab-language-server-lsp-mode.org][MATLAB Language Server]] for an improved editing experience.
 
-4. Check your installation setup.
+5. Check your installation setup.
 
    If you are using *matlab-ts-mode*, visit a =*.m= MATLAB file and select the menu item:
 

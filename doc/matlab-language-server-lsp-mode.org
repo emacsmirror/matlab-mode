@@ -81,14 +81,10 @@ type =M-,= to jump back.
 
    then
 
-   : M-x list-packages
-
-   and click on =lsp-mode= and install it.  Also install:
-
-   - =company= for completions.
-   - =flycheck= for diagnostics (mlint warnings).
-   - =lsp-ui= for improved visualization of information provided by lsp-mode. See
-     https://github.com/emacs-lsp/lsp-ui.
+   : M-x package-install RET lsp-mode RET
+   : M-x package-install RET company RET            // for TAB completions
+   : M-x package-install RET flycheck RET           // for diagnostics (mlint warnings).
+   : M-x package install RET lsp-ui RET             // See https://github.com/emacs-lsp/lsp-ui.
 
 2. Download and install the MATLAB language server
 
