@@ -2555,6 +2555,8 @@ function call."
                         ;;     (property name: (identifier)
                         ;;      (dimensions ( (number) , (number) ))
                         ;;      (identifier) \n)
+                        ;;
+                        ;; See: https://github.com/acristoffers/tree-sitter-matlab/issues/91
                         "property"
 
                         "function_arguments"
