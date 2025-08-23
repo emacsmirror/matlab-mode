@@ -400,12 +400,8 @@ containing RESULT."
                                       &optional file-major-mode setup-callback skip-corrupt-check)
   "Insert FILE into current temporary buffer for testing.
 If optional FILE-MAJOR-MODE function is provided, run that, otherwise
-we examine the first line of the file for the major mode:
-
-  -*- MODE-NAME -*-
-  -*- mode: MODE-NAME -*-
-
-and run that.
+process the first property line \"-*- mode: NAME -*-\" or \"-*-
+mode-NAME -*-\" and set major-mode from that.
 
 If optional SETUP-CALLBACK is specified, it is invoked after setting
 the major mode in the temporary buffer.
@@ -431,16 +427,17 @@ skipped."
     (replace-match ""))
   (goto-char (point-min))
 
-  ;; Set mode
+  ;; Set major-mode using file-major-mode if specified,
+  ;; else use the "-*- property-first-line -*-" to set the mode
   (if file-major-mode
       (funcall file-major-mode)
-    ;; else get major mode from the first line of the file.
-    (when (and (not (looking-at "^.* -\\*-[ \t]+\\([-a-z0-9]+\\)[ \t]+-\\*-"))
-               (not (looking-at "^.* -\\*-.*mode:[ \t]+\\([-a-z0-9]+\\).*-\\*-")))
-      (error "First line of %s must contain -*- MODE-NAME -*- (or -*- mode: MODE-NAME -*-)" file))
-    (let* ((mode (match-string 1))
-           (mode-cmd (intern (concat mode "-mode"))))
-      (funcall mode-cmd)))
+    ;; Else get it from the first "property line" specifying local variables
+    (let* ((prop-major-mode (hack-local-variables-prop-line t)))
+      (when (or (not prop-major-mode))
+        (user-error
+         "First line of %s must contain \"-*- MODE-NAME -*-\" or \"-*- mode: MODE-NAME -*-\""
+         file))
+      (funcall prop-major-mode)))
 
   (when setup-callback
     (funcall setup-callback))
