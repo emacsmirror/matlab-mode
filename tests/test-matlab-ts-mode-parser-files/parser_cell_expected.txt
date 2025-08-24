@@ -1,0 +1,25 @@
+# tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}
+(source_file (comment[1,20]{% -*- matlab-ts -*-})
+ (assignment left: (identifier[22,23]{a}) =
+  right: 
+   (cell {
+    (row
+     (cell {
+      (row (number[28,29]{1}) , (number[31,32]{2}))
+      }))
+    ;
+    (row
+     (cell {
+      (row (number[41,42]{3}) , (number[44,45]{4}))
+      }))
+    ;
+    (row
+     (matrix [
+      (row
+       (range (number[54,55]{1}) : (number[56,58]{10})))
+      ]))
+    }))
+ ;
+ (assignment left: (identifier[63,64]{b}) =
+  right: (string " (string_content[68,80]{not a \{cell\}}) "))
+ ; (comment[84,95]{%\{\n  foo\n%\}}) \n)

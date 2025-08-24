@@ -2100,7 +2100,11 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
           (insert type)
           (when (not (treesit-node-child node 0)) ;; leaf node?
             (let ((node-text (substring-no-properties (treesit-node-text node))))
-              (dolist (pair (list '("\t" . "\\\\t") '("\r" . "\\\\r") '("\n" . "\\\\n")))
+              (dolist (pair (list '("\t" . "\\\\t")
+                                  '("\r" . "\\\\r")
+                                  '("\n" . "\\\\n")
+                                  '("{"  . "\\\\{")
+                                  '("}"  . "\\\\}")))
                 (setq node-text (replace-regexp-in-string (car pair) (cdr pair) node-text)))
               (when (> (length node-text) 50)
                 (setq node-text (concat (substring node-text 0 50) "...")))
