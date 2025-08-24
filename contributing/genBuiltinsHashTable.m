@@ -60,8 +60,10 @@ function genBuiltinsHashTable
     ht = ''; % lisp hash-table string representation
     nEntries = 0;
 
+    bMap = dictionary('', true); % map of builtins we've found
+
     for fcnStart = 'a' : 'z'
-        [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID, 0);
+        [ht, nEntries, bMap] = getHashTableEntries(fcnStart, ht, nEntries, bMap, logFID, 0);
     end
 
     ht = ['(defvar matlab-ts-mode--builtins-ht', newline, ...
@@ -80,10 +82,19 @@ function genBuiltinsHashTable
 
     writelines(ht, outFile, LineEnding = '\n');
     fprintf(1, "Created: %s\n", outFile);
+    fclose(logFID);
 end
 
-function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID, frame)
+function [ht, nEntries, bMap] = getHashTableEntries(fcnStart, ht, nEntries, bMap, logFID, frame)
 % Call emacsdocomplete(fcnStart) to get hash-table entries
+
+    if bMap.isKey(fcnStart)
+        % Running emacsdocomplete('break.a') returns entries:  aa2int, ...
+        % which we've already processed. It should return nothing.
+        % TODO - investigate this to see if there's a fix
+        return; % skip already captured items
+    end
+    bMap(fcnStart) = true;
 
     frame = frame + 1;
     fprintf(logFID, '[%d] Capturing completions for: %s\n', frame, fcnStart);
@@ -131,6 +142,13 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID, fr
                 continue; % skip ourself
             end
 
+            if bMap.isKey(thing)
+                % Running emacsdocomplete('break.a') returns entries:  aa2int, ...
+                % which we've already processed. It should return nothing.
+                % TODO - investigate this to see if there's a fix
+                continue; % skip already captured items
+            end
+
             entryType = m{1}{3};
 
             switch entryType
@@ -146,6 +164,7 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID, fr
                 entry = ['           "', thing, '" t', comment];
                 fprintf(logFID, '[%d] entry: %s\n', frame, entry);
                 ht = [ht, entry, newline]; %#ok<AGROW>
+                bMap(thing) = true;
                 nEntries = nEntries + 1;
                 if strcmp(entryType, 'mFile')
                     % Consider mFile = matlab (toolbox/matlab/general/matlab.m)
@@ -162,14 +181,15 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID, fr
                 % should only be used by code provided by MathWorks.
                 if isempty(regexp(thing, '\.internal$', 'once'))
                     for fcnStart = 'a' : 'z'
-                        [ht, nEntries] = getHashTableEntries([thing, '.', fcnStart], ht, ...
-                                                             nEntries, logFID, frame);
+                        [ht, nEntries, bMap] = getHashTableEntries([thing, '.', fcnStart], ht, ...
+                                                                   nEntries, bMap, logFID, frame);
                     end
                 end
               case {'property', 'enumeration'}
                 entry = ['           "', thing, '" ''', entryType];
                 fprintf(logFID, '[%d] p/e-entry: %s\n', frame, entry);
                 ht = [ht, entry, newline]; %#ok<AGROW>
+                bMap(thing) = true;
                 nEntries = nEntries + 1;
               case {'class', ...
                     'keyword', 'variable', 'pathItem', 'mlappFile', 'mlxFile', ...
@@ -178,8 +198,8 @@ function [ht, nEntries] = getHashTableEntries(fcnStart, ht, nEntries, logFID, fr
                 % etc. can hide namespaces. For example, simulink.slx is a model and we have
                 % simulink namespace giving items like simulink.compiler.genapp.
                 for fcnStart = 'a' : 'z'
-                    [ht, nEntries] = getHashTableEntries([thing, '.', fcnStart], ht, ...
-                                                         nEntries, logFID, frame);
+                    [ht, nEntries, bMap] = getHashTableEntries([thing, '.', fcnStart], ht, ...
+                                                               nEntries, bMap, logFID, frame);
                 end
               otherwise
                 error(['assert - unhandled entryType: ', entryType]);
