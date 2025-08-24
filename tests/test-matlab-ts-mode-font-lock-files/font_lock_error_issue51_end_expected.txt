@@ -4,6 +4,6 @@ c ccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c ccc ccccc cccccc cc cccccccccc cc c cccccccc
 
 kkkkkkkk vvvvvv o fffffffffffffffffffffffffffbvD vb
-    wwwwww w w w wwwwwwww ww w ccc
+    wwwwww w w w wwwwwwww ww w www
 
-kkk
+www

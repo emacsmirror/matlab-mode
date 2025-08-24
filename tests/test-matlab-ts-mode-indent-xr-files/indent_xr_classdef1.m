@@ -1,4 +1,4 @@
-% -*- matlab-ts -*-
+% -*- mode: matlab-ts; matlab-ts-mode-electric-ends: nil -*-
 
 %{
   - First row of commands: we validate multiple indents don't cause point movement

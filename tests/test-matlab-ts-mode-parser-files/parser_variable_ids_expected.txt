@@ -17,6 +17,6 @@
     right: 
      (binary_operator left: (identifier[106,110]{out1}) +
       right: (binary_operator left: (number[113,114]{2}) * right: (identifier[117,121]{out1}))))
-   ;)
+   ; \n)
   end)
  \n)

@@ -102,7 +102,7 @@ function B = ends_in_comments_and_strings()
         
         A = E;
         
-    end ... the other end
+    end % the other end
     % !! 4
     
     B = [ B A ]; % !!4

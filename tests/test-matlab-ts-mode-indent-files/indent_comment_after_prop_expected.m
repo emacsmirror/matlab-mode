@@ -58,7 +58,7 @@ classdef indent_comment_after_prop < handle
                         % comment
                       otherwise
                         disp('a > 11');
-                      % comment
+                        % comment
                     end
                     % comment
                 elseif a > 11

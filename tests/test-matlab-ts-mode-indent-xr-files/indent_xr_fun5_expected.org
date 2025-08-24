@@ -25,23 +25,23 @@
   )
 
 - Invoking      : (re-search-forward "%}")
-  Start point   :  704
-  Moved to point:  707
+  Start point   :  745
+  Moved to point:  748
   : 25:2: %}
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  707
-  Moved to point:  708
+  Start point   :  748
+  Moved to point:  749
   : 26:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "
 ")
-  Start point   :  708
-  Moved to point:  709
+  Start point   :  749
+  Moved to point:  750
   : 27:0: 
   :       ^
   Buffer modified:
@@ -56,15 +56,15 @@
   #+end_src diff
 
 - Invoking      : "C-b" = backward-char
-  Start point   :  709
-  Moved to point:  708
+  Start point   :  750
+  Moved to point:  749
   : 26:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "function ...")
-  Start point   :  708
-  Moved to point:  720
+  Start point   :  749
+  Moved to point:  761
   : 26:12: function ...
   :                    ^
   Buffer modified:
@@ -80,8 +80,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  720
-  Moved to point:  725
+  Start point   :  761
+  Moved to point:  766
   : 27:4:     
   :           ^
   Buffer modified:
@@ -96,8 +96,8 @@
   #+end_src diff
 
 - Invoking      : (insert "[ ...")
-  Start point   :  725
-  Moved to point:  730
+  Start point   :  766
+  Moved to point:  771
   : 27:9:     [ ...
   :                ^
   Buffer modified:
@@ -113,8 +113,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  730
-  Moved to point:  736
+  Start point   :  771
+  Moved to point:  777
   : 28:5:      
   :            ^
   Buffer modified:
@@ -129,8 +129,8 @@
   #+end_src diff
 
 - Invoking      : (insert "b ... comment for b")
-  Start point   :  736
-  Moved to point:  755
+  Start point   :  777
+  Moved to point:  796
   : 28:24:      b ... comment for b
   :                                ^
   Buffer modified:
@@ -146,8 +146,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  755
-  Moved to point:  761
+  Start point   :  796
+  Moved to point:  802
   : 29:5:      
   :            ^
   Buffer modified:
@@ -162,8 +162,8 @@
   #+end_src diff
 
 - Invoking      : (insert "] = ...")
-  Start point   :  761
-  Moved to point:  768
+  Start point   :  802
+  Moved to point:  809
   : 29:12:      ] = ...
   :                    ^
   Buffer modified:
@@ -179,8 +179,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  768
-  Moved to point:  772
+  Start point   :  809
+  Moved to point:  813
   : 30:4:     
   :           ^
   Buffer modified:
@@ -197,8 +197,8 @@
   #+end_src diff
 
 - Invoking      : (insert "indent_xr_fun5 ...")
-  Start point   :  772
-  Moved to point:  790
+  Start point   :  813
+  Moved to point:  831
   : 30:22:     indent_xr_fun5 ...
   :                              ^
   Buffer modified:
@@ -214,8 +214,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  790
-  Moved to point:  791
+  Start point   :  831
+  Moved to point:  832
   : 31:0: 
   :       ^
   Buffer modified:
@@ -230,8 +230,8 @@
   #+end_src diff
 
 - Invoking      : (insert "( ...")
-  Start point   :  791
-  Moved to point:  796
+  Start point   :  832
+  Moved to point:  837
   : 31:5: ( ...
   :            ^
   Buffer modified:
@@ -247,8 +247,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  796
-  Moved to point:  806
+  Start point   :  837
+  Moved to point:  847
   : 32:5:      
   :            ^
   Buffer modified:
@@ -265,8 +265,8 @@
   #+end_src diff
 
 - Invoking      : (insert "a ... comment for a")
-  Start point   :  806
-  Moved to point:  825
+  Start point   :  847
+  Moved to point:  866
   : 32:24:      a ... comment for a
   :                                ^
   Buffer modified:
@@ -282,8 +282,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  825
-  Moved to point:  831
+  Start point   :  866
+  Moved to point:  872
   : 33:5:      
   :            ^
   Buffer modified:
@@ -298,8 +298,8 @@
   #+end_src diff
 
 - Invoking      : (insert ")")
-  Start point   :  831
-  Moved to point:  832
+  Start point   :  872
+  Moved to point:  873
   : 33:6:      )
   :             ^
   Buffer modified:
@@ -315,8 +315,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  832
-  Moved to point:  836
+  Start point   :  873
+  Moved to point:  877
   : 34:4:     
   :           ^
   Buffer modified:
@@ -333,8 +333,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  836
-  Moved to point:  837
+  Start point   :  877
+  Moved to point:  878
   : 35:4:     
   :           ^
   Buffer modified:
@@ -350,8 +350,8 @@
   #+end_src diff
 
 - Invoking      : (insert "b=2*a;")
-  Start point   :  837
-  Moved to point:  843
+  Start point   :  878
+  Moved to point:  884
   : 35:10:     b=2*a;
   :                  ^
   Buffer modified:
@@ -367,10 +367,10 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  843
-  Moved to point:  844
-  : 36:0: 
-  :       ^
+  Start point   :  884
+  Moved to point:  889
+  : 36:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -379,14 +379,14 @@
      )
  
      b=2*a;
-+
++    
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  844
-  Moved to point:  847
-  : 36:3: end
-  :          ^
+  Start point   :  889
+  Moved to point:  892
+  : 36:7:     end
+  :              ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -395,35 +395,37 @@
      )
  
      b=2*a;
--
-+end
+-    
++    end
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  847
-  Moved to point:  848
+  Start point   :  892
+  Moved to point:  889
   : 37:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -34,3 +34,4 @@
+@@ -33,4 +33,5 @@
+     )
  
      b=2*a;
- end
+-    end
++end
 +
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  848
-  Moved to point:  708
+  Start point   :  889
+  Moved to point:  749
   : 26:0: function ...
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  708
+  Start point   :  749
   No point movement
   standard-output:
   #+begin_src matlab-ts

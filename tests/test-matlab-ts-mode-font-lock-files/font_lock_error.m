@@ -8,7 +8,7 @@ function font_lock_error(foo)
         else
             m = regexp(c, '^[ \t]*\(("[^"]+")[ \t]+\.[ \t]+".*\(mFile|pFile|mex\)"\)', tokens)
             if ~isempty(m)
-                out = [out,
+                out = [out, ...
             end
         end
     end

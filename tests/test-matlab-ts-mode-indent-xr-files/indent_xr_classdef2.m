@@ -1,4 +1,4 @@
-% -*- matlab-ts -*-
+% -*- mode: matlab-ts; matlab-ts-mode-electric-ends: nil -*-
 
 %{
 
@@ -13,7 +13,6 @@
   (insert     "end")                        "C-m"
   (insert "end")
   (re-search-backward "^classdef")
-  (print (buffer-substring-no-properties (point) (point-max)))
-  (delete-region (point) (point-max))
+  (t-utils-xr-print-code (point) (point-max))
   )
 %}

@@ -2,7 +2,7 @@
 
 function indent_xr_if_cond(a, b)
 
-    % (t-utils-xr "C-n" "C-e" "C-m" (insert "b > 1"))
+    % (t-utils-xr "C-n" "C-e" "C-m" (insert "b > 1") "C-m")
     if a > 1 && ...
     end
 

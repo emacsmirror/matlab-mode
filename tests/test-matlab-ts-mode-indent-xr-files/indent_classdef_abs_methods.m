@@ -1,4 +1,4 @@
-% -*- matlab-ts -*-
+% -*- mode: matlab-ts; matlab-ts-mode-electric-ends: nil -*-
 
 classdef indent_classdef_abs_methods
     methods(Abstract)
@@ -7,4 +7,4 @@ classdef indent_classdef_abs_methods
     end
 end
 
-%(t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+% (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
