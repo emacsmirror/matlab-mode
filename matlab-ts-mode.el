@@ -1760,7 +1760,8 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                                                                 "("
                                                                 "["
                                                                 "{"
-                                                                "row")
+                                                                "row"
+                                                                "spmd")
                                                         eos)))
 
 (defun matlab-ts-mode--i-next-line-matcher-comment (node)
@@ -1824,6 +1825,80 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
     (let ((prev-sibling (treesit-node-prev-sibling parent)))
       (when (equal (treesit-node-type prev-sibling) "ERROR")
         (treesit-node-child prev-sibling -1)))))
+
+(defun matlab-ts-mode--i-next-line-prev-sibling-to-check (last-child-of-error-node node-to-check)
+  "Locate the prev-sibling-to-check for `matlab-ts-mode--i-next-line-matcher'.
+For LAST-CHILD-OF-ERROR-NODE and NODE-TO-CHECK see
+`matlab-ts-mode--i-next-line-matcher'"
+
+  (let (prev-sibling-to-check
+        prev-sibling-error-node
+        saw-close-paren
+        (prev-sibling (if last-child-of-error-node
+                          last-child-of-error-node ;; is our "prev-sibling"
+                        (treesit-node-prev-sibling node-to-check))))
+    (while (and prev-sibling
+                (not prev-sibling-to-check)
+                (not prev-sibling-error-node))
+      (let ((prev-sibling-type (treesit-node-type prev-sibling)))
+
+        ;; Backup over "..." continuations because they may not be prev-sibling's.
+        ;; Consider:
+        ;;    function ...
+        ;;        [    ...    <== TAB here
+        ;; (source_file (ERROR function) (line_continuation) (ERROR [) (line_continuation))
+        (save-excursion
+          (while (and prev-sibling
+                      (string= prev-sibling-type "line_continuation")
+                      (let ((prev-sibling2 (treesit-node-prev-sibling prev-sibling)))
+                        (or (not prev-sibling2)
+                            (string= (treesit-node-type prev-sibling2) "ERROR"))))
+            (goto-char (treesit-node-start prev-sibling))
+            (when (re-search-backward "[^ \t\n\r]" nil t)
+              (setq prev-sibling (treesit-node-at (point))
+                    prev-sibling-type (when prev-sibling
+                                        (treesit-node-type prev-sibling))))))
+
+        (when prev-sibling
+          (cond
+           ((string= prev-sibling-type "ERROR")
+            (setq prev-sibling-error-node prev-sibling))
+
+           ((string= prev-sibling-type ")")
+            (setq saw-close-paren t))
+
+           ((and (string= prev-sibling-type "(")
+                 saw-close-paren)
+            (setq saw-close-paren nil))
+
+           ((and (string-match-p matlab-ts-mode--i-next-line-anchors-rx prev-sibling-type)
+                 (or (not (string= prev-sibling-type "("))
+                     ;; See: test/test-matlab-ts-mode-indent-xr-files/indent_xr_i_cont_incomplete5.m
+                     ;; result = longFunction( ...
+                     ;;     ^                           <== RET on prior line or TAB goes here
+                     ;;
+                     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun3.m
+                     ;; function out=indent_xr_fun3(in1, ...
+                     ;;                             ^   <== RET on prior line or TAB goes here
+
+                     ;; no function or similar item  before paren: e.g. no longFunction(
+                     (not (let* ((pp-s (treesit-node-prev-sibling prev-sibling))
+                                 (pp-s-type (treesit-node-type pp-s)))
+                            (and pp-s-type
+                                 (string-match-p (rx bos (or "identifier" "spmd") eos) pp-s-type))))
+
+                     ;; OR we have something after the paren: e.g. (in1, ...
+                     (not (equal (treesit-node-type
+                                  (treesit-node-next-sibling prev-sibling))
+                                 "line_continuation"))
+                     ))
+            (setq prev-sibling-to-check prev-sibling)))
+
+          (setq prev-sibling (if prev-sibling-error-node
+                                 nil
+                               (treesit-node-prev-sibling prev-sibling))))))
+
+    (cons prev-sibling-to-check prev-sibling-error-node)))
 
 (cl-defun matlab-ts-mode--i-next-line-matcher (node parent bol &rest _)
   "Matcher for indent on a newline being inserted when in presence of errors.
@@ -1889,61 +1964,11 @@ Prev-siblings:
             (setq ancestor-to-check nil)))
 
         ;; prev-sibling-to-check
-        (let ((prev-sibling (if last-child-of-error-node
-                                last-child-of-error-node ;; is our "prev-sibling"
-                              (treesit-node-prev-sibling node-to-check))))
-          (while (and prev-sibling
-                      (not prev-sibling-to-check)
-                      (not prev-sibling-error-node))
-            (let ((prev-sibling-type (treesit-node-type prev-sibling)))
-
-              ;; Backup over "..." continuations because they may not be prev-sibling's.
-              ;; Consider:
-              ;;    function ...
-              ;;        [    ...    <== TAB here
-              ;; (source_file (ERROR function) (line_continuation) (ERROR [) (line_continuation))
-              (save-excursion
-                (while (and prev-sibling
-                            (string= prev-sibling-type "line_continuation")
-                            (let ((prev-sibling2 (treesit-node-prev-sibling prev-sibling)))
-                              (or (not prev-sibling2)
-                                  (string= (treesit-node-type prev-sibling2) "ERROR"))))
-                  (goto-char (treesit-node-start prev-sibling))
-                  (when (re-search-backward "[^ \t\n\r]" nil t)
-                    (setq prev-sibling (treesit-node-at (point))
-                          prev-sibling-type (when prev-sibling
-                                              (treesit-node-type prev-sibling))))))
-
-              (when prev-sibling
-                (cond
-                 ((string= prev-sibling-type "ERROR")
-                  (setq prev-sibling-error-node prev-sibling))
-
-                 ((and (string-match-p matlab-ts-mode--i-next-line-anchors-rx prev-sibling-type)
-                       (or (not (string= prev-sibling-type "("))
-                           ;; See: test/test-matlab-ts-mode-indent-xr-files/
-                           ;;      indent_xr_i_cont_incomplete5.m
-                           ;; result = longFunction( ...
-                           ;;     ^                           <== RET on prior line or TAB goes here
-                           ;;
-                           ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun3.m
-                           ;; function out=indent_xr_fun3(in1, ...
-                           ;;                             ^   <== RET on prior line or TAB goes here
-
-                           ;; do not have before paren: e.g. no longFunction(
-                           (not (equal (treesit-node-type
-                                        (treesit-node-prev-sibling prev-sibling))
-                                       "identifier"))
-                           ;; OR we have something after the paren: e.g. (in1, ...
-                           (not (equal (treesit-node-type
-                                        (treesit-node-next-sibling prev-sibling))
-                                       "line_continuation"))
-                           ))
-                  (setq prev-sibling-to-check prev-sibling)))
-
-                (setq prev-sibling (if prev-sibling-error-node
-                                       nil
-                                     (treesit-node-prev-sibling prev-sibling)))))))
+        (let ((pair (matlab-ts-mode--i-next-line-prev-sibling-to-check
+                     last-child-of-error-node
+                     node-to-check)))
+          (setq prev-sibling-to-check (car pair)
+                prev-sibling-error-node (cdr pair)))
 
         ;; We use regular matching rules when there is NO error.
         (when (and (not ancestor-error-node)
@@ -2332,6 +2357,10 @@ Example:
 
      ;; I-Rule: comments in classdef's
      ((parent-is ,(rx bos "class_definition" eos)) parent ,matlab-ts-mode--indent-level)
+
+     ;; I-Rule: comment within spmd
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_spmd.m
+     ((parent-is ,(rx bos "spmd")) parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: comment after property:
      ;;         arguments
@@ -3519,11 +3548,6 @@ so configuration variables of that mode, do not affect this mode.
     ;;      Detect when there's no ending newline and report that.
     ;;      Perhaps do this in matlab-ts-mode?
     ;;      Add newline for sweep test if need?
-    ;;
-    ;; TODO indent
-    ;;      spmd
-    ;;      %foo
-    ;;      end
     ;;
     ;; TODO [future] Improve semantic movement
     ;;      thing-settings doesn't work well. Directly implement C-M-f, M-e, etc.
