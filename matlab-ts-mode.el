@@ -3515,6 +3515,11 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO indent
+    ;;      spmd
+    ;;      %foo
+    ;;      end
+    ;;
     ;; TODO [future] Improve semantic movement
     ;;      thing-settings doesn't work well. Directly implement C-M-f, M-e, etc.
     ;;
