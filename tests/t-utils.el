@@ -566,19 +566,25 @@ in a code block using the `major-mode' of the buffer:
           (save-excursion
             (backward-list)
             (when (not (looking-at "(t-utils-xr"))
-              (error "`backward-list from point, %d, didn't not jump to (t-utils-xr" xr-end-point))
+              (user-error
+               "`backward-list from point, %d, didn't not jump to (t-utils-xr" xr-end-point))
             (point)))
          (xr-cmd (buffer-substring-no-properties xr-start-point xr-end-point))
+         (xr-label (or (save-excursion
+                         (goto-char xr-start-point)
+                         (when (and (re-search-backward "[^ \t\r\n]" nil t)
+                                    (re-search-backward "[^a-z0-9_:]" nil t))
+                           (forward-char)
+                           (when (looking-at "[a-z0-9_]+:")
+                             (match-string 0))))
+                       (user-error "Command %s must be prefixed with a \"LABEL1:\"" xr-cmd)))
 
-         ;; TODO Before running any t-utils-xr's, record the LINE:COL in an property each t-tuils-xr
-         ;;      command then use that for the %d:%d below. This way the *.org files will match up
-         ;;      with the original test file.
-
-         (result (format "\n* Executing commands from %s:%d:%d:\n\n  %s\n"
+         (result (format "\n* Executing commands from %s:%d:%d:\n\n  %s %s\n"
                          (file-name-nondirectory buf-file)
                          (line-number-at-pos xr-start-point)
                          (save-excursion (goto-char xr-start-point)
                                          (current-column))
+                         xr-label
                          xr-cmd))
          (cmd-num 0))
 
@@ -699,17 +705,20 @@ messages.
 
 The commands that you can place within (t-utils-xr COMMANDS) are
  1. Lisp expressions.  For example,
-      (t-utils-xr (beginning-of-defun))
+      label: (t-utils-xr (beginning-of-defun))
  2. Keybindings.  For example,
-      (t-utils-xr \"C-M-a\")
+      label: (t-utils-xr \"C-M-a\")
  3. `standard-output' is captured.
     * `t-utils-xr-print-code' can be use to print part of the buffer
       into a code block:
-        (t-utils-xr .... (t-utils-xr-print-code start-point end-point))
+        label: (t-utils-xr .... (t-utils-xr-print-code start-point end-point))
     * (print OBJECT) or (print OBJECT) can also be used.  These
       write to `standard-output' and that is captured into an example
       block.  For example,
-        (t-utils-xr (prin1 (a-buffer-query-function-special-to-your-mode)))
+        label: (t-utils-xr (prin1 (a-buffer-query-special-to-your-mode)))
+
+Each t-utils-xr must be prefixed with a label.  The label helps in
+reading NAME_expected.org
 
 Multiple expressions or keybindings can be specified.
 
@@ -718,13 +727,13 @@ Consider ./test-defun-movement/my_test.c:
   1 | #include <stdlib.h>
   2 |
   3 | int fcn1(void) {
-  4 |   // (t-utils-xr \"C-M-e\" \"C-M-e\")
+  4 |   // Case1: (t-utils-xr \"C-M-e\" \"C-M-e\")
   5 |   return 1;
   6 | }
   7 |
   8 | int main(void) {
   9 |   return fcn1();
-  10|   // (t-utils-xr (beginning-of-defun) (beginning-of-defun))
+  10|   // Case2: (t-utils-xr (beginning-of-defun) (beginning-of-defun))
   11| }
 
 You can interactively evaluate each (t-utils-xr COMMANDS) by placing the
@@ -732,9 +741,11 @@ You can interactively evaluate each (t-utils-xr COMMANDS) by placing the
 example, with the point after the closing parenthesis on line 4 and
 running \\[eval-last-sexp], we'll see in the *Messages* buffer:
 
+TODO correct points in this example:
+
     * Executing commands from my_test.c:4:
 
-      // (t-utils-xr \"C-M-e\" \"C-M-e\")
+      Case1: (t-utils-xr \"C-M-e\" \"C-M-e\")
 
     - Invoking      : \"C-M-e\" = c-end-of-defun
       Start point   :   72
@@ -762,7 +773,7 @@ not exist or result doesn't match the existing my_test_expected.org,
 my_test_expected.org~ is generated and if it looks correct, you should
 rename it to my_test_expected.org.
 
-TODO should example test setup, see t-utils-test-font-lock."
+TODO add example test setup, see t-utils-test-font-lock."
 
   (let ((error-msgs '()))
     (dolist (lang-file lang-files)
@@ -1565,7 +1576,7 @@ corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
-TODO should example test setup, see t-utils-test-font-lock."
+TODO add example test setup, see t-utils-test-font-lock."
 
   (let ((error-msgs '()))
     (dolist (lang-file lang-files)
@@ -1626,7 +1637,7 @@ corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
-TODO should example test setup, see t-utils-test-font-lock."
+TODO add example test setup, see t-utils-test-font-lock."
 
   (let ((error-msgs '()))
     (dolist (lang-file lang-files)
@@ -1687,7 +1698,7 @@ corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
-TODO should example test setup, see t-utils-test-font-lock."
+TODO add example test setup, see t-utils-test-font-lock."
 
   (let ((error-msgs '()))
     (dolist (lang-file lang-files)
@@ -1735,7 +1746,7 @@ corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
-TODO should example test setup, see t-utils-test-font-lock."
+TODO add example test setup, see t-utils-test-font-lock."
 
   (let ((error-msgs '()))
     (dolist (lang-file lang-files)

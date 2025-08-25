@@ -1,8 +1,9 @@
 % -*- matlab-ts -*-
 
-function electric_ends_if_statement(a)
+function electric_ends_if_continued(a)
 
     %{
+      Case1:
       (t-utils-xr
       (re-search-forward "%}") "C-n"
 

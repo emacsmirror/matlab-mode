@@ -1,8 +1,8 @@
 #+startup: showall
 
-* Executing commands from indent_xr_fun3.m:4:2:
+* Executing commands from indent_xr_fun3.m:5:2:
 
-  (t-utils-xr
+  Case1: (t-utils-xr
 
   (re-search-forward "^%}") "C-n"
   (insert "function out=indent_xr_fun3(in1, ...")   "C-m"
@@ -16,29 +16,29 @@
   )
 
 - Invoking      : (re-search-forward "^%}")
-  Start point   :  383
-  Moved to point:  386
-  : 16:2: %}
+  Start point   :  392
+  Moved to point:  395
+  : 17:2: %}
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  386
-  Moved to point:  387
-  : 17:0: 
+  Start point   :  395
+  Moved to point:  396
+  : 18:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "function out=indent_xr_fun3(in1, ...")
-  Start point   :  387
-  Moved to point:  423
-  : 17:36: function out=indent_xr_fun3(in1, ...
+  Start point   :  396
+  Moved to point:  432
+  : 18:36: function out=indent_xr_fun3(in1, ...
   :                                            ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -14,3 +14,4 @@
+@@ -15,3 +15,4 @@
  
    )
  %}
@@ -47,15 +47,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  423
-  Moved to point:  452
-  : 18:28:                             
+  Start point   :  432
+  Moved to point:  461
+  : 19:28:                             
   :                                    ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -14,4 +14,5 @@
+@@ -15,4 +15,5 @@
  
    )
  %}
@@ -67,15 +67,15 @@
   #+end_src diff
 
 - Invoking      : (insert "in2)")
-  Start point   :  452
-  Moved to point:  456
-  : 18:32:                             in2)
+  Start point   :  461
+  Moved to point:  465
+  : 19:32:                             in2)
   :                                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -15,4 +15,4 @@
+@@ -16,4 +16,4 @@
    )
  %}
  function out=indent_xr_fun3(in1, ...
@@ -86,15 +86,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  456
-  Moved to point:  457
-  : 19:0: 
+  Start point   :  465
+  Moved to point:  466
+  : 20:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -15,4 +15,4 @@
+@@ -16,4 +16,4 @@
    )
  %}
  function out=indent_xr_fun3(in1, ...
@@ -104,15 +104,15 @@
   #+end_src diff
 
 - Invoking      : (insert "out = in1 + in2;")
-  Start point   :  457
-  Moved to point:  473
-  : 19:16: out = in1 + in2;
+  Start point   :  466
+  Moved to point:  482
+  : 20:16: out = in1 + in2;
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -16,3 +16,4 @@
+@@ -17,3 +17,4 @@
  %}
  function out=indent_xr_fun3(in1, ...
                              in2)
@@ -121,15 +121,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  473
-  Moved to point:  478
-  : 20:0: 
+  Start point   :  482
+  Moved to point:  487
+  : 21:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -16,4 +16,4 @@
+@@ -17,4 +17,4 @@
  %}
  function out=indent_xr_fun3(in1, ...
                              in2)
@@ -139,15 +139,15 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  478
-  Moved to point:  481
-  : 20:3: end
+  Start point   :  487
+  Moved to point:  490
+  : 21:3: end
   :          ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -17,3 +17,4 @@
+@@ -18,3 +18,4 @@
  function out=indent_xr_fun3(in1, ...
                              in2)
      out = in1 + in2;
@@ -156,14 +156,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  481
-  Moved to point:  387
-  : 17:0: function out=indent_xr_fun3(in1, ...
+  Start point   :  490
+  Moved to point:  396
+  : 18:0: function out=indent_xr_fun3(in1, ...
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  387
+  Start point   :  396
   No point movement
   standard-output:
   #+begin_src matlab-ts
@@ -175,13 +175,13 @@ end
   No buffer modifications
 
 - Invoking      : (delete-region (point) (point-max))
-  Start point   :  387
+  Start point   :  396
   No point movement
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -14,7 +14,3 @@
+@@ -15,7 +15,3 @@
  
    )
  %}

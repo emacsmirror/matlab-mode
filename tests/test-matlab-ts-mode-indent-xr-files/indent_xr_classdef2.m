@@ -2,6 +2,7 @@
 
 %{
 
+  Case1:
   (t-utils-xr
   (re-search-forward "%}")                  "C-n"
   (insert "classdef indent_xr_classdef2")   "C-m"

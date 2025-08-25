@@ -1,24 +1,24 @@
 #+startup: showall
 
-* Executing commands from indent_xr_grandparent_is_block.m:4:6:
+* Executing commands from indent_xr_grandparent_is_block.m:4:13:
 
-  (t-utils-xr "C-n" "C-e" "C-m" (insert "disp(i*2)"))
+  Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "disp(i*2)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :   90
-  Moved to point:  102
+  Start point   :   97
+  Moved to point:  109
   : 5:11:     disp(i)
   :                  ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  102
+  Start point   :  109
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  102
-  Moved to point:  107
+  Start point   :  109
+  Moved to point:  114
   : 6:4:     
   :          ^
   Buffer modified:
@@ -27,7 +27,7 @@
 +++ end_contents
 @@ -3,6 +3,7 @@
  for i=1:10
-     % (t-utils-xr "C-n" "C-e" "C-m" (insert "disp(i*2)"))
+     % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "disp(i*2)"))
      disp(i)
 +    
  end
@@ -36,8 +36,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp(i*2)")
-  Start point   :  107
-  Moved to point:  116
+  Start point   :  114
+  Moved to point:  123
   : 6:13:     disp(i*2)
   :                    ^
   Buffer modified:
@@ -46,7 +46,7 @@
 +++ end_contents
 @@ -3,7 +3,7 @@
  for i=1:10
-     % (t-utils-xr "C-n" "C-e" "C-m" (insert "disp(i*2)"))
+     % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "disp(i*2)"))
      disp(i)
 -    
 +    disp(i*2)
@@ -55,32 +55,32 @@
  
   #+end_src diff
 
-* Executing commands from indent_xr_grandparent_is_block.m:11:6:
+* Executing commands from indent_xr_grandparent_is_block.m:11:13:
 
-  (t-utils-xr "C-n" "C-n" "C-a" "C-i" (insert "disp(j*2)"))
+  Case1: (t-utils-xr "C-n" "C-n" "C-a" "C-i" (insert "disp(j*2)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  197
-  Moved to point:  209
+  Start point   :  211
+  Moved to point:  223
   : 12:11:     disp(j)
   :                   ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  209
-  Moved to point:  210
+  Start point   :  223
+  Moved to point:  224
   : 13:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  210
+  Start point   :  224
   No point movement
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  210
-  Moved to point:  214
+  Start point   :  224
+  Moved to point:  228
   : 13:4:     
   :           ^
   Buffer modified:
@@ -89,7 +89,7 @@
 +++ end_contents
 @@ -10,5 +10,5 @@
  for j=1:10
-     % (t-utils-xr "C-n" "C-n" "C-a" "C-i" (insert "disp(j*2)"))
+     % Case1: (t-utils-xr "C-n" "C-n" "C-a" "C-i" (insert "disp(j*2)"))
      disp(j)
 -
 +    
@@ -97,8 +97,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp(j*2)")
-  Start point   :  214
-  Moved to point:  223
+  Start point   :  228
+  Moved to point:  237
   : 13:13:     disp(j*2)
   :                     ^
   Buffer modified:
@@ -107,7 +107,7 @@
 +++ end_contents
 @@ -10,5 +10,5 @@
  for j=1:10
-     % (t-utils-xr "C-n" "C-n" "C-a" "C-i" (insert "disp(j*2)"))
+     % Case1: (t-utils-xr "C-n" "C-n" "C-a" "C-i" (insert "disp(j*2)"))
      disp(j)
 -    
 +    disp(j*2)

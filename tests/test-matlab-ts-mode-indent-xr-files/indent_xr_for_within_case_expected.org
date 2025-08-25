@@ -1,8 +1,8 @@
 #+startup: showall
 
-* Executing commands from indent_xr_for_within_case.m:6:2:
+* Executing commands from indent_xr_for_within_case.m:7:2:
 
-  (t-utils-xr
+  Case1: (t-utils-xr
 
   (re-search-forward ":10")                  "C-m"
   (insert "disp('i:');")                     "C-m"
@@ -16,22 +16,22 @@
   )
 
 - Invoking      : (re-search-forward ":10")
-  Start point   :  342
-  Moved to point:  512
-  : 24:22:             for i=1:10
+  Start point   :  351
+  Moved to point:  521
+  : 25:22:             for i=1:10
   :                              ^
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  512
-  Moved to point:  529
-  : 25:16:                 
+  Start point   :  521
+  Moved to point:  538
+  : 26:16:                 
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -22,6 +22,7 @@
+@@ -23,6 +23,7 @@
          switch completions{cIdx}
            case {'foo'}
              for i=1:10
@@ -42,15 +42,15 @@
   #+end_src diff
 
 - Invoking      : (insert "disp('i:');")
-  Start point   :  529
-  Moved to point:  540
-  : 25:27:                 disp('i:');
+  Start point   :  538
+  Moved to point:  549
+  : 26:27:                 disp('i:');
   :                                   ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -22,7 +22,7 @@
+@@ -23,7 +23,7 @@
          switch completions{cIdx}
            case {'foo'}
              for i=1:10
@@ -62,15 +62,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  540
-  Moved to point:  557
-  : 26:16:                 
+  Start point   :  549
+  Moved to point:  566
+  : 27:16:                 
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -23,6 +23,7 @@
+@@ -24,6 +24,7 @@
            case {'foo'}
              for i=1:10
                  disp('i:');
@@ -81,15 +81,15 @@
   #+end_src diff
 
 - Invoking      : (insert "disp(i);")
-  Start point   :  557
-  Moved to point:  565
-  : 26:24:                 disp(i);
+  Start point   :  566
+  Moved to point:  574
+  : 27:24:                 disp(i);
   :                                ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -23,7 +23,7 @@
+@@ -24,7 +24,7 @@
            case {'foo'}
              for i=1:10
                  disp('i:');
@@ -101,15 +101,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  565
-  Moved to point:  582
-  : 27:16:                 
+  Start point   :  574
+  Moved to point:  591
+  : 28:16:                 
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -24,6 +24,7 @@
+@@ -25,6 +25,7 @@
              for i=1:10
                  disp('i:');
                  disp(i);
@@ -120,15 +120,15 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  582
-  Moved to point:  585
-  : 27:19:                 end
+  Start point   :  591
+  Moved to point:  594
+  : 28:19:                 end
   :                           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -24,7 +24,7 @@
+@@ -25,7 +25,7 @@
              for i=1:10
                  disp('i:');
                  disp(i);
@@ -140,15 +140,15 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  585
-  Moved to point:  581
-  : 27:15:             end
+  Start point   :  594
+  Moved to point:  590
+  : 28:15:             end
   :                       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -24,7 +24,7 @@
+@@ -25,7 +25,7 @@
              for i=1:10
                  disp('i:');
                  disp(i);
@@ -160,14 +160,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  581
-  Moved to point:  347
-  : 20:0: function indent_xr_for_within_case(completions)
+  Start point   :  590
+  Moved to point:  356
+  : 21:0: function indent_xr_for_within_case(completions)
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  347
+  Start point   :  356
   No point movement
   standard-output:
   #+begin_src matlab-ts

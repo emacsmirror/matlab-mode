@@ -3,7 +3,8 @@
 %{
   - First row of commands: we validate multiple indents don't cause point movement
   - Remaining rows add come class content
-  
+
+  Case1:
   (t-utils-xr
   (re-search-forward "^classdef") "C-e" "C-m" "C-i" "C-i"
   (insert "methods") "C-m"

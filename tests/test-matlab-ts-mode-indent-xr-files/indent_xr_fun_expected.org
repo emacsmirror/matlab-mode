@@ -2,7 +2,7 @@
 
 * Executing commands from indent_xr_fun.m:4:2:
 
-  (t-utils-xr
+  Case1: (t-utils-xr
   (re-search-forward "%}") "C-n"
   (insert "function a = indent_xr_fun()")   "C-m"
   (insert     "a = 1;")                     "C-m"
@@ -12,22 +12,22 @@
   )
 
 - Invoking      : (re-search-forward "%}")
-  Start point   :  268
-  Moved to point:  271
+  Start point   :  276
+  Moved to point:  279
   : 12:2: %}
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  271
-  Moved to point:  272
+  Start point   :  279
+  Moved to point:  280
   : 13:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "function a = indent_xr_fun()")
-  Start point   :  272
-  Moved to point:  300
+  Start point   :  280
+  Moved to point:  308
   : 13:28: function a = indent_xr_fun()
   :                                    ^
   Buffer modified:
@@ -43,8 +43,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  300
-  Moved to point:  301
+  Start point   :  308
+  Moved to point:  309
   : 14:0: 
   :       ^
   Buffer modified:
@@ -61,8 +61,8 @@
   #+end_src diff
 
 - Invoking      : (insert "a = 1;")
-  Start point   :  301
-  Moved to point:  307
+  Start point   :  309
+  Moved to point:  315
   : 14:6: a = 1;
   :             ^
   Buffer modified:
@@ -78,8 +78,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  307
-  Moved to point:  312
+  Start point   :  315
+  Moved to point:  320
   : 15:0: 
   :       ^
   Buffer modified:
@@ -96,8 +96,8 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  312
-  Moved to point:  315
+  Start point   :  320
+  Moved to point:  323
   : 15:3: end
   :          ^
   Buffer modified:
@@ -113,14 +113,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  315
-  Moved to point:  272
+  Start point   :  323
+  Moved to point:  280
   : 13:0: function a = indent_xr_fun()
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  272
+  Start point   :  280
   No point movement
   standard-output:
   #+begin_src matlab-ts

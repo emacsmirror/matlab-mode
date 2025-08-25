@@ -1,11 +1,11 @@
 #+startup: showall
 
-* Executing commands from page_basic.m:3:2:
+* Executing commands from page_basic.m:3:9:
 
-  (t-utils-xr (goto-char (point-min)) "C-x ]" "C-x ]" "C-x [" "C-x [")
+  Case1: (t-utils-xr (goto-char (point-min)) "C-x ]" "C-x ]" "C-x [" "C-x [")
 
 - Invoking      : (goto-char (point-min))
-  Start point   :  133
+  Start point   :  140
   Moved to point:    1
   : 1:0: % -*- matlab-ts -*-
   :      ^
@@ -13,38 +13,38 @@
 
 - Invoking      : "C-x ]" = forward-page
   Start point   :    1
-  Moved to point:  285
+  Moved to point:  299
   : 8:3: %% Section 1
   :         ^
   No buffer modifications
 
 - Invoking      : "C-x ]" = forward-page
-  Start point   :  285
-  Moved to point:  314
+  Start point   :  299
+  Moved to point:  328
   : 13:3: %% Section 2
   :          ^
   No buffer modifications
 
 - Invoking      : "C-x [" = backward-page
-  Start point   :  314
-  Moved to point:  285
+  Start point   :  328
+  Moved to point:  299
   : 8:3: %% Section 1
   :         ^
   No buffer modifications
 
 - Invoking      : "C-x [" = backward-page
-  Start point   :  285
+  Start point   :  299
   Moved to point:    1
   : 1:0: % -*- matlab-ts -*-
   :      ^
   No buffer modifications
 
-* Executing commands from page_basic.m:6:2:
+* Executing commands from page_basic.m:6:9:
 
-  (t-utils-xr (goto-char (point-min)) (forward-page) (forward-page) (backward-page) (backward-page))
+  Case2: (t-utils-xr (goto-char (point-min)) (forward-page) (forward-page) (backward-page) (backward-page))
 
 - Invoking      : (goto-char (point-min))
-  Start point   :  280
+  Start point   :  294
   Moved to point:    1
   : 1:0: % -*- matlab-ts -*-
   :      ^
@@ -52,27 +52,27 @@
 
 - Invoking      : (forward-page)
   Start point   :    1
-  Moved to point:  285
+  Moved to point:  299
   : 8:3: %% Section 1
   :         ^
   No buffer modifications
 
 - Invoking      : (forward-page)
-  Start point   :  285
-  Moved to point:  314
+  Start point   :  299
+  Moved to point:  328
   : 13:3: %% Section 2
   :          ^
   No buffer modifications
 
 - Invoking      : (backward-page)
-  Start point   :  314
-  Moved to point:  285
+  Start point   :  328
+  Moved to point:  299
   : 8:3: %% Section 1
   :         ^
   No buffer modifications
 
 - Invoking      : (backward-page)
-  Start point   :  285
+  Start point   :  299
   Moved to point:    1
   : 1:0: % -*- matlab-ts -*-
   :      ^

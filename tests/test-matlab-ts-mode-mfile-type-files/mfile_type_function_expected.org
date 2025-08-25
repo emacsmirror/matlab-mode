@@ -1,11 +1,11 @@
 #+startup: showall
 
-* Executing commands from mfile_type_function.m:3:2:
+* Executing commands from mfile_type_function.m:3:9:
 
-  (t-utils-xr (print (format "mfile-type: %S" (matlab-ts-mode--mfile-type))))
+  Case1: (t-utils-xr (print (format "mfile-type: %S" (matlab-ts-mode--mfile-type))))
 
 - Invoking      : (print (format "mfile-type: %S" (matlab-ts-mode--mfile-type)))
-  Start point   :   99
+  Start point   :  106
   No point movement
   standard-output:
   #+begin_example

@@ -1,45 +1,45 @@
 #+startup: showall
 
-* Executing commands from comments_basic.m:5:6:
+* Executing commands from comments_basic.m:5:13:
 
-  (t-utils-xr "C-a" "C-n" "C-SPC" "C-n" "C-n" "M-;" "M-;" (deactivate-mark))
+  Case1: (t-utils-xr "C-a" "C-n" "C-SPC" "C-n" "C-n" "M-;" "M-;" (deactivate-mark))
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  200
+  Start point   :  207
   Moved to point:  120
-  : 5:0:     % (t-utils-xr "C-a" "C-n" "C-SPC" "C-n" "C-n" "M-;" "M-;" (deactivate-mark))
+  : 5:0:     % Case1: (t-utils-xr "C-a" "C-n" "C-SPC" "C-n" "C-n" "M-;" "M-;" (deactivate-mark))
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
   Start point   :  120
-  Moved to point:  201
+  Moved to point:  208
   : 6:0:     b = a * 2;
   :      ^
   No buffer modifications
 
 - Invoking      : "C-SPC" = set-mark-command
-  Start point   :  201
+  Start point   :  208
   No point movement
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  201
-  Moved to point:  216
+  Start point   :  208
+  Moved to point:  223
   : 7:0:     b = b * 3;
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  216
-  Moved to point:  231
+  Start point   :  223
+  Moved to point:  238
   : 8:0: 
   :      ^
   No buffer modifications
 
 - Invoking      : "M-;" = comment-dwim
-  Start point   :  231
-  Moved to point:  235
+  Start point   :  238
+  Moved to point:  242
   : 8:0: 
   :      ^
   Buffer modified:
@@ -49,19 +49,19 @@
 @@ -3,8 +3,8 @@
  
      % Test M-; to comment then uncomment following two statements.
-     % (t-utils-xr "C-a" "C-n" "C-SPC" "C-n" "C-n" "M-;" "M-;" (deactivate-mark))
+     % Case1: (t-utils-xr "C-a" "C-n" "C-SPC" "C-n" "C-n" "M-;" "M-;" (deactivate-mark))
 -    b = a * 2;
 -    b = b * 3;
 +    % b = a * 2;
 +    % b = b * 3;
  
      % Test M-; to add comment to end of statement, then delete it.
-     % (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
+     % Case2: (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
   #+end_src diff
 
 - Invoking      : "M-;" = comment-dwim
-  Start point   :  235
-  Moved to point:  231
+  Start point   :  242
+  Moved to point:  238
   : 8:0: 
   :      ^
   Buffer modified:
@@ -71,42 +71,42 @@
 @@ -3,8 +3,8 @@
  
      % Test M-; to comment then uncomment following two statements.
-     % (t-utils-xr "C-a" "C-n" "C-SPC" "C-n" "C-n" "M-;" "M-;" (deactivate-mark))
+     % Case1: (t-utils-xr "C-a" "C-n" "C-SPC" "C-n" "C-n" "M-;" "M-;" (deactivate-mark))
 -    % b = a * 2;
 -    % b = b * 3;
 +    b = a * 2;
 +    b = b * 3;
  
      % Test M-; to add comment to end of statement, then delete it.
-     % (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
+     % Case2: (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
   #+end_src diff
 
 - Invoking      : (deactivate-mark)
-  Start point   :  231
+  Start point   :  238
   No point movement
   No buffer modifications
 
-* Executing commands from comments_basic.m:10:6:
+* Executing commands from comments_basic.m:10:13:
 
-  (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
+  Case2: (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  399
-  Moved to point:  299
-  : 10:0:     % (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
+  Start point   :  413
+  Moved to point:  306
+  : 10:0:     % Case2: (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  299
-  Moved to point:  400
+  Start point   :  306
+  Moved to point:  414
   : 11:0:     b = b * 4;
   :       ^
   No buffer modifications
 
 - Invoking      : "M-;" = comment-dwim
-  Start point   :  400
-  Moved to point:  434
+  Start point   :  414
+  Moved to point:  448
   : 11:34:     b = b * 4;                  % 
   :                                          ^
   Buffer modified:
@@ -116,15 +116,15 @@
 @@ -8,5 +8,5 @@
  
      % Test M-; to add comment to end of statement, then delete it.
-     % (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
+     % Case2: (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
 -    b = b * 4;
 +    b = b * 4;                  % 
  end
   #+end_src diff
 
 - Invoking      : (insert "foo")
-  Start point   :  434
-  Moved to point:  437
+  Start point   :  448
+  Moved to point:  451
   : 11:37:     b = b * 4;                  % foo
   :                                             ^
   Buffer modified:
@@ -134,42 +134,42 @@
 @@ -8,5 +8,5 @@
  
      % Test M-; to add comment to end of statement, then delete it.
-     % (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
+     % Case2: (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
 -    b = b * 4;                  % 
 +    b = b * 4;                  % foo
  end
   #+end_src diff
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  437
-  Moved to point:  400
+  Start point   :  451
+  Moved to point:  414
   : 11:0:     b = b * 4;                  % foo
   :       ^
   No buffer modifications
 
 - Invoking      : "M-;" = comment-dwim
-  Start point   :  400
-  Moved to point:  434
+  Start point   :  414
+  Moved to point:  448
   : 11:34:     b = b * 4;                  % foo
   :                                          ^
   No buffer modifications
 
 - Invoking      : (re-search-backward ";")
-  Start point   :  434
-  Moved to point:  413
+  Start point   :  448
+  Moved to point:  427
   : 11:13:     b = b * 4;                  % foo
   :                     ^
   No buffer modifications
 
 - Invoking      : "C-f" = forward-char
-  Start point   :  413
-  Moved to point:  414
+  Start point   :  427
+  Moved to point:  428
   : 11:14:     b = b * 4;                  % foo
   :                      ^
   No buffer modifications
 
 - Invoking      : "C-k" = kill-line
-  Start point   :  414
+  Start point   :  428
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -178,7 +178,7 @@
 @@ -8,5 +8,5 @@
  
      % Test M-; to add comment to end of statement, then delete it.
-     % (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
+     % Case2: (t-utils-xr "C-a" "C-n" "M-;" (insert "foo") "C-a" "M-;" (re-search-backward ";") "C-f" "C-k")
 -    b = b * 4;                  % foo
 +    b = b * 4;
  end

@@ -3515,13 +3515,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO t-utils-xr
-    ;;      Require a "label:" before the (t-utils-xr ...) command help with reading the *.org
-    ;;      files. The line numbers don't help. With this well have in the *.org files:
-    ;;           * Executing commands from foo.m:N:C
-    ;;               label: (t-utils-xr ...)
-    ;;      Labels cannot be duplicated.
-    ;;
     ;; TODO [future] Improve semantic movement
     ;;      thing-settings doesn't work well. Directly implement C-M-f, M-e, etc.
     ;;

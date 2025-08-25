@@ -1,192 +1,192 @@
 #+startup: showall
 
-* Executing commands from thing_defun.m:5:6:
+* Executing commands from thing_defun.m:5:13:
 
-  (t-utils-xr (beginning-of-defun))
+  Case1: (t-utils-xr (beginning-of-defun))
 
 - Invoking      : (beginning-of-defun)
-  Start point   :   90
+  Start point   :   97
   Moved to point:   22
   : 3:0: function b = thing_defun(a)
   :      ^
   No buffer modifications
 
-* Executing commands from thing_defun.m:6:6:
+* Executing commands from thing_defun.m:6:13:
 
-  (t-utils-xr "C-M-a")
+  Case2: (t-utils-xr "C-M-a")
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  117
+  Start point   :  131
   Moved to point:   22
   : 3:0: function b = thing_defun(a)
   :      ^
   No buffer modifications
 
-* Executing commands from thing_defun.m:9:6:
+* Executing commands from thing_defun.m:9:13:
 
-  (t-utils-xr (end-of-defun) (end-of-defun) (end-of-defun) (end-of-defun))
+  Case3: (t-utils-xr (end-of-defun) (end-of-defun) (end-of-defun) (end-of-defun))
 
 - Invoking      : (end-of-defun)
-  Start point   :  208
-  Moved to point:  639
+  Start point   :  229
+  Moved to point:  702
   : 30:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (end-of-defun)
-  Start point   :  639
-  Moved to point:  698
+  Start point   :  702
+  Moved to point:  761
   : 34:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (end-of-defun)
-  Start point   :  698
-  Moved to point:  798
+  Start point   :  761
+  Moved to point:  869
   : 39:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (end-of-defun)
-  Start point   :  798
+  Start point   :  869
   No point movement
   No buffer modifications
 
-* Executing commands from thing_defun.m:10:6:
+* Executing commands from thing_defun.m:10:13:
 
-  (t-utils-xr "C-M-e" "C-M-e" "C-M-e" "C-M-e")
+  Case4: (t-utils-xr "C-M-e" "C-M-e" "C-M-e" "C-M-e")
 
 - Invoking      : "C-M-e" = treesit-end-of-defun
-  Start point   :  259
-  Moved to point:  490
+  Start point   :  287
+  Moved to point:  539
   : 20:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-e" = treesit-end-of-defun
-  Start point   :  490
-  Moved to point:  619
+  Start point   :  539
+  Moved to point:  682
   : 27:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-e" = treesit-end-of-defun
-  Start point   :  619
-  Moved to point:  639
+  Start point   :  682
+  Moved to point:  702
   : 30:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-e" = treesit-end-of-defun
-  Start point   :  639
-  Moved to point:  698
+  Start point   :  702
+  Moved to point:  761
   : 34:0: 
   :       ^
   No buffer modifications
 
-* Executing commands from thing_defun.m:16:10:
+* Executing commands from thing_defun.m:16:17:
 
-  (t-utils-xr "C-M-a")
+  Case5: (t-utils-xr "C-M-a")
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  387
-  Moved to point:  295
+  Start point   :  422
+  Moved to point:  323
   : 14:0:     function out = nested1(in)
   :       ^
   No buffer modifications
 
-* Executing commands from thing_defun.m:17:10:
+* Executing commands from thing_defun.m:17:17:
 
-  (t-utils-xr "C-M-a" "C-M-a")
+  Case6: (t-utils-xr "C-M-a" "C-M-a")
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  426
-  Moved to point:  295
+  Start point   :  468
+  Moved to point:  323
   : 14:0:     function out = nested1(in)
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  295
+  Start point   :  323
   Moved to point:   22
   : 3:0: function b = thing_defun(a)
   :      ^
   No buffer modifications
 
-* Executing commands from thing_defun.m:18:10:
+* Executing commands from thing_defun.m:18:17:
 
-  (t-utils-xr "C-M-e" "C-M-e" "C-M-e" "C-M-e")
+  Case7: (t-utils-xr "C-M-e" "C-M-e" "C-M-e" "C-M-e")
 
 - Invoking      : "C-M-e" = treesit-end-of-defun
-  Start point   :  481
-  Moved to point:  490
+  Start point   :  530
+  Moved to point:  539
   : 20:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-e" = treesit-end-of-defun
-  Start point   :  490
-  Moved to point:  619
+  Start point   :  539
+  Moved to point:  682
   : 27:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-e" = treesit-end-of-defun
-  Start point   :  619
-  Moved to point:  639
+  Start point   :  682
+  Moved to point:  702
   : 30:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-e" = treesit-end-of-defun
-  Start point   :  639
-  Moved to point:  698
+  Start point   :  702
+  Moved to point:  761
   : 34:0: 
   :       ^
   No buffer modifications
 
-* Executing commands from thing_defun.m:23:10:
+* Executing commands from thing_defun.m:23:17:
 
-  (t-utils-xr "C-M-a")
+  Case8: (t-utils-xr "C-M-a")
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  553
-  Moved to point:  491
+  Start point   :  609
+  Moved to point:  540
   : 21:0:     function out = nested2(in)
   :       ^
   No buffer modifications
 
-* Executing commands from thing_defun.m:25:10:
+* Executing commands from thing_defun.m:25:17:
 
-  (t-utils-xr "C-M-a")
+  Case9: (t-utils-xr "C-M-a")
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  610
-  Moved to point:  491
+  Start point   :  673
+  Moved to point:  540
   : 21:0:     function out = nested2(in)
   :       ^
   No buffer modifications
 
-* Executing commands from thing_defun.m:37:6:
+* Executing commands from thing_defun.m:37:14:
 
-  (t-utils-xr "C-M-a" "C-M-a" "C-M-a" "C-M-a")
+  Case10: (t-utils-xr "C-M-a" "C-M-a" "C-M-a" "C-M-a")
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  793
-  Moved to point:  699
+  Start point   :  864
+  Moved to point:  762
   : 35:0: function out = helper2(in)
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  699
-  Moved to point:  640
+  Start point   :  762
+  Moved to point:  703
   : 31:0: function out = helper1(in)
   :       ^
   No buffer modifications
 
 - Invoking      : "C-M-a" = treesit-beginning-of-defun
-  Start point   :  640
+  Start point   :  703
   Moved to point:   22
   : 3:0: function b = thing_defun(a)
   :      ^

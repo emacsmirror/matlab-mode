@@ -2,40 +2,40 @@
 
 classdef electric_ends_cases
 
-    %(t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
+    % Case1: (t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
 
-    %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+    % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
 
-    %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+    % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
 
     methods
 
-        %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+        % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
 
-        %(t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
+        % Case5: (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
         function foo(a)
         % foo help
 
-            %(t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
+            % Case6: (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
 
-            %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+            % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
 
-            %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+            % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
 
-            %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+            % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
 
-            %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+            % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
 
-            %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+            % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
 
-            %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+            % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
 
-            %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+            % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
 
         end
     end
 
 end
 
-%(t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+% Case14: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
 

@@ -1,33 +1,33 @@
 #+startup: showall
 
-* Executing commands from indent_xr_mat1.m:2:2:
+* Executing commands from indent_xr_mat1.m:2:9:
 
-  (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
+  Case1: (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :   99
+  Start point   :  106
   Moved to point:   21
-  : 2:0: % (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
+  : 2:0: % Case1: (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
   Start point   :   21
-  Moved to point:  100
+  Moved to point:  107
   : 3:0: mat1 = [ [1, 2], [3, 4], ...
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  100
-  Moved to point:  129
+  Start point   :  107
+  Moved to point:  136
   : 4:0:    ...
   :      ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  129
-  Moved to point:  138
+  Start point   :  136
+  Moved to point:  145
   : 4:9:          ...
   :               ^
   Buffer modified:
@@ -36,7 +36,7 @@
 +++ end_contents
 @@ -1,7 +1,7 @@
  % -*- matlab-ts -*-
- % (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
+ % Case1: (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
  mat1 = [ [1, 2], [3, 4], ...
 -   ...
 +         ...
@@ -46,15 +46,15 @@
   #+end_src diff
 
 - Invoking      : "C-n" = next-line
-  Start point   :  138
-  Moved to point:  146
+  Start point   :  145
+  Moved to point:  153
   : 5:4:  ...
   :          ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  146
-  Moved to point:  154
+  Start point   :  153
+  Moved to point:  161
   : 5:12:          ...
   :                   ^
   Buffer modified:
@@ -62,7 +62,7 @@
 --- start_contents
 +++ end_contents
 @@ -2,7 +2,7 @@
- % (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
+ % Case1: (t-utils-xr "C-a" "C-n" "C-n" "C-i" "C-n" "C-i" "C-e" "C-m" (insert "];\n"))
  mat1 = [ [1, 2], [3, 4], ...
           ...
 - ...
@@ -73,13 +73,13 @@
   #+end_src diff
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  154
+  Start point   :  161
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  154
-  Moved to point:  164
+  Start point   :  161
+  Moved to point:  171
   : 6:9:          
   :               ^
   Buffer modified:
@@ -98,8 +98,8 @@
 
 - Invoking      : (insert "];
 ")
-  Start point   :  164
-  Moved to point:  167
+  Start point   :  171
+  Moved to point:  174
   : 7:0: 
   :      ^
   Buffer modified:

@@ -1,24 +1,24 @@
 #+startup: showall
 
-* Executing commands from fill_paragraph_indent.m:4:6:
+* Executing commands from fill_paragraph_indent.m:4:13:
 
-  (t-utils-xr (set-fill-column 60) "C-n" "M-q")
+  Case1: (t-utils-xr (set-fill-column 60) "C-n" "M-q")
 
 - Invoking      : (set-fill-column 60)
-  Start point   :  108
+  Start point   :  115
   No point movement
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  108
-  Moved to point:  118
+  Start point   :  115
+  Moved to point:  125
   : 5:9:  if a > 2
   :               ^
   No buffer modifications
 
 - Invoking      : "M-q" = prog-fill-reindent-defun
-  Start point   :  118
-  Moved to point:  121
+  Start point   :  125
+  Moved to point:  128
   : 5:12:     if a > 2
   :                   ^
   Buffer modified:
@@ -28,7 +28,7 @@
 @@ -2,13 +2,13 @@
  function b = fill_paragraph_indent
  
-     % (t-utils-xr (set-fill-column 60) "C-n" "M-q")
+     % Case1: (t-utils-xr (set-fill-column 60) "C-n" "M-q")
 - if a > 2
 -b= 1;
 -      end

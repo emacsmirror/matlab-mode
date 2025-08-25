@@ -1,11 +1,11 @@
 % -*- matlab-ts -*-
 
-% (t-utils-xr "M-e" "M-a")
+% Case1: (t-utils-xr "M-e" "M-a")
 classdef thing_sentance
 
-    % (t-utils-xr "M-e" "M-e")
+    % Case2: (t-utils-xr "M-e" "M-e")
     properties
-        % (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a" "M-a" "M-a")
+        % Case3: (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a" "M-a" "M-a")
 
         p1 = 0
 

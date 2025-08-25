@@ -1,11 +1,11 @@
 % -*- matlab-ts -*-
 
-% (t-utils-xr "C-a" "C-n" "C-M-f")
+% Case1: (t-utils-xr "C-a" "C-n" "C-M-f")
 classdef thing_sexp < handle
 
-    % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
+    % Case2: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
     properties
-        % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
+        % Case3: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
         p1 = 0
         p2 = ...
             0
@@ -19,10 +19,10 @@ classdef thing_sexp < handle
 
     methods
 
-        % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
+        % Case4: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
         function method1(in1, in2)
 
-            % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f"  "C-M-f")
+            % Case5: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f"  "C-M-f")
             arguments
                 in1 (1,1) double
                 in2 (1,2) double
@@ -31,11 +31,11 @@ classdef thing_sexp < handle
             global gVar1 gVar2
             global pVar1 pVar2
 
-            % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
+            % Case6: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
             try
-                % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f")
+                % Case7: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f")
                 switch in
-                  % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
+                  % Case8: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
                   case 10
                     disp('10');
 
@@ -72,12 +72,12 @@ classdef thing_sexp < handle
             while x < 10
                 x = x + 1;
             end
-            % (t-utils-xr "C-a" "C-p" "C-e" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b"  "C-M-b")
+            % Case9: (t-utils-xr "C-a" "C-p" "C-e" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b" "C-M-b"  "C-M-b")
         end
 
         function method2()
 
-            % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
+            % Case10: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f" "C-M-f" "C-M-f" "C-M-f")
             n = 200;
             A = 500;
             a = zeros(1,n);
@@ -90,14 +90,14 @@ classdef thing_sexp < handle
     end
 
     events
-        % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
+        % Case11: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
         e1
         e2
         % comment
     end
 
     enumeration
-        % (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
+        % Case12: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-M-f")
         one
         two
         % comment

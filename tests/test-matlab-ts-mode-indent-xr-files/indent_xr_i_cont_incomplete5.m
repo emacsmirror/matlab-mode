@@ -1,5 +1,6 @@
 % -*- matlab-ts -*-
 %{
+  Case1:
   (t-utils-xr
   (re-search-forward "^fun") "C-e"                "C-m"
   (insert     "result = longFunction( ...")       "C-m"

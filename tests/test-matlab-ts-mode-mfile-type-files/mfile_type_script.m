@@ -1,6 +1,6 @@
 % -*- matlab-ts -*-
 
-% (t-utils-xr (print (format "mfile-type: %S" (matlab-ts-mode--mfile-type))))
+% Case1: (t-utils-xr (print (format "mfile-type: %S" (matlab-ts-mode--mfile-type))))
 
 a = 1;
 b = myfcn(a);

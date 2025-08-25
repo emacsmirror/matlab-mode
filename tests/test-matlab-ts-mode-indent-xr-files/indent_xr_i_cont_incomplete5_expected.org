@@ -1,8 +1,8 @@
 #+startup: showall
 
-* Executing commands from indent_xr_i_cont_incomplete5.m:3:2:
+* Executing commands from indent_xr_i_cont_incomplete5.m:4:2:
 
-  (t-utils-xr
+  Case1: (t-utils-xr
   (re-search-forward "^fun") "C-e"                "C-m"
   (insert     "result = longFunction( ...")       "C-m"
   (insert          "99);")
@@ -11,29 +11,29 @@
   )
 
 - Invoking      : (re-search-forward "^fun")
-  Start point   :  256
-  Moved to point:  263
-  : 11:3: function result = indent_xr_i_cont_incomplete5
+  Start point   :  265
+  Moved to point:  272
+  : 12:3: function result = indent_xr_i_cont_incomplete5
   :          ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  263
-  Moved to point:  306
-  : 11:46: function result = indent_xr_i_cont_incomplete5
+  Start point   :  272
+  Moved to point:  315
+  : 12:46: function result = indent_xr_i_cont_incomplete5
   :                                                      ^
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  306
-  Moved to point:  311
-  : 12:4:     
+  Start point   :  315
+  Moved to point:  320
+  : 13:4:     
   :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -9,4 +9,5 @@
+@@ -10,4 +10,5 @@
    )
  %}
  function result = indent_xr_i_cont_incomplete5
@@ -42,15 +42,15 @@
   #+end_src diff
 
 - Invoking      : (insert "result = longFunction( ...")
-  Start point   :  311
-  Moved to point:  337
-  : 12:30:     result = longFunction( ...
+  Start point   :  320
+  Moved to point:  346
+  : 13:30:     result = longFunction( ...
   :                                      ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -9,5 +9,5 @@
+@@ -10,5 +10,5 @@
    )
  %}
  function result = indent_xr_i_cont_incomplete5
@@ -60,15 +60,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  337
-  Moved to point:  346
-  : 13:8:         
+  Start point   :  346
+  Moved to point:  355
+  : 14:8:         
   :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -10,4 +10,5 @@
+@@ -11,4 +11,5 @@
  %}
  function result = indent_xr_i_cont_incomplete5
      result = longFunction( ...
@@ -77,15 +77,15 @@
   #+end_src diff
 
 - Invoking      : (insert "99);")
-  Start point   :  346
-  Moved to point:  350
-  : 13:12:         99);
+  Start point   :  355
+  Moved to point:  359
+  : 14:12:         99);
   :                    ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -10,5 +10,5 @@
+@@ -11,5 +11,5 @@
  %}
  function result = indent_xr_i_cont_incomplete5
      result = longFunction( ...
@@ -95,14 +95,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  350
-  Moved to point:  260
-  : 11:0: function result = indent_xr_i_cont_incomplete5
+  Start point   :  359
+  Moved to point:  269
+  : 12:0: function result = indent_xr_i_cont_incomplete5
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  260
+  Start point   :  269
   No point movement
   standard-output:
   #+begin_src matlab-ts

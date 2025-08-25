@@ -1,9 +1,9 @@
 % -*- matlab-ts -*-
 % Test forward/backward page keybindings:
-% (t-utils-xr (goto-char (point-min)) "C-x ]" "C-x ]" "C-x [" "C-x [")
+% Case1: (t-utils-xr (goto-char (point-min)) "C-x ]" "C-x ]" "C-x [" "C-x [")
 
 % Do similar using the underlying functions:
-% (t-utils-xr (goto-char (point-min)) (forward-page) (forward-page) (backward-page) (backward-page))
+% Case2: (t-utils-xr (goto-char (point-min)) (forward-page) (forward-page) (backward-page) (backward-page))
 
 %% Section 1
 

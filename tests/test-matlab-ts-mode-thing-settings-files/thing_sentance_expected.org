@@ -1,84 +1,84 @@
 #+startup: showall
 
-* Executing commands from thing_sentance.m:3:2:
+* Executing commands from thing_sentance.m:3:9:
 
-  (t-utils-xr "M-e" "M-a")
+  Case1: (t-utils-xr "M-e" "M-a")
 
 - Invoking      : "M-e" = forward-sentence
-  Start point   :   48
-  Moved to point: 1688
+  Start point   :   55
+  Moved to point: 1709
   : 102:3: end
   :           ^
   No buffer modifications
 
 - Invoking      : "M-a" = backward-sentence
-  Start point   : 1688
-  Moved to point:   49
+  Start point   : 1709
+  Moved to point:   56
   : 4:0: classdef thing_sentance
   :      ^
   No buffer modifications
 
-* Executing commands from thing_sentance.m:6:6:
+* Executing commands from thing_sentance.m:6:13:
 
-  (t-utils-xr "M-e" "M-e")
+  Case2: (t-utils-xr "M-e" "M-e")
 
 - Invoking      : "M-e" = forward-sentence
-  Start point   :  104
-  Moved to point:  302
+  Start point   :  118
+  Moved to point:  323
   : 21:7:     end
   :              ^
   No buffer modifications
 
 - Invoking      : "M-e" = forward-sentence
-  Start point   :  302
-  Moved to point: 1557
+  Start point   :  323
+  Moved to point: 1578
   : 89:7:     end
   :              ^
   No buffer modifications
 
-* Executing commands from thing_sentance.m:8:10:
+* Executing commands from thing_sentance.m:8:17:
 
-  (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a" "M-a" "M-a")
+  Case3: (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a" "M-a" "M-a")
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  184
-  Moved to point:  120
-  : 8:0:         % (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a" "M-a" "M-a")
+  Start point   :  205
+  Moved to point:  134
+  : 8:0:         % Case3: (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a" "M-a" "M-a")
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  120
-  Moved to point:  185
+  Start point   :  134
+  Moved to point:  206
   : 9:0: 
   :      ^
   No buffer modifications
 
 - Invoking      : "M-m" = back-to-indentation
-  Start point   :  185
+  Start point   :  206
   No point movement
   No buffer modifications
 
 - Invoking      : "M-a" = backward-sentence
-  Start point   :  185
-  Moved to point:  109
+  Start point   :  206
+  Moved to point:  123
   : 7:4:     properties
   :          ^
   No buffer modifications
 
 - Invoking      : "M-a" = backward-sentence
-  Start point   :  109
-  Moved to point:   49
+  Start point   :  123
+  Moved to point:   56
   : 4:0: classdef thing_sentance
   :      ^
   No buffer modifications
 
 - Invoking      : "M-a" = backward-sentence
-  Start point   :   49
+  Start point   :   56
   No point movement
   No buffer modifications
 
 - Invoking      : "M-a" = backward-sentence
-  Start point   :   49
+  Start point   :   56
   No point movement
   No buffer modifications

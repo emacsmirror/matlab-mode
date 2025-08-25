@@ -1,18 +1,18 @@
 #+startup: showall
 
-* Executing commands from electric_pair_single_quote.m:5:2:
+* Executing commands from electric_pair_single_quote.m:5:9:
 
-  (t-utils-xr (re-search-forward "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))))
+  Case1: (t-utils-xr (re-search-forward "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))))
 
 - Invoking      : (re-search-forward "'")
-  Start point   :  144
-  Moved to point:  147
+  Start point   :  151
+  Moved to point:  154
   : 6:2: a'
   :        ^
   No buffer modifications
 
 - Invoking      : (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before)))
-  Start point   :  147
+  Start point   :  154
   No point movement
   standard-output:
   #+begin_example
@@ -20,19 +20,19 @@ t
   #+end_example
   No buffer modifications
 
-* Executing commands from electric_pair_single_quote.m:8:2:
+* Executing commands from electric_pair_single_quote.m:8:9:
 
-  (t-utils-xr (re-search-forward "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))))
+  Case2: (t-utils-xr (re-search-forward "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))))
 
 - Invoking      : (re-search-forward "'")
-  Start point   :  259
-  Moved to point:  269
+  Start point   :  273
+  Moved to point:  283
   : 9:9: b = "foo'bar"
   :               ^
   No buffer modifications
 
 - Invoking      : (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before)))
-  Start point   :  269
+  Start point   :  283
   No point movement
   standard-output:
   #+begin_example
@@ -40,20 +40,20 @@ t
   #+end_example
   No buffer modifications
 
-* Executing commands from electric_pair_single_quote.m:11:2:
+* Executing commands from electric_pair_single_quote.m:11:9:
 
-  (t-utils-xr (re-search-forward "foo") (insert "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (1- (point)) (point)))
+  Case3: (t-utils-xr (re-search-forward "foo") (insert "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (1- (point)) (point)))
 
 - Invoking      : (re-search-forward "foo")
-  Start point   :  437
-  Moved to point:  444
+  Start point   :  458
+  Moved to point:  465
   : 12:6: s='foobar'
   :             ^
   No buffer modifications
 
 - Invoking      : (insert "'")
-  Start point   :  444
-  Moved to point:  445
+  Start point   :  465
+  Moved to point:  466
   : 12:7: s='foo'bar'
   :              ^
   Buffer modified:
@@ -63,16 +63,16 @@ t
 @@ -9,7 +9,7 @@
  b = "foo'bar"
  
- % (t-utils-xr (re-search-forward "foo") (insert "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (1- (point)) (point)))
+ % Case3: (t-utils-xr (re-search-forward "foo") (insert "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (1- (point)) (point)))
 -s='foobar'
 +s='foo'bar'
  
  % start string
- % (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
+ % Case4: (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
   #+end_src diff
 
 - Invoking      : (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before)))
-  Start point   :  445
+  Start point   :  466
   No point movement
   standard-output:
   #+begin_example
@@ -81,8 +81,8 @@ t
   No buffer modifications
 
 - Invoking      : (delete-region (1- (point)) (point))
-  Start point   :  445
-  Moved to point:  444
+  Start point   :  466
+  Moved to point:  465
   : 12:6: s='foobar'
   :             ^
   Buffer modified:
@@ -92,28 +92,28 @@ t
 @@ -9,7 +9,7 @@
  b = "foo'bar"
  
- % (t-utils-xr (re-search-forward "foo") (insert "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (1- (point)) (point)))
+ % Case3: (t-utils-xr (re-search-forward "foo") (insert "'") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (1- (point)) (point)))
 -s='foo'bar'
 +s='foobar'
  
  % start string
- % (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
+ % Case4: (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
   #+end_src diff
 
-* Executing commands from electric_pair_single_quote.m:15:2:
+* Executing commands from electric_pair_single_quote.m:15:9:
 
-  (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
+  Case4: (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
 
 - Invoking      : (re-search-forward "s2")
-  Start point   :  630
-  Moved to point:  633
+  Start point   :  658
+  Moved to point:  661
   : 16:2: s2
   :         ^
   No buffer modifications
 
 - Invoking      : (insert " = '")
-  Start point   :  633
-  Moved to point:  637
+  Start point   :  661
+  Moved to point:  665
   : 16:6: s2 = '
   :             ^
   Buffer modified:
@@ -123,13 +123,13 @@ t
 @@ -13,4 +13,4 @@
  
  % start string
- % (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
+ % Case4: (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
 -s2
 +s2 = '
   #+end_src diff
 
 - Invoking      : (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before)))
-  Start point   :  637
+  Start point   :  665
   No point movement
   standard-output:
   #+begin_example
@@ -138,8 +138,8 @@ nil
   No buffer modifications
 
 - Invoking      : (delete-region (- (point) 4) (point))
-  Start point   :  637
-  Moved to point:  633
+  Start point   :  665
+  Moved to point:  661
   : 16:2: s2
   :         ^
   Buffer modified:
@@ -149,7 +149,7 @@ nil
 @@ -13,4 +13,4 @@
  
  % start string
- % (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
+ % Case4: (t-utils-xr (re-search-forward "s2") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))) (delete-region (- (point) 4) (point)))
 -s2 = '
 +s2
   #+end_src diff

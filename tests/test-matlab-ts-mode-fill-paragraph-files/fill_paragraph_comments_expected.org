@@ -1,34 +1,34 @@
 #+startup: showall
 
-* Executing commands from fill_paragraph_comments.m:5:2:
+* Executing commands from fill_paragraph_comments.m:5:9:
 
-  (t-utils-xr (set-fill-column 60))
+  Case1: (t-utils-xr (set-fill-column 60))
 
 - Invoking      : (set-fill-column 60)
-  Start point   :  135
+  Start point   :  145
   No point movement
   No buffer modifications
 
-* Executing commands from fill_paragraph_comments.m:8:2:
+* Executing commands from fill_paragraph_comments.m:8:9:
 
-  (t-utils-xr "C-n" "C-n" "M-q")
+  Case2: (t-utils-xr "C-n" "C-n" "M-q")
 
 - Invoking      : "C-n" = next-line
-  Start point   :  195
-  Moved to point:  197
+  Start point   :  212
+  Moved to point:  214
   : 9:1: %
   :       ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  197
-  Moved to point:  199
+  Start point   :  214
+  Moved to point:  216
   : 10:1: % A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A  very long comment. A very long comment. A very long comment.
   :        ^
   No buffer modifications
 
 - Invoking      : "M-q" = prog-fill-reindent-defun
-  Start point   :  199
+  Start point   :  216
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -36,7 +36,7 @@
 +++ end_contents
 @@ -7,7 +7,11 @@
  % Test of fill paragraph
- % (t-utils-xr "C-n" "C-n" "M-q")
+ % Case2: (t-utils-xr "C-n" "C-n" "M-q")
  %
 -% A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A very long comment. A  very long comment. A very long comment. A very long comment.
 +% A very long comment. A very long comment. A very long
@@ -46,29 +46,29 @@
 +% comment. A very long comment.
  %
  % Test of fill paragraph on a numbered list
- % (t-utils-xr "C-n" "C-n" "M-q")
+ % Case3: (t-utils-xr "C-n" "C-n" "M-q")
   #+end_src diff
 
-* Executing commands from fill_paragraph_comments.m:17:2:
+* Executing commands from fill_paragraph_comments.m:17:9:
 
-  (t-utils-xr "C-n" "C-n" "M-q")
+  Case3: (t-utils-xr "C-n" "C-n" "M-q")
 
 - Invoking      : "C-n" = next-line
-  Start point   :  538
-  Moved to point:  541
+  Start point   :  562
+  Moved to point:  565
   : 18:2: % 
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  541
-  Moved to point:  544
+  Start point   :  565
+  Moved to point:  568
   : 19:2: % 1. Item one that is long. Item one that is long. Item one that is long. Item one that is long. Item one that is long. Item one that is long.
   :         ^
   No buffer modifications
 
 - Invoking      : "M-q" = prog-fill-reindent-defun
-  Start point   :  544
+  Start point   :  568
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -76,7 +76,7 @@
 +++ end_contents
 @@ -16,8 +16,9 @@
  % Test of fill paragraph on a numbered list
- % (t-utils-xr "C-n" "C-n" "M-q")
+ % Case3: (t-utils-xr "C-n" "C-n" "M-q")
  % 
 -% 1. Item one that is long. Item one that is long. Item one that is long. Item one that is long. Item one that is long. Item one that is long.
 -%    And has multiple lines
@@ -85,29 +85,29 @@
 +%    long. Item one that is long.  And has multiple lines
  %
  % Test of fill paragraph on a numbered list
- % (t-utils-xr "C-n" "C-n" "M-q")
+ % Case4: (t-utils-xr "C-n" "C-n" "M-q")
   #+end_src diff
 
-* Executing commands from fill_paragraph_comments.m:24:2:
+* Executing commands from fill_paragraph_comments.m:24:9:
 
-  (t-utils-xr "C-n" "C-n" "M-q")
+  Case4: (t-utils-xr "C-n" "C-n" "M-q")
 
 - Invoking      : "C-n" = next-line
-  Start point   :  797
-  Moved to point:  799
+  Start point   :  828
+  Moved to point:  830
   : 25:1: %
   :        ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  799
-  Moved to point:  801
+  Start point   :  830
+  Moved to point:  832
   : 26:1: % 2. Item two that is long. Item two that is long. Item two that is long. Item two that is long. Item two that is long. Item two that is long.
   :        ^
   No buffer modifications
 
 - Invoking      : "M-q" = prog-fill-reindent-defun
-  Start point   :  801
+  Start point   :  832
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -115,7 +115,7 @@
 +++ end_contents
 @@ -23,7 +23,9 @@
  % Test of fill paragraph on a numbered list
- % (t-utils-xr "C-n" "C-n" "M-q")
+ % Case4: (t-utils-xr "C-n" "C-n" "M-q")
  %
 -% 2. Item two that is long. Item two that is long. Item two that is long. Item two that is long. Item two that is long. Item two that is long.
 +% 2. Item two that is long. Item two that is long. Item two
@@ -123,29 +123,29 @@
 +% long. Item two that is long.
  %
  % Test of fill paragraph on a bullet item.
- % (t-utils-xr "C-n" "C-n" "M-q")
+ % Case5: (t-utils-xr "C-n" "C-n" "M-q")
   #+end_src diff
 
-* Executing commands from fill_paragraph_comments.m:31:2:
+* Executing commands from fill_paragraph_comments.m:31:9:
 
-  (t-utils-xr "C-n" "C-n" "M-q")
+  Case5: (t-utils-xr "C-n" "C-n" "M-q")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1024
-  Moved to point: 1026
+  Start point   : 1062
+  Moved to point: 1064
   : 32:1: %
   :        ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1026
-  Moved to point: 1028
+  Start point   : 1064
+  Moved to point: 1066
   : 33:1: % - Item three that is long. Item three that is long. Item three that is long. Item three that is long. Item three that is long. Item three that is long. Item three that is long.
   :        ^
   No buffer modifications
 
 - Invoking      : "M-q" = prog-fill-reindent-defun
-  Start point   : 1028
+  Start point   : 1066
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -153,7 +153,7 @@
 +++ end_contents
 @@ -30,7 +30,10 @@
  % Test of fill paragraph on a bullet item.
- % (t-utils-xr "C-n" "C-n" "M-q")
+ % Case5: (t-utils-xr "C-n" "C-n" "M-q")
  %
 -% - Item three that is long. Item three that is long. Item three that is long. Item three that is long. Item three that is long. Item three that is long. Item three that is long.
 +% - Item three that is long. Item three that is long. Item
@@ -165,26 +165,26 @@
  % Test of fill paragraph on a regular comment
   #+end_src diff
 
-* Executing commands from fill_paragraph_comments.m:40:2:
+* Executing commands from fill_paragraph_comments.m:40:9:
 
-  (t-utils-xr "C-n" "C-n" "M-q")
+  Case6: (t-utils-xr "C-n" "C-n" "M-q")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1299
-  Moved to point: 1301
+  Start point   : 1344
+  Moved to point: 1346
   : 41:1: %
   :        ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1301
-  Moved to point: 1303
+  Start point   : 1346
+  Moved to point: 1348
   : 42:1: % foo bar foo barfoo bar foo barfoo bar foo bar foo barfoo bar foo barfoo bar foo bar foo barfoo bar foo barfoo bar
   :        ^
   No buffer modifications
 
 - Invoking      : "M-q" = prog-fill-reindent-defun
-  Start point   : 1303
+  Start point   : 1348
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -192,7 +192,7 @@
 +++ end_contents
 @@ -39,7 +39,8 @@
  % Test of fill paragraph on a regular comment
- % (t-utils-xr "C-n" "C-n" "M-q")
+ % Case6: (t-utils-xr "C-n" "C-n" "M-q")
  %
 -% foo bar foo barfoo bar foo barfoo bar foo bar foo barfoo bar foo barfoo bar foo bar foo barfoo bar foo barfoo bar
 +% foo bar foo barfoo bar foo barfoo bar foo bar foo barfoo
@@ -202,19 +202,19 @@
      if a > 1
   #+end_src diff
 
-* Executing commands from fill_paragraph_comments.m:48:10:
+* Executing commands from fill_paragraph_comments.m:48:17:
 
-  (t-utils-xr "C-n" "M-q")
+  Case7: (t-utils-xr "C-n" "M-q")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1556
-  Moved to point: 1591
-  : 49:34:         b = a * 2; % A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.
-  :                                          ^
+  Start point   : 1608
+  Moved to point: 1650
+  : 49:41:         b = a * 2; % A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.
+  :                                                 ^
   No buffer modifications
 
 - Invoking      : "M-q" = prog-fill-reindent-defun
-  Start point   : 1591
+  Start point   : 1650
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -223,7 +223,7 @@
 @@ -46,7 +46,11 @@
      if a > 1
          % Test of fill paragraph on a regular comment after a statement from column 1
-         % (t-utils-xr "C-n" "M-q")
+         % Case7: (t-utils-xr "C-n" "M-q")
 -        b = a * 2; % A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.
 +        b = a * 2; % A long comment at the end of a
 +                   % statement.  A long comment at the end
@@ -235,33 +235,33 @@
          % Test of fill paragraph on a regular comment after a statement when in comment
   #+end_src diff
 
-* Executing commands from fill_paragraph_comments.m:57:10:
+* Executing commands from fill_paragraph_comments.m:57:17:
 
-  (t-utils-xr "C-n" "C-a" "M-;" "M-q")
+  Case8: (t-utils-xr "C-n" "C-a" "M-;" "M-q")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1995
-  Moved to point: 2042
-  : 58:46:         b = c * d; % A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.
-  :                                                      ^
+  Start point   : 2054
+  Moved to point: 2108
+  : 58:53:         b = c * d; % A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.
+  :                                                             ^
   No buffer modifications
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   : 2042
-  Moved to point: 1996
+  Start point   : 2108
+  Moved to point: 2055
   : 58:0:         b = c * d; % A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.
   :       ^
   No buffer modifications
 
 - Invoking      : "M-;" = comment-dwim
-  Start point   : 1996
-  Moved to point: 2017
+  Start point   : 2055
+  Moved to point: 2076
   : 58:21:         b = c * d; % A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.
   :                             ^
   No buffer modifications
 
 - Invoking      : "M-q" = prog-fill-reindent-defun
-  Start point   : 2017
+  Start point   : 2076
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -270,7 +270,7 @@
 @@ -55,6 +55,10 @@
      else
          % Test of fill paragraph on a regular comment after a statement when in comment
-         % (t-utils-xr "C-n" "C-a" "M-;" "M-q")
+         % Case8: (t-utils-xr "C-n" "C-a" "M-;" "M-q")
 -        b = c * d; % A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.  A long comment at the end of a statement.
 +        b = c * d; % A long comment at the end of a
 +                   % statement.  A long comment at the end

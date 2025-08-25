@@ -1,8 +1,8 @@
 #+startup: showall
 
-* Executing commands from indent_xr_cell1.m:4:2:
+* Executing commands from indent_xr_cell1.m:5:2:
 
-  (t-utils-xr
+  Case1: (t-utils-xr
 
   (re-search-forward "%}")  "C-n"
   (insert "someVariable = {")      "C-m"
@@ -14,29 +14,29 @@
   )
 
 - Invoking      : (re-search-forward "%}")
-  Start point   :  286
-  Moved to point:  289
-  : 14:2: %}
+  Start point   :  295
+  Moved to point:  298
+  : 15:2: %}
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  289
-  Moved to point:  290
-  : 15:0: 
+  Start point   :  298
+  Moved to point:  299
+  : 16:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "someVariable = {")
-  Start point   :  290
-  Moved to point:  306
-  : 15:16: someVariable = {
+  Start point   :  299
+  Moved to point:  315
+  : 16:16: someVariable = {
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -12,3 +12,4 @@
+@@ -13,3 +13,4 @@
  
    )
  %}
@@ -45,15 +45,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  306
-  Moved to point:  324
-  : 16:17:                  
+  Start point   :  315
+  Moved to point:  333
+  : 17:17:                  
   :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -12,4 +12,5 @@
+@@ -13,4 +13,5 @@
  
    )
  %}
@@ -65,15 +65,15 @@
   #+end_src diff
 
 - Invoking      : (insert "1234")
-  Start point   :  324
-  Moved to point:  328
-  : 16:21:                  1234
+  Start point   :  333
+  Moved to point:  337
+  : 17:21:                  1234
   :                             ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -13,4 +13,4 @@
+@@ -14,4 +14,4 @@
    )
  %}
  someVariable = {
@@ -84,15 +84,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  328
-  Moved to point:  346
-  : 17:17:                  
+  Start point   :  337
+  Moved to point:  355
+  : 18:17:                  
   :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -13,4 +13,5 @@
+@@ -14,4 +14,5 @@
    )
  %}
  someVariable = {
@@ -104,15 +104,15 @@
   #+end_src diff
 
 - Invoking      : (insert "};")
-  Start point   :  346
-  Moved to point:  348
-  : 17:19:                  };
+  Start point   :  355
+  Moved to point:  357
+  : 18:19:                  };
   :                           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -14,4 +14,4 @@
+@@ -15,4 +15,4 @@
  %}
  someVariable = {
                   1234
@@ -123,15 +123,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  348
-  Moved to point:  347
-  : 18:0: 
+  Start point   :  357
+  Moved to point:  356
+  : 19:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -14,4 +14,4 @@
+@@ -15,4 +15,4 @@
  %}
  someVariable = {
                   1234
@@ -141,14 +141,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^someVariable")
-  Start point   :  347
-  Moved to point:  290
-  : 15:0: someVariable = {
+  Start point   :  356
+  Moved to point:  299
+  : 16:0: someVariable = {
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  290
+  Start point   :  299
   No point movement
   standard-output:
   #+begin_src matlab-ts

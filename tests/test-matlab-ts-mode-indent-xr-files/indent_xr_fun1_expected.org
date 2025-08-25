@@ -1,33 +1,33 @@
 #+startup: showall
 
-* Executing commands from indent_xr_fun1.m:2:2:
+* Executing commands from indent_xr_fun1.m:2:9:
 
-  (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+  Case1: (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  212
+  Start point   :  219
   Moved to point:   21
-  : 2:0: % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+  : 2:0: % Case1: (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
   :      ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
   Start point   :   21
-  Moved to point:  213
+  Moved to point:  220
   : 3:0: function indent_xr_fun1
   :      ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  213
-  Moved to point:  236
+  Start point   :  220
+  Moved to point:  243
   : 3:23: function indent_xr_fun1
   :                              ^
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  236
-  Moved to point:  237
+  Start point   :  243
+  Moved to point:  244
   : 4:0: 
   :      ^
   Buffer modified:
@@ -36,14 +36,14 @@
 +++ end_contents
 @@ -1,3 +1,4 @@
  % -*- matlab-ts -*-
- % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+ % Case1: (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function indent_xr_fun1
 +
   #+end_src diff
 
 - Invoking      : (insert "a = 1;")
-  Start point   :  237
-  Moved to point:  243
+  Start point   :  244
+  Moved to point:  250
   : 4:6: a = 1;
   :            ^
   Buffer modified:
@@ -52,15 +52,15 @@
 +++ end_contents
 @@ -1,4 +1,4 @@
  % -*- matlab-ts -*-
- % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+ % Case1: (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function indent_xr_fun1
 -
 +a = 1;
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  243
-  Moved to point:  244
+  Start point   :  250
+  Moved to point:  251
   : 5:0: 
   :      ^
   Buffer modified:
@@ -68,15 +68,15 @@
 --- start_contents
 +++ end_contents
 @@ -2,3 +2,4 @@
- % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+ % Case1: (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function indent_xr_fun1
  a = 1;
 +
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  244
-  Moved to point:  247
+  Start point   :  251
+  Moved to point:  254
   : 5:3: end
   :         ^
   Buffer modified:
@@ -84,7 +84,7 @@
 --- start_contents
 +++ end_contents
 @@ -2,4 +2,4 @@
- % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+ % Case1: (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function indent_xr_fun1
  a = 1;
 -
@@ -92,8 +92,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  247
-  Moved to point:  248
+  Start point   :  254
+  Moved to point:  255
   : 6:0: 
   :      ^
   Buffer modified:
@@ -108,22 +108,22 @@
   #+end_src diff
 
 - Invoking      : "C-p" = previous-line
-  Start point   :  248
-  Moved to point:  244
+  Start point   :  255
+  Moved to point:  251
   : 5:0: end
   :      ^
   No buffer modifications
 
 - Invoking      : "C-p" = previous-line
-  Start point   :  244
-  Moved to point:  237
+  Start point   :  251
+  Moved to point:  244
   : 4:0: a = 1;
   :      ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  237
-  Moved to point:  241
+  Start point   :  244
+  Moved to point:  248
   : 4:4:     a = 1;
   :          ^
   Buffer modified:
@@ -132,7 +132,7 @@
 +++ end_contents
 @@ -1,6 +1,6 @@
  % -*- matlab-ts -*-
- % (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+ % Case1: (t-utils-xr "C-a" "C-n" "C-e" "C-m" (insert "a = 1;") "C-m" (insert "end") "C-m" "C-p" "C-p" "C-i"  (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
  function indent_xr_fun1
 -a = 1;
 +    a = 1;
@@ -141,14 +141,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  241
-  Moved to point:  213
+  Start point   :  248
+  Moved to point:  220
   : 3:0: function indent_xr_fun1
   :      ^
   No buffer modifications
 
 - Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
-  Start point   :  213
+  Start point   :  220
   No point movement
   standard-output:
   #+begin_example

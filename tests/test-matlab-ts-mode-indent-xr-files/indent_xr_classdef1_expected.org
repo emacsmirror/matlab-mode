@@ -1,8 +1,8 @@
 #+startup: showall
 
-* Executing commands from indent_xr_classdef1.m:7:2:
+* Executing commands from indent_xr_classdef1.m:8:2:
 
-  (t-utils-xr
+  Case1: (t-utils-xr
   (re-search-forward "^classdef") "C-e" "C-m" "C-i" "C-i"
   (insert "methods") "C-m"
   (insert "function out=foo") "C-m"
@@ -14,29 +14,29 @@
   )
 
 - Invoking      : (re-search-forward "^classdef")
-  Start point   :  499
-  Moved to point:  511
-  : 18:8: classdef indent_xr_classdef1
+  Start point   :  506
+  Moved to point:  518
+  : 19:8: classdef indent_xr_classdef1
   :               ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  511
-  Moved to point:  531
-  : 18:28: classdef indent_xr_classdef1
+  Start point   :  518
+  Moved to point:  538
+  : 19:28: classdef indent_xr_classdef1
   :                                    ^
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  531
-  Moved to point:  536
-  : 19:4:     
+  Start point   :  538
+  Moved to point:  543
+  : 20:4:     
   :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -16,3 +16,4 @@
+@@ -17,3 +17,4 @@
    )
  %}
  classdef indent_xr_classdef1
@@ -44,25 +44,25 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  536
+  Start point   :  543
   No point movement
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  536
+  Start point   :  543
   No point movement
   No buffer modifications
 
 - Invoking      : (insert "methods")
-  Start point   :  536
-  Moved to point:  543
-  : 19:11:     methods
+  Start point   :  543
+  Moved to point:  550
+  : 20:11:     methods
   :                   ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -16,4 +16,4 @@
+@@ -17,4 +17,4 @@
    )
  %}
  classdef indent_xr_classdef1
@@ -71,15 +71,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  543
-  Moved to point:  552
-  : 20:8:         
+  Start point   :  550
+  Moved to point:  559
+  : 21:8:         
   :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -17,3 +17,4 @@
+@@ -18,3 +18,4 @@
  %}
  classdef indent_xr_classdef1
      methods
@@ -87,15 +87,15 @@
   #+end_src diff
 
 - Invoking      : (insert "function out=foo")
-  Start point   :  552
-  Moved to point:  568
-  : 20:24:         function out=foo
+  Start point   :  559
+  Moved to point:  575
+  : 21:24:         function out=foo
   :                                ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -17,4 +17,4 @@
+@@ -18,4 +18,4 @@
  %}
  classdef indent_xr_classdef1
      methods
@@ -104,15 +104,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  568
-  Moved to point:  581
-  : 21:12:             
+  Start point   :  575
+  Moved to point:  588
+  : 22:12:             
   :                    ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -18,3 +18,4 @@
+@@ -19,3 +19,4 @@
  classdef indent_xr_classdef1
      methods
          function out=foo
@@ -120,15 +120,15 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  581
-  Moved to point:  584
-  : 21:15:             end
+  Start point   :  588
+  Moved to point:  591
+  : 22:15:             end
   :                       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -18,4 +18,4 @@
+@@ -19,4 +19,4 @@
  classdef indent_xr_classdef1
      methods
          function out=foo
@@ -137,15 +137,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  584
-  Moved to point:  589
-  : 22:8:         
+  Start point   :  591
+  Moved to point:  596
+  : 23:8:         
   :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -18,4 +18,5 @@
+@@ -19,4 +19,5 @@
  classdef indent_xr_classdef1
      methods
          function out=foo
@@ -155,15 +155,15 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  589
-  Moved to point:  592
-  : 22:11:         end
+  Start point   :  596
+  Moved to point:  599
+  : 23:11:         end
   :                   ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -19,4 +19,4 @@
+@@ -20,4 +20,4 @@
      methods
          function out=foo
          end
@@ -172,15 +172,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  592
-  Moved to point:  589
-  : 23:0: 
+  Start point   :  599
+  Moved to point:  596
+  : 24:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -19,4 +19,5 @@
+@@ -20,4 +20,5 @@
      methods
          function out=foo
          end
@@ -190,15 +190,15 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  589
-  Moved to point:  592
-  : 23:3: end
+  Start point   :  596
+  Moved to point:  599
+  : 24:3: end
   :          ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -20,4 +20,4 @@
+@@ -21,4 +21,4 @@
          function out=foo
          end
      end
@@ -207,15 +207,15 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  592
-  Moved to point:  593
-  : 24:0: 
+  Start point   :  599
+  Moved to point:  600
+  : 25:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -21,3 +21,4 @@
+@@ -22,3 +22,4 @@
          end
      end
  end
@@ -223,14 +223,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^classdef")
-  Start point   :  593
-  Moved to point:  503
-  : 18:0: classdef indent_xr_classdef1
+  Start point   :  600
+  Moved to point:  510
+  : 19:0: classdef indent_xr_classdef1
   :       ^
   No buffer modifications
 
 - Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
-  Start point   :  503
+  Start point   :  510
   No point movement
   standard-output:
   #+begin_example

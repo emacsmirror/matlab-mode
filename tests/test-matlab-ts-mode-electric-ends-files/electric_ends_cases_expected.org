@@ -1,19 +1,19 @@
 #+startup: showall
 
-* Executing commands from electric_ends_cases.m:5:5:
+* Executing commands from electric_ends_cases.m:5:13:
 
-  (t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
+  Case1: (t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  123
-  Moved to point:  124
+  Start point   :  131
+  Moved to point:  132
   : 6:0: 
   :      ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  124
-  Moved to point:  128
+  Start point   :  132
+  Moved to point:  136
   : 6:4:     
   :          ^
   Buffer modified:
@@ -23,17 +23,17 @@
 @@ -3,7 +3,7 @@
  classdef electric_ends_cases
  
-     %(t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
+     % Case1: (t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
 -
 +    
-     %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+     % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
  
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
   #+end_src diff
 
 - Invoking      : (insert "properties")
-  Start point   :  128
-  Moved to point:  138
+  Start point   :  136
+  Moved to point:  146
   : 6:14:     properties
   :                     ^
   Buffer modified:
@@ -43,17 +43,17 @@
 @@ -3,7 +3,7 @@
  classdef electric_ends_cases
  
-     %(t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
+     % Case1: (t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
 -    
 +    properties
-     %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+     % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
  
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  138
-  Moved to point:  147
+  Start point   :  146
+  Moved to point:  155
   : 7:8:         
   :              ^
   Buffer modified:
@@ -62,19 +62,19 @@
 +++ end_contents
 @@ -4,6 +4,9 @@
  
-     %(t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
+     % Case1: (t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
      properties
 +        
 +    end
 +
-     %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+     % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
  
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
   #+end_src diff
 
 - Invoking      : (insert "p1")
-  Start point   :  147
-  Moved to point:  149
+  Start point   :  155
+  Moved to point:  157
   : 7:10:         p1
   :                 ^
   Buffer modified:
@@ -83,29 +83,29 @@
 +++ end_contents
 @@ -4,7 +4,7 @@
  
-     %(t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
+     % Case1: (t-utils-xr "C-n" "C-i" (insert "properties") "C-m" (insert "p1"))
      properties
 -        
 +        p1
      end
  
-     %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+     % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:10:5:
+* Executing commands from electric_ends_cases.m:10:13:
 
-  (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+  Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  242
-  Moved to point:  243
+  Start point   :  258
+  Moved to point:  259
   : 11:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  243
-  Moved to point:  247
+  Start point   :  259
+  Moved to point:  263
   : 11:4:     
   :           ^
   Buffer modified:
@@ -115,17 +115,17 @@
 @@ -8,7 +8,7 @@
      end
  
-     %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+     % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
 -
 +    
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
  
      methods
   #+end_src diff
 
 - Invoking      : (insert "methods")
-  Start point   :  247
-  Moved to point:  254
+  Start point   :  263
+  Moved to point:  270
   : 11:11:     methods
   :                   ^
   Buffer modified:
@@ -135,17 +135,17 @@
 @@ -8,7 +8,7 @@
      end
  
-     %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+     % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
 -    
 +    methods
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
  
      methods
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  254
-  Moved to point:  263
+  Start point   :  270
+  Moved to point:  279
   : 12:8:         
   :               ^
   Buffer modified:
@@ -154,19 +154,19 @@
 +++ end_contents
 @@ -9,6 +9,9 @@
  
-     %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+     % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
      methods
 +        
 +    end
 +
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
  
      methods
   #+end_src diff
 
 - Invoking      : (insert "% methods-comment")
-  Start point   :  263
-  Moved to point:  280
+  Start point   :  279
+  Moved to point:  296
   : 12:25:         % methods-comment
   :                                 ^
   Buffer modified:
@@ -175,29 +175,29 @@
 +++ end_contents
 @@ -9,7 +9,7 @@
  
-     %(t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
+     % Case2: (t-utils-xr "C-n" "C-i" (insert "methods") "C-m" (insert "% methods-comment"))
      methods
 -        
 +        % methods-comment
      end
  
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:15:5:
+* Executing commands from electric_ends_cases.m:15:13:
 
-  (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+  Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  371
-  Moved to point:  372
+  Start point   :  395
+  Moved to point:  396
   : 16:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  372
-  Moved to point:  376
+  Start point   :  396
+  Moved to point:  400
   : 16:4:     
   :           ^
   Buffer modified:
@@ -207,17 +207,17 @@
 @@ -13,7 +13,7 @@
      end
  
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
 -
 +    
      methods
  
-         %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+         % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
   #+end_src diff
 
 - Invoking      : (insert "events")
-  Start point   :  376
-  Moved to point:  382
+  Start point   :  400
+  Moved to point:  406
   : 16:10:     events
   :                  ^
   Buffer modified:
@@ -227,17 +227,17 @@
 @@ -13,7 +13,7 @@
      end
  
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
 -    
 +    events
      methods
  
-         %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+         % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  382
-  Moved to point:  391
+  Start point   :  406
+  Moved to point:  415
   : 17:8:         
   :               ^
   Buffer modified:
@@ -246,19 +246,19 @@
 +++ end_contents
 @@ -14,6 +14,9 @@
  
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
      events
 +        
 +    end
 +
      methods
  
-         %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+         % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
   #+end_src diff
 
 - Invoking      : (insert "% events-comment")
-  Start point   :  391
-  Moved to point:  407
+  Start point   :  415
+  Moved to point:  431
   : 17:24:         % events-comment
   :                                ^
   Buffer modified:
@@ -267,7 +267,7 @@
 +++ end_contents
 @@ -14,7 +14,7 @@
  
-     %(t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
+     % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
      events
 -        
 +        % events-comment
@@ -276,20 +276,20 @@
      methods
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:22:9:
+* Executing commands from electric_ends_cases.m:22:17:
 
-  (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+  Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  516
-  Moved to point:  517
+  Start point   :  548
+  Moved to point:  549
   : 23:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  517
-  Moved to point:  525
+  Start point   :  549
+  Moved to point:  557
   : 23:8:         
   :               ^
   Buffer modified:
@@ -299,17 +299,17 @@
 @@ -20,7 +20,7 @@
      methods
  
-         %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+         % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
 -
 +        
-         %(t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
+         % Case5: (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
          function foo(a)
          % foo help
   #+end_src diff
 
 - Invoking      : (insert "function bar")
-  Start point   :  525
-  Moved to point:  537
+  Start point   :  557
+  Moved to point:  569
   : 23:20:         function bar
   :                            ^
   Buffer modified:
@@ -319,17 +319,17 @@
 @@ -20,7 +20,7 @@
      methods
  
-         %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+         % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
 -        
 +        function bar
-         %(t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
+         % Case5: (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
          function foo(a)
          % foo help
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  537
-  Moved to point:  550
+  Start point   :  569
+  Moved to point:  582
   : 24:12:             
   :                    ^
   Buffer modified:
@@ -338,19 +338,19 @@
 +++ end_contents
 @@ -21,6 +21,9 @@
  
-         %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+         % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
          function bar
 +            
 +        end
 +
-         %(t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
+         % Case5: (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
          function foo(a)
          % foo help
   #+end_src diff
 
 - Invoking      : (insert "disp('bar')")
-  Start point   :  550
-  Moved to point:  561
+  Start point   :  582
+  Moved to point:  593
   : 24:23:             disp('bar')
   :                               ^
   Buffer modified:
@@ -359,29 +359,29 @@
 +++ end_contents
 @@ -21,7 +21,7 @@
  
-         %(t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
+         % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
          function bar
 -            
 +            disp('bar')
          end
  
-         %(t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
+         % Case5: (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:27:9:
+* Executing commands from electric_ends_cases.m:27:17:
 
-  (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
+  Case5: (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
 
 - Invoking      : (re-search-forward "foo help")
-  Start point   :  657
-  Moved to point:  700
+  Start point   :  697
+  Moved to point:  740
   : 29:18:         % foo help
   :                          ^
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  700
-  Moved to point:  709
+  Start point   :  740
+  Moved to point:  749
   : 30:8:         % 
   :               ^
   Buffer modified:
@@ -389,25 +389,25 @@
 --- start_contents
 +++ end_contents
 @@ -27,6 +27,7 @@
-         %(t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
+         % Case5: (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
          function foo(a)
          % foo help
 +        % 
  
-             %(t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
+             % Case6: (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
  
   #+end_src diff
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  709
-  Moved to point:  711
+  Start point   :  749
+  Moved to point:  751
   : 30:10:         % 
   :                  ^
   No buffer modifications
 
 - Invoking      : (insert "line 2")
-  Start point   :  711
-  Moved to point:  717
+  Start point   :  751
+  Moved to point:  757
   : 30:16:         % line 2
   :                        ^
   Buffer modified:
@@ -415,30 +415,30 @@
 --- start_contents
 +++ end_contents
 @@ -27,7 +27,7 @@
-         %(t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
+         % Case5: (t-utils-xr (re-search-forward "foo help") "C-m" "C-e" (insert "line 2"))
          function foo(a)
          % foo help
 -        % 
 +        % line 2
  
-             %(t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
+             % Case6: (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
  
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:32:13:
+* Executing commands from electric_ends_cases.m:32:21:
 
-  (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
+  Case6: (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  796
-  Moved to point:  797
+  Start point   :  844
+  Moved to point:  845
   : 33:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  797
-  Moved to point:  809
+  Start point   :  845
+  Moved to point:  857
   : 33:12:             
   :                    ^
   Buffer modified:
@@ -448,17 +448,17 @@
 @@ -30,7 +30,7 @@
          % line 2
  
-             %(t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
+             % Case6: (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
 -
 +            
-             %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
   #+end_src diff
 
 - Invoking      : (insert "arguments")
-  Start point   :  809
-  Moved to point:  818
+  Start point   :  857
+  Moved to point:  866
   : 33:21:             arguments
   :                             ^
   Buffer modified:
@@ -468,17 +468,17 @@
 @@ -30,7 +30,7 @@
          % line 2
  
-             %(t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
+             % Case6: (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
 -            
 +            arguments
-             %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  818
-  Moved to point:  835
+  Start point   :  866
+  Moved to point:  883
   : 34:16:                 
   :                        ^
   Buffer modified:
@@ -487,19 +487,19 @@
 +++ end_contents
 @@ -31,6 +31,9 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
+             % Case6: (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
              arguments
 +                
 +            end
 +
-             %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
   #+end_src diff
 
 - Invoking      : (insert "a")
-  Start point   :  835
-  Moved to point:  836
+  Start point   :  883
+  Moved to point:  884
   : 34:17:                 a
   :                         ^
   Buffer modified:
@@ -508,29 +508,29 @@
 +++ end_contents
 @@ -31,7 +31,7 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
+             % Case6: (t-utils-xr "C-n" "C-i" (insert "arguments") "C-m" (insert "a"))
              arguments
 -                
 +                a
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:37:13:
+* Executing commands from electric_ends_cases.m:37:21:
 
-  (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+  Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  935
-  Moved to point:  936
+  Start point   :  991
+  Moved to point:  992
   : 38:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  936
-  Moved to point:  948
+  Start point   :  992
+  Moved to point: 1004
   : 38:12:             
   :                    ^
   Buffer modified:
@@ -540,17 +540,17 @@
 @@ -35,7 +35,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
 -
 +            
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
 - Invoking      : (insert "if a")
-  Start point   :  948
-  Moved to point:  952
+  Start point   : 1004
+  Moved to point: 1008
   : 38:16:             if a
   :                        ^
   Buffer modified:
@@ -560,17 +560,17 @@
 @@ -35,7 +35,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
 -            
 +            if a
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  952
-  Moved to point:  969
+  Start point   : 1008
+  Moved to point: 1025
   : 39:16:                 
   :                        ^
   Buffer modified:
@@ -579,19 +579,19 @@
 +++ end_contents
 @@ -36,6 +36,9 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
              if a
 +                
 +            end
 +
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
 - Invoking      : (insert "disp('if')")
-  Start point   :  969
-  Moved to point:  979
+  Start point   : 1025
+  Moved to point: 1035
   : 39:26:                 disp('if')
   :                                  ^
   Buffer modified:
@@ -600,29 +600,29 @@
 +++ end_contents
 @@ -36,7 +36,7 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
+             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
              if a
 -                
 +                disp('if')
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:42:13:
+* Executing commands from electric_ends_cases.m:42:21:
 
-  (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+  Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1111
-  Moved to point: 1112
+  Start point   : 1175
+  Moved to point: 1176
   : 43:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1112
-  Moved to point: 1124
+  Start point   : 1176
+  Moved to point: 1188
   : 43:12:             
   :                    ^
   Buffer modified:
@@ -632,17 +632,17 @@
 @@ -40,7 +40,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
 -
 +            
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
 - Invoking      : (insert "switch a")
-  Start point   : 1124
-  Moved to point: 1132
+  Start point   : 1188
+  Moved to point: 1196
   : 43:20:             switch a
   :                            ^
   Buffer modified:
@@ -652,17 +652,17 @@
 @@ -40,7 +40,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
 -            
 +            switch a
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1132
-  Moved to point: 1147
+  Start point   : 1196
+  Moved to point: 1211
   : 44:14:               case 
   :                      ^
   Buffer modified:
@@ -671,26 +671,26 @@
 +++ end_contents
 @@ -41,6 +41,9 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
 +              case 
 +            end
 +
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1147
-  Moved to point: 1152
+  Start point   : 1211
+  Moved to point: 1216
   : 44:19:               case 
   :                           ^
   No buffer modifications
 
 - Invoking      : (insert "1")
-  Start point   : 1152
-  Moved to point: 1153
+  Start point   : 1216
+  Moved to point: 1217
   : 44:20:               case 1
   :                            ^
   Buffer modified:
@@ -699,18 +699,18 @@
 +++ end_contents
 @@ -41,7 +41,7 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
 -              case 
 +              case 1
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1153
-  Moved to point: 1170
+  Start point   : 1217
+  Moved to point: 1234
   : 45:16:                 
   :                        ^
   Buffer modified:
@@ -718,18 +718,18 @@
 --- start_contents
 +++ end_contents
 @@ -42,6 +42,7 @@
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
                case 1
 +                
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
 - Invoking      : (insert "disp('case 1')")
-  Start point   : 1170
-  Moved to point: 1184
+  Start point   : 1234
+  Moved to point: 1248
   : 45:30:                 disp('case 1')
   :                                      ^
   Buffer modified:
@@ -737,30 +737,30 @@
 --- start_contents
 +++ end_contents
 @@ -42,7 +42,7 @@
-             %(t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
                case 1
 -                
 +                disp('case 1')
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:48:13:
+* Executing commands from electric_ends_cases.m:48:21:
 
-  (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+  Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1284
-  Moved to point: 1285
+  Start point   : 1356
+  Moved to point: 1357
   : 49:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1285
-  Moved to point: 1297
+  Start point   : 1357
+  Moved to point: 1369
   : 49:12:             
   :                    ^
   Buffer modified:
@@ -770,17 +770,17 @@
 @@ -46,7 +46,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
 -
 +            
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
 - Invoking      : (insert "while true")
-  Start point   : 1297
-  Moved to point: 1307
+  Start point   : 1369
+  Moved to point: 1379
   : 49:22:             while true
   :                              ^
   Buffer modified:
@@ -790,17 +790,17 @@
 @@ -46,7 +46,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
 -            
 +            while true
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1307
-  Moved to point: 1324
+  Start point   : 1379
+  Moved to point: 1396
   : 50:16:                 
   :                        ^
   Buffer modified:
@@ -809,19 +809,19 @@
 +++ end_contents
 @@ -47,6 +47,9 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
              while true
 +                
 +            end
 +
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
 - Invoking      : (insert "break")
-  Start point   : 1324
-  Moved to point: 1329
+  Start point   : 1396
+  Moved to point: 1401
   : 50:21:                 break
   :                             ^
   Buffer modified:
@@ -830,29 +830,29 @@
 +++ end_contents
 @@ -47,7 +47,7 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
+             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
              while true
 -                
 +                break
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:53:13:
+* Executing commands from electric_ends_cases.m:53:22:
 
-  (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+  Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1434
-  Moved to point: 1435
+  Start point   : 1515
+  Moved to point: 1516
   : 54:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1435
-  Moved to point: 1447
+  Start point   : 1516
+  Moved to point: 1528
   : 54:12:             
   :                    ^
   Buffer modified:
@@ -862,17 +862,17 @@
 @@ -51,7 +51,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
 -
 +            
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
   #+end_src diff
 
 - Invoking      : (insert "for idx=1:a")
-  Start point   : 1447
-  Moved to point: 1458
+  Start point   : 1528
+  Moved to point: 1539
   : 54:23:             for idx=1:a
   :                               ^
   Buffer modified:
@@ -882,17 +882,17 @@
 @@ -51,7 +51,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
 -            
 +            for idx=1:a
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1458
-  Moved to point: 1475
+  Start point   : 1539
+  Moved to point: 1556
   : 55:16:                 
   :                        ^
   Buffer modified:
@@ -901,19 +901,19 @@
 +++ end_contents
 @@ -52,6 +52,9 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
              for idx=1:a
 +                
 +            end
 +
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
   #+end_src diff
 
 - Invoking      : (insert "disp(idx)")
-  Start point   : 1475
-  Moved to point: 1484
+  Start point   : 1556
+  Moved to point: 1565
   : 55:25:                 disp(idx)
   :                                 ^
   Buffer modified:
@@ -922,29 +922,29 @@
 +++ end_contents
 @@ -52,7 +52,7 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
              for idx=1:a
 -                
 +                disp(idx)
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:58:13:
+* Executing commands from electric_ends_cases.m:58:22:
 
-  (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+  Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1592
-  Moved to point: 1593
+  Start point   : 1682
+  Moved to point: 1683
   : 59:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1593
-  Moved to point: 1605
+  Start point   : 1683
+  Moved to point: 1695
   : 59:12:             
   :                    ^
   Buffer modified:
@@ -954,17 +954,17 @@
 @@ -56,7 +56,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
 -
 +            
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
   #+end_src diff
 
 - Invoking      : (insert "parfor idx=1:a")
-  Start point   : 1605
-  Moved to point: 1619
+  Start point   : 1695
+  Moved to point: 1709
   : 59:26:             parfor idx=1:a
   :                                  ^
   Buffer modified:
@@ -974,17 +974,17 @@
 @@ -56,7 +56,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
 -            
 +            parfor idx=1:a
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1619
-  Moved to point: 1636
+  Start point   : 1709
+  Moved to point: 1726
   : 60:16:                 
   :                        ^
   Buffer modified:
@@ -993,19 +993,19 @@
 +++ end_contents
 @@ -57,6 +57,9 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
              parfor idx=1:a
 +                
 +            end
 +
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
  
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
   #+end_src diff
 
 - Invoking      : (insert "disp(idx)")
-  Start point   : 1636
-  Moved to point: 1645
+  Start point   : 1726
+  Moved to point: 1735
   : 60:25:                 disp(idx)
   :                                 ^
   Buffer modified:
@@ -1014,29 +1014,29 @@
 +++ end_contents
 @@ -57,7 +57,7 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
+             % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
              parfor idx=1:a
 -                
 +                disp(idx)
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:63:13:
+* Executing commands from electric_ends_cases.m:63:22:
 
-  (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+  Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1758
-  Moved to point: 1759
+  Start point   : 1857
+  Moved to point: 1858
   : 64:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1759
-  Moved to point: 1771
+  Start point   : 1858
+  Moved to point: 1870
   : 64:12:             
   :                    ^
   Buffer modified:
@@ -1046,17 +1046,17 @@
 @@ -61,7 +61,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
 -
 +            
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
  
          end
   #+end_src diff
 
 - Invoking      : (insert "spmd")
-  Start point   : 1771
-  Moved to point: 1775
+  Start point   : 1870
+  Moved to point: 1874
   : 64:16:             spmd
   :                        ^
   Buffer modified:
@@ -1066,17 +1066,17 @@
 @@ -61,7 +61,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
 -            
 +            spmd
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
  
          end
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1775
-  Moved to point: 1792
+  Start point   : 1874
+  Moved to point: 1891
   : 65:16:                 
   :                        ^
   Buffer modified:
@@ -1085,19 +1085,19 @@
 +++ end_contents
 @@ -62,6 +62,9 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
              spmd
 +                
 +            end
 +
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
  
          end
   #+end_src diff
 
 - Invoking      : (insert "q = magic(spmdIndex + 2)")
-  Start point   : 1792
-  Moved to point: 1816
+  Start point   : 1891
+  Moved to point: 1915
   : 65:40:                 q = magic(spmdIndex + 2)
   :                                                ^
   Buffer modified:
@@ -1106,29 +1106,29 @@
 +++ end_contents
 @@ -62,7 +62,7 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
+             % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
              spmd
 -                
 +                q = magic(spmdIndex + 2)
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:68:13:
+* Executing commands from electric_ends_cases.m:68:22:
 
-  (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+  Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1915
-  Moved to point: 1916
+  Start point   : 2023
+  Moved to point: 2024
   : 69:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1916
-  Moved to point: 1928
+  Start point   : 2024
+  Moved to point: 2036
   : 69:12:             
   :                    ^
   Buffer modified:
@@ -1138,7 +1138,7 @@
 @@ -66,7 +66,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
 -
 +            
          end
@@ -1147,8 +1147,8 @@
   #+end_src diff
 
 - Invoking      : (insert "try")
-  Start point   : 1928
-  Moved to point: 1931
+  Start point   : 2036
+  Moved to point: 2039
   : 69:15:             try
   :                       ^
   Buffer modified:
@@ -1158,7 +1158,7 @@
 @@ -66,7 +66,7 @@
              end
  
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
 -            
 +            try
          end
@@ -1167,8 +1167,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1931
-  Moved to point: 1948
+  Start point   : 2039
+  Moved to point: 2056
   : 70:16:                 
   :                        ^
   Buffer modified:
@@ -1177,7 +1177,7 @@
 +++ end_contents
 @@ -67,6 +67,10 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
              try
 +                
 +            catch me
@@ -1189,8 +1189,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp('try')")
-  Start point   : 1948
-  Moved to point: 1959
+  Start point   : 2056
+  Moved to point: 2067
   : 70:27:                 disp('try')
   :                                   ^
   Buffer modified:
@@ -1199,7 +1199,7 @@
 +++ end_contents
 @@ -67,7 +67,7 @@
  
-             %(t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
+             % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
              try
 -                
 +                disp('try')
@@ -1208,12 +1208,12 @@
  
   #+end_src diff
 
-* Executing commands from electric_ends_cases.m:79:1:
+* Executing commands from electric_ends_cases.m:79:10:
 
-  (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  Case14: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
 
 - Invoking      : (t-utils-xr-print-code (point-min) (point-max))
-  Start point   : 2085
+  Start point   : 2202
   No point movement
   standard-output:
   #+begin_src matlab-ts
@@ -1221,70 +1221,70 @@
 
 classdef electric_ends_cases
 
-    %(t-utils-xr \"C-n\" \"C-i\" (insert \"properties\") \"C-m\" (insert \"p1\"))
+    % Case1: (t-utils-xr \"C-n\" \"C-i\" (insert \"properties\") \"C-m\" (insert \"p1\"))
     properties
         p1
     end
 
-    %(t-utils-xr \"C-n\" \"C-i\" (insert \"methods\") \"C-m\" (insert \"% methods-comment\"))
+    % Case2: (t-utils-xr \"C-n\" \"C-i\" (insert \"methods\") \"C-m\" (insert \"% methods-comment\"))
     methods
         % methods-comment
     end
 
-    %(t-utils-xr \"C-n\" \"C-i\" (insert \"events\") \"C-m\" (insert \"% events-comment\"))
+    % Case3: (t-utils-xr \"C-n\" \"C-i\" (insert \"events\") \"C-m\" (insert \"% events-comment\"))
     events
         % events-comment
     end
 
     methods
 
-        %(t-utils-xr \"C-n\" \"C-i\" (insert \"function bar\") \"C-m\" (insert \"disp('bar')\"))
+        % Case4: (t-utils-xr \"C-n\" \"C-i\" (insert \"function bar\") \"C-m\" (insert \"disp('bar')\"))
         function bar
             disp('bar')
         end
 
-        %(t-utils-xr (re-search-forward \"foo help\") \"C-m\" \"C-e\" (insert \"line 2\"))
+        % Case5: (t-utils-xr (re-search-forward \"foo help\") \"C-m\" \"C-e\" (insert \"line 2\"))
         function foo(a)
         % foo help
         % line 2
 
-            %(t-utils-xr \"C-n\" \"C-i\" (insert \"arguments\") \"C-m\" (insert \"a\"))
+            % Case6: (t-utils-xr \"C-n\" \"C-i\" (insert \"arguments\") \"C-m\" (insert \"a\"))
             arguments
                 a
             end
 
-            %(t-utils-xr \"C-n\" \"C-i\" (insert \"if a\") \"C-m\" (insert \"disp('if')\"))
+            % Case7: (t-utils-xr \"C-n\" \"C-i\" (insert \"if a\") \"C-m\" (insert \"disp('if')\"))
             if a
                 disp('if')
             end
 
-            %(t-utils-xr \"C-n\" \"C-i\" (insert \"switch a\") \"C-m\" \"C-e\" (insert \"1\") \"C-m\" (insert \"disp('case 1')\"))
+            % Case8: (t-utils-xr \"C-n\" \"C-i\" (insert \"switch a\") \"C-m\" \"C-e\" (insert \"1\") \"C-m\" (insert \"disp('case 1')\"))
             switch a
               case 1
                 disp('case 1')
             end
 
-            %(t-utils-xr \"C-n\" \"C-i\" (insert \"while true\") \"C-m\" (insert \"break\"))
+            % Case9: (t-utils-xr \"C-n\" \"C-i\" (insert \"while true\") \"C-m\" (insert \"break\"))
             while true
                 break
             end
 
-            %(t-utils-xr \"C-n\" \"C-i\" (insert \"for idx=1:a\") \"C-m\" (insert \"disp(idx)\"))
+            % Case10: (t-utils-xr \"C-n\" \"C-i\" (insert \"for idx=1:a\") \"C-m\" (insert \"disp(idx)\"))
             for idx=1:a
                 disp(idx)
             end
 
-            %(t-utils-xr \"C-n\" \"C-i\" (insert \"parfor idx=1:a\") \"C-m\" (insert \"disp(idx)\"))
+            % Case11: (t-utils-xr \"C-n\" \"C-i\" (insert \"parfor idx=1:a\") \"C-m\" (insert \"disp(idx)\"))
             parfor idx=1:a
                 disp(idx)
             end
 
-            %(t-utils-xr \"C-n\" \"C-i\" (insert \"spmd\") \"C-m\" (insert \"q = magic(spmdIndex + 2)\"))
+            % Case12: (t-utils-xr \"C-n\" \"C-i\" (insert \"spmd\") \"C-m\" (insert \"q = magic(spmdIndex + 2)\"))
             spmd
                 q = magic(spmdIndex + 2)
             end
 
-            %(t-utils-xr \"C-n\" \"C-i\" (insert \"try\") \"C-m\" (insert \"disp('try')\"))
+            % Case13: (t-utils-xr \"C-n\" \"C-i\" (insert \"try\") \"C-m\" (insert \"disp('try')\"))
             try
                 disp('try')
             catch me
@@ -1295,7 +1295,7 @@ classdef electric_ends_cases
 
 end
 
-%(t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+% Case14: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
 
   #+end_src
   No buffer modifications

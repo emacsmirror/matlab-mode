@@ -2,27 +2,27 @@
 
 function b = thing_defun(a)
 
-    % (t-utils-xr (beginning-of-defun))
-    % (t-utils-xr "C-M-a")
+    % Case1: (t-utils-xr (beginning-of-defun))
+    % Case2: (t-utils-xr "C-M-a")
     x = 1;
 
-    % (t-utils-xr (end-of-defun) (end-of-defun) (end-of-defun) (end-of-defun))
-    % (t-utils-xr "C-M-e" "C-M-e" "C-M-e" "C-M-e")
+    % Case3: (t-utils-xr (end-of-defun) (end-of-defun) (end-of-defun) (end-of-defun))
+    % Case4: (t-utils-xr "C-M-e" "C-M-e" "C-M-e" "C-M-e")
 
     b = nested1(a) + nested2(a);
 
     function out = nested1(in)
         out = x + helper1(in);
-        % (t-utils-xr "C-M-a")
-        % (t-utils-xr "C-M-a" "C-M-a")
-        % (t-utils-xr "C-M-e" "C-M-e" "C-M-e" "C-M-e")
+        % Case5: (t-utils-xr "C-M-a")
+        % Case6: (t-utils-xr "C-M-a" "C-M-a")
+        % Case7: (t-utils-xr "C-M-e" "C-M-e" "C-M-e" "C-M-e")
     end
 
     function out = nested2(in)
 
-        % (t-utils-xr "C-M-a")
+        % Case8: (t-utils-xr "C-M-a")
         out = 2 * x + in;
-        % (t-utils-xr "C-M-a")
+        % Case9: (t-utils-xr "C-M-a")
     end
 
     b = 2 * b;
@@ -34,5 +34,5 @@ end
 
 function out = helper2(in)
     out = in *2;
-    % (t-utils-xr "C-M-a" "C-M-a" "C-M-a" "C-M-a")
+    % Case10: (t-utils-xr "C-M-a" "C-M-a" "C-M-a" "C-M-a")
 end
