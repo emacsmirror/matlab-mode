@@ -1347,8 +1347,8 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
 
 (defvar matlab-ts--indent-debug-rule
   '((lambda (node parent bol)
-      (message "-->N:%S P:%S BOL:%S GP:%S NPS:%S"
-               node parent bol
+      (message "-->N:%S P:%S L:%d BOL:%S GP:%S NPS:%S"
+               node parent (line-number-at-pos) bol
                (treesit-node-parent parent)
                (treesit-node-prev-sibling node))
       nil)
@@ -2765,8 +2765,12 @@ If optional NO-PROMPT is t, fix the name if needed without prompting."
                              (insert base-name-no-ext))))))
                    (cl-return))
 
-                  ;; Case: anything except a comment
-                  ((not (string= "comment" child-type))
+                  ;; Case: any other code means this is a script, so no on save fix
+                  ((not (string-match-p (rx bos (or "comment"
+                                                    "line_continuation"
+                                                    "\n")
+                                            eos)
+                                        child-type))
                    (cl-return))))))))
 
 (defun matlab-ts-mode--write-file-callback ()
@@ -3154,7 +3158,11 @@ This callback also implements `matlab-ts-mode-electric-ends'."
                                    (child-idx 0)
                                    (child (treesit-node-child root child-idx)))
                               (while (and child
-                                          (string= (treesit-node-type child) "comment"))
+                                          (string-match-p (rx bos (or "comment"
+                                                                      "line_continuation"
+                                                                      "\n")
+                                                              eos)
+                                                          (treesit-node-type child)))
                                 (setq child-idx (1+ child-idx))
                                 (setq child (treesit-node-child root child-idx)))
                               child))
@@ -3504,10 +3512,20 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO t-utils-xr
+    ;;      Require a "label:" before the (t-utils-xr ...) command help with reading the *.org
+    ;;      files. The line numbers don't help. With this well have in the *.org files:
+    ;;           * Executing commands from foo.m:N:C
+    ;;               label: (t-utils-xr ...)
+    ;;      Labels cannot be duplicated.
+    ;;
     ;; TODO font-lock: matlab.mixin.SetGetExactNames is not in matlab-ts-mode--builtins.el?
     ;;
     ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
     ;;      think it was missing a few toolboxes.
+    ;;
+    ;; TODO [future] Improve semantic movement
+    ;;      thing-settings doesn't work well. Directly implement C-M-f, M-e, etc.
     ;;
     ;; TODO [future] add matlab-sections-minor-mode indicator in mode line and make it clickable so
     ;;      it can be turned off

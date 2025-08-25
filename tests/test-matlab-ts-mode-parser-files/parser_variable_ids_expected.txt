@@ -1,5 +1,5 @@
 # tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}
-(source_file (comment[1,20]{% -*- matlab-ts -*-})
+(source_file (comment[1,20]{% -*- matlab-ts -*-}) \n
  (function_definition function
   (function_output (identifier[31,35]{out1}) =)
   name: (identifier[38,57]{parser_variable_ids})

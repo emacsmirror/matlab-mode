@@ -6,13 +6,13 @@
 
 - Invoking      : "M-e" = forward-sentence
   Start point   :   48
-  Moved to point:   72
-  : 4:23: classdef thing_sentance
-  :                              ^
+  Moved to point: 1688
+  : 102:3: end
+  :           ^
   No buffer modifications
 
 - Invoking      : "M-a" = backward-sentence
-  Start point   :   72
+  Start point   : 1688
   Moved to point:   49
   : 4:0: classdef thing_sentance
   :      ^

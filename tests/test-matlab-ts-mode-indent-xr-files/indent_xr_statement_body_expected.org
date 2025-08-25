@@ -432,43 +432,28 @@
 
 - Invoking      : "C-i" = indent-for-tab-command
   Start point   :  788
-  Moved to point:  784
-  : 30:18:                 %c
-  :                          ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -27,7 +27,7 @@
- 
-                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
-                 spmd
--                    %c
-+                %c
-                 end
- 
-                 % (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
-  #+end_src diff
+  No point movement
+  No buffer modifications
 
 * Executing commands from indent_xr_statement_body.m:33:18:
 
   (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   :  874
-  Moved to point:  900
+  Start point   :  878
+  Moved to point:  904
   : 34:25:             elseif a == 2
   :                                 ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  900
+  Start point   :  904
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  900
-  Moved to point:  917
+  Start point   :  904
+  Moved to point:  921
   : 35:16:                 
   :                        ^
   Buffer modified:
@@ -486,8 +471,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   :  917
-  Moved to point:  919
+  Start point   :  921
+  Moved to point:  923
   : 35:18:                 %c
   :                          ^
   Buffer modified:
@@ -506,7 +491,7 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  919
+  Start point   :  923
   No point movement
   No buffer modifications
 
@@ -515,20 +500,20 @@
   (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   :  989
-  Moved to point: 1006
+  Start point   :  993
+  Moved to point: 1010
   : 38:16:             else
   :                        ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1006
+  Start point   : 1010
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   : 1006
-  Moved to point: 1023
+  Start point   : 1010
+  Moved to point: 1027
   : 39:16:                 
   :                        ^
   Buffer modified:
@@ -546,8 +531,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   : 1023
-  Moved to point: 1025
+  Start point   : 1027
+  Moved to point: 1029
   : 39:18:                 %c
   :                          ^
   Buffer modified:
@@ -566,7 +551,7 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1025
+  Start point   : 1029
   No point movement
   No buffer modifications
 
@@ -575,20 +560,20 @@
   (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1124
-  Moved to point: 1144
+  Start point   : 1128
+  Moved to point: 1148
   : 44:19:             while a
   :                           ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1144
+  Start point   : 1148
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   : 1144
-  Moved to point: 1161
+  Start point   : 1148
+  Moved to point: 1165
   : 45:16:                 
   :                        ^
   Buffer modified:
@@ -606,8 +591,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   : 1161
-  Moved to point: 1163
+  Start point   : 1165
+  Moved to point: 1167
   : 45:18:                 %c
   :                          ^
   Buffer modified:
@@ -626,7 +611,7 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1163
+  Start point   : 1167
   No point movement
   No buffer modifications
 
@@ -635,20 +620,20 @@
   (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1245
-  Moved to point: 1273
+  Start point   : 1249
+  Moved to point: 1277
   : 49:27:             for fIdx = 1:10
   :                                   ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1273
+  Start point   : 1277
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   : 1273
-  Moved to point: 1290
+  Start point   : 1277
+  Moved to point: 1294
   : 50:16:                 
   :                        ^
   Buffer modified:
@@ -666,8 +651,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   : 1290
-  Moved to point: 1292
+  Start point   : 1294
+  Moved to point: 1296
   : 50:18:                 %c
   :                          ^
   Buffer modified:
@@ -686,7 +671,7 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1292
+  Start point   : 1296
   No point movement
   No buffer modifications
 
@@ -695,20 +680,20 @@
   (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1386
-  Moved to point: 1397
+  Start point   : 1390
+  Moved to point: 1401
   : 56:10:     events
   :                  ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1397
+  Start point   : 1401
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   : 1397
-  Moved to point: 1406
+  Start point   : 1401
+  Moved to point: 1410
   : 57:8:         
   :               ^
   Buffer modified:
@@ -726,8 +711,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   : 1406
-  Moved to point: 1408
+  Start point   : 1410
+  Moved to point: 1412
   : 57:10:         %c
   :                  ^
   Buffer modified:
@@ -746,7 +731,7 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1408
+  Start point   : 1412
   No point movement
   No buffer modifications
 
@@ -755,20 +740,20 @@
   (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1474
-  Moved to point: 1490
+  Start point   : 1478
+  Moved to point: 1494
   : 61:15:     enumeration
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1490
+  Start point   : 1494
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   : 1490
-  Moved to point: 1499
+  Start point   : 1494
+  Moved to point: 1503
   : 62:8:         
   :               ^
   Buffer modified:
@@ -786,8 +771,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   : 1499
-  Moved to point: 1501
+  Start point   : 1503
+  Moved to point: 1505
   : 62:10:         %c
   :                  ^
   Buffer modified:
@@ -806,7 +791,7 @@
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1501
+  Start point   : 1505
   No point movement
   No buffer modifications
 
@@ -815,7 +800,7 @@
   (t-utils-xr (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
 
 - Invoking      : (re-search-backward "^classdef")
-  Start point   : 1635
+  Start point   : 1639
   Moved to point:   75
   : 4:0: classdef indent_xr_statement_body < handle
   :      ^
@@ -852,7 +837,7 @@ classdef indent_xr_statement_body < handle
 
                 % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
                 spmd
-                %c
+                    %c
                 end
 
                 % (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")

@@ -1,5 +1,5 @@
 # tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}
-(source_file (comment[1,20]{% -*- matlab-ts -*-})
+(source_file (comment[1,20]{% -*- matlab-ts -*-}) \n
  (assignment left: (identifier[22,23]{a}) =
   right: 
    (cell {
