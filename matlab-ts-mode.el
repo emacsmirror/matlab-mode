@@ -3544,11 +3544,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO test/sweep-test-matlab-ts-grammar.sh
-    ;;      Detect when there's no ending newline and report that.
-    ;;      Perhaps do this in matlab-ts-mode?
-    ;;      Add newline for sweep test if need?
-    ;;
     ;; TODO [future] Improve semantic movement
     ;;      thing-settings doesn't work well. Directly implement C-M-f, M-e, etc.
     ;;

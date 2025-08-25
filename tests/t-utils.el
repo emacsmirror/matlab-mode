@@ -1997,6 +1997,11 @@ otherwise the result is displayed on stdout."
           (condition-case err
               (progn
                 (t-utils--insert-file-for-test lang-file major-mode-fun)
+                (save-excursion
+                  (goto-char (point-max))
+                  ;; tree-sitter requires a final newline. Without a final newline, a parse error will occur.
+                  (when (not (looking-at "\n"))
+                    (insert "\n")))
                 (setq ok t))
             (error
              (t-utils--log log-file (format "Skipping %s, %s\n"
