@@ -13,16 +13,33 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #
+# Notes:
+# ------
+#
+#   To run a single t-utils.el based test:
+#      make RUN_T_UTILS_TEST=test-NAME
+#   For example:
+#      make RUN_T_UTILS_TEST=test-matlab-ts-mode-indent
+#
+#   To run a single t-utils.el based test with extra flags, add T_UTILS_FLAGS. For example:
+#      make T_UTILS_FLAGS="--eval '(setq treesit--indent-verbose t)'" \
+#           RUN_T_UTILS_TEST=test-matlab-ts-mode-indent
+#
 
 EMACS ?= emacs
 EMACSFLAGS = --batch -Q --eval '(setq debug-on-error t)'
 
 MATLAB_FILES = $(wildcard *.m)
 
-TEST_TARGETS = modetests
+ifneq ($(RUN_T_UTILS_TEST),)
+    TEST_TARGETS = $(RUN_T_UTILS_TEST)
+else
+    TEST_TARGETS = modetests
 
-ifndef OS # OS is defined on Windows (e.g. OS=Windows_NT) and there's no MATLAB shell tests on windows.
-   TEST_TARGETS += shelltests
+    # OS is defined on Windows (e.g. OS=Windows_NT) and there's no MATLAB shell tests on windows.
+    ifndef OS
+       TEST_TARGETS += shelltests
+    endif
 endif
 
 CLEAN_MATLABPATH = env MATLABPATH=
@@ -38,10 +55,12 @@ modetests: metest.el
 shelltests: mstest.el
 	$(CLEAN_MATLABPATH) "$(EMACS)" $(EMACSFLAGS) -l mstest.el $(MATLAB_PROG_SETUP) -e "mstest-run-all-tests"
 
-.PHONY: test-matlab-ts-mode-font-lock
-test-matlab-ts-mode-font-lock:
-	"$(EMACS)" $(EMACSFLAGS) -l $@.el -e $@
-
+ifneq ($(RUN_T_UTILS_TEST),)
+.PHONY: $(RUN_T_UTILS_TEST)
+$(RUN_T_UTILS_TEST):
+	"$(EMACS)" $(EMACSFLAGS) -L . -l t-utils.el $(T_UTILS_FLAGS) \
+	  -eval '(t-utils-run "$(RUN_T_UTILS_TEST).el")'
+endif
 
 # [eof] tests/Makefile
 
