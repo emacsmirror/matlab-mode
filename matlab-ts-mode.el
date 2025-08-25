@@ -588,14 +588,16 @@ than the COMMENT-NODE start-point and end-point."
                                                override start end))
             (goto-char comment-end)))))))
 
-(defun matlab-ts-mode--namespace-builtins-capture (field-expression-node override start end &rest _)
+(defun matlab-ts-mode--namespace-builtins-capture (namespace-node override start end &rest _)
   "Fontify foo.bar.goo when it is a builtin function.
-FIELD-EXPRESSION-NODE is the tree-sitter comment node from a
+NAMESPACE-NODE is the tree-sitter field_expression or a superclass
+property_name node.  These nodes have children that for a PATH,
+e.g. \"foo.bar.goo\".  This is connected to the namespace-builtins
 treesit-font-lock-rules rule and OVERRIDE is from that rule.  START and
 END specify the region to be fontified which could be smaller or larger
 than the FILED-EXPRESSION-NODE start-point and end-point."
-  (let ((children (treesit-node-children field-expression-node))
-        (path "")) ;; The "path" of FIELD-EXPRESSION, e.g. foo.bar.goo
+  (let ((children (treesit-node-children namespace-node))
+        (path "")) ;; The "path" of NAMESPACE, e.g. foo.bar.goo
     (cl-loop for child in children do
              (let ((child-type (treesit-node-type child)))
                (cond
@@ -612,7 +614,7 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
                  (cl-return)))))
     (let ((builtin-type (gethash path matlab-ts-mode--builtins-ht)))
       (when builtin-type
-        (let ((builtin-start (treesit-node-start field-expression-node))
+        (let ((builtin-start (treesit-node-start namespace-node))
               builtin-end
               prop-start
               prop-end)
@@ -789,6 +791,14 @@ Example, disp variable is overriding the disp builtin function:
      (property name: (identifier) (identifier) @font-lock-type-face :?)
      (property name: (property_name (identifier)) (identifier) @font-lock-type-face :?))
 
+   ;; F-Rule: namespaces (the +dir's, class methods, etc.)
+   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m
+   :language 'matlab
+   :feature 'namespace-builtins
+   :override t
+   `((superclasses (property_name) @matlab-ts-mode--namespace-builtins-capture)
+     (field_expression) @matlab-ts-mode--namespace-builtins-capture)
+
    ;; F-Rule: factory items that come with MATLAB, Simulink, or add-on products
    ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_builtins.m
    :language 'matlab
@@ -797,13 +807,6 @@ Example, disp variable is overriding the disp builtin function:
       (:pred matlab-ts-mode--is-identifier-builtin @font-lock-builtin-face))
      ((command_name) @font-lock-builtin-face
       (:pred matlab-ts-mode--is-command-builtin @font-lock-builtin-face)))
-
-   ;; F-Rule: namespaces (the +dir's, class methods, etc.)
-   ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_namespaces.m
-   :language 'matlab
-   :feature 'namespace-builtins
-   :override t
-   `((field_expression) @matlab-ts-mode--namespace-builtins-capture)
 
    ;; F-Rule: function/classdef and items defining them, e.g. the function arguments
    :language 'matlab
@@ -3518,11 +3521,6 @@ so configuration variables of that mode, do not affect this mode.
     ;;           * Executing commands from foo.m:N:C
     ;;               label: (t-utils-xr ...)
     ;;      Labels cannot be duplicated.
-    ;;
-    ;; TODO font-lock: matlab.mixin.SetGetExactNames is not in matlab-ts-mode--builtins.el?
-    ;;
-    ;; TODO update matlab-ts-mode--builtins.el. I generated using R2025a installation, though I
-    ;;      think it was missing a few toolboxes.
     ;;
     ;; TODO [future] Improve semantic movement
     ;;      thing-settings doesn't work well. Directly implement C-M-f, M-e, etc.

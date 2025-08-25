@@ -34,6 +34,9 @@ function genBuiltinsHashTable
 %    quit MATLAB.
 %
 % 2. Place the contents of /tmp/builtins-ht.el in ../matlab-ts-mode--builtins.el
+%    Sort the entries of the hash table using sort line case insensitive
+%    (defun sort-lines-i () (interactive)(let ((sort-fold-case t))(call-interactively 'sort-lines)))
+% 
 %
 % 3. rm /tmp/builtins-he.el
 %
@@ -152,9 +155,11 @@ function [ht, nEntries, bMap] = getHashTableEntries(fcnStart, ht, nEntries, bMap
             entryType = m{1}{3};
 
             switch entryType
+              case 'keyword'
+                % we have these handled as keywords in matlab-ts-mode
               case {'mFile', 'pFile', 'mex', 'function', 'method', ...
                     'class', ...
-                    'keyword', 'variable', 'pathItem', 'mlappFile', 'mlxFile', ...
+                    'variable', 'pathItem', 'mlappFile', 'mlxFile', ...
                     'mdlFile', 'slxFile', 'sscFile', 'sfxFile'}
                 comment = [' ;; (', entryType, ')'];
                 desc = strtrim(m{1}{2});
