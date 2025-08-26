@@ -1,0 +1,81 @@
+#+startup: showall
+
+* Executing commands from electric_ends_function_with_no_end.m:7:9:
+
+  Case1: (t-utils-xr "C-n" (insert "function foo1") "C-m" (insert "disp('foo1')") (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  251
+  Moved to point:  252
+  : 8:0: 
+  :      ^
+  No buffer modifications
+
+- Invoking      : (insert "function foo1")
+  Start point   :  252
+  Moved to point:  265
+  : 8:13: function foo1
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -5,3 +5,4 @@
+ foo1();
+ 
+ % Case1: (t-utils-xr "C-n" (insert "function foo1") "C-m" (insert "disp('foo1')") (t-utils-xr-print-code (point-min) (point-max)))
++function foo1
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  265
+  Moved to point:  266
+  : 9:0: 
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -5,4 +5,4 @@
+ foo1();
+ 
+ % Case1: (t-utils-xr "C-n" (insert "function foo1") "C-m" (insert "disp('foo1')") (t-utils-xr-print-code (point-min) (point-max)))
+-function foo1
+\ No newline at end of file
++function foo1
+  #+end_src diff
+
+- Invoking      : (insert "disp('foo1')")
+  Start point   :  266
+  Moved to point:  278
+  : 9:12: disp('foo1')
+  :                   ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -6,3 +6,4 @@
+ 
+ % Case1: (t-utils-xr "C-n" (insert "function foo1") "C-m" (insert "disp('foo1')") (t-utils-xr-print-code (point-min) (point-max)))
+ function foo1
++disp('foo1')
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :  278
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+function electric_ends_function_with_no_end
+disp('in electric_ends_function_with_no_end')
+foo1();
+
+% Case1: (t-utils-xr \"C-n\" (insert \"function foo1\") \"C-m\" (insert \"disp('foo1')\") (t-utils-xr-print-code (point-min) (point-max)))
+function foo1
+disp('foo1')
+  #+end_src
+  No buffer modifications

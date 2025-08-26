@@ -3068,12 +3068,14 @@ THERE-END MISMATCH) or nil."
             (cond
 
              ;; Case: Was a statement entered that requires and end?
-             ((string-match-p (rx bos (or "function" "arguments" "if" "switch" "while" "for" "parfor"
-                                          "spmd" "try" "classdef" "enumeration" "properties" "methods"
-                                          "events")
+             ((string-match-p (rx bos (or "function" "arguments" "if" "switch" "while" "for"
+                                          "parfor" "spmd" "try" "classdef" "enumeration"
+                                          "properties" "methods" "events")
                                   eos)
                               node-type)
-              (when (matlab-ts-mode--is-electric-end-missing node) ;; Is the statement missing an end?
+              (when (and (or (> matlab-ts-mode--function-indent-level 0)
+                             (not (string= node-type "function")))
+                         (matlab-ts-mode--is-electric-end-missing node)) ;; Missing an end?
                 ;; Statement for the RET doesn't have an end, so add one at end-indent-level
                 (setq end-indent-level (current-indentation))
                 (setq pre-insert "\n")
