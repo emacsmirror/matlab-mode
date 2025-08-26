@@ -3056,7 +3056,10 @@ THERE-END MISMATCH) or nil."
         extra-insert
         item-to-insert
         move-point-to-extra-insert
-        (pre-insert ""))
+        (pre-insert "")
+        (statement-with-end-re (rx (or "function" "arguments" "if" "switch" "while" "for"
+                                       "parfor" "spmd" "try" "classdef" "enumeration"
+                                       "properties" "methods" "events"))))
 
     (save-excursion
       (forward-line -1)
@@ -3068,11 +3071,10 @@ THERE-END MISMATCH) or nil."
             (cond
 
              ;; Case: Was a statement entered that requires and end?
-             ((string-match-p (rx bos (or "function" "arguments" "if" "switch" "while" "for"
-                                          "parfor" "spmd" "try" "classdef" "enumeration"
-                                          "properties" "methods" "events")
-                                  eos)
-                              node-type)
+             ((and (string-match-p (concat "\\`" statement-with-end-re "\\'") node-type)
+                   ;; must be at a keyword and not in whitespace before it
+                   ;; See: tests/test-matlab-ts-mode-electric-ends-files/electric_ends_in_ws.m
+                   (looking-at statement-with-end-re))
               (when (and (or (> matlab-ts-mode--function-indent-level 0)
                              (not (string= node-type "function")))
                          (matlab-ts-mode--is-electric-end-missing node)) ;; Missing an end?

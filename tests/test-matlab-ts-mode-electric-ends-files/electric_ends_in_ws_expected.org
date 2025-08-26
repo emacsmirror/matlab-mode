@@ -1,0 +1,45 @@
+#+startup: showall
+
+* Executing commands from electric_ends_in_ws.m:3:9:
+
+  Case1: (t-utils-xr "C-n" "C-m" (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  103
+  Moved to point:  104
+  : 4:0: 
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  104
+  Moved to point:  105
+  : 5:0: 
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,5 +2,6 @@
+ 
+ % Case1: (t-utils-xr "C-n" "C-m" (t-utils-xr-print-code (point-min) (point-max)))
+ 
++
+ if a
+     disp('foo')
+  #+end_src diff
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :  105
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+% Case1: (t-utils-xr \"C-n\" \"C-m\" (t-utils-xr-print-code (point-min) (point-max)))
+
+
+if a
+    disp('foo')
+  #+end_src
+  No buffer modifications
