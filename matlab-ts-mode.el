@@ -1731,10 +1731,8 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                   matlab-ts-mode--indent-level))
 
                (_
-                (if last-child-of-error-node
-                    ;; Part of a continuation, so 4 for that plus 4 for parent
-                    (* 2 matlab-ts-mode--indent-level)
-                  matlab-ts-mode--indent-level)))))))
+                matlab-ts-mode--indent-level)
+               )))))
     (setq matlab-ts-mode--i-next-line-pair
           (cons (treesit-node-start anchor-node) indent-level))))
 
@@ -1790,7 +1788,7 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
             ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_classdef3.m
             (setq matlab-ts-mode--i-next-line-pair
                   (cons (treesit-node-start last-child) 0))
-            (cl-return-from matlab-ts-mode--i-next-line-matcher t)))))))
+            t))))))
 
 (defun matlab-ts-mode--not-node-and-blank (node bol)
   "Is NODE nil with BOL on a blank line?"
@@ -1833,7 +1831,7 @@ For LAST-CHILD-OF-ERROR-NODE and NODE-TO-CHECK see
 
   (let (prev-sibling-to-check
         prev-sibling-error-node
-        saw-close-paren
+        (close-paren-count 0)
         (prev-sibling (if last-child-of-error-node
                           last-child-of-error-node ;; is our "prev-sibling"
                         (treesit-node-prev-sibling node-to-check))))
@@ -1865,11 +1863,11 @@ For LAST-CHILD-OF-ERROR-NODE and NODE-TO-CHECK see
             (setq prev-sibling-error-node prev-sibling))
 
            ((string= prev-sibling-type ")")
-            (setq saw-close-paren t))
+            (setq close-paren-count (1+ close-paren-count)))
 
            ((and (string= prev-sibling-type "(")
-                 saw-close-paren)
-            (setq saw-close-paren nil))
+                 (> close-paren-count 0))
+            (setq close-paren-count (1- close-paren-count)) 0)
 
            ((and (string-match-p matlab-ts-mode--i-next-line-anchors-rx prev-sibling-type)
                  (or (not (string= prev-sibling-type "("))
@@ -2144,10 +2142,6 @@ Example:
      ;; I-Rule: within a code block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
 
-     ;; xxx
-     ;; ;; I-Rule: last line of code block comment "%{ ... %}"?
-     ;; (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
-
      ;; I-Rule: switch case and otherwise statements
      ((node-is ,(rx bos (or "case_clause" "otherwise_clause") eos))
       parent ,matlab-ts-mode--switch-indent-level)
@@ -2189,16 +2183,6 @@ Example:
      ;; I-Rule: items in blocks
      ((n-p-gp nil ,(rx bos "property" eos) ,(rx bos "properties" eos))
       grand-parent ,matlab-ts-mode--indent-level)
-
-     ;; ;; I-Rule: property/argument continuation
-     ;; ;;         arguments
-     ;; ;;             a ...
-     ;; ;;                 ^   RET/TAB to here
-     ;; ;;         end
-     ;; ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_classdef_abs_methods.m
-     ;; xxx
-     ;; ((n-p-gp nil ,(rx bos "line_continuation" eos) ,(rx bos "property" eos))
-     ;;  grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: property continuation
      ((n-p-gp nil ,(rx bos "default_value" eos) ,(rx bos "property" eos))
@@ -2277,6 +2261,7 @@ Example:
 
      ;; I-Rule: disp(myMatrix(1:  ...
      ;; <TAB>                 end));
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_ranges.m
      ((parent-is ,(rx bos "range" eos)) parent 0)
 
      ;; I-Rule: try<RET>    |   catch<RET>
@@ -3544,6 +3529,18 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO [future] Indent - complex for statement
+    ;;         function a = foo(inputArgument1)
+    ;;             for (idx = (a.b.getStartValue(((inputArgument1 + someOtherFunction(b)) * 2 - ...
+    ;;                                            offset))) ...
+    ;;     TAB>         : ...
+    ;;                  2 * (a.b.myFcn(inputArgument1, ...
+    ;;                                 'end') + ...
+    ;;                       100))
+    ;;                 disp(idx)
+    ;;             end
+    ;;         end
+    ;;
     ;; TODO [future] Improve semantic movement
     ;;      thing-settings doesn't work well. Directly implement C-M-f, M-e, etc.
     ;;
@@ -3661,3 +3658,4 @@ matlab-language-server-lsp-mode.org\n"
 ;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
 ;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd
+;; LocalWords:  matlabls vscode
