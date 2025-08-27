@@ -254,8 +254,8 @@ content can crash Emacs via the matlab tree-sitter parser."
     (when bad-char-point
       (fundamental-mode)
       (goto-char bad-char-point)
-      (user-error "Buffer appears corrupt, non-printable utf8 character at point %d: %c"
-                  bad-char-point (char-before)))))
+      (user-error "Not entring matlab-ts-mode due to non-printable utf8 character \"%c\" at point %d"
+                  (char-before) bad-char-point ))))
 
 ;;; Syntax table
 
