@@ -1904,7 +1904,7 @@ ERROR-INFO is \"at line NUM:COL<optional-text\""
 (defun t-utils--err-locs (capture-errors)
   "Get list of \"type at line N1:C1 to N2:C2\" for each error.
 CAPTURE-ERRORS is result of `treesit-query-capture' and
-each elelment is a cons pair (NAME . NODE)."
+each element is a cons pair (NAME . NODE)."
 
   (let ((result-list '()))
     (dolist (capture-error capture-errors)
@@ -1999,7 +1999,8 @@ otherwise the result is displayed on stdout."
                 (t-utils--insert-file-for-test lang-file major-mode-fun)
                 (save-excursion
                   (goto-char (point-max))
-                  ;; tree-sitter requires a final newline. Without a final newline, a parse error will occur.
+                  ;; tree-sitter requires a final newline.  Without a final newline, a parse error
+                  ;; will occur.
                   (when (not (looking-at "\n"))
                     (insert "\n")))
                 (setq ok t))
@@ -2291,6 +2292,6 @@ To debug a specific -parser test file
 ;;; t-utils.el ends here
 
 ;; LocalWords:  lang defun alist eos treesit lf setq truename dolist nondirectory bos buf funcall
-;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib
+;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash
 ;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow
