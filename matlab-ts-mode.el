@@ -1446,8 +1446,8 @@ Similar for case and otherwise statements."
     (and prev-sibling
          (string= (treesit-node-type prev-sibling) "line_continuation"))))
 
-(defun matlab-ts-mode--i-cont-offset (_node parent _bol &rest _)
-  "Get the ellipsis continuation offset based on PARENT.
+(defun matlab-ts-mode--i-cont-offset (node parent _bol &rest _)
+  "Get the ellipsis continuation offset based on NODE with PARENT.
 This is `matlab-ts-mode--indent-level' or 0 when in a cell or matrix
 row."
   (let ((row-node (let ((n parent))
@@ -1455,9 +1455,22 @@ row."
                                 (not (string= (treesit-node-type n) "row")))
                       (setq n (treesit-node-parent n)))
                     n)))
-    (if row-node
-        0
-      matlab-ts-mode--indent-level)))
+    (cond
+     (row-node
+      0)
+     ((string= (treesit-node-type parent) "superclasses")
+      (if (and node
+               (string= (treesit-node-type node) "&"))
+          ;;     classdef indent_classdef_super_continued3 ...
+          ;;         < otherThing ...
+          ;; TAB>    & otherThing2 ...
+          0
+        ;;      classdef indent_classdef_super_continued < otherThing & ...
+        ;; TAB>                                            otherThing2 & ...
+        ;; See: test-matlab-ts-mode-indent-files/indent_classdef_super_continued.m
+        2))
+     (t
+      matlab-ts-mode--indent-level))))
 
 
 (defvar matlab-ts-mode--i-cont-incomplete-matcher-pair)
@@ -1730,6 +1743,18 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                     0
                   matlab-ts-mode--indent-level))
 
+               ("<" ;; superclass
+                (if (and node
+                         (string= (treesit-node-type node) "&"))
+                    ;;     classdef indent_classdef_super_continued3 ...
+                    ;;         < otherThing ...
+                    ;; TAB>    & otherThing2 ...
+                    0
+                  ;;      classdef indent_classdef_super_continued < otherThing & ...
+                  ;; TAB>                                            otherThing2 & ...
+                  ;; See: test-matlab-ts-mode-indent-files/indent_classdef_super_continued.m
+                  2))
+
                (_
                 matlab-ts-mode--indent-level)
                )))))
@@ -1759,7 +1784,9 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                                                                 "["
                                                                 "{"
                                                                 "row"
-                                                                "spmd")
+                                                                "spmd"
+                                                                "<" ;; superclasses
+                                                                )
                                                         eos)))
 
 (defun matlab-ts-mode--i-next-line-matcher-comment (node)
