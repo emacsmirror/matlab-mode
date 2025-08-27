@@ -1,4 +1,4 @@
 Major mode errored with message
-Buffer appears corrupt, non-printable utf8 character at point 45: 
+Not entering matlab-ts-mode due to non-printable utf8 character "" at point 45
 
 Entered major-mode: fundamental-mode
