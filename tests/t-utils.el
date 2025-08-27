@@ -844,6 +844,109 @@ TODO add example test setup, see t-utils-test-font-lock."
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
 
+(defun t-utils-test-action (test-name lang-files action-fun)
+  "Run and record ACTION-FUN on each NAME.LANG file in LANG-FILES list.
+ACTION-FUN is a function that takes no arguments and is called
+in context of a temporary buffer containing NAME.LANG file from LANG-FILES.
+ACTION-FUN must return a string that is recorded into NAME_expected.txt.
+Within ACTION-FUN, `t-utils--buf-file' contains NAME.LANG.
+TEST-NAME is used in messages.
+
+The result of ACTION-FUN is compared against NAME_expected.txt.  If
+my_test_expected.txt does not exist or result does not match the existing
+my_test_expected.txt, my_test_expected.txt~ is generated and if it looks
+correct, you should rename it to my_test_expected.txt.
+
+Example test setup:
+
+  ./LANGUAGE-ts-mode.el
+  ./tests/test-LANGUAGE-ts-mode-view-parse-errors.el
+  ./tests/test-LANGUAGE-ts-mode-view-parse-errors-files/NAME1.LANG
+  ./tests/test-LANGUAGE-ts-mode-view-parse-errors-files/NAME1_expected.txt
+  ./tests/test-LANGUAGE-ts-mode-view-parse-errors-files/NAME2.LANG
+  ./tests/test-LANGUAGE-ts-mode-view-parse-errors-files/NAME2_expected.txt
+  ....
+
+Where ./tests/test-LANGUAGE-ts-mode-view-parse-errors.el exercises
+function LANGUAGE-ts-mode-view-parse-errors which shows a buffer
+containing the LANGUAGE tree-sitter parse errors.
+
+  (require \\='t-utils)
+  (require \\='LANGUAGE-ts-mode)
+
+  (defvar test-LANGUAGE-ts-mode-view-parse-errors--file nil)
+  
+  (defun test-LANGUAGE-ts-mode-view-parse-errors--file (lang-file)
+    \"Test an individual LANG-FILE.\"
+    (let ((test-LANGUAGE-ts-mode-view-parse-errors--file lang-file))
+      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-view-parse-errors\")))
+  
+  (defun test-LANGUAGE-ts-mode-view-parse-errors-action-fun ()
+    \"Exercise LANGUAGE-ts-mode-view-parse-errors on the current buffer.\"
+    (let* ((lang-file (file-name-nondirectory t-utils--buf-file))
+           (parse-errors-buf (LANGUAGE-ts-view-parse-errors))
+           (buf-name (buffer-name))
+           (contents (with-current-buffer parse-errors-buf
+                       (buffer-substring-no-properties (point-min) (point-max))))
+           (result (replace-regexp-in-string (rx bol (literal buf-name) \":\")
+                                             (concat lang-file \":\")
+                                             contents)))
+      (kill-buffer parse-errors-buf)
+      result))
+  
+  (ert-deftest test-LANGUAGE-ts-mode-view-parse-errors ()
+    \"Test LANGUAGE-ts-mode-view-parse-errors.
+  Using ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME.m, compare
+  LANGUAGE-ts-mode-view-parse-error against
+  ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME_expected.txt.  This loops
+  on all ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME.m files.
+  
+  To add a test, create
+    ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME.m
+  and run this function.  The baseline is saved for you as
+    ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME_expected.txt~
+  after validating it, rename it to
+    ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME_expected.txt\"
+  
+    (let* ((test-name \"test-LANGUAGE-ts-mode-view-parse-errors\")
+           (lang-files (t-utils-get-files
+                     test-name
+                     (rx \".m\" eos)
+                     nil
+                     test-LANGUAGE-ts-mode-view-parse-errors--file)))
+      (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
+      (t-utils-test-action test-name lang-files
+       #\\='test-LANGUAGE-ts-mode-view-parse-errors-action-fun)))"
+
+  (let ((error-msgs '()))
+    (dolist (lang-file lang-files)
+      (with-temp-buffer
+
+        (let ((start-time (current-time)))
+
+          (message "START: %s %s" test-name lang-file)
+
+          (t-utils--insert-file-for-test lang-file)
+
+          (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
+                 (expected (when (file-exists-p expected-file)
+                             (with-temp-buffer
+                               (insert-file-contents-literally expected-file)
+                               (buffer-string))))
+                 (got (concat (symbol-name action-fun) " result:\n---\n"
+                              (funcall action-fun)))
+                 (got-file (concat expected-file "~")))
+
+            (kill-buffer)
+            (let ((error-msg (t-utils--baseline-check
+                              test-name start-time
+                              lang-file got got-file expected expected-file)))
+              (when error-msg
+                (push error-msg error-msgs)))))))
+    ;; Validate t-utils-test-outline-search-function result
+    (setq error-msgs (reverse error-msgs))
+    (should (equal error-msgs '()))))
+
 (defun t-utils--test-font-lock-checker (lang-file
                                         got got-file expected expected-file code-to-face)
   "Get error that includes the position of the first font face difference.
@@ -1884,7 +1987,7 @@ To debug a specific file-encoding test file
               (when error-msg
                 (push error-msg error-msgs)))))))
 
-    ;; Validate t-utils-test-file-encoding result
+    ;; Validate result
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
 
@@ -2284,7 +2387,7 @@ To debug a specific -parser test file
               (when error-msg
                 (push error-msg error-msgs)))))))
 
-    ;; Validate t-utils-test-file-encoding result
+    ;; Validate result
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
 

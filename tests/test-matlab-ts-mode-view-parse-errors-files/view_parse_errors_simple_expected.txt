@@ -1,0 +1,5 @@
+test-matlab-ts-mode-view-parse-errors-action-fun result:
+---
+Tree-sitter parse errors.
+view_parse_errors_simple.m:3:3: error: parse error from line 3:3 to line 3:4 (point 24 to 25)
+view_parse_errors_simple.m:5:3: error: parse error from line 5:3 to line 5:6 (point 37 to 40)

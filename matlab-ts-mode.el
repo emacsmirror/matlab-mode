@@ -35,6 +35,7 @@
 
 ;;; Code:
 
+(require 'compile)
 (require 'treesit)
 
 (require 'matlab--access)
@@ -3267,6 +3268,102 @@ Within comments, the following markers will be highlighted:
     (grep (concat grep-command "-wie \"" pattern "\" "
                   (file-name-nondirectory (buffer-file-name))))))
 
+;;; View parse errors
+
+(defun matlab-ts-mode--get-parse-errors ()
+  "Return a string of parse errors in matlab-ts-mode current buffer."
+
+  ;; See: tests/test-matlab-ts-mode-view-parse-errors.el
+
+  (let ((capture-errors (treesit-query-capture (treesit-buffer-root-node) '((ERROR) @e)))
+        (result-list '())
+        (buf-name (if (buffer-file-name)
+                      (file-name-nondirectory (buffer-file-name))
+                    (buffer-name))))
+    (dolist (capture-error capture-errors)
+      (let* ((error-node (cdr capture-error))
+             (start-point (treesit-node-start error-node))
+             (start-line (line-number-at-pos start-point))
+             (start-col (save-excursion ;; error messages are one based columns
+                          (goto-char start-point)
+                          (1+ (current-column))))
+             (end-point (treesit-node-end error-node))
+             (end-line (line-number-at-pos end-point))
+             (end-col (save-excursion
+                        (goto-char end-point)
+                        (1+ (current-column)))))
+        (push (format
+               "%s:%d:%d: error: parse error from line %d:%d to line %d:%d (point %d to %d)\n"
+               buf-name
+               start-line start-col
+               start-line start-col
+               end-line end-col
+               start-point
+               end-point)
+              result-list)))
+    (let ((errs (mapconcat #'identity (reverse result-list))))
+      (if (string= errs "")
+          (setq errs "No tree-sitter errors\n")
+        (setq errs (concat "Tree-sitter parse errors.\n" errs)))
+      errs)))
+
+(defvar-local matlab-ts-parse-errors-compilation--buffer nil)
+
+(defun matlab-ts-mode--view-parse-errors-recompile ()
+  "Get latest parse errors."
+  (interactive)
+  (unless matlab-ts-parse-errors-compilation--buffer
+    (error "No previously parsed buffer"))
+  (when (not (buffer-live-p matlab-ts-parse-errors-compilation--buffer))
+    (error "Previously parsed buffer was killed"))
+  (with-current-buffer matlab-ts-parse-errors-compilation--buffer
+    (matlab-ts-view-parse-errors 'no-pop-to-buffer)))
+
+(defvar-keymap matlab-ts-parse-errors-mode-map
+  "g" #'matlab-ts-mode--view-parse-errors-recompile)
+
+;; Note, we are using a slightly shorter names (no -mode)
+;;   matlab-ts-view-parse-errors
+;;   matlab-ts-parse-errors-mode
+;; so the mode line indicator, "matlab-ts-parse-errors" is slightly shorter
+
+(define-compilation-mode matlab-ts-parse-errors-mode "m-ts-parse-errors"
+  "The variant of `compilation-mode' used for `matlab-ts-view-parse-errors'."
+  (setq-local matlab-ts-parse-errors-compilation--current-buffer (current-buffer)))
+
+(defun matlab-ts-view-parse-errors (&optional no-pop-to-buffer)
+  "View parse errors in matlab-ts-mode current buffer.
+Optional NO-POP-TO-BUFFER, if non-nil will not run `pop-to-buffer'.
+The errors are displayed in a \"*parse errors in BUFFER-NAME*\" buffer
+and this buffer is returned."
+  (interactive)
+
+  (when (not (eq major-mode 'matlab-ts-mode))
+    (user-error "Current buffer major-mode, %s, is not matlab-ts-mode"
+                (symbol-name major-mode)))
+
+  (let ((m-buf (current-buffer))
+        (m-buf-dir default-directory)
+        parse-errors-buf
+        (errs (matlab-ts-mode--get-parse-errors))
+        (err-buf-name (concat "*parse errors in " (buffer-name) "*")))
+
+    (with-current-buffer (setq parse-errors-buf (get-buffer-create err-buf-name))
+      (read-only-mode -1)
+      (auto-revert-mode 0) ;; no need to save history
+      (erase-buffer)
+      (insert errs)
+      (matlab-ts-parse-errors-mode)
+      (goto-char (point-min))
+      (when (re-search-forward ": error: " nil t)
+        (beginning-of-line))
+      (setq default-directory m-buf-dir)
+      (setq-local matlab-ts-parse-errors-compilation--buffer m-buf)
+      (read-only-mode 1)
+      (when (not no-pop-to-buffer)
+        (pop-to-buffer (current-buffer) 'other-window)))
+    parse-errors-buf))
+
 ;;; Keymap
 
 (defvar-keymap matlab-ts-mode-map
@@ -3416,9 +3513,12 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
      )
 
     "----"
-    ["View mlint code analyzer messages" (flycheck-list-errors)
+    ["View mlint code analyzer messages" flycheck-list-errors
      :help "View mlint code analyzer messages.
 Click FlyC in the mode-line for more options."]
+    ["View tree-sitter parse errors" matlab-ts-view-parse-errors
+     :help "The MATLAB tree-sitter is the engine behind matlab-ts-mode.
+Parse errors are not as detailed as mlint code analyzer messages."]
     "----"
     ["Jump to function" imenu]
     "----"
@@ -3566,10 +3666,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO view errors
-    ;;      Add matlab-ts-mode-view-syntax-errors in a compilation mode buffer (g to refresh),
-    ;;      add to menu
-    ;;
     ;; TODO [future] Indent - complex for statement
     ;;         function a = foo(inputArgument1)
     ;;             for (idx = (a.b.getStartValue(((inputArgument1 + someOtherFunction(b)) * 2 - ...
@@ -3699,4 +3795,4 @@ matlab-language-server-lsp-mode.org\n"
 ;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
 ;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd
-;; LocalWords:  matlabls vscode
+;; LocalWords:  matlabls vscode buf dolist
