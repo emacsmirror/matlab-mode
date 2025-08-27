@@ -1420,7 +1420,7 @@ and the corresponding baseline, =fill_paragraph_test1_expected.org=
   -    % A very long comment. A very long comment. A very long comment. A very long comment. A very long comment.
   +    % A very long comment. A very long comment. A very long
   +    % comment. A very long comment. A very long comment.
-   
+
        b = 1;
    end
     ,#+end_src diff
@@ -2226,9 +2226,31 @@ Install, using default branch
      (matlab-shell-run-code-section) because it was duplication and wasn't correctly handling all
      cases.
 
+ 15. Builtin items such as namespaces, functions, classes, enumerations, etc. provided by the
+     MATLAB/Simulink products are shown in =font-lock-builtin-face=. Using a different face for
+     builtins vs items you created improves readability. It also helps to avoid mistakes where you
+     override a builtin with a variable. The number of builtin items in the MATLAB/Simulink
+     R2025a.update1 product family is 153,627.
+
+ 16. When creating a variable that matches a builtin item
+     matlab-ts-mode-variable-override-builtin-face. This makes it easy to see when you are
+     accidently shadowing a builtin function, class, etc. For example, in the following
+     we create a lines variable that shadows the MATLAB built-in lines function:
+
+      #+begin_src matlab
+        lines = ['line1', 'line2']
+      #+end_src
+
+    Using a non-builtin name for a variable results in the standard =font-lock-variable-name-face=
+    being used:
+
+      #+begin_src matlab
+        myLines = ['line1', 'line2']
+      #+end_src
+
 # LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
 # LocalWords:  lang utils Imenu LSP defun ELPA tuils setq SLIB libtree dylib sexp xr defcusom
 # LocalWords:  defface EDebug ielm fontify Fontifying fontified defcustom alist eos bol NPS prev BUF
 # LocalWords:  caar cdar bos dwim propertize ppss SPC reindent defadvice IMenu imenu pred fn elec
 # LocalWords:  funcall myfcn prin asdf repeat:nil ABI abi MSYS pacman gpg bobp defclass docstring
-# LocalWords:  fontification lsp numberp cdr keymap sudo nodejs npm linux gz
+# LocalWords:  fontification lsp numberp cdr keymap sudo nodejs npm linux gz builtins
