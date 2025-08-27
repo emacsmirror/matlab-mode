@@ -2179,78 +2179,93 @@ Install, using default branch
      - Double quotes for a double-quoted string.
      - Parenthesis =()=, Vectors, =[]=, and Cells ={}=.
 
- 10. We now highlight starting and ending string quote when the point is on the start or end single
-     or double quote.
+  10. We now highlight starting and ending string quote when the point is on the start or end single
+      or double quote.
 
- 11. Improved (more predictable) s-expression commands
+  11. Improved (more predictable) s-expression commands
 
-     #+begin_example
-       C-M-f   Move forward by s-expression, forward-sexp
-               - If point is on the start of an s-expression, move to the end.
-               - If point is on the end of an s-expression, move to the start of the next s-expression
-                 at the same level. If there is no next s-expression, no movement occurs.
-       C-M-b   Move backward by s-expression, backward-sexp
-               - If point is on the end of an s-expression, move to the start.
-               - If point is on the start of an s-expression, move to the start of the prior s-expression
-                 at the same level. If there is no prior s-expression, no movement occurs.
-       C-M-SPC Mark s-expression, place point at beginning of sexp and mark at the end, mark-sexp
-       C-M-@   Same as C-M-SPC.
-       C-M-k   Kill s-expression, kill-sexp
-       C-M-t   Transpose s-expressions, transpose-sexp
-     #+end_example
+      #+begin_example
+        C-M-f   Move forward by s-expression, forward-sexp
+                - If point is on the start of an s-expression, move to the end.
+                - If point is on the end of an s-expression, move to the start of the next s-expression
+                  at the same level. If there is no next s-expression, no movement occurs.
+        C-M-b   Move backward by s-expression, backward-sexp
+                - If point is on the end of an s-expression, move to the start.
+                - If point is on the start of an s-expression, move to the start of the prior s-expression
+                  at the same level. If there is no prior s-expression, no movement occurs.
+        C-M-SPC Mark s-expression, place point at beginning of sexp and mark at the end, mark-sexp
+        C-M-@   Same as C-M-SPC.
+        C-M-k   Kill s-expression, kill-sexp
+        C-M-t   Transpose s-expressions, transpose-sexp
+      #+end_example
 
- 12. Improved sentence commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
-     "Wrong number of arguments: (0 . 0), 1" and now works in matlab-ts-mode.
+  12. Improved sentence commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
+      "Wrong number of arguments: (0 . 0), 1" and now works in matlab-ts-mode.
 
-     #+begin_example
-       M-e      Move forward to next end of sentence, forward-sentence
-       M-a      Move backward to start of sentence, backward-sentence
-       M-k      Kill from point to end of sentence, kill-sentence
-       C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
-     #+end_example
+      #+begin_example
+        M-e      Move forward to next end of sentence, forward-sentence
+        M-a      Move backward to start of sentence, backward-sentence
+        M-k      Kill from point to end of sentence, kill-sentence
+        C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
+      #+end_example
 
- 13. Many older matlab-mode menu items and keybindings have been removed because there are
-     standard replacements. Examples:
+  13. Many older matlab-mode menu items and keybindings have been removed because there are
+      standard replacements. Examples:
 
-     - To comment or uncomment code use select the code and type =M-;= which is the standard
-       way to do this in Emacs. The older =C-c ;= and =C-c :" matlab only comment and uncomment
-       commands no longer exist.
+      - To comment or uncomment code use select the code and type =M-;= which is the standard
+        way to do this in Emacs. The older =C-c ;= and =C-c :" matlab only comment and uncomment
+        commands no longer exist.
 
-     - Completion - we used to have =M-TAB= to complete symbol and this has been replaced by
-       using LSP mode.
+      - Completion - we used to have =M-TAB= to complete symbol and this has been replaced by
+        using LSP mode.
 
-       TODO - show how to do in lsp-mode and update lsp-mode org on this.
+        TODO - show how to do in lsp-mode and update lsp-mode org on this.
 
- 14. matlab-shell now has one correct ways of running code sections, via menu =MATLAB -> Code
-     Sections -> Run Section (C-c C-<return>)= or and the older =MATLAB -> Run Code Section=
-     (matlab-shell-run-code-section) because it was duplication and wasn't correctly handling all
-     cases.
+  14. matlab-shell now has one correct ways of running code sections, via menu =MATLAB -> Code
+      Sections -> Run Section (C-c C-<return>)= or and the older =MATLAB -> Run Code Section=
+      (matlab-shell-run-code-section) because it was duplication and wasn't correctly handling all
+      cases.
 
- 15. Builtin items such as namespaces, functions, classes, enumerations, etc. provided by the
-     MATLAB/Simulink products are shown in =font-lock-builtin-face=. Using a different face for
-     builtins vs items you created improves readability. It also helps to avoid mistakes where you
-     override a builtin with a variable. The number of builtin items in the MATLAB/Simulink
-     R2025a.update1 product family is 153,627.
+  15. Builtin items such as namespaces, functions, classes, enumerations, etc. provided by the
+      MATLAB/Simulink products are shown in =font-lock-builtin-face=. Using a different face for
+      builtins vs items you created improves readability. It also helps to avoid mistakes where you
+      override a builtin with a variable. The number of builtin items in the MATLAB/Simulink
+      R2025a.update1 product family is 153,627.
 
- 16. When creating a variable that matches a builtin item
-     matlab-ts-mode-variable-override-builtin-face. This makes it easy to see when you are
-     accidently shadowing a builtin function, class, etc. For example, in the following
-     we create a lines variable that shadows the MATLAB built-in lines function:
+  16. When creating a variable that matches a builtin item
+      matlab-ts-mode-variable-override-builtin-face. This makes it easy to see when you are
+      accidently shadowing a builtin function, class, etc. For example, in the following
+      we create a lines variable that shadows the MATLAB built-in lines function:
 
-      #+begin_src matlab
-        lines = ['line1', 'line2']
-      #+end_src
+       #+begin_src matlab
+         lines = ['line1', 'line2']
+       #+end_src
 
-    Using a non-builtin name for a variable results in the standard =font-lock-variable-name-face=
-    being used:
+     Using a non-builtin name for a variable results in the standard =font-lock-variable-name-face=
+     being used:
 
-      #+begin_src matlab
-        myLines = ['line1', 'line2']
-      #+end_src
+       #+begin_src matlab
+         myLines = ['line1', 'line2']
+       #+end_src
+
+  17. MLint MATLAB code analyzer integration via flycheck. Flycheck is an improved on-the-fly
+      error reporting system when compared with the mlint integration in the older matlab-mode.
+
+  18. New "MATLAB -> View mlint code analyzer messages" menu item.
+
+  19. New "MATLAB -> View tree-sitter parse errors" menu item that lets one inspect
+      the parse errors found by the MATLAB tree-sitter backing the new matlab-ts-mode.
+
+  20. New "MATLAB -> Jump to function" menu item.
+
+  21. New "MATLAB -> Check setup" menu item that helps validate flycheck and lsp-mode are
+      setup correctly.
+
+  22. New "MATLAB -> Editing -> ..." submenu that contains helpful editing commands.
 
 # LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
-# LocalWords:  lang utils Imenu LSP defun ELPA tuils setq SLIB libtree dylib sexp xr defcusom
+# LocalWords:  lang utils Imenu LSP defun ELPA tuils setq SLIB libtree dylib sexp xr defcusom MLint
 # LocalWords:  defface EDebug ielm fontify Fontifying fontified defcustom alist eos bol NPS prev BUF
 # LocalWords:  caar cdar bos dwim propertize ppss SPC reindent defadvice IMenu imenu pred fn elec
 # LocalWords:  funcall myfcn prin asdf repeat:nil ABI abi MSYS pacman gpg bobp defclass docstring
-# LocalWords:  fontification lsp numberp cdr keymap sudo nodejs npm linux gz builtins
+# LocalWords:  fontification lsp numberp cdr keymap sudo nodejs npm linux gz builtins flycheck
