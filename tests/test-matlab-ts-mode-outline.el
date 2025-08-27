@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-outline-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-outline-files/NAME_expected.txt
+;; Tests for matlab-ts-mode `outline-minor-mode'
 ;;
 
 ;;; Code:
@@ -42,7 +39,7 @@ This is provided for debugging.
 (ert-deftest test-matlab-ts-mode-outline ()
   "Test outline mode using ./test-matlab-ts-mode-outline-files/NAME.m.
 Using ./test-matlab-ts-mode-outline-files/NAME.m, call `outline-search-function'
-and compare result agains
+and compare result against
 ./test-matlab-ts-mode-outline-files/NAME_expected.txt.  This loops
 on all ./test-matlab-ts-mode-outline-files/NAME.m files.
 
@@ -64,3 +61,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-outline)
 ;;; test-matlab-ts-mode-outline.el ends here
+
+;; LocalWords:  utils defun eos treesit

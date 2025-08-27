@@ -17,10 +17,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode font-lock faces.
-;; Load ../matlab-ts-mode.el via require and run font-lock tests using
-;; ./test-matlab-ts-mode-font-lock-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-font-lock-files/NAME_expected.txt
+;; Tests for matlab-ts-mode for font-lock
 ;;
 
 ;;; Code:
@@ -47,7 +44,7 @@ font-lock face used for said source character.  The mapping is defined
 by the code-to-face alist setup by this function.  This loops
 on all ./test-matlab-ts-mode-font-lock-files/NAME.m files.
 
-To add a test, createp
+To add a test, create
   ./test-matlab-ts-mode-font-lock-files/NAME.m
 and run this function.  The baseline is saved for you as
   ./test-matlab-ts-mode-font-lock-files/NAME_expected.txt~
@@ -96,3 +93,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-font-lock)
 ;;; test-matlab-ts-mode-font-lock.el ends here
+
+;; LocalWords:  utils defun alist eos buf treesit

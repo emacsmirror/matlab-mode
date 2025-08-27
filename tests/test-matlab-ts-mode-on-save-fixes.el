@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-on-save-fixes-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-on-save-fixes-files/NAME_expected.org
+;; Tests for matlab-ts-mode on save fixes (fix function/classdef name to match file)
 ;;
 
 ;;; Code:
@@ -66,3 +63,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-on-save-fixes)
 ;;; test-matlab-ts-mode-on-save-fixes.el ends here
+
+;; LocalWords:  utils defun tmp eos treesit xr

@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-mfile-type-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-mfile-type-files/NAME_expected.org
+;; Tests for matlab-ts-mode mfile type handling (script, function, class, empty)
 ;;
 
 ;;; Code:
@@ -66,3 +63,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-mfile-type)
 ;;; test-matlab-ts-mode-mfile-type.el ends here
+
+;; LocalWords:  utils defun xr eos treesit

@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-movement-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-movement-files/NAME_expected.org
+;; Tests for matlab-ts-mode "movement" commands such as C-M-f
 ;;
 
 ;;; Code:
@@ -67,3 +64,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-movement)
 ;;; test-matlab-ts-mode-movement.el ends here
+
+;; LocalWords:  utils defun eos treesit xr

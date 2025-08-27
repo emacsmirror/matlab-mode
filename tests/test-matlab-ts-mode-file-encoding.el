@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-file-encoding-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-file-encoding-files/NAME_expected.m
+;; Tests for matlab-ts-mode for file encoding
 ;;
 
 ;;; Code:
@@ -44,7 +41,7 @@ This is provided for debugging.
 Using ./test-matlab-ts-mode-file-encoding-files/NAME.m, compare result
 of activating matlab-ts-mode on NAME.m against
 ./test-matlab-ts-mode-file-encoding-files/NAME_expected.txt.  Where the
-expected result is a succesful activation or an error message.  This
+expected result is a successful activation or an error message.  This
 loops on all ./test-matlab-ts-mode-file-encoding-files/NAME.m files.
 
 To add a test, create
@@ -65,3 +62,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-file-encoding)
 ;;; test-matlab-ts-mode-file-encoding.el ends here
+
+;; LocalWords:  utils defun eos treesit

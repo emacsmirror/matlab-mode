@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Run indent tests using `t-utils-xr' in
-;;   ./test-matlab-ts-mode-indent-xr-files/NAME.m
-;; comparing against
-;;   ./test-matlab-ts-mode-indent-xr-files/NAME_expected.org
+;; Validate matlab-ts-mode indent "as you type".
 ;;
 
 ;;; Code:
@@ -43,8 +40,8 @@ This is provided for debugging.
 (ert-deftest test-matlab-ts-mode-indent-xr ()
   "Test indent using ./test-matlab-ts-mode-indent-xr-files/NAME.m.
 Using ./test-matlab-ts-mode-indent-xr-files/NAME.m, compare typing
-commands via `t-utils-xr' Lisp commans in the *.m files and compare
-agains ./test-matlab-ts-mode-indent-xr-files/NAME_expected.org.  This
+commands via `t-utils-xr' Lisp commands in the *.m files and compare
+against ./test-matlab-ts-mode-indent-xr-files/NAME_expected.org.  This
 loops on all ./test-matlab-ts-mode-indent-xr-files/NAME.m files.
 
 To add a test, create
@@ -66,3 +63,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-indent-xr)
 ;;; test-matlab-ts-mode-indent-xr.el ends here
+
+;; LocalWords:  utils defun eos treesit

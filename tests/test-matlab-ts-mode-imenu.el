@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-imenu-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-imenu-files/NAME_expected.txt
+;; Tests for matlab-ts-mode for imenu
 ;;
 
 ;;; Code:
@@ -63,3 +60,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-imenu)
 ;;; test-matlab-ts-mode-imenu.el ends here
+
+;; LocalWords:  utils defun eos treesit

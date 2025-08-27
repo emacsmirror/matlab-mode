@@ -19,11 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt
-;;
+;;  Tests for matlab-ts-mode defun setup.
 
 ;;; Code:
 
@@ -65,3 +61,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-treesit-defun-name)
 ;;; test-matlab-ts-mode-treesit-defun-name.el ends here
+
+;; LocalWords:  utils eos

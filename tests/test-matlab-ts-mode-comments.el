@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-comments-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-comments-files/NAME_expected.org
+;; Tests for matlab-ts-mode comment handling.
 ;;
 
 ;;; Code:
@@ -64,3 +61,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode-comments)
 ;;; test-matlab-ts-mode-comments.el ends here
+
+;; LocalWords:  utils defun eos treesit xr

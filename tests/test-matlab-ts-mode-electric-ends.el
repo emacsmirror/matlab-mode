@@ -19,10 +19,7 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./test-matlab-ts-mode-electric-ends-files/NAME.m comparing against
-;; ./test-matlab-ts-mode-electric-ends-files/NAME_expected.org
+;; Tests for matlab-ts-mode "electric ends" feature
 ;;
 
 ;;; Code:
