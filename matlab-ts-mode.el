@@ -254,7 +254,7 @@ content can crash Emacs via the matlab tree-sitter parser."
     (when bad-char-point
       (fundamental-mode)
       (goto-char bad-char-point)
-      (user-error "Not entring matlab-ts-mode due to non-printable utf8 character \"%c\" at point %d"
+      (user-error "Not entering matlab-ts-mode due to non-printable utf8 character \"%c\" at point %d"
                   (char-before) bad-char-point ))))
 
 ;;; Syntax table
@@ -3695,7 +3695,7 @@ matlab-language-server-lsp-mode.org\n"
 ;; LocalWords:  SPDX gmail dylib libtree treesit builtins defface defcustom flycheck MLint MELPA LF
 ;; LocalWords:  defun progn setq MEC propertize varname eobp mcm defmacro sexp defconst bos eos prev
 ;; LocalWords:  classdef's Fontify fontified fontify gethash pragma's multioutput pred dir's bol cdr
-;; LocalWords:  NPS BUF myfcn pcase xr repeat:nil docstring numberp imenu alist nondirectory mapc
+;; LocalWords:  NPS BUF myfcn pcase xr repeat:nil docstring numberp imenu alist nondirectory mapc ws
 ;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
 ;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd
