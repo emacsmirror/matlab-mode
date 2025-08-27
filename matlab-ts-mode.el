@@ -2326,6 +2326,12 @@ Example:
      ;; <TAB>                    2, ...
      ((parent-is ,(rx bos "arguments" eos)) parent 0)
 
+     ;; I-Rule:      someNamespace1.subNamespace2.myFunction( ...
+     ;;        TAB>      a, ... % comment for param1
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_namespace_fcn_continued.m
+     ((n-p-gp ,(rx bos "arguments" eos) ,(rx bos "function_call" eos) ,(rx bos "field_expression" eos))
+      grand-parent ,matlab-ts-mode--indent-level)
+
      ;; I-Rule:  my_function( ...
      ;; <TAB>        1, ...
      ((node-is ,(rx bos "arguments" eos)) parent ,matlab-ts-mode--indent-level)
@@ -3533,6 +3539,10 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO view errors
+    ;;      Add matlab-ts-mode-view-syntax-errors in a compilation mode buffer (g to refresh),
+    ;;      add to menu
+    ;;
     ;; TODO [future] Indent - complex for statement
     ;;         function a = foo(inputArgument1)
     ;;             for (idx = (a.b.getStartValue(((inputArgument1 + someOtherFunction(b)) * 2 - ...
