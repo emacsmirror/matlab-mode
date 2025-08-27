@@ -61,6 +61,7 @@
 
 (require 'derived)
 (require 'easymenu)
+(require 'text-property-search)
 
 (eval-when-compile
   (require 'elec-pair))

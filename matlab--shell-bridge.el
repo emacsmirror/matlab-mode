@@ -13,7 +13,8 @@ Is `matlab-ts-mode' active per
   (add-to-list \\='major-mode-remap-alist \\='(matlab-mode . matlab-ts-mode))
 If so, require `matlab-ts-mode' else require `matlab-mode'?"
   (cond
-   ((rassoc 'matlab-ts-mode major-mode-remap-alist)
+   ((and (boundp 'major-mode-remap-alist)
+         (rassoc 'matlab-ts-mode major-mode-remap-alist)) ;; major-mode-remap-alist came w/ Emacs 29
     (require 'matlab-ts-mode)
     t)
    (t

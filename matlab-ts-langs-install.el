@@ -113,7 +113,7 @@ SLIB-RE is the regexp that matches LANGUAGE.SLIB-EXT."
     (dolist (file extracted-files)
       (when (string-match slib-re file)
         (push (match-string 1 file) all-languages)))
-    (setq all-languages (sort all-languages))
+    (setq all-languages (sort all-languages #'string<))
 
     (when (= (length all-languages) 0)
       (error "Failed to find any extracted files in %s from command %s"
