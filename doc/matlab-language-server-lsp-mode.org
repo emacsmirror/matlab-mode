@@ -90,7 +90,8 @@ type =M-,= to jump back.
 
    + Download the language server (clone or unzip):
       : git clone https://github.com/mathworks/MATLAB-language-server.git
-     or download and unzip a release from https://github.com/mathworks/MATLAB-language-server
+     or download and unzip a release from
+     [[https://github.com/mathworks/MATLAB-language-server/releases]]
 
    + In the cloned or unzipped directory,
      #+begin_src bash
