@@ -19,11 +19,13 @@
 
 ;;; Commentary:
 ;;
-;; Validate matlab-ts-mode indent.
-;; Load ../matlab-ts-mode.el via require and run indent tests using
-;; ./sweep-test-matlab-ts-mode-indent-files/NAME.m comparing against
-;; ./sweep-test-matlab-ts-mode-indent-files/NAME_expected.m
+;; M-: (sweep-test-matlab-ts-mode-indent)
 ;;
+;; Checks indent on all files under the current directory:
+;;  - runs `t-utils-sweep-test-indent' which validates the tree-sitter parse error state matches
+;;    mlint parse error state.
+;;  - activates `matlab-ts-mode--indent-assert'
+;;  - reports slowest indents
 
 ;;; Code:
 
@@ -76,7 +78,7 @@ errors according to SYNTAX-CHECKER-FUN.  Any inconsistent parses are
 reported which is likely a bug in the tree-sitter parser.
 
 This calls `t-utils-sweep-test-indent' with does a number of
-checks to validate the ident rules.  When run interactively,
+checks to validate the indent rules.  When run interactively,
 displays the result in a *sweep-test-matlab-ts-mode-indent* buffer, otherwise
 the results are displayed on stdout."
 
@@ -93,3 +95,5 @@ the results are displayed on stdout."
 
 (provide 'sweep-test-matlab-ts-mode-indent)
 ;;; sweep-test-matlab-ts-mode-indent.el ends here
+
+;; LocalWords:  utils MLint defun setq EOL regularcode eos bos
