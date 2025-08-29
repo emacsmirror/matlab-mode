@@ -336,8 +336,8 @@ function has_nested_fcn
     A = 1;
 
     function am_nested_fcn() %!!4
-                             % help
-                             % !!4
+    % help
+    % !!4
         code(A);
         %!!8
     end
@@ -351,7 +351,7 @@ end
 function b=function_end_same_line(a), b=a; end %!!0
 
 function function_after_end_same_line()%!!0
-                                       %!!0
+%!!0
     disp('foo');%!!4
 
     debug_cmd_dual();

@@ -1261,17 +1261,49 @@ BOL, beginning-of-line point, is where we start looking for the error
 node."
   (and (not node)
        (string= "comment" (treesit-node-type parent))
+       (save-excursion
+         (goto-char (treesit-node-start parent))
+         (looking-at "%{" t))
        (not (save-excursion (goto-char bol)
                             (looking-at "%" t)))
        (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent))))
 
-(defun matlab-ts-mode--i-doc-comment-matcher (node parent _bol &rest _)
-  "Is NODE, PARENT a function/classdef doc comment?"
-  (or (and (string= "comment" (or (treesit-node-type node) ""))
+(defvar matlab-ts-mode-i-doc-comment-matcher-pair)
+
+(defun matlab-ts-mode--i-doc-comment-matcher (node parent bol &rest _)
+  "Is NODE, PARENT, BOL a function/classdef doc comment?"
+  (let (doc-comment-node)
+    (cond
+     ((and (string= "comment" (or (treesit-node-type node) ""))
            (matlab-ts-mode--is-doc-comment node parent))
-      (and (not node)
+      (setq doc-comment-node parent))
+
+     ((and (not node)
            (string= "comment" (treesit-node-type parent))
-           (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent)))))
+           (matlab-ts-mode--is-doc-comment parent (treesit-node-parent parent)))
+      ;; Case:        function a = foo(b) %#ok
+      ;;        TAB>  % doc comment
+      ;; tests/test-matlab-ts-mode-indent-files/indent_mlint_suppression_on_fcn.m
+      (setq doc-comment-node (treesit-node-parent parent))))
+
+    (when doc-comment-node
+      (setq matlab-ts-mode-i-doc-comment-matcher-pair
+            (cons (treesit-node-start doc-comment-node)
+                  (if (save-excursion
+                        (goto-char bol)
+                        (and (not (looking-at "%"))
+                             (re-search-backward "^[ \t]*%{[ \t]*$"
+                                                 (treesit-node-start (treesit-node-at (point))) t)))
+                      2
+                    0))))))
+
+(defun matlab-ts-mode--i-doc-comment-anchor (_node _parent _bol &rest _)
+  "Return anchor for the function/classdef doc comment based on PARENT."
+  (car matlab-ts-mode-i-doc-comment-matcher-pair))
+
+(defun matlab-ts-mode--i-doc-comment-offset (_node _parent _bol &rest _)
+  "Return offset for the function/classdef doc comment based on PARENT."
+  (cdr matlab-ts-mode-i-doc-comment-matcher-pair))
 
 (defun matlab-ts-mode--i-in-block-comment-matcher (node parent bol &rest _)
   "Is NODE, PARENT, BOL within a block \"{% ... %)\"?"
@@ -1281,11 +1313,20 @@ node."
                             (looking-at "%" t)))))
 
 (defun matlab-ts-mode--i-block-comment-end-matcher (node parent bol &rest _)
-  "Is NODE, PARENT, BOL last line of \"{% ... %)\"?"
+  "Is NODE, PARENT, BOL last line of \"{% ... %)\"?
+Also handle single-line comment blocks, e.g.
+          a = 1 % comment1 about a
+   TAB>         % comment2 about a
+but not
+        function foo %#ok
+   TAB> % doc comment line 1"
+
   (and (not node)
        (string= "comment" (treesit-node-type parent))
-       (save-excursion (goto-char bol)
-                       (looking-at "%" t))))
+       (save-excursion
+         (goto-char bol)
+         (and (looking-at "%" t)
+              (not (matlab-ts-mode--i-doc-comment-matcher node parent bol))))))
 
 ;; `matlab-ts-mode--function-indent-level'
 ;;
@@ -2165,7 +2206,9 @@ Example:
      (,#'matlab-ts-mode--i-doc-block-comment-matcher parent 2)
 
      ;; I-Rule: function/classdef doc comment?
-     (,#'matlab-ts-mode--i-doc-comment-matcher parent 0)
+     (,#'matlab-ts-mode--i-doc-comment-matcher
+      ,#'matlab-ts-mode--i-doc-comment-anchor
+      ,#'matlab-ts-mode--i-doc-comment-offset)
 
      ;; I-Rule: within a code block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)

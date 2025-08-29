@@ -329,7 +329,7 @@ end
 function b=function_end_same_line(a), b=a; end %!!0
 
 function function_after_end_same_line()%!!0
-                                       %!!0
+%!!0
     disp('foo');%!!4
 
     debug_cmd_dual();
