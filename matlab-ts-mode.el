@@ -476,15 +476,20 @@ help doc comment."
                                       eos)
                                   prev-type)
                   (and (string= prev-type "identifier")           ;; id could be a fcn or class id
-                       (let ((prev-sibling (treesit-node-prev-sibling prev-node)))
-                         (and prev-sibling
-                              (string-match-p
-                               (rx bos
-                                   (or "function"         ;; fcn without in and out args
-                                       "function_output"  ;; fcn w/out args and no in args
-                                       "classdef")        ;; base class
-                                   eos)
-                               (treesit-node-type prev-sibling))))))
+                       (let* ((prev-sibling (treesit-node-prev-sibling prev-node))
+                              (prev-type (and prev-sibling (treesit-node-type prev-sibling))))
+                         (and prev-type
+                              (or
+                               (string-match-p
+                                (rx bos
+                                    (or "function"         ;; fcn without in and out args
+                                        "function_output"  ;; fcn w/out args and no in args
+                                        "classdef")        ;; base class
+                                    eos)
+                                prev-type)
+                               (and (string= prev-type "attributes")
+                                    (equal (treesit-node-type (treesit-node-parent prev-sibling))
+                                           "class_definition")))))))
           comment-node)))))
 
 (defun matlab-ts-mode--is-doc-comment (comment-node parent)

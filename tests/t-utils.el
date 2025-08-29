@@ -1185,8 +1185,7 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
         ;; result is nil or an error message list of strings
         error-msg))))
 
-(defun t-utils--test-indent-typing-line-by-line (lang-file lang-file-mode
-                                                      expected expected-file)
+(defun t-utils--test-indent-typing-line-by-line (lang-file lang-file-mode expected expected-file)
   "Indent LANG-FILE by typing it line-by-line.
 Validate result matches EXPECTED from EXPECTED-FILE.
 
@@ -1396,9 +1395,9 @@ To debug a specific indent test file
           (message "START: %s <indent-using-unindented-contents> %s" test-name lang-file)
           (let ((start-time (current-time))
                 (unindented-error-msg (t-utils--test-indent-unindented
-                                   lang-file lang-file-major-mode
-                                   expected expected-file
-                                   line-manipulator)))
+                                       lang-file lang-file-major-mode
+                                       expected expected-file
+                                       line-manipulator)))
             (message "%s: %s <indent-using-unindented-contents> %s %s" test-name lang-file
                      (if unindented-error-msg "FAIL" "PASS")
                      (t-utils--took start-time))
@@ -2022,13 +2021,13 @@ each element is a cons pair (NAME . NODE)."
              (end-col (save-excursion
                         (goto-char end-point)
                         (1+ (current-column)))))
-       (push (format "%s node at line %d:%d to %d:%d (point %d to %d)"
-                     (treesit-node-type error-node)
-                     start-line start-col
-                     end-line end-col
-                     start-point
-                     end-point)
-             result-list)))
+        (push (format "%s node at line %d:%d to %d:%d (point %d to %d)"
+                      (treesit-node-type error-node)
+                      start-line start-col
+                      end-line end-col
+                      start-point
+                      end-point)
+              result-list)))
     (reverse result-list)))
 
 (defun t-utils-sweep-test-ts-grammar (test-name
