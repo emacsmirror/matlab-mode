@@ -1524,7 +1524,7 @@ row."
 
 (defvar matlab-ts-mode--i-cont-incomplete-matcher-pair)
 
-(defun matlab-ts-mode--i-cont-incomplete-matcher (node parent _bol &rest _)
+(cl-defun matlab-ts-mode--i-cont-incomplete-matcher (node parent _bol &rest _)
   "Is current line part of an ellipsis line continuation?
 If so, set `matlab-ts-mode--i-cont-incomplete-matcher-pair'.  This is for
 incomplete statements where NODE is nil and PARENT is line_continuation."
@@ -1574,14 +1574,32 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
                            t))))
             (setq anchor-node (treesit-node-prev-sibling anchor-node)))
 
-          ;; If we found "( ..." then we anchor parent and not the "("
+
+          ;; If anchor-node is non-nil, we found "(", anchor off it, e.g. "(arg"
           (when (and anchor-node
                      (save-excursion
                        (goto-char (treesit-node-start anchor-node))
                        ;; When not an argument after the "("
                        ;; Examples: "(-1,..." "(+1,...") "(a, ..."  "((1+2),..."  "({1},..."
                        (not (looking-at "([ \t]*[-+a-zA-Z0-9{(]" t))))
-            (setq anchor-node nil))
+
+            (let ((prev-node (treesit-node-prev-sibling anchor-node))  ;; "fcn(" ?
+                  id-start)
+              (when (and (equal (treesit-node-type prev-node) "identifier")
+                         (save-excursion
+                           (setq id-start (treesit-node-start prev-node))
+                           (goto-char id-start)
+                           (beginning-of-line)
+                           (back-to-indentation)
+                           (= (point) id-start)))
+                ;; Incomplete:      something.foo4 = ...
+                ;;                       someFcn2( ...
+                ;;             TAB>          1, ...
+                (setq matlab-ts-mode--i-cont-incomplete-matcher-pair
+                      (cons id-start matlab-ts-mode--indent-level))
+                (cl-return-from matlab-ts-mode--i-cont-incomplete-matcher t)))
+            (setq anchor-node nil) ;; can't anchor off the "("
+            )
 
           ;; An expression of an if, while, or switch statement? Consider:
           ;;   if a > 1 && ...
@@ -2181,6 +2199,52 @@ Example:
   "Return the offset computed by `matlab-ts-mode--i-fcn-args-next-line-matcher'."
   (cdr matlab-ts-mode--i-fcn-args-next-line-pair))
 
+(defvar matlab-ts-mode--i-assign-cont-pair nil)
+
+(defun matlab-ts-mode--i-assign-cont-anchor (&rest _)
+  "Return anchor for `matlab-ts-mode--i-assign-cont-matcher'."
+  (car matlab-ts-mode--i-assign-cont-pair))
+
+(defun matlab-ts-mode--i-assign-cont-offset (&rest _)
+  "Return anchor for `matlab-ts-mode--i-assign-cont-matcher'."
+  (cdr matlab-ts-mode--i-assign-cont-pair))
+
+(defun matlab-ts-mode--i-assign-cont-matcher (node parent _bol &rest _)
+  "Is NODE, PARENT part of an assignment line continuation?"
+  (and node
+       (equal (treesit-node-type (treesit-node-prev-sibling node)) "line_continuation")
+       (string= (treesit-node-type parent) "function_call")
+
+       (let ((grand-parent (treesit-node-parent parent))
+             full-fcn-node
+             assign-node)
+
+         (pcase (treesit-node-type grand-parent)
+           ("assignment"
+            (setq full-fcn-node parent
+                  assign-node grand-parent))
+           ("field_expression"
+            (let ((great-gp (treesit-node-parent grand-parent)))
+              (when (equal (treesit-node-type great-gp) "assignment")
+                (setq full-fcn-node grand-parent
+                      assign-node great-gp)))))
+
+         (when full-fcn-node
+           (save-excursion
+             (goto-char (treesit-node-start full-fcn-node))
+             (beginning-of-line)
+             (back-to-indentation)
+             (setq matlab-ts-mode--i-assign-cont-pair ;; Matched one of two cases
+                   (cons (if (= (point) (treesit-node-start full-fcn-node))
+                             ;;     something.foo4 = ...
+                             ;;         someFcn2( ...
+                             ;; TAB>        1, ...
+                             (point)
+                           ;;      something.foo2 = someFcn(...
+                           ;;  TAB>    1, ...
+                           (treesit-node-start assign-node))
+                         matlab-ts-mode--indent-level)))))))
+
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
@@ -2394,6 +2458,14 @@ Example:
      ;; I-Rule:  a = [    2 ...       |   function a ...
      ;; <TAB>             1 ...       |            = fcn
      ((parent-is ,(rx bos (or "row" "function_output") eos)) parent 0)
+
+     ;; I-Rule:      something.foo4 = ...
+     ;;                  someFcn2( ...
+     ;;          TAB>        1, ...
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_fcn_cont.m
+     (,#'matlab-ts-mode--i-assign-cont-matcher
+      ,#'matlab-ts-mode--i-assign-cont-anchor
+      ,#'matlab-ts-mode--i-assign-cont-offset)
 
      ;; I-Rule:  a = ...
      ;; <TAB>        1;
@@ -3754,6 +3826,11 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO t-utils indent testing
+    ;;      Add setting of treesit--indent-verbose t,
+    ;;      capture matched rules and record in NAME_matched.txt, one per line of form:
+    ;;         sourceLine >>> Matched rule: ....
+    ;;
     ;; TODO [future] Indent - complex for statement
     ;;         function a = foo(inputArgument1)
     ;;             for (idx = (a.b.getStartValue(((inputArgument1 + someOtherFunction(b)) * 2 - ...
