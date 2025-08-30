@@ -12,14 +12,11 @@
      (cell {
       (row (number[41,42]{3}) , (number[44,45]{4}))
       }))
-    ;
+    ; (comment[53,64]{% comment 1})
     (row
-     (matrix [
-      (row
-       (range (number[54,55]{1}) : (number[56,58]{10})))
-      ]))
-    }))
+     (range (number[70,71]{1}) : (number[72,74]{10})))
+    (comment[80,91]{% comment 2}) }))
  ;
- (assignment left: (identifier[63,64]{b}) =
-  right: (string " (string_content[68,80]{not a \{cell\}}) "))
- ; (comment[84,95]{%\{\n  foo\n%\}}) \n)
+ (assignment left: (identifier[100,101]{b}) =
+  right: (string " (string_content[105,117]{not a \{cell\}}) "))
+ ; (comment[121,132]{%\{\n  foo\n%\}}) \n)
