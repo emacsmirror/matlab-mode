@@ -255,8 +255,9 @@ content can crash Emacs via the matlab tree-sitter parser."
     (when bad-char-point
       (fundamental-mode)
       (goto-char bad-char-point)
-      (user-error "Not entering matlab-ts-mode due to non-printable utf8 character \"%c\" at point %d"
-                  (char-before) bad-char-point ))))
+      (user-error
+       "Not entering matlab-ts-mode due to non-printable utf8 character \"%c\" at point %d"
+       (char-before) bad-char-point ))))
 
 ;;; Syntax table
 
@@ -713,7 +714,8 @@ Example, disp variable is overriding the disp builtin function:
 
    ;; F-Rule: Constant literal numbers, e.g. 1234, 12.34, 10e10
    ;; We could use this for items like true, false, pi, etc. See some of these numbers in:
-   ;; https://www.mathworks.com/content/dam/mathworks/fact-sheet/matlab-basic-functions-reference.pdf
+   ;;   https://www.mathworks.com/content/dam/mathworks/fact-sheet/
+   ;;   matlab-basic-functions-reference.pdf
    ;; however, they do show up as builtins, which to me seems more accurate.
    ;; This rule needs to come before the "F-Rule: keywords: if, else, end, etc." because
    ;; we want the end_keyword when used as a number index into a cell/matrix to be a number font.
@@ -917,7 +919,6 @@ Example, disp variable is overriding the disp builtin function:
    '((ERROR) @font-lock-warning-face)
    )
   "The matlab-ts-mode font-lock settings.")
-
 
 ;;; Indent
 
@@ -2290,7 +2291,6 @@ Example:
                       eos))
       parent ,matlab-ts-mode--indent-level)
 
-
      ;; I-Rule: case 10<RET>
      ((n-p-gp nil ,(rx bos "\n" eos) ,(rx bos (or "switch_statement" "case_clause"
                                                   "otherwise_clause")
@@ -2405,7 +2405,9 @@ Example:
      ;; I-Rule:      someNamespace1.subNamespace2.myFunction( ...
      ;;        TAB>      a, ... % comment for param1
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_namespace_fcn_continued.m
-     ((n-p-gp ,(rx bos "arguments" eos) ,(rx bos "function_call" eos) ,(rx bos "field_expression" eos))
+     ((n-p-gp ,(rx bos "arguments" eos)
+              ,(rx bos "function_call" eos)
+              ,(rx bos "field_expression" eos))
       grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule:  my_function( ...
@@ -2481,7 +2483,6 @@ Example:
 
 ;;; Thing settings for movement, etc.
 
-
 (defvar matlab-ts-mode--statements-type-re
   (rx (seq
        bos
@@ -2505,14 +2506,17 @@ Example:
        eos))
   "MATLAB command statements.")
 
-(cl-defun matlab-ts-mode-beginning-of-statement (&optional goto-end statement-type-re)
+(cl-defun matlab-ts-mode-beginning-of-statement (&optional
+                                                 goto-end statement-type-re
+                                                 find-outermost-statement
+                                                 no-message)
   "Move to the beginning of a statement.
 If optional GOTO-END is \\='end, move to end of the current statement.
 
 We define a command statement to be a complete syntactic unit that has
 a start and end.  For example, if point is in an assignment statement
     var = ...
-      1;
+        1;
 move point to the \"v\" when GOTO-END is nil, otherwise move to the
 point after \";\".  Likewise for other command statements.
 
@@ -2531,9 +2535,18 @@ current assignment statement, use
 If STATEMENT-TYPE-RE is not specified, `matlab-ts-mode--statements-type-re'
 is used.
 
-Returns nil if not in a statement, otherwise the `point' which
-will be a new point if the starting point was not at the start
-or end of the command statement."
+Optional FIND-OUTERMOST-STATEMENT, if t locates the outermost statement.
+For example, if point is on the 11 below will move to the beginning of
+the assignment and not the inner function_call statement.
+
+ var = ...
+     fun(11, ...
+         22);
+
+Optional NO-MESSAGE if non-nil will prevent messages from being displayed.
+
+Returns nil if not in a statement, otherwise the anchor node
+used to do the movement."
   (interactive)
 
   (cl-assert (or (not goto-end) (eq goto-end 'end)))
@@ -2542,52 +2555,68 @@ or end of the command statement."
     (setq statement-type-re matlab-ts-mode--statements-type-re))
 
   (let ((start-point (point))
-        (node (treesit-node-at (point))))
+        (search-node (treesit-node-at (point)))
+        statement-node)
 
     ;; When on a newline, back up to prior statement
     (when (and (> (point) 1)
-               (equal (treesit-node-type node) "\n")
+               (equal (treesit-node-type search-node) "\n")
                (re-search-backward "[^ \t\n\r]" nil t))
-      (setq node (treesit-node-at (point))))
+      (setq search-node (treesit-node-at (point))))
 
     ;; When at ";" use prev-sibling
-    (when (equal (treesit-node-type node) ";")
-      (setq node (treesit-node-prev-sibling node)))
+    (when (equal (treesit-node-type search-node) ";")
+      (setq search-node (treesit-node-prev-sibling search-node)))
 
     ;; find nearest ancestor that matches statement-type-re
-    (while (and node
-                (let ((type (treesit-node-type node)))
-                  (when (equal type "ERROR")
-                    ;; No movement if we have a syntax error
-                    (message "Not in statement due to syntax error.")
-                    (cl-return-from matlab-ts-mode-beginning-of-statement))
-                  (not (string-match-p statement-type-re type))))
-      (setq node (treesit-node-parent node)))
+    (while search-node
 
-    (when (not node)
-      (message "Not in a statement")
+      ;; Find inner statement node
+      (while (and search-node
+                    (let ((type (treesit-node-type search-node)))
+                      (when (equal type "ERROR")
+                        ;; No movement if we have a syntax error
+                        (unless no-message
+                          (message "Not in statement due to syntax error"))
+                        (cl-return-from matlab-ts-mode-beginning-of-statement))
+                      (not (string-match-p statement-type-re type))))
+          (setq search-node (treesit-node-parent search-node)))
+
+        (when search-node
+          (setq statement-node search-node)
+          (if find-outermost-statement
+              (setq search-node (treesit-node-parent search-node))
+            (setq search-node nil))))
+
+    (when (not statement-node)
+      (unless no-message
+        (message "Not in a statement"))
       (cl-return-from matlab-ts-mode-beginning-of-statement))
 
-    (when node
-      (let* ((statement-start-point (treesit-node-start node))
-             (end-node (or
-                        ;; Use next sibling node if it's a ";" for the an
-                        ;; assignment or function_call.
-                        (and (string-match-p (rx (seq bos (or "assignment"
-                                                              "function_call")
-                                                      eos))
-                                             (treesit-node-type node))
-                             (let ((next-node (treesit-node-next-sibling node)))
-                               (when (and next-node
-                                          (string= ";" (treesit-node-type next-node)))
-                                 next-node)))
-                        node))
-             (statement-end-point (treesit-node-end end-node)))
-        (when (and (>= start-point statement-start-point)
-                   (<= start-point statement-end-point))
-          (goto-char (if (eq goto-end 'end)
-                         statement-end-point
-                       statement-start-point)))))))
+    (let* ((statement-start-point (treesit-node-start statement-node))
+           (end-node (or
+                      ;; Use next sibling node if it's a ";" for the an
+                      ;; assignment or function_call.
+                      (and (string-match-p (rx (seq bos (or "assignment"
+                                                            "function_call"
+                                                            "field_expression")
+                                                    eos))
+                                           (treesit-node-type statement-node))
+                           (let ((next-node (treesit-node-next-sibling statement-node)))
+                             (when (and next-node
+                                        (string= ";" (treesit-node-type next-node)))
+                               next-node)))
+                      statement-node))
+           (statement-end-point (treesit-node-end end-node)))
+      (when (and (>= start-point statement-start-point)
+                 (<= start-point statement-end-point))
+        (cond
+         ((eq goto-end 'end)
+          (goto-char statement-end-point)
+          end-node)
+         (t
+          (goto-char statement-start-point)
+          statement-node))))))
 
 (defun matlab-ts-mode-end-of-statement (&optional statement-type)
   "Move to the end of a command statement.
@@ -2597,15 +2626,21 @@ not specified statement in `matlab-ts-mode--statements-ht' are used."
   (interactive)
   (matlab-ts-mode-beginning-of-statement 'end statement-type))
 
+;; TODO - use these for M-a, M-e?
+
 (defun matlab-ts-mode-beginning-of-command ()
   "Move to the beginning of the command at point.
 Commands are either assignment or function_call statements that can be
 evaluated at the matlab prompt.  Movement occurs only if the point is in
 an assignment or function call.  Note array indexing is considered a
 function call."
-  (matlab-ts-mode-beginning-of-statement nil (rx (seq bos (or "assignment"
-                                                              "function_call")
-                                                      eos))))
+  (when (matlab-ts-mode-beginning-of-statement nil
+                                               (rx (seq bos (or "assignment"
+                                                                "function_call"
+                                                                "field_expression")
+                                                        eos))
+                                               t)
+    (point)))
 
 (defun matlab-ts-mode-end-of-command ()
   "Move to the end of the command at point.
@@ -2613,9 +2648,13 @@ Commands are either assignment or function_call statements that can be
 evaluated at the matlab prompt.  Movement occurs only if the point is in
 an assignment or function call.  Note array indexing is considered a
 function call."
-  (matlab-ts-mode-beginning-of-statement 'end (rx (seq bos (or "assignment"
-                                                               "function_call")
-                                                       eos))))
+  (when (matlab-ts-mode-beginning-of-statement 'end
+                                               (rx (seq bos (or "assignment"
+                                                                "function_call"
+                                                                "field_expression")
+                                                        eos))
+                                               t)
+    (point)))
 
 ;; matlab-ts-mode--thing-settings used for:
 ;;   C-M-a  - M-x beginning-of-defun

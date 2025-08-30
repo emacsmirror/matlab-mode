@@ -233,3 +233,120 @@
   : 20:6: v(2:3)
   :             ^
   No buffer modifications
+
+* Executing commands from movement_statements.m:22:9:
+
+  Case6: (t-utils-xr "C-n" "C-a" "C-f" (matlab-ts-mode-beginning-of-command) (matlab-ts-mode-end-of-command))
+
+- Invoking      : "C-n" = next-line
+  Start point   :  881
+  Moved to point:  922
+  : 23:40: dependencies.internal.widget.foobar( ...
+  :                                                ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  922
+  Moved to point:  882
+  : 23:0: dependencies.internal.widget.foobar( ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-f" = forward-char
+  Start point   :  882
+  Moved to point:  883
+  : 23:1: dependencies.internal.widget.foobar( ...
+  :        ^
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-beginning-of-command)
+  Start point   :  883
+  Moved to point:  882
+  : 23:0: dependencies.internal.widget.foobar( ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-end-of-command)
+  Start point   :  882
+  Moved to point:  944
+  : 24:21:     this.UniqueName);
+  :                             ^
+  No buffer modifications
+
+* Executing commands from movement_statements.m:26:9:
+
+  Case7: (t-utils-xr "C-n" "C-a" "C-f" (matlab-ts-mode-beginning-of-command) (matlab-ts-mode-end-of-command))
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1055
+  Moved to point: 1118
+  : 27:62: this.foo3 = 1 + dependencies.internal.widget.someFunction( ...
+  :                                                                      ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   : 1118
+  Moved to point: 1056
+  : 27:0: this.foo3 = 1 + dependencies.internal.widget.someFunction( ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-f" = forward-char
+  Start point   : 1056
+  Moved to point: 1057
+  : 27:1: this.foo3 = 1 + dependencies.internal.widget.someFunction( ...
+  :        ^
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-beginning-of-command)
+  Start point   : 1057
+  Moved to point: 1056
+  : 27:0: this.foo3 = 1 + dependencies.internal.widget.someFunction( ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-end-of-command)
+  Start point   : 1056
+  Moved to point: 1141
+  : 28:22:     this.UniqueName2);
+  :                              ^
+  No buffer modifications
+
+* Executing commands from movement_statements.m:30:9:
+
+  Case8: (t-utils-xr "C-n" "C-a" "C-f" (matlab-ts-mode-beginning-of-command) (matlab-ts-mode-end-of-command))
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1252
+  Moved to point: 1316
+  : 31:63: this.foo3 = 1 + dependencies.internal.widget.someFunction2( ...
+  :                                                                       ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   : 1316
+  Moved to point: 1253
+  : 31:0: this.foo3 = 1 + dependencies.internal.widget.someFunction2( ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-f" = forward-char
+  Start point   : 1253
+  Moved to point: 1254
+  : 31:1: this.foo3 = 1 + dependencies.internal.widget.someFunction2( ...
+  :        ^
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-beginning-of-command)
+  Start point   : 1254
+  Moved to point: 1253
+  : 31:0: this.foo3 = 1 + dependencies.internal.widget.someFunction2( ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-end-of-command)
+  Start point   : 1253
+  Moved to point: 1384
+  : 34:22:     this.UniqueName3);
+  :                              ^
+  No buffer modifications
