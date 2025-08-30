@@ -710,7 +710,8 @@ Example, disp variable is overriding the disp builtin function:
    :language 'matlab
    :feature 'comment-marker
    :override t
-   '(((comment) @matlab-ts-mode--comment-to-do-capture))
+   '(((comment) @matlab-ts-mode--comment-to-do-capture)
+     ((line_continuation) @matlab-ts-mode--comment-to-do-capture))
 
    ;; F-Rule: Constant literal numbers, e.g. 1234, 12.34, 10e10
    ;; We could use this for items like true, false, pi, etc. See some of these numbers in:

@@ -9,5 +9,7 @@ function a = font_lock_comment_markers
     % FIXME - foo, TODO - bar
     %
     % XXX
-    a = 1;
+    a = 1 + ... % xxx FIXME TODO
+        2;
+
 end
