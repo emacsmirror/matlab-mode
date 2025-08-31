@@ -2271,7 +2271,12 @@ Example:
         (and node
              (not (string= (treesit-node-type node) "line_continuation"))
              (equal (treesit-node-type parent) "source_file")))
-      column-0 0)
+      ;; column-0 moves point, fixed in emacs 31
+      (lambda (_node _parent bol &rest _)
+        (save-excursion
+          (goto-char bol)
+          (line-beginning-position)))
+      0)
 
      ;; I-Rule: within a function/classdef doc block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-doc-block-comment-matcher parent 2)
