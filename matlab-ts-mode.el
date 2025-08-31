@@ -2419,6 +2419,16 @@ Example:
      ;; <TAB>       y = 2;
      ((parent-is ,(rx bos "block" eos)) parent 0)
 
+     ;; I-Rule: classdef indent_class_prop_continued
+     ;;              properties
+     ;;                  ListArrayHeight = struct( ...
+     ;;         TAB>         'Short',  {1}, ...
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_class_prop_continued.m
+     ((n-p-gp ,(rx bos (or "arguments" ")") eos)
+              ,(rx bos "function_call" eos)
+              ,(rx bos "default_value" eos))
+      great-grand-parent ,matlab-ts-mode--indent-level)
+
      ;; I-Rule:  a = ...
      ;; <TAB>        1;
      ((parent-is ,(rx bos "assignment" eos)) parent ,matlab-ts-mode--indent-level)
@@ -3831,6 +3841,12 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO Indent
+    ;;           myVariable = struct( ...
+    ;;               'Short',  {1}, ...
+    ;;               'Long',   {100} ...
+    ;;      TAB>     );
+    ;;
     ;; TODO t-utils indent testing
     ;;      Add setting of treesit--indent-verbose t,
     ;;      capture matched rules and record in NAME_matched.txt, one per line of form:
