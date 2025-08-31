@@ -3836,6 +3836,27 @@ so configuration variables of that mode, do not affect this mode.
     ;;      capture matched rules and record in NAME_matched.txt, one per line of form:
     ;;         sourceLine >>> Matched rule: ....
     ;;
+    ;; TODO C-x h M-x indent-region fails on this:
+    ;;          function foo
+    ;;              var_types = {
+    ;;                  'bool';
+    ;;                  'int8';
+    ;;                  'int8';
+    ;;                  'int8'
+    ;;                          };
+    ;;
+    ;;          end
+    ;;      Get:
+    ;;          function foo
+    ;;              var_types = {
+    ;;                            'bool';
+    ;;                  'int8';
+    ;;                  'int8';
+    ;;                  'int8'
+    ;;                          };
+    ;;
+    ;;          end
+    ;;
     ;; TODO [future] Indent - complex for statement
     ;;         function a = foo(inputArgument1)
     ;;             for (idx = (a.b.getStartValue(((inputArgument1 + someOtherFunction(b)) * 2 - ...
