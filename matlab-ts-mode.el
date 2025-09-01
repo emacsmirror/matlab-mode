@@ -3847,11 +3847,6 @@ so configuration variables of that mode, do not affect this mode.
     ;;               'Long',   {100} ...
     ;;      TAB>     );
     ;;
-    ;; TODO t-utils indent testing
-    ;;      Add setting of treesit--indent-verbose t,
-    ;;      capture matched rules and record in NAME_matched.txt, one per line of form:
-    ;;         sourceLine >>> Matched rule: ....
-    ;;
     ;; TODO C-x h M-x indent-region fails on this:
     ;;          function foo
     ;;              var_types = {

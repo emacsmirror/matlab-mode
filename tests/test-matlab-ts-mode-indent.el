@@ -57,7 +57,7 @@ after validating it, rename it to
          (m-files (t-utils-get-files
                    test-name
                    (rx ".m" eos)
-                   (rx "_expected.m" eos) ;; skip our *_expected.m baselines
+                   nil
                    test-matlab-ts-mode-indent--file))
          (indent-checker (lambda ()
                            (setq test-matlab-ts-mode-indent--current-indent-level

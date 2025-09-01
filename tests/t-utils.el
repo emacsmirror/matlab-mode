@@ -346,7 +346,7 @@ baseline check fails."
                                              expected-file)))
             (setq baseline-errors (list
                                    (format "Test: %s" lang-file)
-                                   (format "Got: %s" got-file )
+                                   (format "Got: %s" got-file)
                                    (format "Expected: %s" expected-file))))
           (when baseline-errors
             (if error-msg
@@ -362,9 +362,10 @@ baseline check fails."
         (message "-> %s" msg)))
 
     ;; Report the status of the test.
-    (message "%s: %s %s %s"
-             (if error-msg "FAIL" "PASS")
-             test-name lang-file (t-utils--took start-time))
+    (when start-time
+      (message "%s: %s %s %s"
+               (if error-msg "FAIL" "PASS")
+               test-name lang-file (t-utils--took start-time)))
     error-msg))
 
 (defun t-utils--display-result (test-name directory result &optional result-file)
@@ -875,12 +876,12 @@ containing the LANGUAGE tree-sitter parse errors.
   (require \\='LANGUAGE-ts-mode)
 
   (defvar test-LANGUAGE-ts-mode-view-parse-errors--file nil)
-  
+
   (defun test-LANGUAGE-ts-mode-view-parse-errors--file (lang-file)
     \"Test an individual LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-view-parse-errors--file lang-file))
       (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-view-parse-errors\")))
-  
+
   (defun test-LANGUAGE-ts-mode-view-parse-errors-action-fun ()
     \"Exercise LANGUAGE-ts-mode-view-parse-errors on the current buffer.\"
     (let* ((lang-file (file-name-nondirectory t-utils--buf-file))
@@ -893,21 +894,21 @@ containing the LANGUAGE tree-sitter parse errors.
                                              contents)))
       (kill-buffer parse-errors-buf)
       result))
-  
+
   (ert-deftest test-LANGUAGE-ts-mode-view-parse-errors ()
     \"Test LANGUAGE-ts-mode-view-parse-errors.
   Using ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME.m, compare
   LANGUAGE-ts-mode-view-parse-error against
   ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME_expected.txt.  This loops
   on all ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME.m files.
-  
+
   To add a test, create
     ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME.m
   and run this function.  The baseline is saved for you as
     ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME_expected.txt~
   after validating it, rename it to
     ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME_expected.txt\"
-  
+
     (let* ((test-name \"test-LANGUAGE-ts-mode-view-parse-errors\")
            (lang-files (t-utils-get-files
                      test-name
@@ -1227,8 +1228,58 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
         ;; result is nil or an error message list of strings
         error-msg))))
 
+(defvar t-utils--test-indent-msgs nil)
+(defvar t-utils--test-indent-msgs-ignore-re nil)
+
+(defun t-utils--test-indent-msg-capture (format-string &rest args)
+  "Advice for message FORMAT-STRING ARGS to capture the messages."
+  (let ((msg (concat "<{" (apply #'format format-string args) "}>")))
+    (when (not (string-match-p t-utils--test-indent-msgs-ignore-re msg))
+      (let* ((line-num (line-number-at-pos))
+             (last-msgs-at-line-num (gethash line-num t-utils--test-indent-msgs))
+             (msgs-at-line-num (if last-msgs-at-line-num
+                                   (concat last-msgs-at-line-num " " msg)
+                                 msg)))
+        (puthash line-num msgs-at-line-num t-utils--test-indent-msgs)))))
+
+(defun t-utils--test-indent-expected-msgs (test-name lang-file)
+  "For TEST-NAME, validate the NAME_expected_msgs.LANG baseline for LANG-FILE.
+Message are captured during `indent-region' LANG-FILE and combined with
+the indented code to create NAME_expected_msgs.txt of form:
+  CODE_LINE1 COMMENT-START <{MESSAGES}> COMMENT-END
+  CODE_LINE2 COMMENT-START <{MESSAGES}> COMMENT-END
+  ..."
+  (let* ((expected-file (replace-regexp-in-string "\\.\\([^.]+\\)\\'" "_expected_msgs.\\1"
+                                                  lang-file))
+         (expected (when (file-exists-p expected-file)
+                     (with-temp-buffer
+                       (insert-file-contents-literally expected-file)
+                       (buffer-string))))
+         (got-file (concat expected-file "~"))
+         got)
+
+    (save-excursion
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let* ((current-line (buffer-substring-no-properties (line-beginning-position)
+                                                            (line-end-position)))
+               (line-num (line-number-at-pos))
+               (current-msgs (gethash line-num t-utils--test-indent-msgs)))
+          (setq got (concat got
+                            current-line (when current-msgs
+                                           (concat " " comment-start " " current-msgs comment-end))
+                            "\n"))
+          (forward-line))))
+    
+    (let ((error-msg (t-utils--baseline-check
+                      test-name nil
+                      lang-file got got-file expected expected-file)))
+      error-msg)))
+
+;; TODO use (cl-defun t-utils-test-NAME test-name lang-files (&key ....)) syntax
 (defun t-utils-test-indent (test-name lang-files
-                                      &optional indent-checker line-manipulator error-nodes-regexp)
+                                      &optional indent-checker line-manipulator error-nodes-regexp
+                                      indent-msgs-ignore-re)
   "Test indent on each file in LANG-FILES list.
 Compare indent of each NAME.LANG in LANG-FILES against NAME_expected.LANG.
 TEST-NAME is used in messages.
@@ -1243,12 +1294,27 @@ corresponding TEST-NAME-files/ directory, create
 TEST-NAME-files/NAME.LANG, then run the test.  Follow the messages to
 accept the generated baseline after validating it.
 
-Two methods are used to indent each file in LANG-FILES,
+This test:
 
  1. (indent-region (point-min) (point-man))
 
     If optional INDENT-CHECKER function is provided, that is called with
     the temporary buffer in context after the `indent-region'.
+
+    During the indent, `treesit--indent-verbose' is set to t and
+    messages are captured.  The indented file plus the captured messages
+    are compared against NAME_expected_msgs.LANG.  If the match fails or
+    NAME_expected_msgs.LANG does not exist, NAME_expected_msgs.LANG~ is
+    created containing the expected result.  You can then fix the code
+    or if the \"got\" result is good, rename NAME_expected_msgs.LANG~ to
+    NAME_expected_msgs.LANG.
+
+    INDENT-MSGS-IGNORE-RE are messages that are ignored during the
+    indent region capture.  This defaults to
+      (rx bos (or \"-->\" \"Indenting region\"))
+    where we assume messages starting with \"-->\" are debugging
+    message and the \"Indenting region\" are progress messages
+    from `indent-region'.
 
  2. Indent the unindented contents of lang-file when there are no
     error nodes in lang-file.  In a temporary buffer
@@ -1344,91 +1410,118 @@ To debug a specific indent test file
   (when (not error-nodes-regexp)
     (setq error-nodes-regexp (rx bos "ERROR" eos)))
 
+  (setq t-utils--test-indent-msgs-ignore-re
+        (or indent-msgs-ignore-re (rx bos (or "-->" "Indenting region"))))
+
   (let ((error-msgs '()))
     (dolist (lang-file lang-files)
-      (let* ((expected-file (replace-regexp-in-string "\\.\\([^.]+\\)\\'" "_expected.\\1"
-                                                      lang-file))
-             (expected (when (file-exists-p expected-file)
-                         (with-temp-buffer
-                           (insert-file-contents-literally expected-file)
-                           (buffer-string))))
-             do-line-by-line-indent
-             lang-file-major-mode
-             error-node)
+      ;; TODO add the same skip to the other t-utils-test-NAME's
+      ;; Skip *_expected.m, *_expected_msgs.m baselines
+      (when (not (string-match-p "_expected\\(?:_msgs\\)?.[^.]+\\'" lang-file))
+        (let* ((expected-file (replace-regexp-in-string "\\.\\([^.]+\\)\\'" "_expected.\\1"
+                                                        lang-file))
+               (expected (when (file-exists-p expected-file)
+                           (with-temp-buffer
+                             (insert-file-contents-literally expected-file)
+                             (buffer-string))))
+               do-line-by-line-indent
+               lang-file-major-mode
+               error-node)
 
-        ;; Indent lang-file
-        (with-temp-buffer
-          (let ((start-time (current-time)))
-            (t-utils--insert-file-for-test lang-file)
-            (setq error-node (treesit-search-subtree
-                              (treesit-buffer-root-node) error-nodes-regexp nil t))
+          ;; Indent lang-file
+          (with-temp-buffer
+            (let ((start-time (current-time))
+                  (start-msg (format "START: %s <indent-region> %s [%d]" test-name lang-file
+                                     (car (let ((current-time-list nil)) (current-time))))))
+              (t-utils--insert-file-for-test lang-file)
+              (setq error-node (treesit-search-subtree
+                                (treesit-buffer-root-node) error-nodes-regexp nil t))
+              
+              (setq lang-file-major-mode major-mode)
+              
+              (t-utils--trim) ;; remove trailing lines to simplify baselines
+              
+              (message "%s" start-msg)
 
-            (message "START: %s <indent-region> %s" test-name lang-file)
-            (setq lang-file-major-mode major-mode)
+              ;; indent-region, collecting messages to create NAME_expected_msgs.LANG baseline
+              (let ((treesit--indent-verbose t))
 
-            (indent-region (point-min) (point-max))
+                (unwind-protect
+                    (progn
+                      (setq t-utils--test-indent-msgs (make-hash-table :test 'equal))
+                      (advice-add #'message :override #'t-utils--test-indent-msg-capture)
 
-            (when indent-checker
-              (funcall indent-checker))
+                      (indent-region (point-min) (point-max))
 
-            ;; By design indent-for-tab-command adds whitespace up to the indent level for code
-            ;; insertion on a "blank" line. To simplify our baselines, we remove this extra space.
-            (t-utils--trim)
+                      (let ((error-msg (t-utils--test-indent-expected-msgs test-name lang-file)))
+                        (when error-msg
+                          (push error-msg error-msgs))))
+                  ;; unwind-protect unwind forms
+                  (progn
+                    (setq t-utils--test-indent-msgs nil)
+                    (advice-remove #'message #'t-utils--test-indent-msg-capture))))
 
-            (let ((got (buffer-substring (point-min) (point-max)))
-                  (got-file (concat expected-file "~")))
+              (when indent-checker
+                (funcall indent-checker))
 
-              (setq do-line-by-line-indent
-                    (not (string-match-p "t-utils-test-indent:[ \t]*no-line-by-line-indent" got)))
+              ;; By design indent-for-tab-command adds whitespace up to the indent level for code
+              ;; insertion on a "blank" line. To simplify our baselines, we remove this extra space.
+              (t-utils--trim)
 
-              (set-buffer-modified-p nil)
-              (kill-buffer)
+              (let ((got (buffer-substring (point-min) (point-max)))
+                    (got-file (concat expected-file "~")))
 
-              (let ((indent-error-msg (t-utils--baseline-check
-                                       (concat test-name " <indent-region>") start-time
-                                       lang-file got got-file expected expected-file)))
-                (when indent-error-msg
-                  (push indent-error-msg error-msgs))))))
+                (setq do-line-by-line-indent
+                      (not (string-match-p "t-utils-test-indent:[ \t]*no-line-by-line-indent" got)))
 
-        ;; Now, simulate typing lang-file and indent it (exercise TAB and RET)
-        (when (not error-node)
-          (message "START: %s <indent-using-unindented-contents> %s" test-name lang-file)
-          (let ((start-time (current-time))
-                (unindented-error-msg (t-utils--test-indent-unindented
-                                       lang-file lang-file-major-mode
-                                       expected expected-file
-                                       line-manipulator)))
-            (message "%s: %s <indent-using-unindented-contents> %s %s" test-name lang-file
-                     (if unindented-error-msg "FAIL" "PASS")
-                     (t-utils--took start-time))
-            (when unindented-error-msg
-              (push unindented-error-msg error-msgs)))
+                (set-buffer-modified-p nil)
+                (kill-buffer)
 
-          ;; Indent line-by-line if
-          ;;  1)  lang-file does not contain:
-          ;;          t-utils-test-indent: no-line-by-line-indent - <reason>
-          ;;      No message produced about skipping it.
-          ;; and
-          ;;  2) LANG-FILE-NO-EXT.skip.typing.txt does not exist
-          ;;     where LANG-FILE-NO-EXT is the lang-file without the extension.
-          (when do-line-by-line-indent
-            (let ((skip-typing-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.typing.txt"
-                                                              lang-file)))
-              (if (file-exists-p skip-typing-file)
-                  (t-utils--skip-message lang-file skip-typing-file
-                                         "typing line-by-line this test input")
-                (message "START: %s <indent-via-typing-line-by-line> %s" test-name lang-file)
-                (let ((start-time (current-time))
-                      (typing-error-msg (t-utils--test-indent-typing-line-by-line
+                (let ((indent-error-msg (t-utils--baseline-check
+                                         (concat test-name " <indent-region>") start-time
+                                         lang-file got got-file expected expected-file)))
+                  (when indent-error-msg
+                    (push indent-error-msg error-msgs))))))
+
+          ;; Now, simulate typing lang-file and indent it (exercise TAB and RET)
+          (when (not error-node)
+            (message "START: %s <indent-using-unindented-contents> %s" test-name lang-file)
+            (let ((start-time (current-time))
+                  (unindented-error-msg (t-utils--test-indent-unindented
                                          lang-file lang-file-major-mode
-                                         expected expected-file)))
-                  (message "%s: %s <indent-via-typing-line-by-line> %s %s" test-name lang-file
-                           (if typing-error-msg "FAIL" "PASS")
-                           (t-utils--took start-time))
-                  (when typing-error-msg
-                    (push typing-error-msg error-msgs))))))
-          )
-        ))
+                                         expected expected-file
+                                         line-manipulator)))
+              (message "%s: %s <indent-using-unindented-contents> %s %s" test-name lang-file
+                       (if unindented-error-msg "FAIL" "PASS")
+                       (t-utils--took start-time))
+              (when unindented-error-msg
+                (push unindented-error-msg error-msgs)))
+
+            ;; Indent line-by-line if
+            ;;  1)  lang-file does not contain:
+            ;;          t-utils-test-indent: no-line-by-line-indent - <reason>
+            ;;      No message produced about skipping it.
+            ;; and
+            ;;  2) LANG-FILE-NO-EXT.skip.typing.txt does not exist
+            ;;     where LANG-FILE-NO-EXT is the lang-file without the extension.
+            (when do-line-by-line-indent
+              (let ((skip-typing-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.typing.txt"
+                                                                lang-file)))
+                (if (file-exists-p skip-typing-file)
+                    (t-utils--skip-message lang-file skip-typing-file
+                                           "typing line-by-line this test input")
+                  (message "START: %s <indent-via-typing-line-by-line> %s" test-name lang-file)
+                  (let ((start-time (current-time))
+                        (typing-error-msg (t-utils--test-indent-typing-line-by-line
+                                           lang-file lang-file-major-mode
+                                           expected expected-file)))
+                    (message "%s: %s <indent-via-typing-line-by-line> %s %s" test-name lang-file
+                             (if typing-error-msg "FAIL" "PASS")
+                             (t-utils--took start-time))
+                    (when typing-error-msg
+                      (push typing-error-msg error-msgs))))))
+            )
+          )))
     ;; Validate t-utils-test-indent result
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
@@ -2396,4 +2489,4 @@ To debug a specific -parser test file
 ;; LocalWords:  lang defun alist eos treesit lf setq truename dolist nondirectory bos buf funcall
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash
-;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow
+;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's
