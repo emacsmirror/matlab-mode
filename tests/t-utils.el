@@ -1270,7 +1270,7 @@ the indented code to create NAME_expected_msgs.txt of form:
                                            (concat " " comment-start " " current-msgs comment-end))
                             "\n"))
           (forward-line))))
-    
+
     (let ((error-msg (t-utils--baseline-check
                       test-name nil
                       lang-file got got-file expected expected-file)))
@@ -1365,16 +1365,19 @@ This test:
     comment to lang-file:
       t-utils-test-indent: no-line-by-line-indent - <REASON>
 
-Example test setup:
+Example test setup (the *_expected.LANG and *_expected_msgs.LANG are generated
+for you):
 
   ./LANGUAGE-ts-mode.el
   ./tests/test-LANGUAGE-ts-mode-indent.el
   ./tests/test-LANGUAGE-ts-mode-indent-files/NAME1.LANG
   ./tests/test-LANGUAGE-ts-mode-indent-files/NAME1_expected.LANG
+  ./tests/test-LANGUAGE-ts-mode-indent-files/NAME1_expected_msgs.LANG
   ./tests/test-LANGUAGE-ts-mode-indent-files/NAME2.LANG
   ./tests/test-LANGUAGE-ts-mode-indent-files/NAME2_expected.LANG
+  ./tests/test-LANGUAGE-ts-mode-indent-files/NAME2_expected_msgs.LANG
 
-Where ./tests/test-LANGUAGE-ts-mode-indent.el contains:
+./tests/test-LANGUAGE-ts-mode-indent.el contains:
 
   (defvar test-LANGUAGE-ts-mode-indent--file nil)
 
@@ -1437,11 +1440,11 @@ To debug a specific indent test file
               (t-utils--insert-file-for-test lang-file)
               (setq error-node (treesit-search-subtree
                                 (treesit-buffer-root-node) error-nodes-regexp nil t))
-              
+
               (setq lang-file-major-mode major-mode)
-              
+
               (t-utils--trim) ;; remove trailing lines to simplify baselines
-              
+
               (message "%s" start-msg)
 
               ;; indent-region, collecting messages to create NAME_expected_msgs.LANG baseline
