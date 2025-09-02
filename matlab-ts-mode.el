@@ -2294,6 +2294,29 @@ Example:
                            (treesit-node-start assign-node))
                          matlab-ts-mode--indent-level)))))))
 
+(defvar matlab-ts--i-arg-namespace-fcn-prop-anchor-value nil)
+
+(defun matlab-ts--i-arg-namespace-fcn-prop-matcher (node parent _bol &rest _)
+  "Is NODE, PARENT a property default value?
+Example:
+        properties (Constant)
+            property1 = containers.Map(...
+    TAB>                    {"
+  (and (equal (treesit-node-type node) "arguments")
+       (string= (treesit-node-type parent) "function_call")
+       (let ((grand-parent (treesit-node-parent parent)))
+         (and (string= (treesit-node-type grand-parent) "field_expression")
+              (let ((great-grand-parent (treesit-node-parent grand-parent)))
+                (and (string= (treesit-node-type great-grand-parent) "default_value")
+                     (let ((great-great-grand-parent (treesit-node-parent great-grand-parent)))
+                       (and (string= (treesit-node-type great-great-grand-parent) "property")
+                            (setq matlab-ts--i-arg-namespace-fcn-prop-anchor-value
+                                  (treesit-node-start great-great-grand-parent))))))))))
+
+(defun matlab-ts--i-arg-namespace-fcn-prop-anchor (_node _parent _bol &rest _)
+  "Return anchor for `matlab-ts--i-arg-namespace-fcn-prop-matcher'."
+  matlab-ts--i-arg-namespace-fcn-prop-anchor-value)
+
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
@@ -2539,6 +2562,14 @@ Example:
      ;; I-Rule:  a = my_function(1, ...
      ;; <TAB>                    2, ...
      ((parent-is ,(rx bos "arguments" eos)) parent 0)
+
+     ;; I-Rule:      properties (Constant)
+     ;;                  property1 = containers.Map(...
+     ;;        TAB>          {
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_class_prop_continued2.m
+     (,#'matlab-ts--i-arg-namespace-fcn-prop-matcher
+      ,#'matlab-ts--i-arg-namespace-fcn-prop-anchor
+      ,matlab-ts-mode--indent-level)
 
      ;; I-Rule:      someNamespace1.subNamespace2.myFunction( ...
      ;;        TAB>      a, ... % comment for param1
