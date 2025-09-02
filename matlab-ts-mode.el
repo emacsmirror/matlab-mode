@@ -1658,6 +1658,17 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
 
 (defvar matlab-ts-mode--i-next-line-pair)
 
+(defun matlab-ts-mode--is-prev-sibling-fcn-args (node)
+  "Is a prev-sibling of NODE a function_arguments node?"
+  (let* ((prev-sibling (treesit-node-prev-sibling node))
+         (prev-type (treesit-node-type prev-sibling)))
+    (while (and prev-sibling
+                (not (string= prev-type "function_arguments"))
+                ;; matlab tree-sitter uses a newline after arguments statement
+                (not (string= prev-type "\n")))
+      (setq prev-sibling (treesit-node-prev-sibling prev-sibling)))
+    (when prev-sibling t)))
+
 (defun matlab-ts-mode--i-next-line-indent-level (node bol anchor-node last-child-of-error-node)
   "Get indent level for `matlab-ts-mode--i-cont-incomplete-matcher'.
 
@@ -1703,22 +1714,26 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                   0))
 
                ((rx (seq bos (or "properties" "events" "methods" "arguments") eos))
-                (if (equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
-                    ;; after properties, etc.
-                    0
-                  ;; else under properties, etc.
-
-                  (if (and (string= anchor-type "arguments")
-                           (or (not node)
-                               (let ((prev-sibling (treesit-node-prev-sibling node)))
-                                 (and prev-sibling
-                                      (string= (treesit-node-type prev-sibling)
-                                               "line_continuation")))))
-                      ;; Continuation:    arguments
-                      ;;                     firstArgument ...
-                      ;;         TAB>            ^
-                      (* 2 matlab-ts-mode--indent-level)
-                    matlab-ts-mode--indent-level)))
+                (cond
+                 ((equal "end" (treesit-node-type (treesit-node-child anchor-node -1)))
+                  ;; after properties, etc.
+                  0)
+                 ((string= anchor-type "arguments")
+                  (if (or (not node)
+                          (matlab-ts-mode--is-prev-sibling-fcn-args node))
+                      (if (let ((prev-sibling (treesit-node-prev-sibling node)))
+                            (and prev-sibling
+                                 (string= (treesit-node-type prev-sibling) "line_continuation")))
+                          ;; Continuation:    arguments
+                          ;;                     firstArgument ...
+                          ;;         TAB>            ^
+                          (* 2 matlab-ts-mode--indent-level)
+                        matlab-ts-mode--indent-level)
+                    ;; Else function-call argumens
+                    ;; See: tests/test-matlab-ts-mode-indent-files/indent_fcn_call_last_paren.m
+                    0))
+                 (t
+                  matlab-ts-mode--indent-level)))
 
                ("("
                 1)
@@ -2437,6 +2452,15 @@ Example:
      ;; <TAB>        1;
      ((parent-is ,(rx bos "binary_operator" eos)) parent 0)
 
+     ;; I-Rule:      something.foo4 = ...
+     ;;                  someFcn2( ...
+     ;;          TAB>        1, ...
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_fcn_cont.m
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_fcn_call_last_paren.m
+     (,#'matlab-ts-mode--i-assign-cont-matcher
+      ,#'matlab-ts-mode--i-assign-cont-anchor
+      ,#'matlab-ts-mode--i-assign-cont-offset)
+
      ;; I-Rule:  a = ( ...       |     a = [  ...     |     a = {  ...
      ;;               1 ...      |          1 ...     |          1 ...
      ;; <TAB>        );          |         ];         |         };
@@ -2473,14 +2497,6 @@ Example:
      ;; I-Rule:  a = [    2 ...       |   function a ...
      ;; <TAB>             1 ...       |            = fcn
      ((parent-is ,(rx bos (or "row" "function_output") eos)) parent 0)
-
-     ;; I-Rule:      something.foo4 = ...
-     ;;                  someFcn2( ...
-     ;;          TAB>        1, ...
-     ;; See: tests/test-matlab-ts-mode-indent-files/indent_fcn_cont.m
-     (,#'matlab-ts-mode--i-assign-cont-matcher
-      ,#'matlab-ts-mode--i-assign-cont-anchor
-      ,#'matlab-ts-mode--i-assign-cont-offset)
 
      ;; I-Rule:  a = ...
      ;; <TAB>        1;
