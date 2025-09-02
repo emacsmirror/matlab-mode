@@ -1643,7 +1643,7 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
   (cdr matlab-ts-mode--i-cont-incomplete-matcher-pair))
 
 (defun matlab-ts-mode--is-next-line-fcn-args-anchor-node (anchor-node)
-  "Is ANCHOR-NODE for a  \"fcn(\ ...?"
+  "Is ANCHOR-NODE for a  \"fcn(\ ...\", if so return new anchor node."
   (when (string= (treesit-node-type anchor-node) "(")
     (save-excursion
       (goto-char (treesit-node-start anchor-node))
@@ -1653,8 +1653,40 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
            (equal (treesit-node-type (treesit-node-at (point))) "line_continuation")
            (goto-char (treesit-node-start anchor-node))
            (> (point) 1)
-           (goto-char (1- (point)))
-           (looking-at "[.a-z0-9_]" t)))))
+
+           (goto-char (1- (point))) ;; just before the "("
+           (progn ;; skip back to first non-whitespace char before the "("
+             (when (looking-at "[ \t]")
+               (re-search-backward "[^ \t\r\n]" nil t))
+             t)
+           ;; is "fcn(" or "fcn ("?
+           ;;       ^         ^
+           (looking-at "[a-z0-9_]" t)
+
+           ;; Found something that looks like a function-call, e.g. "id("
+           ;; Return id-node if it's a fcn-call in a fcn-call.
+           (or (let ((id-node (treesit-node-at (point))))
+
+                 (goto-char (treesit-node-start id-node))
+
+                 ;; Move over field expression, other1.other2.fcn1(foo.bar.fcn2(
+                 (when (> (current-column) 0)
+                   (goto-char (1- (point)))
+                   (while (and (> (current-column) 0)
+                               (looking-at "\\." t))
+                     (goto-char (1- (point)))
+                     (when (looking-at "[a-z0-9_]" t)
+                       (setq id-node (treesit-node-at (point)))
+                       (goto-char (treesit-node-start id-node))
+                       (when (> (current-column) 0)
+                         (goto-char (1- (point)))))))
+
+                 (when (looking-at "[ \t]")
+                   (re-search-backward "[^ \t\r\n]" nil t))
+                 (when (looking-at "(")
+                   id-node))
+               (treesit-node-parent anchor-node))
+      ))))
 
 (defvar matlab-ts-mode--i-next-line-pair)
 
@@ -1686,12 +1718,13 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                    (< (treesit-node-start anchor-last-child) (treesit-node-start node))))
       (setq anchor-node anchor-last-child)))
 
-  (when (matlab-ts-mode--is-next-line-fcn-args-anchor-node anchor-node)
-    ;; Case: var_b = my_function( ...
-    ;;           ^                        <== RET/TAB to here
-    ;; See:  tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun_call1.m
-    (setq anchor-node (treesit-node-parent anchor-node)
-          last-child-of-error-node nil))
+  (let ((updated-anchor-node (matlab-ts-mode--is-next-line-fcn-args-anchor-node anchor-node)))
+    (when updated-anchor-node
+      ;; Case: var_b = my_function( ...
+      ;;           ^                        <== RET/TAB to here
+      ;; See:  tests/test-matlab-ts-mode-indent-xr-files/indent_xr_fun_call1.m
+      (setq anchor-node updated-anchor-node
+            last-child-of-error-node nil)))
 
   (let ((indent-level
          (if (and node (string= (treesit-node-type node) "end"))
@@ -1974,9 +2007,10 @@ For LAST-CHILD-OF-ERROR-NODE and NODE-TO-CHECK see
            ((string= prev-sibling-type ")")
             (setq close-paren-count (1+ close-paren-count)))
 
-           ((and (string= prev-sibling-type "(")
-                 (> close-paren-count 0))
-            (setq close-paren-count (1- close-paren-count)) 0)
+           ((string= prev-sibling-type "(")
+            (if (> close-paren-count 0)
+                (setq close-paren-count (1- close-paren-count))
+              (setq prev-sibling-to-check prev-sibling)))
 
            ((and (string-match-p matlab-ts-mode--i-next-line-anchors-rx prev-sibling-type)
                  (or (not (string= prev-sibling-type "("))
