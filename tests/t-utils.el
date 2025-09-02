@@ -1432,7 +1432,8 @@ To debug a specific indent test file
           (with-temp-buffer
             (let ((start-time (current-time))
                   (start-msg (format "START: %s <indent-region> %s [%d]" test-name lang-file
-                                     (car (let ((current-time-list nil)) (current-time))))))
+                                     (car (let ((current-time-list nil)) (current-time)))))
+                  indent-expected-msgs-error-msg)
               (t-utils--insert-file-for-test lang-file)
               (setq error-node (treesit-search-subtree
                                 (treesit-buffer-root-node) error-nodes-regexp nil t))
@@ -1453,9 +1454,8 @@ To debug a specific indent test file
 
                       (indent-region (point-min) (point-max))
 
-                      (let ((error-msg (t-utils--test-indent-expected-msgs test-name lang-file)))
-                        (when error-msg
-                          (push error-msg error-msgs))))
+                      (setq indent-expected-msgs-error-msg
+                            (t-utils--test-indent-expected-msgs test-name lang-file)))
                   ;; unwind-protect unwind forms
                   (progn
                     (setq t-utils--test-indent-msgs nil)
@@ -1481,7 +1481,13 @@ To debug a specific indent test file
                                          (concat test-name " <indent-region>") start-time
                                          lang-file got got-file expected expected-file)))
                   (when indent-error-msg
-                    (push indent-error-msg error-msgs))))))
+                    (push indent-error-msg error-msgs)))
+
+                ;; Report error from `t-utils--test-indent-expected-msgs' after doing the main
+                ;; `indent-region' check. This way the messages in the *ert* buffer are ordered with
+                ;; the main indent-region check first.
+                (when indent-expected-msgs-error-msg
+                  (push indent-expected-msgs-error-msg error-msgs)))))
 
           ;; Now, simulate typing lang-file and indent it (exercise TAB and RET)
           (when (not error-node)
