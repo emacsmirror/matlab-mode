@@ -2473,7 +2473,7 @@ Example:
      ;;                  ListArrayHeight = struct( ...
      ;;         TAB>         'Short',  {1}, ...
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_class_prop_continued.m
-     ((n-p-gp ,(rx bos (or "arguments" ")") eos)
+     ((n-p-gp ,(rx bos (or ")" "arguments" "line_continuation") eos)
               ,(rx bos "function_call" eos)
               ,(rx bos "default_value" eos))
       great-grand-parent ,matlab-ts-mode--indent-level)
