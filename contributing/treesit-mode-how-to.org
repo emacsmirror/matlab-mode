@@ -763,6 +763,37 @@ so we can combine them and also handle nested if-statements as shown below.
 Following this process, we complete our indent engine by adding more rules. As we develop
 the rules, it is good to lock down expected behavior with tests.
 
+*** Setup: Indent Considerations
+
+1. Indent rules maybe easy to define using the treesit package pre-defined matchers and anchors
+   when there are no syntax errors.
+
+2. It is a good idea to ensure that indent work well when there are syntax errors thus giving
+   a natural editing experience. Consider the case of typing in code, you want the RET to
+   go to the right location on the next line, even when there is a syntax error. For example,
+
+   : myStruct.field = someFcn(arg1, <RET>
+   :                          ^                <== Point should be here
+
+   The indent tests below help with this by programmatically typing "line-by-line" each test
+   case to ensure the behavior is as expected when you are typing code.
+
+3. You can use functions for matcher, anchor, and offset as in
+
+   #+begin_src emacs-lisp
+     (defvar LANGUAGE-ts-mode--indent-rules
+       `((LANGUAGE
+          ;; <snip>
+          (,#'my-matcher-fun ,#'my-anchor-fun, ,#'my-offset-fun)
+          ;; <snip>
+          )))
+   #+end_src
+
+   Be careful with my-offset-fun. It should not base the offset on the point of the prev-node or
+   anything like that. This is because =indent-region= does a batch indent to improve
+   performance. It does not do line-by-line indenting. Therefore, the offset must not be based on
+   the indentation of prior lines.
+
 ** Test: Indent
 
 We use a looping pattern similar to the font-lock test for our indent tests:
@@ -771,9 +802,11 @@ We use a looping pattern similar to the font-lock test for our indent tests:
   ./LANGUAGE-ts-mode.el
   ./tests/test-LANGUAGE-ts-mode-indent.el
   ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test1.lang
-  ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test1_expected.lang  // generated for you
+  ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test1_expected.lang       // generated for you
+  ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test1_expected_msgs.lang  // generated for you
   ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test2.lang
-  ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test2_expected.lang  // generated for you
+  ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test2_expected.lang       // generated for you
+  ./tests/test-LANGUAGE-ts-mode-indent-files/indent_test2_expected_msgs.lang  // generated for you
   ....
 #+end_example
 
@@ -794,27 +827,36 @@ where test-LANGUAGE-ts-mode-indent.el contains:
 
   (ert-deftest test-LANGUAGE-ts-mode-indent ()
     "Test indent using ./test-LANGUAGE-ts-mode-indent-files/NAME.lang.
-  Compare indent of ./test-LANGUAGE-ts-mode-indent-files/NAME.lang against
-  ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang.  Indent is done two
-  ways as described in `t-utils-test-indent'.  This loops
-  on all ./test-LANGUAGE-ts-mode-indent-files/NAME.lang files.
+  Compare indent of ./test-LANGUAGE-ts-mode-indent-files/NAME.lang
+  against ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang.
+  Indent is done several ways as described in `t-utils-test-indent'.
+  This loops on all ./test-LANGUAGE-ts-mode-indent-files/NAME.lang
+  files.
 
   To add a test, create
     ./test-LANGUAGE-ts-mode-indent-files/NAME.lang
   and run this function.  The baseline is saved for you as
     ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang~
-  after validating it, rename it to
-    ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang"
+    ./test-LANGUAGE-ts-mode-indent-files/NAME_expected_msgs.lang~
+  after validating them, rename them to
+    ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang
+    ./test-LANGUAGE-ts-mode-indent-files/NAME_expected_msgs.lang"
 
     (let* ((test-name "test-LANGUAGE-ts-mode-indent")
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx ".lang" eos)
-                     (rx "_expected.lang" eos) ;; skip our *_expected.lang baselines
-                     test-LANGUAGE-ts-mode-indent--file)))
+                        test-name
+                        (rx ".lang" eos)
+                        nil
+                        test-LANGUAGE-ts-mode-indent--file)))
       (t-utils-error-if-no-treesit-for 'LANGUAGE test-name)
       (t-utils-test-indent test-name)))
 #+end_src
+
+This test,
+
+1. Runs indent-region on NAME.lang and compares against NAME_expected.lang.
+2. Indents the unindented contents of NAME.lang and compares against NAME_expected.lang.
+3. Indents the contents of NAME.lang line-by-line, simulating typing code line-by-line.
 
 ** Test: Indent as you type
 
