@@ -1233,13 +1233,13 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
 
 (defun t-utils--test-indent-msg-capture (format-string &rest args)
   "Advice for message FORMAT-STRING ARGS to capture the messages."
-  (let ((msg (concat "<{" (apply #'format format-string args) "}>")))
+  (let ((msg (apply #'format format-string args)))
     (when (not (string-match-p t-utils--test-indent-msgs-ignore-re msg))
       (let* ((line-num (line-number-at-pos))
              (last-msgs-at-line-num (gethash line-num t-utils--test-indent-msgs))
-             (msgs-at-line-num (if last-msgs-at-line-num
-                                   (concat last-msgs-at-line-num " " msg)
-                                 msg)))
+             (msgs-at-line-num (concat last-msgs-at-line-num
+                                       (when last-msgs-at-line-num " ")
+                                       "<{" msg "}>")))
         (puthash line-num msgs-at-line-num t-utils--test-indent-msgs)))))
 
 (defun t-utils--test-indent-expected-msgs (test-name lang-file)
