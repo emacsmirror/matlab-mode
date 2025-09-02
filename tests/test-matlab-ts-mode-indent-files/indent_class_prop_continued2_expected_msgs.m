@@ -6,25 +6,25 @@ classdef indent_class_prop_continued2 %  <{Matched rule: ((lambda (node parent _
 
     properties (Constant) %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
         property1 = containers.Map(... %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
-            { %  <{Matched rule: (matlab-ts--i-arg-namespace-fcn-prop-matcher matlab-ts--i-arg-namespace-fcn-prop-anchor 4)}>
-              'one' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-              'two' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+            { %  <{Matched rule: (matlab-ts-mode--i-arg-namespace-fcn-prop-matcher matlab-ts-mode--i-arg-namespace-fcn-prop-anchor 4)}>
+              'one' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+              'two' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
             } ... %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
             , ... %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
             { %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
-              'foo' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-              'bar' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+              'foo' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+              'bar' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
             }); %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
         property2 = someFcn(... %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
             { %  <{Matched rule: ((n-p-gp "\\`\\(?:)\\|arguments\\|line_continuation\\)\\'" "\\`function_call\\'" "\\`default_value\\'") great-grand-parent 4)}>
-              'one' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-              'two' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+              'one' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+              'two' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
             } ... %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
             , ... %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
             { %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
-              'foo' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-              'bar' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+              'foo' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+              'bar' %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
             }); %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
     end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>

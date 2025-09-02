@@ -1421,33 +1421,6 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
     nil
     0))
 
-(defun matlab-ts-mode--row-indent-level (node parent _bol &rest _)
-  "Indent level for a NODE in PARENT cell or matrix."
-
-  ;; first-entry is the 2nd element, i.e. child 1. Child 0 is the "[" or "{".
-  ;; first-entry could be "line_continuation" or "row"
-  ;; "row" can also be empty, e.g. start-point == end-point as in
-  ;;       C = [
-  ;;             ...
-  ;;   TAB>      1 ...
-  ;;           ]
-  (let* ((first-entry (treesit-node-child parent 1))
-         first-start)
-    (if (and (not (equal node first-entry)) ;; point is not on first row
-             (equal (treesit-node-type first-entry) "row")
-             (not (= (setq first-start (treesit-node-start first-entry))
-                     (treesit-node-end first-entry))))
-        ;;         c = [2, 3;
-        ;;  TAB>        3, 4];
-        (let ((first-column (save-excursion
-                              (goto-char first-start)
-                              (current-column)))
-              (array-column (save-excursion
-                              (goto-char (treesit-node-start parent))
-                              (current-column))))
-          (- first-column array-column))
-      matlab-ts-mode--array-indent-level)))
-
 (defvar matlab-ts-mode--i-error-switch-matcher-pair)
 
 (defun matlab-ts-mode--i-error-switch-matcher (node _parent bol &rest _)
@@ -2294,9 +2267,9 @@ Example:
                            (treesit-node-start assign-node))
                          matlab-ts-mode--indent-level)))))))
 
-(defvar matlab-ts--i-arg-namespace-fcn-prop-anchor-value nil)
+(defvar matlab-ts-mode--i-arg-namespace-fcn-prop-anchor-value nil)
 
-(defun matlab-ts--i-arg-namespace-fcn-prop-matcher (node parent _bol &rest _)
+(defun matlab-ts-mode--i-arg-namespace-fcn-prop-matcher (node parent _bol &rest _)
   "Is NODE, PARENT a property default value?
 Example:
         properties (Constant)
@@ -2310,12 +2283,38 @@ Example:
                 (and (string= (treesit-node-type great-grand-parent) "default_value")
                      (let ((great-great-grand-parent (treesit-node-parent great-grand-parent)))
                        (and (string= (treesit-node-type great-great-grand-parent) "property")
-                            (setq matlab-ts--i-arg-namespace-fcn-prop-anchor-value
+                            (setq matlab-ts-mode--i-arg-namespace-fcn-prop-anchor-value
                                   (treesit-node-start great-great-grand-parent))))))))))
 
-(defun matlab-ts--i-arg-namespace-fcn-prop-anchor (_node _parent _bol &rest _)
-  "Return anchor for `matlab-ts--i-arg-namespace-fcn-prop-matcher'."
-  matlab-ts--i-arg-namespace-fcn-prop-anchor-value)
+(defun matlab-ts-mode--i-arg-namespace-fcn-prop-anchor (_node _parent _bol &rest _)
+  "Return anchor for `matlab-ts-mode--i-arg-namespace-fcn-prop-matcher'."
+  matlab-ts-mode--i-arg-namespace-fcn-prop-anchor-value)
+
+(defvar matlab-ts-mode--i-row-anchor-value nil)
+
+(defun matlab-ts-mode--i-row-matcher (node parent _bol &rest _)
+  "Is NODE, PARENT in a matrix with first row on the \"[\" line?
+Example:
+   m = [1, 2, ...
+        3, 4]       <== TAB to here."
+  (and node
+       (string= (treesit-node-type node) "row")
+       (string= (treesit-node-type parent) "matrix")
+       (save-excursion
+         (goto-char (treesit-node-start parent))
+         (forward-char)
+         (when (and (looking-at "[ \t]")
+                    (re-search-forward "[^ \t]" (line-end-position) t))
+           (backward-char))
+         ;; Have something after the "[", e.g. "[  123" or "[ ..."?
+         (when (and (looking-at "[^ \t\r\n]")
+                    (not (equal (treesit-node-type (treesit-node-at (point))) "line_continuation")))
+           (setq matlab-ts-mode--i-row-anchor-value (treesit-node-start (treesit-node-at (point))))
+           t))))
+
+(defun matlab-ts-mode--i-row-anchor (_node _parent _bol &rest _)
+  "Return anchor for `matlab-ts-mode--i-row-matcher'."
+  matlab-ts-mode--i-row-anchor-value)
 
 (defvar matlab-ts-mode--indent-rules
   `((matlab
@@ -2527,15 +2526,26 @@ Example:
      ;; <TAB>         1 ...
      ((parent-is ,(rx bos "parenthesis" eos)) parent 1)
 
+     ;; I-Rule:  a = [    2 ...       |   function a ...
+     ;; <TAB>             1 ...       |            = fcn
+     ((parent-is ,(rx bos (or "row" "function_output") eos)) parent 0)
+
+     ;; I-Rule: a = [1, 2, ...
+     ;;              3, 4]
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_matrix.m
+     (,#'matlab-ts-mode--i-row-matcher
+      ,#'matlab-ts-mode--i-row-anchor
+      0)
+      
      ;; I-Rule:  a = [   ...    |    a = { ...
      ;; <TAB>          2 ...    |          2 ...
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_matrix.m
-     ((parent-is ,(rx bos (or "cell" "matrix") eos)) parent ,#'matlab-ts-mode--row-indent-level)
+     ((parent-is ,(rx bos (or "cell" "matrix") eos)) parent ,matlab-ts-mode--array-indent-level)
 
      ;; I-Rule:   cell1 = { ...
      ;; See: ./test-matlab-ts-mode-indent-xr-files/indent_xr_cell1.m
      ((n-p-gp nil ,(rx bos "line_continuation" eos) ,(rx bos (or "cell" "matrix") eos))
-      grand-parent ,#'matlab-ts-mode--row-indent-level)
+      grand-parent ,matlab-ts-mode--array-indent-level)
 
      ;; I-Rule: function args next line
      ;;           function someFunction(...
@@ -2551,10 +2561,6 @@ Example:
      ;; <TAB>              a, ... % comment    |                   b, ... % comment
      ((parent-is ,(rx bos (or "multioutput_variable" "function_arguments") eos)) parent 1)
 
-     ;; I-Rule:  a = [    2 ...       |   function a ...
-     ;; <TAB>             1 ...       |            = fcn
-     ((parent-is ,(rx bos (or "row" "function_output") eos)) parent 0)
-
      ;; I-Rule:  a = ...
      ;; <TAB>        1;
      ((n-p-gp nil nil ,(rx bos "assignment" eos)) grand-parent ,matlab-ts-mode--indent-level)
@@ -2567,8 +2573,8 @@ Example:
      ;;                  property1 = containers.Map(...
      ;;        TAB>          {
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_class_prop_continued2.m
-     (,#'matlab-ts--i-arg-namespace-fcn-prop-matcher
-      ,#'matlab-ts--i-arg-namespace-fcn-prop-anchor
+     (,#'matlab-ts-mode--i-arg-namespace-fcn-prop-matcher
+      ,#'matlab-ts-mode--i-arg-namespace-fcn-prop-anchor
       ,matlab-ts-mode--indent-level)
 
      ;; I-Rule:      someNamespace1.subNamespace2.myFunction( ...
@@ -3922,33 +3928,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO Indent
-    ;;           myVariable = struct( ...
-    ;;               'Short',  {1}, ...
-    ;;               'Long',   {100} ...
-    ;;      TAB>     );
-    ;;
-    ;; TODO C-x h M-x indent-region fails on this:
-    ;;          function foo
-    ;;              var_types = {
-    ;;                  'bool';
-    ;;                  'int8';
-    ;;                  'int8';
-    ;;                  'int8'
-    ;;                          };
-    ;;
-    ;;          end
-    ;;      Get:
-    ;;          function foo
-    ;;              var_types = {
-    ;;                            'bool';
-    ;;                  'int8';
-    ;;                  'int8';
-    ;;                  'int8'
-    ;;                          };
-    ;;
-    ;;          end
-    ;;
     ;; TODO [future] Indent - complex for statement
     ;;         function a = foo(inputArgument1)
     ;;             for (idx = (a.b.getStartValue(((inputArgument1 + someOtherFunction(b)) * 2 - ...

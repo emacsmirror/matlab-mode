@@ -135,46 +135,46 @@ function out = array_constant_decls() %  <{Matched rule: ((lambda (node parent _
     A = [ 1 2 3 ]; %!!4 %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
 
     Blong = [ 1 2; %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-              3 4; %!!14 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+              3 4; %!!14 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
             ]; %!!12 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     Csep = [ %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-             1 2; %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-             3 4; %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+             1 2; %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+             3 4; %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
            ]; %!!11 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     multinest = { [ 1 2               %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-                    3 4 ];            %!!20 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-                  { 5 6 7 ...         %!!18 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+                    3 4 ];            %!!20 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                  { 5 6 7 ...         %!!18 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
                     8 9 10 ...        %!!20 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
                   };                  %!!18 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
-                  fcncall(10, ...     %!!18 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+                  fcncall(10, ...     %!!18 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
                           12, ...     %!!26 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
                           [ 13 14;    %!!26 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
-                            15 16 ])  %!!28 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+                            15 16 ])  %!!28 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
                 } ;  %!!16 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     nest = { ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-             1        %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-             [ ...    %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-               2 3    %!!10 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+             1        %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+             [ ...    %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+               2 3    %!!10 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
              ] ...    %!!8 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
              3        %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
            };    %!!11 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     cascade_long_name = ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
         { ...               %!!8 %  <{Matched rule: ((parent-is "\\`assignment\\'") parent 4)}>
-          1                 %!!10 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-          2                 %!!10 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+          1                 %!!10 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+          2                 %!!10 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
         };                  %!!8 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     % TODO %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
     % I don't know why the below indents this way. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
     % It should either do all max indent, or all lined up with parens. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
     thing.thing.long.long.longname({ 'str' %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-                                     'str' %!!37 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-                                     'str' %!!37 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-                                     'str' %!!37 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+                                     'str' %!!37 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+                                     'str' %!!37 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+                                     'str' %!!37 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
                                    });   %!!35 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     thing.thing.long.long.longname('str', ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
@@ -190,12 +190,12 @@ function out = array_constant_decls() %  <{Matched rule: ((lambda (node parent _
     % This array has bad syntactic expression parsing due to the %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
     % apostrophy %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
     Closures = [ %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-                 755009 ; ... % 21-Feb-2067 Washington's Birthday (Mon) %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-                 755010 ;     % !!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+                 755009 ; ... % 21-Feb-2067 Washington's Birthday (Mon) %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+                 755010 ;     % !!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
                ]; %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     dep = [ %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-            root(info.function, factory, workspace, []), ...    % likewise this isn't a keyword %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+            root(info.function, factory, workspace, []), ...    % likewise this isn't a keyword %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
             fcn3.finalize                                       % the single quote used to break [] scanning %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
           ]; %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
@@ -211,13 +211,13 @@ function out = array_constant_decls() %  <{Matched rule: ((lambda (node parent _
 
     % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
     out = { A     %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-            Blong %!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-            Csep  %!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-            nest  %!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-            multinest%!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-            cascade_long_name%!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-            Closures%!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
-            dep %!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+            Blong %!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+            Csep  %!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+            nest  %!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+            multinest%!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+            cascade_long_name%!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+            Closures%!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+            dep %!!12 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
           };      %!!10 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
@@ -289,7 +289,7 @@ function B = continuations_and_block_comments %  <{Matched rule: ((lambda (node 
                  arg2); %!!17 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
     A = [ 1 2  % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-          3 4 ]; % !!10 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+          3 4 ]; % !!10 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
 
     foo(['this is a very long string', ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
          'with a continution to do something very exciting']);%!!9 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>

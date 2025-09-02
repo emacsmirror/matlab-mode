@@ -1,11 +1,10 @@
-M-x indent-region fails and produces:
 % -*- matlab-ts -*-
 function indent_failure_with_indent_region
     var_types = {
                   'bool';
-        'int8';
-        'int8';
-        'int8'
+                  'int8';
+                  'int8';
+                  'int8'
                 };
 
 end

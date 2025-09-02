@@ -20,7 +20,7 @@ function ... %  <{Matched rule: ((lambda (node parent _bol &rest _) (and node (n
         ); %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     b = [ ... %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-          1 + ... %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent matlab-ts-mode--row-indent-level)}>
+          1 + ... %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
           2 + ... %  <{Matched rule: ((parent-is "\\`binary_operator\\'") parent 0)}>
           3   ... %  <{Matched rule: ((parent-is "\\`binary_operator\\'") parent 0)}>
         ]; %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
