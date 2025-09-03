@@ -2,6 +2,7 @@
 
 ;; Copyright 2025 Free Software Foundation, Inc.
 ;;
+;; Version: 7.0
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
