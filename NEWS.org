@@ -3,11 +3,171 @@
 
 # Copyright 2025 Free Software Foundation, Inc.
 
-* Next release
+* Release 7.0 MMM DD, YYYY
 
 These are items that will appear in the next ELPA release. These items are available from MELPA.
 
-1. Added [[file:doc/matlab-netshell-for-windows.org][doc/matlab-netshell-for-windows.org]]. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/b0222ac2c067292b43fba91a60b39a262c6149d3][b0222ac]].
+1. New matlab-ts-mode. Commit XXX.
+
+* News for matlab-ts-mode
+
+  matlab-ts-mode is a [[https://tree-sitter.github.io/tree-sitter][tree-sitter]], based MATLAB mode using
+  https://github.com/acristoffers/tree-sitter-matlab. This new MATLAB mode is a replacement
+  for the matlab-mode.
+
+  + Improved font-lock (semantic coloring) performance, making editing even more smooth.
+
+    - More accurate fontification, we now identify language elements accurately and use
+      more faces to color them.
+
+    - Fixes edge-case fontification issues when compared with matlab-mode
+
+      Create issue for this:
+        #+begin_src matlab-ts
+        x = [1 2; 3 4];
+        y = x''               % this is valid double transpose where matlab-mode gets it wrong
+        #+end_src
+
+      Function identification, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/48
+
+    - In comments, we now highlight =FIXME=, =TODO=, and =XXX= markers.
+
+    - Fixed fontification of "%% section" to require that the be the start of a comment and
+      on their own line.
+
+    - Variable creation/assignment will be semantically colored.
+
+    - Now fontify all MATLAB/Simulink factory builtin provided functions, class
+      methods/properties, enums, etc. Note, if you override a builtin function with a variable,
+      the variable creation/assignment will be colored as a variable, but the use will continue to
+      be a function.  To avoid this confusing state, use variable names that collide with builtin
+      items.
+
+  + Improved indent
+
+    - Simplified the semantics for indent. The indent rules are described in matlab-ts-mode.el
+      for completeness.
+
+    - Improved indent performance, making editing very smooth.
+
+    - Fixes various edge-case indent issues, some are
+
+      + Fixed indent of function definition when ellipsis continuations are used.
+
+      + Auto-indentation of end, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/33
+
+      + Fixed cell and matrices indent alignment problems
+
+  + There's no longer prompting if you want functions to have end's. This is now computed
+    automatically.
+
+  + Improved fill-paragraph, =M-q=, which will now fill comments and when not in a comment, indent
+    the current function or statement.
+
+  + Accurate type of m-file detection, which improves matlab-sections-minor-mode.
+
+  + Change Log command now work with MATLAB *.m files.
+
+    Running =C-x 4 a= (add-change-log-entry-other-window) will now insert the name of the function
+    or classdef for the current point.
+
+  + Added support for =M-x outline-minor-mode=. Outline headings are =function='s, =classdef='s,
+    and "%% heading" comments.
+
+  + On save fix of function/classdef name now handles buffer names that aren't valid MATLAB
+    identifiers.  On save fix of function/classdef name handles buffers not associated with files
+    on disk.  Also fixed cases where detection of scripts failed.
+
+  + Improved handling of single quotes for =M-x electric-pair-mode=. These will automatically
+    pair
+    - Single quote when used to create a single-quoted string, but not when used elsewhere,
+      e.g. a matrix transpose.
+    - Double quotes for a double-quoted string.
+    - Parenthesis =()=, Vectors, =[]=, and Cells ={}=.
+
+  + We now highlight starting and ending string quote when the point is on the start or end single
+    or double quote.
+
+  + Improved (more predictable) s-expression commands
+
+    #+begin_example
+      C-M-f   Move forward by s-expression, forward-sexp
+              - If point is on the start of an s-expression, move to the end.
+              - If point is on the end of an s-expression, move to the start of the next s-expression
+                at the same level. If there is no next s-expression, no movement occurs.
+      C-M-b   Move backward by s-expression, backward-sexp
+              - If point is on the end of an s-expression, move to the start.
+              - If point is on the start of an s-expression, move to the start of the prior s-expression
+                at the same level. If there is no prior s-expression, no movement occurs.
+      C-M-SPC Mark s-expression, place point at beginning of sexp and mark at the end, mark-sexp
+      C-M-@   Same as C-M-SPC.
+      C-M-k   Kill s-expression, kill-sexp
+      C-M-t   Transpose s-expressions, transpose-sexp
+    #+end_example
+
+  + Improved sentence commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
+    "Wrong number of arguments: (0 . 0), 1" and now works in matlab-ts-mode.
+
+    #+begin_example
+      M-e      Move forward to next end of sentence, forward-sentence
+      M-a      Move backward to start of sentence, backward-sentence
+      M-k      Kill from point to end of sentence, kill-sentence
+      C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
+    #+end_example
+
+  + Some older matlab-mode menu items and keybindings have been removed because there are
+    standard replacements. Examples:
+
+    - To comment or uncomment code use select the code and type =M-;= which is the standard
+      way to do this in Emacs. The older =C-c ;= and =C-c :" matlab only comment and uncomment
+      commands no longer exist.
+
+    - Completion - we used to have =M-TAB= to complete symbol and this has been replaced by
+      using LSP mode.
+
+  + matlab-shell now has one correct ways of running code sections, via menu =MATLAB -> Code
+    Sections -> Run Section (C-c C-<return>)= or and the older =MATLAB -> Run Code Section=
+    (matlab-shell-run-code-section) because it was duplication and wasn't correctly handling all
+    cases.
+
+  + Builtin items such as namespaces, functions, classes, enumerations, etc. provided by the
+    MATLAB/Simulink products are shown in =font-lock-builtin-face=. Using a different face for
+    builtins vs items you created improves readability. It also helps to avoid mistakes where you
+    override a builtin with a variable. The number of builtin items in the MATLAB/Simulink
+    R2025a.update1 product family is 153,627.
+
+  + When creating a variable that matches a builtin item
+    matlab-ts-mode-variable-override-builtin-face. This makes it easy to see when you are
+    accidently shadowing a builtin function, class, etc. For example, in the following
+    we create a lines variable that shadows the MATLAB built-in lines function:
+
+     #+begin_src matlab
+       lines = ['line1', 'line2']
+     #+end_src
+
+   Using a non-builtin name for a variable results in the standard =font-lock-variable-name-face=
+   being used:
+
+     #+begin_src matlab
+       myLines = ['line1', 'line2']
+     #+end_src
+
+  + MLint MATLAB code analyzer integration via flycheck. Flycheck is an improved on-the-fly
+    error reporting system when compared with the mlint integration in the older matlab-mode.
+
+  + New "MATLAB -> View mlint code analyzer messages" menu item.
+
+  + New "MATLAB -> View tree-sitter parse errors" menu item that lets one inspect
+    the parse errors found by the MATLAB tree-sitter backing the new matlab-ts-mode.
+
+  + New "MATLAB -> Jump to function" menu item.
+
+  + New "MATLAB -> Check setup" menu item that helps validate flycheck and lsp-mode are
+    setup correctly.
+
+  + New "MATLAB -> Editing -> ..." submenu that contains helpful editing commands.
+
+2. Added [[file:doc/matlab-netshell-for-windows.org][doc/matlab-netshell-for-windows.org]]. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/b0222ac2c067292b43fba91a60b39a262c6149d3][b0222ac]].
 
    #+begin_example
 
@@ -22,14 +182,14 @@ These are items that will appear in the next ELPA release. These items are avail
 
    #+end_example
 
-2. Setup imenu for *.tlc files. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/7d0d26a0312cf3a7b0cb07ff982f1b5274f96424][7d0d26a]] and [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e3e6952d57955764d48e9f9432247903672297dc][e3e6952]].
+3. Setup imenu for *.tlc files. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/7d0d26a0312cf3a7b0cb07ff982f1b5274f96424][7d0d26a]] and [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e3e6952d57955764d48e9f9432247903672297dc][e3e6952]].
 
-3. Fix imenu for ~*.m~ files and added [[file:doc/matlab-imenu.org][doc/matlab-imenu.org]] on using it. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/a54d2061bd31c9cba32fc5e0e0ecf34b900e26d1][a54d206]].
+4. Fix imenu for ~*.m~ files and added [[file:doc/matlab-imenu.org][doc/matlab-imenu.org]] on using it. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/a54d2061bd31c9cba32fc5e0e0ecf34b900e26d1][a54d206]].
 
    Now typing ~M-g i~ (or ~M-x imenu~) when visiting a ~*.m~ file will let you quickly jump to
    function declarations.
 
-4. Indent first non-help comment. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/a63e0fe398fa0e49ef0ca71eb1371a0b45ce62cd][a63e0fe]].
+5. Indent first non-help comment. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/a63e0fe398fa0e49ef0ca71eb1371a0b45ce62cd][a63e0fe]].
 
    #+begin_src matlab
      function b = foo
@@ -41,23 +201,23 @@ These are items that will appear in the next ELPA release. These items are avail
      end
    #+end_src
 
-5. [[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]], matlabls, for code navigation, code completion, go to definition,
+6. [[https://github.com/mathworks/MATLAB-language-server][MATLAB Language Server]], matlabls, for code navigation, code completion, go to definition,
    find references, and more. See [[file:doc/matlab-language-server-lsp-mode.org][doc/matlab-language-server-lsp-mode.org]]. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e9ab4fb8b0fedc0e769f4c7e0d86bd26a08567f8][e9ab4fb]].
 
-6. Improved Emacs tramp remote *M-x matlab-shell*. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/64e1805d36a362111ac3518a4fd7428c60483079][64e1805]].
+7. Improved Emacs tramp remote *M-x matlab-shell*. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/64e1805d36a362111ac3518a4fd7428c60483079][64e1805]].
 
    Prior to this commit, matlab-shell running through Emacs tramp partially.  This commit enables
    remote matlab-shell and enables remote debugging, hyperlinks, etc.  See [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/remote-matlab-shell.org][remote-matlab-shell.org]]
    documentation.
 
-7. Remove font-lock-constant-face from help comments. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/1d935b364dd90449a9dfa9a8743e275359096289][1d935b3]].
+8. Remove font-lock-constant-face from help comments. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/1d935b364dd90449a9dfa9a8743e275359096289][1d935b3]].
 
    A general guideline for help comments is to capitalize functions such as PLOT as references and
    matlab-mode used to make these a font-lock-constant-face inside of comments. However, often capital items are
    not references and make comments look bad, so removed these. Likewise, there were other uses of
    font-lock-constant-face that look odd, so removed these.
 
-8. Revamped MATLAB code sections script support issues. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e75ebf5a88b02833d700bcf9ee4419c5888caf12][e75ebf5]] and others.
+9. Revamped MATLAB code sections script support issues. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e75ebf5a88b02833d700bcf9ee4419c5888caf12][e75ebf5]] and others.
 
    - Added [[file:doc/matlab-code-sections.org][doc/matlab-code-sections.org]].
 
@@ -96,16 +256,16 @@ These are items that will appear in the next ELPA release. These items are avail
 
    - Added tests, [[https://github.com/mathworks/Emacs-MATLAB-Mode/issues/8][issue 8]].
 
-9. Enhanced *M-x matlab-shell* to search for MATLAB in standard installation locations if it is not
-   on the path. If we are unable to find MATLAB, we now generate an error explaining how to setup
-   your system to make matlab-shell work. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/9773232626919a6319e3ac36bc7e0cdd99c46585][9773232]].
+10. Enhanced *M-x matlab-shell* to search for MATLAB in standard installation locations if it is not
+    on the path. If we are unable to find MATLAB, we now generate an error explaining how to setup
+    your system to make matlab-shell work. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/9773232626919a6319e3ac36bc7e0cdd99c46585][9773232]].
 
-10. Improved fill-paragraph to work when point is before a comment. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/8686c85cf376f90549d3aaf8478ed381f22282aa][8686c85]].
+11. Improved fill-paragraph to work when point is before a comment. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/8686c85cf376f90549d3aaf8478ed381f22282aa][8686c85]].
 
-11. Add TAB completion in matlab-shell for MATLAB R2025a. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e92fe818acd71c4bead7bdf837e791b5aa456d11][e92fe81]] and several followup
+12. Add TAB completion in matlab-shell for MATLAB R2025a. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/e92fe818acd71c4bead7bdf837e791b5aa456d11][e92fe81]] and several followup
     commits.
 
-12. Fixed Emacs 30 lisp compiler warnings. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/89b585e6d935fd36176791caa66d4dad0405407b][89b585e]].
+13. Fixed Emacs 30 lisp compiler warnings. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/89b585e6d935fd36176791caa66d4dad0405407b][89b585e]].
 
 * Release 6.3 Dec 8, 2024
 
@@ -123,7 +283,7 @@ This is the first [[https://elpa.gnu.org/packages//matlab-mode.html][ELPA matlab
 
 6. *tlc-mode* for editing ~*.tlc~ files
 
-* Older releasess
+* Older releases
 
 matlab-mode was created in 1991.  Change history from 2005 till now
 can be found in https://github.com/mathworks/Emacs-MATLAB-Mode.
@@ -132,3 +292,6 @@ The prior location for matlab-mode was [[https://sourceforge.net/projects/matlab
 prior to sourceforge no longer exist.
 
 See older history [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/2ff6f96294353f3f17757a2522a64c427929ff01/ChangeLog][ChangeLog]], [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/528a4fc79426adc7cf9a484d231dec7defd9c5f4/ChangeLog.old1][ChangeLog.old1]], [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/528a4fc79426adc7cf9a484d231dec7defd9c5f4/ChangeLog.old2][ChangeLog.old2]], and older [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/b7e170ee37a23b6852e461772de1c4e986bb6833/NEWS.org][NEWS.org]].
+
+# LocalWords:  showall ELPA MELPA fontification fontify sexp SPC LSP builtins MLint flycheck lsp
+# LocalWords:  netshell emacsinit imenu matlabls netsell sourceforge MMM YYYY
