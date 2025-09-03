@@ -3931,6 +3931,13 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
+    ;; TODO M-q on first line
+    ;;          foobar = struct(...
+    ;;               'field1', 1, ...
+    ;;               'field1', 2);
+    ;;      result in
+    ;;          foobar = struct(...  'field1', 1, ...  'field1', 2);
+    ;;
     ;; TODO [future] Indent - complex for statement
     ;;         function a = foo(inputArgument1)
     ;;             for (idx = (a.b.getStartValue(((inputArgument1 + someOtherFunction(b)) * 2 - ...
