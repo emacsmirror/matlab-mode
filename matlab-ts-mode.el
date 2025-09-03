@@ -2293,13 +2293,13 @@ Example:
 (defvar matlab-ts-mode--i-row-anchor-value nil)
 
 (defun matlab-ts-mode--i-row-matcher (node parent _bol &rest _)
-  "Is NODE, PARENT in a matrix with first row on the \"[\" line?
+  "Is NODE, PARENT in a matrix with first row on the \"[\" or \"{\" line?
 Example:
    m = [1, 2, ...
         3, 4]       <== TAB to here."
   (and node
        (string= (treesit-node-type node) "row")
-       (string= (treesit-node-type parent) "matrix")
+       (string-match-p (rx bos (or "cell" "matrix") eos) (treesit-node-type parent))
        (save-excursion
          (goto-char (treesit-node-start parent))
          (forward-char)
@@ -2533,6 +2533,7 @@ Example:
      ;; I-Rule: a = [1, 2, ...
      ;;              3, 4]
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_matrix.m
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_cell.m
      (,#'matlab-ts-mode--i-row-matcher
       ,#'matlab-ts-mode--i-row-anchor
       0)
@@ -3533,7 +3534,8 @@ Within comments, the following markers will be highlighted:
 ;;; View parse errors
 
 (defun matlab-ts-mode--get-parse-errors ()
-  "Return a string of parse errors in matlab-ts-mode current buffer."
+  "Return a string of parse errors in matlab-ts-mode current buffer.
+Returns nil if there are no errors."
 
   ;; See: tests/test-matlab-ts-mode-view-parse-errors.el
 
@@ -3565,7 +3567,7 @@ Within comments, the following markers will be highlighted:
               result-list)))
     (let ((errs (mapconcat #'identity (reverse result-list))))
       (if (string= errs "")
-          (setq errs "No tree-sitter errors\n")
+          (setq errs nil)
         (setq errs (concat "Tree-sitter parse errors.\n" errs)))
       errs)))
 
@@ -3607,7 +3609,8 @@ and this buffer is returned."
   (let ((m-buf (current-buffer))
         (m-buf-dir default-directory)
         parse-errors-buf
-        (errs (matlab-ts-mode--get-parse-errors))
+        (errs (or (matlab-ts-mode--get-parse-errors)
+                  "No tree-sitter errors\n"))
         (err-buf-name (concat "*parse errors in " (buffer-name) "*")))
 
     (with-current-buffer (setq parse-errors-buf (get-buffer-create err-buf-name))

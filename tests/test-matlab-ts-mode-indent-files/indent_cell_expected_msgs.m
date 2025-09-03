@@ -13,8 +13,8 @@ function [a1, a2, a3, a4, long_variable_a] = indent_cell %  <{Matched rule: ((la
 
     a3 = { ... %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
            2,  { 3 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
-                 4 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
-                 5 + ( ... %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
+                 4 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                 5 + ( ... %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
                       2 + 0 ... %  <{Matched rule: ((parent-is "\\`parenthesis\\'") parent 1)}>
                      ) %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
                } %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
@@ -31,4 +31,8 @@ function [a1, a2, a3, a4, long_variable_a] = indent_cell %  <{Matched rule: ((la
           3,   2    7 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
         }; %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
+    c1 = {char([0xD800 0xDC32 0xD800 0xDC00 0xD800 0xDC1C]); %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
+          char([0xD800 0xDF3E 0xD800 0xDF48]); %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+          char([0xD802 0xDC11 0xD802 0xDC2C]); %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+          char([0xD83D 0xDE08 0xD83D 0xDE31 0xD83D 0xDE49])}; %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
