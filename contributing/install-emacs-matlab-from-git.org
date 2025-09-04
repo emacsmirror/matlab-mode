@@ -72,7 +72,7 @@ If using Emacs 30 or later you need to [[file:install-matlab-tree-sitter-grammar
 Add the following to your =~/.emacs= file:
 
 #+begin_src emacs-lisp
-  (add-to-list 'load-path "/path/to/Emacs-MATLAB-mode")
+  (add-to-list 'load-path "~/work-area/Emacs-MATLAB-mode")
   (load-library "matlab-autoload")
 #+end_src
 
