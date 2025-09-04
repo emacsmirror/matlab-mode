@@ -1,0 +1,150 @@
+# | Copyright 2025 Free Software Foundation, Inc.
+# |
+# | This program is free software: you can redistribute it and/or modify
+# | it under the terms of the GNU General Public License as published by
+# | the Free Software Foundation, either version 3 of the License, or
+# | (at your option) any later version.
+# |
+# | This program is distributed in the hope that it will be useful,
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# | GNU General Public License for more details.
+# |
+# | You should have received a copy of the GNU General Public License
+# | along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# |
+# | Commentary:
+# |   Guidelines for writing a major mode powered by tree-sitter
+
+#+startup: showall
+
+#+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles-from-org.css"/>
+#+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+#+options: ^:{}
+#+options: toc:nil
+#+latex_header: \usepackage[margin=0.5in]{geometry}
+#+latex_header: \usepackage{parskip}
+#+latex_header: \usepackage{tocloft}
+#+latex_header: \advance\cftsecnumwidth 0.5em\relax
+#+latex_header: \advance\cftsubsecindent 0.5em\relax
+#+latex_header: \advance\cftsubsecnumwidth 0.5em\relax
+
+#+title: How to install the MATLAB tree-sitter grammar
+#+author: John Ciolfi
+#+date: [2025-09-04]
+
+The MATLAB tree-sitter grammar requires Emacs 30 or later. This is typically installed in
+=~/.emacs.d/tree-sitter/libtree-sitter-matlab.so= (=.dll= on Windows, =.dylib= on Mac).
+
+Below we use the location =~/emacs-workarea=. You can change this to another location if desired.
+
+As described below, installation consists of two steps
+
+1. Install the MATLAB tree-sitter grammar
+2. Setup Emacs to use the tree-sitter grammar
+
+* Install MATLAB tree-sitter grammar for Emacs 30
+
+For Emacs 30, you need to build the MATLAB tree-sitter grammar for ABI 14 because Emacs 30 uses
+version 14 of the tree-sitter application binary interface and as of Sep-2025, the latest
+tree-sitter ABI is 15. There are different methods for installing this.
+
+- Method 1 :: Install pre-built binaries
+
+  This currently *does not work* as of Sep-2025 because the grammar build is too old. Please use one
+  of the other methods.
+
+  Install the pre-built binaries from http://github.com/emacs-tree-sitter/tree-sitter-langs
+  using the following after installing the MATLAB package from [[file:../README.org][MELPA]]:
+
+  :  M-x matlab-ts-langs-install
+
+  and install matlab (and other languages tree-sitter shared objects if you'd like).
+
+- Method 2 :: Install from the abi/14 branch
+
+  Install the C compiler if not installed.  When installing from source, you need to use the correct
+  compiler. If you use the wrong compiler, you'll see undefined errors. For example, Windows Emacs
+  doesn't work with gcc from MSys2 (you need Visual Studio I think).
+
+  Debian Emacs was built using gcc and you can get gcc via:
+
+  #+begin_src bash
+    sudo apt install gcc
+    gcc --version
+    # gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+  #+end_src
+
+  Next, ask Emacs to build the grammar:
+
+  : emacs
+  : M-x treesit-install-language-grammar
+  : Language: matlab
+  : There is no recipe for matlab, do you want to build it interactively? (y or n) y
+  : Enter the URL of the Git repository of the language grammar: https://github.com/acristoffers/tree-sitter-matlab
+  : Enter the tag or branch (default: default branch): abi/14
+  : Enter the subdirectory in which the parser.c file resides (default: "src"):
+  : Enter the C compiler to use (default: auto-detect):
+  : Enter the C++ compiler to use (default: auto-detect):
+  : Install to (default: ~/.emacs.d/tree-sitter):
+
+- Method 3 :: Generate the grammar for ABI 14
+
+  Install JavaScript node and C compiler if not installed.  See above to install the C compiler. This
+  will install JavaScript node on Debian:
+
+  #+begin_src bash
+    sudo apt update
+    sudo apt install nodejs npm
+    node --version
+    # v18.19.0
+  #+end_src
+
+  Download and extract release, https://github.com/tree-sitter/tree-sitter/releases into some
+  location. For example, place it in:
+
+  : ~/emacs-workarea/tree-sitter-bin/tree-sitter
+
+  Next, generate the grammar for ABI 14:
+
+  #+begin_src bash
+    cd ~/emacs-workarea
+    git clone https://github.com/acristoffers/tree-sitter-matlab.git
+
+    cd ~/emacs-workarea/tree-sitter-matlab
+    ~/emacs-workarea/tree-sitter-bin/tree-sitter generate --abi 14
+  #+end_src
+
+  Next, ask Emacs to build it:
+
+  : emacs
+  : M-x treesit-install-language-grammar
+  : Language: matlab
+  : There is no recipe for matlab, do you want to build it interactively? (y or n) y
+  : Enter the URL of the Git repository of the language grammar: ~/emacs-workarea/tree-sitter-matlab
+  : Enter the tag or branch (default: default branch):
+  : Enter the subdirectory in which the parser.c file resides (default: "src"):
+  : Enter the C compiler to use (default: auto-detect):
+  : Enter the C++ compiler to use (default: auto-detect):
+  : Install to (default: ~/.emacs.d/tree-sitter):
+
+* Setup Emacs to use the MATLAB tree-sitter grammar
+
+Tell Emacs to use *matlab-ts-mode* for MATLAB files by adding the following to your
+=user-init-file= which is typically =~/.emacs=, or add it to your =site-run-file=
+
+#+begin_src emacs-lisp
+  (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
+#+end_src
+
+Tell =org-mode= that =#+begin_src matlab ... #end_src= blocks should use *matlab-ts-mode*:
+
+ : M-x customize-variable RET org-src-lang-modes RET
+
+and map matlab to matlab-ts:
+
+ : Language name: matlab
+ : Major mode: matlab-ts
+
+# LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
+# LocalWords:  libtree dylib workarea ABI langs abi MSys sudo treesit nodejs npm alist lang

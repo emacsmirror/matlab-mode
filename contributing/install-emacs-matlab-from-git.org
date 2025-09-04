@@ -1,0 +1,90 @@
+# | Copyright 2025 Free Software Foundation, Inc.
+# |
+# | This program is free software: you can redistribute it and/or modify
+# | it under the terms of the GNU General Public License as published by
+# | the Free Software Foundation, either version 3 of the License, or
+# | (at your option) any later version.
+# |
+# | This program is distributed in the hope that it will be useful,
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# | GNU General Public License for more details.
+# |
+# | You should have received a copy of the GNU General Public License
+# | along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# |
+# | Commentary:
+# |   Guidelines for writing a major mode powered by tree-sitter
+
+#+startup: showall
+
+#+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles-from-org.css"/>
+#+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+#+options: ^:{}
+#+options: toc:nil
+#+latex_header: \usepackage[margin=0.5in]{geometry}
+#+latex_header: \usepackage{parskip}
+#+latex_header: \usepackage{tocloft}
+#+latex_header: \advance\cftsecnumwidth 0.5em\relax
+#+latex_header: \advance\cftsubsecindent 0.5em\relax
+#+latex_header: \advance\cftsubsecnumwidth 0.5em\relax
+
+#+title: How to install Emacs MATLAB from Git
+#+author: John Ciolfi
+#+date: [2025-09-04]
+
+
+When contributing or trying out newer changes, you'll need to install the Emacs-MATLAB-Mode package
+from git. The install below uses =~/emacs-workarea= as a work area. You can change that as desired.
+
+* Consider creating a temporary home
+
+See file:DEBUGGING.org where you run with the environment variable, HOME set to a temporary
+location.
+
+* Install MATLAB tree-sitter grammar
+
+If using Emacs 30 or later you need to [[file:../doc/install-matlab-tree-sitter-grammar.org][install the MATLAB tree-sitter grammar]]. This is needed for the tests.
+
+* Build Emacs-MATLAB-Mode
+
+#+begin_src bash
+  cd ~/emacs-workarea
+
+  git clone https://github.com/mathworks/Emacs-MATLAB-Mode.git
+
+  cd Emacs-MATLAB-Mode
+
+  # Build lisp and run tests (requires MATLAB executable on your system PATH)
+  make
+
+  # Alternatively, build lisp and run tests using a specific MATLAB executable
+  make MATLAB_EXE=/path/to/matlab
+
+  # If desired, you can separate the building of lisp and running tests using:
+  make lisp
+  make tests
+  make tests MATLAB_EXE=/path/to/matlab # if using a specific MATLAB executable
+#+end_src
+
+* Update ~/.emacs
+
+Add the following to your =~/.emacs= file:
+
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "/path/to/Emacs-MATLAB-mode")
+  (load-library "matlab-autoload")
+#+end_src
+
+* Install lsp-mode
+
+Install lsp-mode and related packages. See file:../doc/matlab-language-server-lsp-mode.org.
+
+* Check setup
+
+If you are using *matlab-ts-mode*, visit a =*.m= MATLAB file and select the menu item:
+
+ : MATLAB -> Check setup
+
+# LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
+# LocalWords:  workarea libtree dylib ABI abi treesit sudo nodejs npm linux gz lsp

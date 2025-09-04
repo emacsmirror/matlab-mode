@@ -84,7 +84,7 @@
 
 * Installation
 
-1. Install the MATLAB package via [[https://elpa.gnu.org/][ELPA]] or [[https://melpa.org][MELPA]]. MELPA contains the latest version.  To install from
+1. Install the MATLAB package via [[https://melpa.org][MELPA]] or [[https://elpa.gnu.org/][ELPA]]. MELPA contains the latest version.  To install from
    MELPA, add to your =~/.emacs=
 
    #+begin_src emacs-lisp
@@ -102,8 +102,8 @@
 
    : M-x package-install RET company RET
 
-3. [Optional] Install MATLAB tree-sitter for matlab-ts-mode, which provides improved performance
-   improved editing capabilities, and more.
+3. [Optional] Install MATLAB tree-sitter for matlab-ts-mode, which provides improved editing
+   capabilities and improved performance.
 
    The MATLAB tree-sitter leverages [[https://tree-sitter.github.io/tree-sitter/][Tree-sitter]] to create a parse tree for MATLAB code.  The parse
    tree is updated incrementally and is robust to syntax errors. It is highly performant and
@@ -111,64 +111,11 @@
    process.  *matlab-ts-mode* leverages the MATLAB tree-sitter to give an improved MATLAB editing
    experience when compared with matlab-mode.
 
-   As of Aug-8-2025 matlab-ts-mode works with *Emacs 30* (the latest Emacs release).  By default,
-   the MATLAB tree-sitter shared object is placed in
+   See file:doc/install-matlab-tree-sitter-grammar.org
 
-   : ~/.emacs.d/tree-sitter/libtree-sitter-matlab.so        (.dll on Windows, or .dylib on Mac)
+4. [Optional]. Install lsp-mode and the [[file:doc/matlab-language-server-lsp-mode.org][MATLAB Language Server]] for an improved editing experience.
 
-   * Install matlab tree-sitter shared object. There are two method for installing the tree-sitter
-     shared objects:
-
-     - Method 1 ::
-
-       Install the pre-built binaries using the following after installing the MATLAB package
-       (step 1) and restarting Emacs:
-
-       :  M-x matlab-ts-langs-install
-
-       and install matlab (and other languages tree-sitter shared objects if you'd like).
-
-     - Method 2 ::
-
-       Build the tree-sitter shared object from source:
-
-       : M-x treesit-install-language-grammar
-       :
-       : Language: matlab
-       : There is no recipe for matlab, do you want to build it interactively? (y or n) y
-       : Enter the URL of the Git repository of the language grammar: https://github.com/acristoffers/tree-sitter-matlab
-       : Enter the tag or branch (default: default branch): abi/14
-       : Enter the subdirectory in which the parser.c file resides (default: "src"):
-       : Enter the C compiler to use (default: auto-detect):
-       : Enter the C++ compiler to use (default: auto-detect):
-       : Install to (default: ~/.emacs.d/tree-sitter):
-
-       When installing from source, you need to use the correct compiler. If you use the wrong
-       compiler, you'll see undefined errors. For example, Windows Emacs doesn't work with gcc from
-       MSys2.
-
-   * Tell Emacs to use *matlab-ts-mode* for MATLAB files by adding the following to your
-     =user-init-file= which is typically =~/.emacs=, or add it to your =site-run-file=
-
-     #+begin_src emacs-lisp
-       (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
-     #+end_src
-
-   * Tell =org-mode= that =#+begin_src matlab ... #end_src= blocks should use
-     *matlab-ts-mode*:
-
-      : M-x customize-variable RET org-src-lang-modes RET
-
-     and map matlab to matlab-ts:
-
-      : Language name: matlab
-      : Major mode: matlab-ts
-
-   * Setup =lsp-mode=. See [[file:doc/matlab-language-server-lsp-mode.org]].
-
-4. [Optional]. Install the [[file:doc/matlab-language-server-lsp-mode.org][MATLAB Language Server]] for an improved editing experience.
-
-5. Check your installation setup.
+5. [Optional]. Check your installation setup.
 
    If you are using *matlab-ts-mode*, visit a =*.m= MATLAB file and select the menu item:
 
@@ -176,29 +123,8 @@
 
 ** Install from this repository
 
-Build:
-
-#+begin_src bash
-  cd /path/to/Emacs-MATLAB-mode
-
-  # Build lisp and run tests (requires MATLAB executable):
-  make
-
-  # Alternatively, build lisp and run tests using a specific MATLAB executable:
-  make MATLAB_EXE=/path/to/matlab
-
-  # If desired, you can separate the building of lisp and running tests using:
-  make lisp
-  make tests
-  make tests MATLAB_EXE=/path/to/matlab # if using a specific MATLAB executable
-#+end_src
-
-Add the following to your =~/.emacs= file:
-
-#+begin_src emacs-lisp
-  (add-to-list 'load-path "/path/to/Emacs-MATLAB-mode")
-  (load-library "matlab-autoload")
-#+end_src
+If you are contributing to the Emacs MATLAB Mode package, see
+[[file:contributing/install-emacs-matlab-from-git.org]]
 
 * MathWorks Products ([[https://www.mathworks.com][https://www.mathworks.com]])
 
