@@ -85,7 +85,10 @@
 
   ;; Run test-*.el. t-utils-run must be last because it will exit emacs when noninteractive.
   (when (>= emacs-major-version 30)
-    (t-utils-run)))
+    (if (treesit-ready-p 'matlab t)
+        (t-utils-run)
+      (message "metest.el:1: warning: matlab tree-sitter shared object is not installed, \
+unable to run tests"))))
 
 (defun metest-run (test)
   "Run and time TEST."
