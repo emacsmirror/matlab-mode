@@ -39,8 +39,8 @@ from git. The install below uses =~/emacs-workarea= as a work area. You can chan
 
 * Consider creating a temporary home
 
-See file:DEBUGGING.org where you run with the environment variable, HOME set to a temporary
-location.
+You can create a temorary home by setting the the environment variable, HOME set to a temporary
+location. This lets you develop Emacs MATLAB Mode in a clean environment. See [[file:DEBUGGING.org][DEBUGGING.org]].
 
 * Install MATLAB tree-sitter grammar
 
@@ -78,7 +78,7 @@ Add the following to your =~/.emacs= file:
 
 * Install lsp-mode
 
-Install lsp-mode and related packages. See file:../doc/matlab-language-server-lsp-mode.org.
+Install lsp-mode and related packages. See [[file:../doc/matlab-language-server-lsp-mode.org][doc/matlab-language-server-lsp-mode.org]]
 
 * Check setup
 

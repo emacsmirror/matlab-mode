@@ -98,7 +98,7 @@
 
    Note: to all available packages, =M-x RET list-packages RET=
 
-2  [Optional] Install the =company= package which is used for TAB completions.
+2. [Optional] Install the =company= package which is used for TAB completions.
 
    : M-x package-install RET company RET
 
@@ -111,11 +111,11 @@
    process.  *matlab-ts-mode* leverages the MATLAB tree-sitter to give an improved MATLAB editing
    experience when compared with matlab-mode.
 
-   See file:doc/install-matlab-tree-sitter-grammar.org
+   See [[file:doc/install-matlab-tree-sitter-grammar.org][doc/install-matlab-tree-sitter-grammar.org]]
 
-4. [Optional]. Install lsp-mode and the [[file:doc/matlab-language-server-lsp-mode.org][MATLAB Language Server]] for an improved editing experience.
+4. [Optional] Install lsp-mode and the [[file:doc/matlab-language-server-lsp-mode.org][MATLAB Language Server]] for an improved editing experience.
 
-5. [Optional]. Check your installation setup.
+5. [Optional] Check your installation setup.
 
    If you are using *matlab-ts-mode*, visit a =*.m= MATLAB file and select the menu item:
 
@@ -124,7 +124,7 @@
 ** Install from this repository
 
 If you are contributing to the Emacs MATLAB Mode package, see
-[[file:contributing/install-emacs-matlab-from-git.org]]
+[[file:contributing/install-emacs-matlab-from-git.org][contributing/install-emacs-matlab-from-git.org]]
 
 * MathWorks Products ([[https://www.mathworks.com][https://www.mathworks.com]])
 
