@@ -38,7 +38,7 @@ This is provided for debugging.
     (ert-run-tests-interactively "test-matlab-ts-mode-movement")))
 
 (ert-deftest test-matlab-ts-mode-movement ()
-  "Test movement commands using ./test-matlab-ts-mode-movement-files/NAME.m.
+  "Test movement commands, C-M-f, etc.
 Using ./test-matlab-ts-mode-movement-files/NAME.m, compare
 movement of `matlab-mode-ts-beginning-of-command' and
 `matlab-mode-ts-end-of-command' against baseline:

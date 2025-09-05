@@ -39,21 +39,21 @@ This is provided for debugging.
     (ert-run-tests-interactively "test-matlab-ts-mode-indent")))
 
 (ert-deftest test-matlab-ts-mode-indent ()
-  "Test indent using ./test-LANGUAGE-ts-mode-indent-files/NAME.lang.
-Compare indent of ./test-LANGUAGE-ts-mode-indent-files/NAME.lang
-against ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang.
+  "Test indent.
+Compare indent of ./test-MATLAB-ts-mode-indent-files/NAME.m
+against ./test-MATLAB-ts-mode-indent-files/NAME_expected.m.
 Indent is done several ways as described in `t-utils-test-indent'.
-This loops on all ./test-LANGUAGE-ts-mode-indent-files/NAME.lang
+This loops on all ./test-MATLAB-ts-mode-indent-files/NAME.m
 files.
 
 To add a test, create
-  ./test-LANGUAGE-ts-mode-indent-files/NAME.lang
+  ./test-MATLAB-ts-mode-indent-files/NAME.m
 and run this function.  The baseline is saved for you as
-  ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang~
-  ./test-LANGUAGE-ts-mode-indent-files/NAME_expected_msgs.lang~
+  ./test-MATLAB-ts-mode-indent-files/NAME_expected.m~
+  ./test-MATLAB-ts-mode-indent-files/NAME_expected_msgs.m~
 after validating them, rename them to
-  ./test-LANGUAGE-ts-mode-indent-files/NAME_expected.lang
-  ./test-LANGUAGE-ts-mode-indent-files/NAME_expected_msgs.lang"
+  ./test-MATLAB-ts-mode-indent-files/NAME_expected.m
+  ./test-MATLAB-ts-mode-indent-files/NAME_expected_msgs.m"
 
   (let* ((matlab-ts-mode-electric-ends nil)
          (test-name "test-matlab-ts-mode-indent")
@@ -79,7 +79,9 @@ after validating them, rename them to
                                    (insert " ")))
                                (forward-line)))))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
-    (t-utils-test-indent test-name m-files indent-checker line-manipulator)))
+    (t-utils-test-indent test-name m-files
+                         :indent-checker indent-checker
+                         :line-manipulator line-manipulator)))
 
 (provide 'test-matlab-ts-mode-indent)
 ;;; test-matlab-ts-mode-indent.el ends here

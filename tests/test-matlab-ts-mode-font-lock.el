@@ -89,7 +89,9 @@ after validating it, rename it to
                          ))
          (test-buf-setup (lambda () (matlab-sections-minor-mode -1))))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
-    (t-utils-test-font-lock test-name m-files code-to-face test-buf-setup)))
+    (t-utils-test-font-lock test-name m-files
+                            :code-to-face code-to-face
+                            :setup-callback test-buf-setup)))
 
 (provide 'test-matlab-ts-mode-font-lock)
 ;;; test-matlab-ts-mode-font-lock.el ends here

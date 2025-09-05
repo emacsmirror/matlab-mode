@@ -74,7 +74,8 @@ after validating it, rename it to
                    nil
                    test-matlab-ts-mode-view-parse-errors--file)))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
-    (t-utils-test-action test-name m-files #'test-matlab-ts-mode-view-parse-errors-action-fun)))
+    (t-utils-test-action test-name m-files
+                         :action-fun #'test-matlab-ts-mode-view-parse-errors-action-fun)))
 
 (provide 'test-matlab-ts-mode-view-parse-errors)
 ;;; test-matlab-ts-mode-view-parse-errors.el ends here

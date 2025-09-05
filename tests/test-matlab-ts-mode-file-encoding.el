@@ -37,7 +37,7 @@ This is provided for debugging.
     (ert-run-tests-interactively "test-matlab-ts-mode-file-encoding")))
 
 (ert-deftest test-matlab-ts-mode-file-encoding ()
-  "Test indent using ./test-matlab-ts-mode-file-encoding-files/NAME.m.
+  "Test file encoding.
 Using ./test-matlab-ts-mode-file-encoding-files/NAME.m, compare result
 of activating matlab-ts-mode on NAME.m against
 ./test-matlab-ts-mode-file-encoding-files/NAME_expected.txt.  Where the
@@ -58,7 +58,8 @@ after validating it, rename it to
                    nil
                    test-matlab-ts-mode-file-encoding--file)))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
-    (t-utils-test-file-encoding test-name m-files #'matlab-ts-mode)))
+    (t-utils-test-file-encoding test-name m-files
+                                :file-major-mode #'matlab-ts-mode)))
 
 (provide 'test-matlab-ts-mode-file-encoding)
 ;;; test-matlab-ts-mode-file-encoding.el ends here
