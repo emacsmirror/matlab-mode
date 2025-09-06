@@ -85,13 +85,13 @@ the results are displayed on stdout."
   (let ((test-name "sweep-test-matlab-ts-mode-indent")
         (matlab-ts-mode--indent-assert t))
 
-    (t-utils-sweep-test-indent test-name
-                               (or directory default-directory)
-                               (rx ".m" eos)
-                               #'matlab-ts-mode
-                               #'sweep-test-matlab-ts-mode-indent--syntax-checker
-                               check-valid-parse
-                               (rx bos "ERROR" eos))))
+    (t-utils-sweep-test-indent
+     test-name
+     (or directory default-directory)
+     (rx ".m" eos)
+     #'matlab-ts-mode
+     :syntax-checker-fun #'sweep-test-matlab-ts-mode-indent--syntax-checker
+     :check-valid-parse check-valid-parse)))
 
 (provide 'sweep-test-matlab-ts-mode-indent)
 ;;; sweep-test-matlab-ts-mode-indent.el ends here

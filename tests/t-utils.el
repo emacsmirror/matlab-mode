@@ -19,14 +19,14 @@
 
 ;;; Commentary:
 ;;
-;; Test utilities used by ./test-*.el files.  Longer-term, it would be nice to integrate the concepts
-;; below in Emacs proper, perhaps by integrating the ideas into `ert'.
+;; Test utilities used by ./test-*.el files.  Longer-term, it would be nice to integrate the
+;; concepts below in Emacs proper, perhaps by integrating the ideas into `ert'.
 ;;
 ;; ----------------
 ;; | Capabilities |
 ;; ----------------
 ;;
-;;   1. Separation of test input from test baselines and automatic generation/update of the baselines.
+;;   1. Separation test input from test baselines and automatic generation/update of the baselines.
 ;;
 ;;      Suppose you have test_file.lang and want to run some operation on it, like semantic movement
 ;;      commands.  You can specify the movement, e.g. C-M-f, C-M-b, etc. at certain locations in
@@ -56,8 +56,8 @@
 ;;
 ;;          ./tests/test-NAME-files/test_file3_expected.lang~
 ;;
-;;      You examine the results and if they look good you rename it to the expected baseline resulting
-;;      in test-NAME.el having three test cases:
+;;      You examine the results and if they look good you rename it to the expected baseline
+;;      resulting in test-NAME.el having three test cases:
 ;;
 ;;          ./tests/test-NAME.el
 ;;          ./tests/test-NAME-files/test_file1.lang
@@ -80,9 +80,52 @@
 ;;          ./tests/test-NAME-files/test_file2_expected.EXT
 ;;          ./tests/test-NAME-files/test_file3.lang
 ;;          ./tests/test-NAME-files/test_file3_expected.EXT
-;;          ./tests/test-NAME-files/test_file3.skip.txt       // content should say why test is disabled
+;;          ./tests/test-NAME-files/test_file3.skip.txt       // content says why test is disabled
 ;;
-;;   4. Sweep tests
+;;   4. Execute-and-record tests
+;;
+;;      Within your ./tests/test-NAME-files/test_file1.lang you can place in comments
+;;
+;;        (t-utils-xr COMMANDS)
+;;
+;;      For example, for C++ you could have tests/test-NAME-files/test_file1.cpp
+;;
+;;        #include <stdlib.h>
+;;
+;;        int fcn1(void) {
+;;          // Case1: (t-utils-xr \"C-M-e\" \"C-M-e\")
+;;          return 1;
+;;        }
+;;
+;;        int main(void) {
+;;          return fcn1();
+;;          // Case2: (t-utils-xr (beginning-of-defun) (beginning-of-defun))
+;;        }
+;;
+;;      that exercise the code movements commands. The result of executing these commands is
+;;      compared against baseline, ./tests/test-NAME-files/test_file1_expected.org. The baseline
+;;      is generated or updated automatically as needed using the tilde workflow as described
+;;      above.
+;;
+;;      Note, you can have commands that modify the buffer, for example, to validate indent as
+;;      you type:
+;;
+;;        /*
+;;          CaseSimpleIndent:
+;;          (t-utils-xr
+;;          "M->"
+;;          (insert "int foo() {")          "C-m"
+;;          (insert "return 1;")            "C-m"
+;;          (insert "}")              "C-i" "C-m"
+;;          (re-search-backward "^int foo")
+;;          (t-utils-xr-print-code (point) (point-max))
+;;          )
+;;        */
+;;
+;;      To create a test that contains a number of tests cases (*.lang files), you write a test
+;;      driver, say test-LANGAGE-ts-mode-indent-xr that invokes `t-utils-test-xr'.
+;;
+;;   5. Sweep tests
 ;;
 ;;      Sweep tests take a directory tree and run actions on every file matching a pattern.  For
 ;;      example, `t-utils-sweep-test-indent' will run indent-region on all matched files under a
@@ -1669,11 +1712,11 @@ errors according to the syntax-checker-fun\n%s" lang-file check-result))))
 
     (cons parse-error invalid-successful-parse)))
 
-(defun t-utils-sweep-test-indent (test-name directory lang-file-regexp major-mode-fun
-                                            &optional syntax-checker-fun check-valid-parse
-                                            error-nodes-regexp
-                                            log-file
-                                            result-file)
+(cl-defun t-utils-sweep-test-indent (test-name directory lang-file-regexp major-mode-fun
+                                               &key syntax-checker-fun check-valid-parse
+                                               error-nodes-regexp
+                                               log-file
+                                               result-file)
   "Sweep test indent on files under DIRECTORY recursively.
 File base names matching LANG-FILE-REGEXP are tested.
 TEST-NAME is used in messages.
