@@ -1,0 +1,65 @@
+#+startup: showall
+
+* Executing commands from thing_fun_sexp.m:3:9:
+
+  Case1: (t-utils-xr "C-a" "C-n" "C-f" "C-M-f")
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :   69
+  Moved to point:   22
+  : 3:0: % Case1: (t-utils-xr "C-a" "C-n" "C-f" "C-M-f")
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :   22
+  Moved to point:   70
+  : 4:0: function a = thing_fun_sexp(b)
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-f" = forward-char
+  Start point   :   70
+  Moved to point:   71
+  : 4:1: function a = thing_fun_sexp(b)
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-M-f" = forward-sexp
+  Start point   :   71
+  Moved to point:  177
+  : 7:3: end
+  :         ^
+  No buffer modifications
+
+* Executing commands from thing_fun_sexp.m:6:13:
+
+  Case2: (t-utils-xr "C-a" "C-n" "C-f" "C-M-b")
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  173
+  Moved to point:  122
+  : 6:0:     % Case2: (t-utils-xr "C-a" "C-n" "C-f" "C-M-b")
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  122
+  Moved to point:  174
+  : 7:0: end
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-f" = forward-char
+  Start point   :  174
+  Moved to point:  175
+  : 7:1: end
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-M-b" = backward-sexp
+  Start point   :  175
+  Moved to point:   70
+  : 4:0: function a = thing_fun_sexp(b)
+  :      ^
+  No buffer modifications

@@ -2933,13 +2933,30 @@ the normal s-expression movement by calling
   (let* ((move-back (and (numberp arg) (< arg 0)))
          (match-paren (if move-back
                           (member (char-before) '(?\] ?\) ?\}))
-                        (member (char-after) '(?\[ ?\( ?\{)))))
+                        (member (char-after) '(?\[ ?\( ?\{))))
+         node)
     (if (or match-paren
-            (let* ((pt-and-node (matlab-ts-mode--real-node-at-point))
-                   (node (cdr pt-and-node)))
-              (equal (treesit-node-type node) "comment")))
+            (equal (setq node (let ((pt-and-node (matlab-ts-mode--real-node-at-point)))
+                                (cdr pt-and-node)))
+                   "comment"))
         ;; See tests/test-matlab-ts-mode-thing-settings-files/thing_forward_sexp1.m
         (forward-sexp-default-function arg)
+
+      ;; Else ask treesit to do the movement.
+      ;; Note, treesit doesn't behave well when point is not at the end or start of the node,
+      ;; so fix that. Consider
+      ;;     function foo
+      ;;         ^          <== point here and C-M-f
+      ;;     end
+      ;;      ^             <== point here and C-M-b
+      ;; See: tests/test-matlab-ts-mode-thing-settings-files/thing_fun_sexp.m
+      (when (and node
+                 (>= (point) (treesit-node-start node))
+                 (< (point) (treesit-node-end node)))
+        (if move-back
+            (when (string= (treesit-node-type node) "end")
+              (goto-char (treesit-node-end node)))
+          (goto-char (treesit-node-start node))))
       (treesit-forward-sexp arg))))
 
 ;;; Change Log
@@ -3638,11 +3655,6 @@ and this buffer is returned."
 
   ;; Editing commands
   "C-c C-j" #'matlab-justify-line
-
-  ;; TODO - add these?
-  ;; Navigation commands
-  ;; (define-key km [(meta a)] 'matlab-beginning-of-command)
-  ;; (define-key km [(meta e)] 'matlab-end-of-command)
 
   ;; Integration with `matlab-shell'
   "C-c C-s" 'matlab-shell-save-and-go
