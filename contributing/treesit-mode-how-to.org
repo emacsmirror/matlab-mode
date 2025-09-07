@@ -23,7 +23,6 @@
 #+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles-from-org.css"/>
 #+html_head_extra: <link rel="stylesheet" type="text/css" href="css/styles.css"/>
 #+options: ^:{}
-#+options: toc:nil
 #+latex_header: \usepackage[margin=0.5in]{geometry}
 #+latex_header: \usepackage{parskip}
 #+latex_header: \usepackage{tocloft}
@@ -36,8 +35,8 @@
 #+date: Sep-5-2025
 
 I created this guide while developing, matlab-ts-mode, a [[https://tree-sitter.github.io/tree-sitter/][tree-sitter]] powered mode for [[https://www.mathworks.com][MATLAB]]. I
-tried to make this guide general so it could be reused for development of other languages. Perhaps,
-the guide could be intergrated into Emacs documentation?
+tried to make this guide general so it could be reused for creating major modes for other
+languages.
 
 I developed matlab-ts-mode using Emacs 30. The more I learned about tree-sitter, the more I liked
 it. I was very much impressed with the quality of the tree-sitter itself and the integration of
