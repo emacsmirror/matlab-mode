@@ -35,6 +35,14 @@
 #+author: John Ciolfi
 #+date: Sep-5-2025
 
+I created this guide while developing, matlab-ts-mode, a [[https://tree-sitter.github.io/tree-sitter/][tree-sitter]] powered mode for [[https://www.mathworks.com][MATLAB]]. I
+tried to make this guide general so it could be reused for development of other languages. Perhaps,
+the guide could be intergrated into Emacs documentation?
+
+I developed matlab-ts-mode using Emacs 30. The more I learned about tree-sitter, the more I liked
+it. I was very much impressed with the quality of the tree-sitter itself and the integration of
+tree-sitter in Emacs. The quality of the intergation of tree-sitter in Emacs is exceptional.
+
 * What does tree-sitter provide?
 
 Tree-sitter provides a parse tree for your language in real-time. The tree-sitter parser for your
@@ -58,21 +66,29 @@ languages like C/C++, LSP parses the include headers so it can provide go-to def
 references, diagnostics warning and error messages, and similar capabilities. These LSP capabilities
 are not provided by tree-sitter, nor does it make sense for tree-sitter to provide them. It makes
 perfect sense that Emacs provides both tree-sitter and LSP because they both provide complementary
-capabilities for coding. There is a little overlap between LSP and tree-sitter in that both can
-provide indentation (code formatting) and semantic coloring. The advantage of tree-sitter is that it
-is faster, more accurate in context of syntax errors, and works without requiring the concept of a
-project. You can open a source file from anywhere and tree-sitter can semantically color it, indent
-it, etc.
+capabilities for coding.
+
+There is a small amount of overlap between LSP and tree-sitter in that both can provide indentation
+(code formatting) and semantic highlighting. The advantage of tree-sitter is that it is faster and
+more accurate indentation as you type. Another bonus is that tree-sitter works without requiring a
+project or other setup to get things going. LSP requires typically requires the concept of a project
+so it can parse your code. With tree-sitter, you can open a source file from anywhere and
+tree-sitter can semantically color it, indent it, etc.
+
+Try using LSP for syntax highlighting or code indentation on a large file where you type at a
+productive speed of 40-75 words per minute. The experience will be less than ideal. Now try that
+where syntax highlighting and code indentation are powered by tree-sitter. You'll be pleasantly
+suprised how good tree-sitter is. The editor will be much smoother with higher-quality syntax
+highlighting and code indentation. You see spend much less time having to adjust whitespace to
+make your code look good because the indentation as you type is much better.
 
 * Guide to building a tree-sitter mode
 
-This guide to building a *LANGUAGE-ts-mode* for /file.lang/ files was written using Emacs 30.1.
-
-In creating a tree-sitter mode for a programming language, you have two options. You can leverage an
-old-style existing mode via =(define-derived-mode LANGUAGE-ts-mode OLD-LANGUAGE-mode "LANGUAGE"
-...)= and then override items such as font-lock and indent. The other approach is to create a new
-LANGUAGE-ts-mode based on prog-mode which we recommend. Taking this approch eliminates unnecessary
-coupling between the old-style mode and the new tree-sitter mode.
+In creating a tree-sitter mode, *LANGUAGE-ts-mode* for /file.lang/ files, you have two options. You
+can leverage an old-style existing mode via =(define-derived-mode LANGUAGE-ts-mode OLD-LANGUAGE-mode
+"LANGUAGE" ...)= and then override items such as font-lock and indent. The other approach is to
+create a new LANGUAGE-ts-mode based on prog-mode which we recommend. Taking this approach eliminates
+unnecessary coupling between the old-style mode and the new tree-sitter mode.
 
 #+begin_src emacs-lisp
  (define-derived-mode LANGUAGE-ts-mode prog-mode "LANGUAGE" ...)
@@ -106,7 +122,7 @@ example, when writing a font-lock test, you provide the =file.lang= and run the 
 see there is no expected baseline to compare against, so it will generate one for you and ask you to
 validate it. The expect baseline for =file.lang= is =file_expected.txt= and the contents of the
 =file_expected.txt= is of same length of =file.lang=, where each character's face is encoded in a
-single character. This makes it very easy to lock down the behavior of font-lock without having to
+single character. This makes it very easy to lock down the behaviour of font-lock without having to
 write lisp code to add the expected results of the test. The same test strategy is used for other
 aspects of our =LANGUAGE-ts-mode=.
 
@@ -322,7 +338,7 @@ This will display messages of the following form which can be helpful in debuggi
 
  : Fontifying text from START-POINT to END-POINT, Face: FACE, Node: TYPE
 
-Another debugging tip, is to use the =%S= format specifier in calls to message which displays the
+Another debugging tip is to use the =%S= format specifier in calls to message which displays the
 lisp object representation.  For example, in our defun LANGUAGE-ts-mode--comment-to-do-capture, we
 could add =(message "debug comment-node: %S" comment-node)= which will show what it's processing.
 Using EDebug on font-lock functions can be tricky because they get called on display updates.
@@ -426,7 +442,7 @@ a unique string to start the comments, so they are searchable.
 The =treesit-font-lock-feature-list= contains four sublists where the first sublist is font-lock
 level 1, and so on. Each sublist contains a set of feature; names that correspond to the =:feature
 'NAME= entries in =LANGUAGE-ts-mode--font-lock-settings=.  For example, ='comment= for comments,
-='definition= for function and other definitions, ='keyword= for language keywords, etc. Font-lock
+='definition= for function and similar definitions', ='keyword= for language keywords, etc. Font-lock
 applies the faces defined in each sublist up to and including `treesit-font-lock-level', which
 defaults to 3. If you'd like to have your font-lock default to level 4, add:
 
@@ -669,7 +685,7 @@ If you look at the definition of parent-is, you'll see it leverages =string-matc
 matching against =(treesit-node-type parent-node)=.  Therefore, to be precise, we match using the
 start of the string, =bos=, and end of string, =eos=.  If your nodes are unique enough, you can
 leave off the =bos= and =eos=, but that could be troublesome if the grammar is updated. For example,
-suppose you have a "function" node and you match using =(parent-is "function")=, then the grammar is
+suppose you have a "function" node, and you match using =(parent-is "function")=, then the grammar is
 updated to have regular "function" nodes and "function2" nodes where you want to different font for
 "function2".  The =(parent-is "function")= will match both. Therefore, we recommend being precise
 when matching which will also give a slight boost in performance.
@@ -766,7 +782,7 @@ the rules, it is good to lock down expected behavior with tests.
 
 *** Setup: Indent Considerations
 
-1. Indent rules maybe easy to define using the treesit package pre-defined matchers and anchors
+1. Indent rules may be easy to define using the treesit package pre-defined matchers and anchors
    when there are no syntax errors.
 
 2. It is a good idea to ensure that indent work well when there are syntax errors thus giving
@@ -961,8 +977,8 @@ The commands are executed and recorded. The recorded results are compared agains
 
  : =./tests/test-matlab-ts-mode-indent-xr-files/indent_cell1_expected.org=
 
-If the baseline doesn't exist or result doesn't match the baseline, the test fails and
-the following tilde file is created:
+If the baseline doesn't exist or the result doesn't match the baseline, the test fails, and the
+following tilde file is created:
 
  : =./tests/test-matlab-ts-mode-indent-xr-files/indent_cell1_expected.org~=
 
@@ -970,40 +986,39 @@ You can then rename the tilde file to =indent_cell1_expected.org= or fix the cod
 
 ** Sweep test: Indent
 
-We define a sweep test to be a test that tries an action on a large number of files and reports
-issues it finds.  Sweep tests differ from classic baseline tests such as the above where we run
-functions and check the result for correctness.  A sweep test of indent on many thousands of
-LANGUAGE files cannot check the result of each individual indent because there is no baseline
-results for each file. However, a sweep test can check for asserts, unexpected errors, and slow
-indents. It can also check for invalid parse trees reported by the LANGUAGE tree-sitter if you have
-an external command that can check for syntax errors in your LANGUAGE files.
+We define a sweep test to be a test that tries an action on many files and reports issues it finds.
+Sweep tests differ from classic baseline tests such as the above where we run functions and check
+the result for correctness.  A sweep test of indent on many thousands of LANGUAGE files cannot check
+the result of each individual indent because there is no baseline results for each file. However, a
+sweep test can check for asserts, unexpected errors, and slow indents. It can also check for invalid
+parse trees reported by the LANGUAGE tree-sitter if you have an external command that can check for
+syntax errors in your LANGUAGE files.
 
 Our indent sweep test takes a directory and runs indent-region all LANGUAGE files under the
 directory recursively.
 
- - If the parse tree indicates an error, we call the external syntax checker to double
-   check that the file does indeed have a syntax error. If the external checker says the
-   file does not have a syntax error, we report the file and this is likely a bug in
-   the LANGUAGE tree-sitter parser.
+ - If the parse tree indicates an error, we call the external syntax checker to double check that
+   the file does indeed have a syntax error. If the external checker says the file does not have a
+   syntax error, we report the file, and this is likely a bug in the LANGUAGE tree-sitter parser.
 
- - If check-valid-parse below is t the test will call syntax checker on all files being
-   processed to verify that the a successful tree-sitter parse also has no errors according to
-   syntax checker. Any inconsistent parses are reported which is likely a bug in the
+ - If check-valid-parse below is t the test will call syntax checker on all files being processed to
+   verify that there was a successful tree-sitter parse also that there are no errors according to
+   syntax checker. Any inconsistent parses are reported which is likely a bug in the tree-sitter
+   parser.
+
+ - Next, =indent-region= is run on the file in a temporary buffer. The time it takes is recorded and
+   the slowest indents are reported.  If you see slow indents, there could be bugs in your
    tree-sitter parser.
 
- - Next, =indent-region= is run on the file in a temporary buffer. The time it takes is
-   recorded in a table.  The slowest indents are reported.  If you see slow indents, there
-   could be bugs in your tree-sitter parser.
-
- - If =indent-region= errors out, then that is also reported.  For example, suppose we write a
+ - If =indent-region= generates errors, then they is also reported.  For example, suppose we write a
    lambda indent MATCHER that contains
 
     : (string-match-p my-node-regexp (treesit-node-type (treesit-node-prev-sibling parent))
 
    In our classic test things work fine because our test has a parent with a previous
-   sibling. However, we may have missed that parent may not have a previous sibling. A sweep of a
-   large number of LANGUAGE files has good probability of hitting this. If parent doesn't have a
-   previous sibling, we'll get "error (void-function string-match-p)."
+   sibling. However, we may have missed that parent may not have a previous sibling. A sweep of many
+   LANGUAGE files has a good probability of hitting this. If parent doesn't have a previous sibling,
+   we'll get "error (void-function string-match-p)."
 
 Our indent sweep test:
 
@@ -1268,7 +1283,7 @@ Syntactic expressions, s-expressions, or simply sexp commands operate on /balanc
 expressions/. Strings are naturally balanced expressions because they start and end with some type
 of quote character. Likewise brackets =[ items ]= and braces ={ items }= are typically balanced
 expressions because they have open and close characters. Some languages have keywords expressions
-that have a starting keyword and an ending keyword. For example "if" could be paired with a closing
+that have a starting keyword and an ending keyword. For example, "if" could be paired with a closing
 "end" keyword. s-expressions can span multiple lines. s-expressions can be nested. These commands
 leverage ='sexp= and ='text= things:
 
@@ -1369,7 +1384,7 @@ behavior because one can then fix the syntax behaviors by adding appropriate str
 continuations. There's no way to alter the string filling behavior besides using defadvice, which
 you should not do.
 
-If your syntax table correctly identifies comments and strings, then it M-q just works, though you
+If your syntax table correctly identifies comments and strings, then =M-q= just works, though you
 should still add tests to validate it works.  If you'd like tree-sitter nodes other than comments
 and strings to be filled like plain text, you should add a =text= entry to =treesit-thing-settings=,
 e.g. if nodeName1 and nodeName2 should be filled like plain text, use:
@@ -1546,8 +1561,8 @@ the mode line. You can view imenu in a sidebar window, using, [[https://github.c
 
 To populate imenu, in LANGUAGE-ts-mode, we setup =treesit-simple-imenu-settings=, where each element
 is of form =(category regexp pred name-fn)=, but form many languages, you only need to specify the
-first two elements.  When name-fcn is nil the imenu names are generated the
-=treesit-defun-name-function= which we already setup.
+first two elements.  When name-fcn is nil the imenu names are generated by the
+=treesit-defun-name-function= which we already set up.
 
 #+begin_src emacs-lisp
   (defvar LANGUAGE-ts-mode--imenu-settings
@@ -1576,8 +1591,8 @@ patterns.
 
 * Setup: Outline, treesit-outline-predicate
 
-This needs to be setup if treesit-simple-imenu-settings isn't set and you are using a custom
-imenu-create-index-function as we did above.
+This needs to be set up if =treesit-simple-imenu-settings= has not been set and you are using a
+custom =imenu-create-index-function= as we did above.
 
 #+begin_src emacs-lisp
   (defun LANGUAGE-ts-mode--outline-predicate (node)
@@ -1604,7 +1619,7 @@ and
 
 ** Test: Outline
 
-To add tests, we follow similar pattern to our other tests above and leverage
+To add tests, we follow a similar pattern to our other tests above and leverage
 =t-utils-test-outline-search-function=.
 
 * Setup: Electric Pair, electric-pair-mode
@@ -1995,7 +2010,7 @@ version and learn from it.
 
 Tree-sitter powered modes provide highly accurate syntax coloring, indentation, and other features.
 In addition, tree-sitter modes are generally much more performant than the older-style regular
-expression based modes, especially for a reasonably complex programming language.
+expression-based modes, especially for a reasonably complex programming language.
 
 A downside of a tree-sitter mode is that the necessary =libtree-sitter-LANGUAGE.SLIB= shared library
 files are not provided with the =NAME-ts-mode='s that are shipped with Emacs. For =NAME-ts-mode='s
@@ -2097,7 +2112,7 @@ Install, using default branch
 
   If you use prev-line on the blank-line immediately after "b = 2;", you'll get the expected point
   below "b". If you use prev-line on the second blank line after "b = 2;", the point move the the
-  first blank line after the "b = 2;" statuement which may not be what you want. Prehaps prev-real
+  first blank line after the "b = 2;" statement which may not be what you want. Perhaps prev-real
   should look backwards to the first prior line with non-whitespace. If there's concern about
   compatibility, treesit could be updated to have:
 
@@ -2140,7 +2155,7 @@ Example:
 #+end_example
 
 Note the build of the dll from https://github.com/emacs-tree-sitter/tree-sitter-langs is good.
-Perhaps, Visual Studio is needed and =M-x treesit-install-language-grammar= should look for
+Perhaps, Visual Studio is needed, and =M-x treesit-install-language-grammar= should look for
 that?
 
 ** =M-x treesit-install-language-grammar= doesn't check the ABI version.
@@ -2158,23 +2173,16 @@ If tree-sitter isn't found, it should offer to download it.
 ** M-q (prog-fill-reindent-defun) splits strings
 
 When the point is in a string and you type M-q it will split long strings into multiple lies which
-results in syntax errors in some languages, e.g. C.
-
-: char * str = "a very long string a very long string a very long string a very long string a very long string a very long string a very long string a very long string ";
-
-results in:
-
-Would like an option to have M-q indent or fill comments. When in a string it should do nothing
-if it can't guarantee the syntax will be correct. Ideally, we'd have a way to fill strings
-by using the appropriate string concatenation characters.
+results in syntax errors in some languages. It would be nice to either fix this or have an option
+that instructs M-q to indent or fill comments, but never split strings. When in a string it
+should do nothing if it can't guarantee the syntax will be correct. Ideally, we'd have a way to fill
+strings by using the appropriate string concatenation characters.
 
 ** Doc for treesit-thing-settings is misleading.
 
 It mentions a "comment" thing, but that is not used by treesit. Also looking at the
 setting for C/C++, what's written
 
-  : Here's an example treesit-thing-settings for C and C++:
-  :
   : ((c
   :   (defun "function_definition")
   :   (sexp (not "[](),[{}]"))
