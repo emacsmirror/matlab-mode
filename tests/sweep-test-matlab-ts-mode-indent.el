@@ -63,7 +63,11 @@ String CHECK-RESULT is what the MLint returned."
               "An END might be missing"
               ;; L 195 (C 15): Invalid text character(s).
               ;;    regularcode;  #r#
-              "Invalid text character"))
+              "Invalid text character"
+              ;; ./tests/continuations.m
+              ;; L 1 (C 1): Code analysis did not complete. File contains too many syntax errors.
+              "syntax errors"
+              ))
             mlint-out)))
     (cons valid mlint-out)))
 
