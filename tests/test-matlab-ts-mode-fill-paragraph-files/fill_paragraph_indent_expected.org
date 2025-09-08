@@ -16,7 +16,7 @@
   :               ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  125
   Moved to point:  128
   : 5:12:     if a > 2

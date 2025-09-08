@@ -1,0 +1,297 @@
+#+startup: showall
+
+* Executing commands from fill_paragraph_strings_and_ellipsis.m:8:10:
+
+  c1: (t-utils-xr "C-n" "C-a" "M-q")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  308
+  Moved to point:  324
+  : 9:15:     a = c + ...
+  :                      ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  324
+  Moved to point:  309
+  : 9:0:     a = c + ...
+  :      ^
+  No buffer modifications
+
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
+  Start point   :  309
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -7,7 +7,7 @@
+ 
+     % c1: (t-utils-xr "C-n" "C-a" "M-q")
+     a = c + ...
+-                2;
++        2;
+ 
+     % c2: (t-utils-xr "C-n" "C-a" "M-q")
+     a = a  + 3; % foo bar    goo
+  #+end_src diff
+
+* Executing commands from fill_paragraph_strings_and_ellipsis.m:12:10:
+
+  c2: (t-utils-xr "C-n" "C-a" "M-q")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  377
+  Moved to point:  410
+  : 13:32:     a = a  + 3; % foo bar    goo
+  :                                        ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  410
+  Moved to point:  378
+  : 13:0:     a = a  + 3; % foo bar    goo
+  :       ^
+  No buffer modifications
+
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
+  Start point   :  378
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -10,7 +10,7 @@
+         2;
+ 
+     % c2: (t-utils-xr "C-n" "C-a" "M-q")
+-    a = a  + 3; % foo bar    goo
++    a = a  + 3; % foo bar goo
+ 
+     b = foo1;
+ 
+  #+end_src diff
+
+* Executing commands from fill_paragraph_strings_and_ellipsis.m:24:10:
+
+  c3: (t-utils-xr (re-search-forward "a long string") "M-q")
+
+- Invoking      : (re-search-forward "a long string")
+  Start point   :  557
+  Moved to point:  587
+  : 25:29:            b = "a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string ";
+  :                                     ^
+  No buffer modifications
+
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
+  Start point   :  587
+  Moved to point:  580
+  : 25:22:     b = "a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string ";
+  :                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -22,7 +22,7 @@
+ function b = foo1
+ 
+     % c3: (t-utils-xr (re-search-forward "a long string") "M-q")
+-           b = "a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string ";
++    b = "a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string ";
+ end
+ 
+ function foobar = foo2
+  #+end_src diff
+
+* Executing commands from fill_paragraph_strings_and_ellipsis.m:30:10:
+
+  c4: (t-utils-xr "C-n" "C-a" "M-q")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  835
+  Moved to point:  859
+  : 31:23:     foobar = struct(...
+  :                               ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  859
+  Moved to point:  836
+  : 31:0:     foobar = struct(...
+  :       ^
+  No buffer modifications
+
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
+  Start point   :  836
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -30,7 +30,7 @@
+     % c4: (t-utils-xr "C-n" "C-a" "M-q")
+     foobar = struct(...
+         'field1', 1, ...
+-            'field1', 2);
++        'field1', 2);
+ end
+ 
+ function foobar = foo3
+  #+end_src diff
+
+* Executing commands from fill_paragraph_strings_and_ellipsis.m:38:10:
+
+  c5: (t-utils-xr "C-n" "C-n" "C-a" "M-q")
+
+- Invoking      : "C-n" = next-line
+  Start point   :  982
+  Moved to point: 1006
+  : 39:23:     foobar = struct(...
+  :                               ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1006
+  Moved to point: 1030
+  : 40:23:         'field1', 1, ...
+  :                               ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   : 1030
+  Moved to point: 1007
+  : 40:0:         'field1', 1, ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
+  Start point   : 1007
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -38,7 +38,7 @@
+     % c5: (t-utils-xr "C-n" "C-n" "C-a" "M-q")
+     foobar = struct(...
+         'field1', 1, ...
+-            'field1', 2);
++        'field1', 2);
+ end
+ 
+ function foobar = foo4
+  #+end_src diff
+
+* Executing commands from fill_paragraph_strings_and_ellipsis.m:46:10:
+
+  c6: (t-utils-xr "C-n" "C-n" "C-n" "C-a" "M-q")
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1135
+  Moved to point: 1159
+  : 47:23:     foobar = struct(...
+  :                               ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1159
+  Moved to point: 1183
+  : 48:23:         'field1', 1, ...
+  :                               ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   : 1183
+  Moved to point: 1208
+  : 49:23:             'field1', 2);
+  :                               ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   : 1208
+  Moved to point: 1185
+  : 49:0:             'field1', 2);
+  :       ^
+  No buffer modifications
+
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
+  Start point   : 1185
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -46,7 +46,7 @@
+     % c6: (t-utils-xr "C-n" "C-n" "C-n" "C-a" "M-q")
+     foobar = struct(...
+         'field1', 1, ...
+-            'field1', 2);
++        'field1', 2);
+ end
+ 
+ % c7: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src diff
+
+* Executing commands from fill_paragraph_strings_and_ellipsis.m:52:6:
+
+  c7: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   : 1278
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+% Filling code with ellipsis and strings causes problems for prog-fill-reindent-defun
+% so we created matlab-ts-mode-prog-fill-reindent-defun to test that M-q on these works.
+
+function [a, b, f2, f3, f4] = fill_paragraph_strings_and_ellipsis(c)
+
+    % c1: (t-utils-xr \"C-n\" \"C-a\" \"M-q\")
+    a = c + ...
+        2;
+
+    % c2: (t-utils-xr \"C-n\" \"C-a\" \"M-q\")
+    a = a  + 3; % foo bar goo
+
+    b = foo1;
+
+    f2 = foo2;
+    f3 = foo3;
+    f4 = foo4;
+end
+
+function b = foo1
+
+    % c3: (t-utils-xr (re-search-forward \"a long string\") \"M-q\")
+    b = \"a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string \";
+end
+
+function foobar = foo2
+
+    % c4: (t-utils-xr \"C-n\" \"C-a\" \"M-q\")
+    foobar = struct(...
+        'field1', 1, ...
+        'field1', 2);
+end
+
+function foobar = foo3
+
+    % c5: (t-utils-xr \"C-n\" \"C-n\" \"C-a\" \"M-q\")
+    foobar = struct(...
+        'field1', 1, ...
+        'field1', 2);
+end
+
+function foobar = foo4
+
+    % c6: (t-utils-xr \"C-n\" \"C-n\" \"C-n\" \"C-a\" \"M-q\")
+    foobar = struct(...
+        'field1', 1, ...
+        'field1', 2);
+end
+
+% c7: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src
+  No buffer modifications

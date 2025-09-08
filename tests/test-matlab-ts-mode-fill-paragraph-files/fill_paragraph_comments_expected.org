@@ -27,7 +27,7 @@
   :        ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  216
   No point movement
   Buffer modified:
@@ -67,7 +67,7 @@
   :         ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  568
   No point movement
   Buffer modified:
@@ -106,7 +106,7 @@
   :        ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  832
   No point movement
   Buffer modified:
@@ -144,7 +144,7 @@
   :        ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   : 1066
   No point movement
   Buffer modified:
@@ -183,7 +183,7 @@
   :        ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   : 1348
   No point movement
   Buffer modified:
@@ -213,7 +213,7 @@
   :                                                 ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   : 1650
   No point movement
   Buffer modified:
@@ -260,7 +260,7 @@
   :                             ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   : 2076
   No point movement
   Buffer modified:

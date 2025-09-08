@@ -27,7 +27,7 @@
   :            ^
   No buffer modifications
 
-- Invoking      : "M-q" = prog-fill-reindent-defun
+- Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  240
   No point movement
   Buffer modified:

@@ -3647,6 +3647,48 @@ and this buffer is returned."
         (pop-to-buffer (current-buffer) 'other-window)))
     parse-errors-buf))
 
+;;; Our M-q matlab-ts-mode-prog-fill-reindent-defun
+
+(defun matlab-ts-mode-prog-fill-reindent-defun (&optional justify)
+  "MATLAB refill or reindent the paragraph or defun at point.
+
+If the point is in a string or a comment, fill the paragraph that
+contains point or follows point.  Optional JUSTIFY is passed
+to `fill-paragraph'.
+
+Otherwise, reindent the function definition that contains point
+or follows point.
+
+This exists because ellipsis line continuations cause
+`prog-fill-reindent-defun' to not behave well.  Thus, we handle
+these locally."
+  (interactive "P")
+  (save-excursion
+    (let ((treesit-text-node
+           (and (treesit-available-p)
+                (treesit-parser-list)
+                (let ((node (treesit-node-at (point))))
+                  (and (treesit-node-match-p node 'text t)
+                       (not (equal (treesit-node-type node) "line_continuation")))))))
+      (if (or treesit-text-node
+              ;; We can't fill strings because doing so introduces syntax errors
+              (let ((sp (syntax-ppss)))
+                (and (nth 8 sp) ;; string or comment
+                     (not (nth 3 sp)))) ;; not string
+              (let ((comment-start-pt
+                     (save-excursion
+                       (when (and (re-search-forward "\\s-*\\s<" (line-end-position) t)
+                                  (not (equal (treesit-node-type (treesit-node-at (point)))
+                                              "line_continuation")))
+                         (point)))))
+                (when comment-start-pt
+                  (goto-char comment-start-pt))))
+          (fill-paragraph justify (region-active-p))
+        (beginning-of-defun)
+        (let ((start (point)))
+          (end-of-defun)
+          (indent-region start (point) nil))))))
+
 ;;; Keymap
 
 (defvar-keymap matlab-ts-mode-map
@@ -3654,6 +3696,7 @@ and this buffer is returned."
   :parent prog-mode-map
 
   ;; Editing commands
+  "M-q" #'matlab-ts-mode-prog-fill-reindent-defun
   "C-c C-j" #'matlab-justify-line
 
   ;; Integration with `matlab-shell'
@@ -3944,13 +3987,6 @@ so configuration variables of that mode, do not affect this mode.
     ;; Activate MATLAB script ";; heading" matlab-sections-minor-mode if needed
     (matlab-sections-auto-enable-on-mfile-type-fcn (matlab-ts-mode--mfile-type))
 
-    ;; TODO M-q on first line
-    ;;          foobar = struct(...
-    ;;               'field1', 1, ...
-    ;;               'field1', 2);
-    ;;      result in
-    ;;          foobar = struct(...  'field1', 1, ...  'field1', 2);
-    ;;
     ;; TODO [future] Indent - complex for statement
     ;;         function a = foo(inputArgument1)
     ;;             for (idx = (a.b.getStartValue(((inputArgument1 + someOtherFunction(b)) * 2 - ...
