@@ -3579,13 +3579,29 @@ provided."
                         (goto-char end-point)
                         (1+ (current-column)))))
         (push (format
-               "%s:%d:%d: error: parse error from line %d:%d to line %d:%d (point %d to %d)\n"
+               "%s:%d:%d: error: parse error from line %d:%d to line %d:%d (point %d to %d)
+%5d | %s
+      | %s^
+"
                buf-name
                start-line start-col
                start-line start-col
                end-line end-col
                start-point
-               end-point)
+               end-point
+               start-line
+               ;; error line
+               (buffer-substring (save-excursion
+                                   (goto-char start-point)
+                                   (line-beginning-position))
+                                 (save-excursion
+                                   (goto-char start-point)
+                                   (line-end-position)))
+               ;; space padding for the pointer (^)
+               (save-excursion
+                 (goto-char start-point)
+                 (let ((n-spaces (- start-point (line-beginning-position))))
+                   (make-string n-spaces ? ))))
               result-list)))
     (let ((errs (mapconcat #'identity (reverse result-list))))
       (if (string= errs "")
