@@ -1736,7 +1736,7 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                           ;;         TAB>            ^
                           (* 2 matlab-ts-mode--indent-level)
                         matlab-ts-mode--indent-level)
-                    ;; Else function-call argumens
+                    ;; Else function-call arguments
                     ;; See: tests/test-matlab-ts-mode-indent-files/indent_fcn_call_last_paren.m
                     0))
                  (t
@@ -4116,4 +4116,4 @@ matlab-language-server-lsp-mode.org\n"
 ;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
 ;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd
-;; LocalWords:  matlabls vscode buf dolist
+;; LocalWords:  matlabls vscode buf dolist sp ppss
