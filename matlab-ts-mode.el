@@ -3551,17 +3551,21 @@ Within comments, the following markers will be highlighted:
 
 ;;; View parse errors
 
-(defun matlab-ts-mode--get-parse-errors ()
+(defun matlab-ts-mode--get-parse-errors (&optional file-name-for-error)
   "Return a string of parse errors in matlab-ts-mode current buffer.
-Returns nil if there are no errors."
+Returns nil if there are no errors.
+
+Optional FILE-NAME-FOR-ERROR is used instead of the `buffer-name' if
+provided."
 
   ;; See: tests/test-matlab-ts-mode-view-parse-errors.el
 
   (let ((capture-errors (treesit-query-capture (treesit-buffer-root-node) '((ERROR) @e)))
         (result-list '())
-        (buf-name (if (buffer-file-name)
-                      (file-name-nondirectory (buffer-file-name))
-                    (buffer-name))))
+        (buf-name (or file-name-for-error
+                      (if (buffer-file-name)
+                          (file-name-nondirectory (buffer-file-name))
+                        (buffer-name)))))
     (dolist (capture-error capture-errors)
       (let* ((error-node (cdr capture-error))
              (start-point (treesit-node-start error-node))
