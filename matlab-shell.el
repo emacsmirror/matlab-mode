@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'subr-x)
+
 (require 'matlab-compat)
 (eval-and-compile
   (require 'matlab--access))
