@@ -43,11 +43,22 @@ This will also enter MATLAB mode for empty files *.m files when
 
   (and buffer-file-name ;; have a file?
        ;; AND a valid MATLAB file name
+
        (string-match
         "^\\(?:.*/\\)?[a-zA-Z][a-zA-Z0-9_]*\\.m\\'"  ;; /path/to/file.m ?
+        ;; buffer-file-name in archives look like:
+        ;;   /path/to/archive.zip:archive/foo.m
+        ;; and the ":" causes it too look like an invalid m-file path, so compare against the file
+        ;; name from the archive.
         (file-name-sans-versions
          (if (and (boundp 'archive-subfile-mode) archive-subfile-mode)
-             (aref archive-subfile-mode 0)   ;; Will just be file.m without the directory
+             ;; When in an archive, the buffer-file-name will look like /path/to/archive.zip:foo.m,
+             ;; which will not be a valid M-file name because of the ":". Therefore, match against
+             ;; the file in the archive without the archive path.
+             (if (fboundp 'archive--file-desc-ext-file-name) ;; Emacs 28+ uses a cl-defstruct.
+                 (archive--file-desc-ext-file-name archive-subfile-mode)
+               ;; Emacs 27 uses an array
+               (aref archive-subfile-mode 0))
            buffer-file-name)))
        ;; AND (have MATLAB code OR an empty file that should enter matlab-mode)
        (or
@@ -88,4 +99,4 @@ This will also enter MATLAB mode for empty files *.m files when
 (provide 'matlab-is-matlab-file)
 ;;; matlab-is-matlab-file.el ends here
 
-;; LocalWords:  alist defcustom mfiles objc defun boundp aref setq cdr
+;; LocalWords:  alist defcustom mfiles objc defun boundp aref setq cdr fboundp defstruct
