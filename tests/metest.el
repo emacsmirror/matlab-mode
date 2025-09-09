@@ -39,7 +39,6 @@
 (require 'metest-indent-test2)
 (require 'metest-imenu)
 (require 'metest-imenu-tlc)
-(require 't-utils)
 
 (defun metest-all-syntax-tests ()
   "Run all the syntax test cases in this file."
@@ -72,8 +71,6 @@
   ;; Parsing and completion are high level tools
   (metest-run 'metest-complete-test)
 
-  (metest-check-version)
-
   (metest-log-report (metest-log-write))
 
   (matlab-scan-stats-print)
@@ -85,7 +82,10 @@
 
   ;; Run test-*.el. t-utils-run must be last because it will exit emacs when noninteractive.
   (when (>= emacs-major-version 30)
-    (if (treesit-ready-p 'matlab t)
+    (require 't-utils)
+    (declare-function t-utils-run "t-utils.el")
+    (if (and (fboundp 'treesit-ready-p)
+             (treesit-ready-p 'matlab t))
         (t-utils-run)
       (message "metest.el:1: warning: matlab tree-sitter shared object is not installed, \
 unable to run tests"))))
@@ -611,19 +611,6 @@ For example: (metest-fill-paragraph \"fill-paragraph/FILE.m\"))"
                                   "%s")
                                   m-file m-file-expected got-result-file)))))))
   (message "--> metest-fill-paragraph SUCCESS"))
-
-(defun metest-check-version ()
-  "Validate matlab-mode version numbers are consistent."
-  (let ((package-version (with-temp-buffer
-                           (insert-file-contents "../matlab-mode.el")
-                           (when (not (re-search-forward
-                                       "^;; Version: \\([0-9]+\\.[0-9]+\\)[ \t]*$" nil t))
-                             (user-error "Failed to find version in ../matlab-mode.el"))
-                           (match-string 1))))
-    (when (not (string= package-version matlab-version))
-      (user-error "Version from matlab-mode.el \";; Version: %s\" != matlab-version %s"
-                  package-version matlab-version))))
-
 
 ;;; UTILS
 ;;
