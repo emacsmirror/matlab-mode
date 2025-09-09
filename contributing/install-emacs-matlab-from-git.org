@@ -39,7 +39,7 @@ from git. The install below uses =~/emacs-workarea= as a work area. You can chan
 
 * Consider creating a temporary home
 
-You can create a temorary home by setting the the environment variable, HOME set to a temporary
+You can create a temporary home by setting the environment variable, HOME set to a temporary
 location. This lets you develop Emacs MATLAB Mode in a clean environment. See [[file:DEBUGGING.org][DEBUGGING.org]].
 
 * Install MATLAB tree-sitter grammar

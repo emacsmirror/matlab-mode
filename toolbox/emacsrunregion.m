@@ -63,4 +63,4 @@ function emacsrunregion(file, startchar, endchar)
     %         shortFileName, extension, regionInfo);
 end
 
-% LocalWords:  STARTCHAR ENDCHAR
+% LocalWords:  STARTCHAR ENDCHAR startchar endchar LF CRFL

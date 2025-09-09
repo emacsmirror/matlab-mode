@@ -147,4 +147,4 @@ and map matlab to matlab-ts:
  : Major mode: matlab-ts
 
 # LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
-# LocalWords:  libtree dylib workarea ABI langs abi MSys sudo treesit nodejs npm alist lang
+# LocalWords:  libtree dylib workarea ABI langs abi MSys sudo treesit nodejs npm alist lang MELPA

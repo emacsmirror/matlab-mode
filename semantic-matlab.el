@@ -871,4 +871,4 @@ This will include a list of type/field names when applicable."
 ;; LocalWords:  repeat:nil RETURNVARS fn vals func's downcase oldstyle dolist nthcdr typemodifiers
 ;; LocalWords:  mapcar alist nconc bt ctags reparse chil newlist astruct aclass exampleclass anumber
 ;; LocalWords:  anotherclass avariable defconst progn bobp setcdr knowntypes cadr argstr docstring
-;; LocalWords:  defcustom ia tt fboundp nolog ctxt ENDSYM endsym imenu bucketize stickyfunc
+;; LocalWords:  defcustom ia tt fboundp nolog ctxt ENDSYM endsym imenu bucketize stickyfunc mapc

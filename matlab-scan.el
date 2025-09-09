@@ -1522,7 +1522,7 @@ If optional NODISP, then don't display, just return the msg."
 (provide 'matlab-scan)
 ;;; matlab-scan.el ends here
 
-;; LocalWords:  eludlam defconst decl ifelse vardecl obarray mapc elt cdr defun numberp Ludlam
+;; LocalWords:  eludlam defconst decl ifelse vardecl obarray mapc elt cdr defun numberp Ludlam gmail
 ;; LocalWords:  defsubst kwt setq symbolp memq ctxt ppss mlf ltype stype propertize BOL sexp bol
 ;; LocalWords:  ppsbol pps progn repeat:nil ppsend eol ec prev symval eolp commanddual defmacro
 ;; LocalWords:  consp endpt parens tmp bobp setcdr nthcdr setcar nonemptymiss codemiss cmdbegin

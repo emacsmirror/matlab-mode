@@ -218,4 +218,4 @@ function [ht, nEntries, bMap] = getHashTableEntries(fcnStart, ht, nEntries, bMap
 end
 
 % LocalWords:  emacsdocomplete builtins keymodels vdynblks vdynsolution mlapp mlx ssc sfx genapp tmp
-% LocalWords:  nodesktop
+% LocalWords:  nodesktop defun aa

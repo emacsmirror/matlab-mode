@@ -94,7 +94,7 @@
    "----"
    ["Exit" bury-buffer t]))
 
-;; Need this to fix wierd problem in define-derived-mode
+;; Need this to fix weird problem in define-derived-mode
 (defvar matlab-shell-help-mode-syntax-table (make-syntax-table)
   "Syntax table used in `matlab-shell-help-mode'.")
 
@@ -202,3 +202,5 @@ EVENT is the user mouse event."
 (provide 'matlab-topic)
 
 ;;; matlab-topic.el ends here
+
+;; LocalWords:  Ludlam zappo fboundp defalias keymap setq boundp defun downcase cdr numberp

@@ -56,3 +56,5 @@
 (provide 'matlab-mode)
 
 ;;; matlab-mode.el ends here
+
+;; LocalWords:  SPDX Wette mwette edu Ludlam eludlam Uwe Brauer oub ucm gmail defconst

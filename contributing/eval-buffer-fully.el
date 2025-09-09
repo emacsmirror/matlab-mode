@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 ;;
-;; Development utiltity useful after modifying a Lisp buffer
+;; Development utility useful after modifying a Lisp buffer
 ;;
 ;;    M-x eval-buffer-fully
 
@@ -12,7 +12,7 @@
   "Try to fully evaluate the buffer.
 Evaluate a Lisp buffer by running \\[eval-buffer].  If the buffer has
 already been evaluated, `eval-buffer' will only re-evaluate `defun'
-defintions.  Therefore, this function will search for other defintions
+definitions.  Therefore, this function will search for other definitions
 on their own line and run \\[eval-defun] on them.  This will miss some
 items such as use of macros."
   (interactive)
@@ -38,3 +38,5 @@ items such as use of macros."
 
 (provide 'eval-buffer-fully)
 ;;; eval-buffer-fully.el ends here
+
+;; LocalWords:  defun bol defface defmacro keymap

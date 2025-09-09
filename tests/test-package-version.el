@@ -28,7 +28,7 @@
 (ert-deftest test-package-version ()
   "Validate the package version numbers in ../*.el are the same.
 Emacs MATLAB mode package consists of several major and minor modes and
-for simplicity we require that the verisons of these be the same."
+for simplicity we require that the versions of these be the same."
 
   (let ((el-files (directory-files ".." t "\\.el\\'"))
         (version-lines "")
@@ -57,3 +57,5 @@ for simplicity we require that the verisons of these be the same."
 
 (provide 'test-package-version)
 ;;; test-package-version.el ends here
+
+;; LocalWords:  utils dolist setq

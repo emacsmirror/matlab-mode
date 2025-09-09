@@ -373,7 +373,7 @@ buffers for the integration with matlab-shell-mode."
   (set-syntax-table (matlab--shell-get-syntax-table))
 
   (setq-local font-lock-defaults '((matlab-shell-font-lock-keywords)
-                             t   ;; syntatic fontification (strings and comments) is not performed.
+                             t   ;; syntactic fontification (strings and comments) is not performed.
                              nil ;; keywords are case sensitive
                              ;; Put _ as a word constituent, simplifying keywords
                              ((?_ . "w"))))
@@ -2505,4 +2505,5 @@ Argument FNAME specifies if we should echo the region to the command line."
 ;; LocalWords:  dired bol bobp numberp princ minibuffer fn matlabregex lastcmd notimeout
 ;; LocalWords:  stacktop eltest testme localfcn LF fileref funcall ef ec basec sk nondirectory utils
 ;; LocalWords:  ignoredups boundp edir sexp Fixup mapc emacsrun noshow cnt ellipsis newf bss noselect
-;; LocalWords:  fname mlx xemacs linux darwin truename clientcmd simulationc caar
+;; LocalWords:  fname mlx xemacs linux darwin truename clientcmd simulationc caar fontification
+;; LocalWords:  defsubst ppss

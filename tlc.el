@@ -506,4 +506,4 @@ EXISTS(\"?\\(?:::\\)?_[A-Z_0-9]+_\"?)\\s-*==\\s-*\\(?:0\\|TLC_FALSE\\)\\|\
 
 ;; LocalWords:  Ludlam eludlam galbraith psg debian defun defcustom setq keymap defface grayscale sw
 ;; LocalWords:  IDNUM NUMTLCFILES STRINGOF SYSNAME TLCFILES UINTWHITE repeat:nil prog calc endswitch
-;; LocalWords:  bobp nexti progn alist el stackexchange ppss openfile closefile curr elsif
+;; LocalWords:  bobp nexti progn alist el stackexchange ppss openfile closefile curr elsif imenu

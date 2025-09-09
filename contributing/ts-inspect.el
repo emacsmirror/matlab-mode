@@ -12,7 +12,7 @@
   "Display information about node at POSITION.
 POSITION defaults to the current `point'.
 Returns a string of the form:
-  Heirarchy:
+  Hierarchy:
     #<treesit-node ROOT in 1-67>
       #<treesit-node PARENT in 37-62>
         #<treesit-node NODE in 61-62>
@@ -27,7 +27,7 @@ Returns a string of the form:
   (let ((node (treesit-node-at position))
         result)
 
-    ;; Heiararchy
+    ;; Hierarchy
     (let* ((tree `(,(format "%S\n" node)))
            (parent (treesit-node-parent node))
            (prefix "  "))
@@ -35,7 +35,7 @@ Returns a string of the form:
         (push (format "%S\n" parent) tree)
         (setq parent (treesit-node-parent parent)))
 
-      (setq result (concat "Heirarchy:\n"
+      (setq result (concat "Hierarchy:\n"
                            (mapconcat (lambda (n)
                                         (let ((leaf (concat prefix n)))
                                           (setq prefix (concat "  " prefix))
@@ -64,3 +64,5 @@ Returns a string of the form:
 
 (provide 'ts-inspect)
 ;;; ts-inspect.el ends here
+
+;; LocalWords:  treesit defun Prev PREV setq mapconcat prev

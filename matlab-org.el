@@ -157,4 +157,4 @@ PARAMS MATLABP."
 ;;; matlab-org.el ends here
 
 ;; LocalWords:  gmail defun setq isstring progn fixup matlabp dpng gfx funcall Tmp writematrix eoe
-;; LocalWords:  mapcar mapconcat featurep boundp
+;; LocalWords:  mapcar mapconcat featurep boundp ERRORTXT

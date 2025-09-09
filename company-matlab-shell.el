@@ -99,4 +99,4 @@ ARG and IGNORED are ignored."
 ;;; company-matlab-shell.el ends here
 
 ;; LocalWords:  Ludlam Engster ci defun substr lastcmd eol buf cdr puthash gethash remhash mapcar
-;; LocalWords:  fboundp
+;; LocalWords:  fboundp zappo dengste

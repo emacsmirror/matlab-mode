@@ -181,5 +181,6 @@ list-files-for-release:
 
 # [EOF] Makefile
 
-# LocalWords:  EMACSFLAGS setq LOADPATH LOADDEFS LOADDIRS ELC elc MAKECMDGOALS ifeq abspath
-# LocalWords:  autoloads loaddefs tstamp addprefix ifneq nodesktop nosplash endef usr
+# LocalWords:  EMACSFLAGS setq LOADPATH LOADDEFS LOADDIRS ELC elc MAKECMDGOALS ifeq abspath flycheck
+# LocalWords:  autoloads loaddefs tstamp addprefix ifneq nodesktop nosplash endef usr treesit MSYS
+# LocalWords:  msys awk maint

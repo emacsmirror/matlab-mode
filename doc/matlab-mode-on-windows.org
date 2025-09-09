@@ -51,7 +51,7 @@ To use Emacs on Windows with the matlab-mode package,
    version should be fine.
 
 7. [Optional] Install lsp-mode, lsp-ui, and flycheck. Run =M-x list-packages=, search for them and
-   install them. Then install the MATLAB Lanugage Server, see
+   install them. Then install the MATLAB Language Server, see
    [[file:matlab-language-server-lsp-mode.org]].
 
 8. [Optional] Use bash for =M-x shell=
@@ -70,3 +70,5 @@ To use Emacs on Windows with the matlab-mode package,
 
 9. [Optional] Install =magit= for Git by =M-x list-packages=, then clicking on =magit= from melpa
    to install. You'll also need to install https://gitforwindows.org/.
+
+# LocalWords:  showall MSYS pacman gpg melpa setq msys usr elpa lsp flycheck magit

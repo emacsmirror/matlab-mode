@@ -63,3 +63,5 @@ and add:
 #+begin_src emacs-lisp
    (lambda () (imenu-add-to-menubar "Fcns"))
 #+end_src
+
+# LocalWords:  showall Func

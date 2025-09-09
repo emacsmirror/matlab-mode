@@ -110,3 +110,5 @@ Open the following [[file:~/emacs-projects/Emacs-MATLAB-Mode/examples/matlab-sec
   set(gca, 'FontSize', fsz)
 
 #+end_src
+
+# LocalWords:  showall emacsinit elpa matlabsection fsamp Tmax Nt fsz sp stackedplot

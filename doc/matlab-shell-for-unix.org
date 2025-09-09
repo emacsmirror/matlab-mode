@@ -11,13 +11,13 @@ In Emacs,
 
  : M-x matlab-shell
 
-will run =matlab -nodesktop= in a =*MATAB*= shell buffer.  By default, if matlab is on your path,
+will run =matlab -nodesktop= in a =*MATLAB*= shell buffer.  By default, if matlab is on your path,
 =which matlab= returns a location, then that version of matlab is used by matlab-shell. Otherwise,
 matlab-shell will look for matlab in the standard installation locations and use that. If you'd like
 matlab-shell to use a specific version of MATLAB run
-=M-x customzie-variable RET matlab-shell-command RET=.
+=M-x customize-variable RET matlab-shell-command RET=.
 
-In the =*MATAB*= matlab-shell buffer, you can run MATLAB commands, debug MATLAB =*.m= files, and
+In the =*MATLAB*= matlab-shell buffer, you can run MATLAB commands, debug MATLAB =*.m= files, and
 more. See the MATLAB menu for capabilities.
 
 At the MATLAB prompt, ">>", you can TAB complete commands.  matlab-shell uses company-mode for
@@ -26,3 +26,5 @@ completions. For example:
  : >> plot(a, b, 'Line<TAB>
 
 will complete =Line= to =LineWidth=.
+
+# LocalWords:  showall nodesktop

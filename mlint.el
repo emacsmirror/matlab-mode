@@ -489,7 +489,7 @@ Optional argument FIELDS are the initialization arguments."
 
 (defclass mlint-lm-function-name (mlint-lm-replace-focus)
   ()
-  "When function name is missmatched with the file name."
+  "When function name is mismatched with the file name."
   )
 
 (cl-defmethod initialize-instance :after ((this mlint-lm-function-name) &rest fields)
@@ -903,4 +903,5 @@ find it."
 ;; LocalWords:  cadr cdddr mapconcat defclass linemarks initarg coverlay warningid ID's warningcode
 ;; LocalWords:  initform newgroup foundgroup lmg defmethod plist nondirectory oref oset boundp EDiff
 ;; LocalWords:  warntxt progn makeunbound ent newfcn downcase mapc fontify truename magit ediff prev
-;; LocalWords:  mlinting keymap repos ipos startpos mmode funcall metabuffer ediffed mapcar
+;; LocalWords:  mlinting keymap repos ipos startpos mmode funcall metabuffer ediffed mapcar MSNU
+;; LocalWords:  ENDCT FNDEF MCFIL MCSCC tmp aref wc blockname

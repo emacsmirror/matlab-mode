@@ -40,7 +40,7 @@ languages.
 
 I developed matlab-ts-mode using Emacs 30. The more I learned about tree-sitter, the more I liked
 it. I was very much impressed with the quality of the tree-sitter itself and the integration of
-tree-sitter in Emacs. The quality of the intergation of tree-sitter in Emacs is exceptional.
+tree-sitter in Emacs. The quality of the integration of tree-sitter in Emacs is exceptional.
 
 * What does tree-sitter provide?
 
@@ -77,7 +77,7 @@ tree-sitter can semantically color it, indent it, etc.
 Try using LSP for syntax highlighting or code indentation on a large file where you type at a
 productive speed of 40-75 words per minute. The experience will be less than ideal. Now try that
 where syntax highlighting and code indentation are powered by tree-sitter. You'll be pleasantly
-suprised how good tree-sitter is. The editor will be much smoother with higher-quality syntax
+surprised how good tree-sitter is. The editor will be much smoother with higher-quality syntax
 highlighting and code indentation. You see spend much less time having to adjust whitespace to
 make your code look good because the indentation as you type is much better.
 
@@ -2110,7 +2110,7 @@ Install, using default branch
   #+end_example
 
   If you use prev-line on the blank-line immediately after "b = 2;", you'll get the expected point
-  below "b". If you use prev-line on the second blank line after "b = 2;", the point move the the
+  below "b". If you use prev-line on the second blank line after "b = 2;", the point move the
   first blank line after the "b = 2;" statement which may not be what you want. Perhaps prev-real
   should look backwards to the first prior line with non-whitespace. If there's concern about
   compatibility, treesit could be updated to have:

@@ -128,9 +128,9 @@ SLIB-RE is the regexp that matches LANGUAGE.SLIB-EXT."
 	  (let ((lang (completing-read prompt all-languages nil t)))
 	    (if (string= lang "")
 		(setq done (string-match "\\`Next" prompt))
-	      ;; else lanuage entered
+	      ;; else language entered
 	      (push lang languages-to-extract)
-	      (setq prompt "Next lanugage to extract (enter when done): "))))))
+	      (setq prompt "Next language to extract (enter when done): "))))))
     ;; result
     languages-to-extract))
 
@@ -222,7 +222,7 @@ LATEST-URL is the URL used to get *.tar.gz into the current buffer"
       (error
        (error "Failed to extract downloaded %s
 Error: %s
-This could be due use of a tree-sitter lanugage shared library.
+This could be due use of a tree-sitter language shared library.
 Try restarting Emacs without loading any *-ts-mode, then run
 M-x matlab-ts-langs-install"
 	      latest-url
@@ -285,3 +285,7 @@ is known to work with Emacs 30 as of July 2025"
 
 (provide 'matlab-ts-langs-install)
 ;;; matlab-ts-langs-install.el ends here
+
+;; LocalWords:  libtree dylib aarch darwin gz linux pc msvc LANUGAGE SLIB SLILB treesit defun os
+;; LocalWords:  pcase macos berkeley freebsd nt gv buf setq mapconcat slib dolist pecify lang readme
+;; LocalWords:  nondirectory tmp alist repeat:tmp bsdunix andriod progn truename

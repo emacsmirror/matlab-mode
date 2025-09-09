@@ -30,7 +30,7 @@ function emacsrun(mfile, varargin)
     end
 
     
-    % If not on the path, temporarilly switch to that directory so it and an files it references are
+    % If not on the path, temporarily switch to that directory so it and an files it references are
     % accessible
     if ~onpath
         oldpath = pwd;
@@ -43,3 +43,5 @@ function emacsrun(mfile, varargin)
     
     evalin('base',cmd);
 end
+
+% LocalWords:  MFILE

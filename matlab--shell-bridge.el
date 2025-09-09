@@ -87,4 +87,4 @@ to strings and comments."
 (provide 'matlab--shell-bridge)
 ;;; matlab--shell-bridge.el ends here
 
-;; LocalWords:  defun alist rassoc pcase
+;; LocalWords:  defun alist rassoc pcase boundp

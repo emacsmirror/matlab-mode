@@ -585,6 +585,6 @@ If COUNT is negative, travel backward."
 
 ;;; matlab-syntax.el ends here
 
-;; LocalWords:  Ludlam eludlam compat booleanp propertize varname defmacro oldsyntax progn
+;; LocalWords:  Ludlam eludlam compat booleanp propertize varname defmacro oldsyntax progn defface
 ;; LocalWords:  ppss sexp pps defun eobp mcm blockcomment EOL defconst commanddual cds bolp eol
-;; LocalWords:  cellbreak setq defsubst charvector memq sexps posn parens boundp gmail
+;; LocalWords:  cellbreak setq defsubst charvector memq sexps posn parens boundp gmail classdef's

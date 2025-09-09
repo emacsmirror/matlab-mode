@@ -84,7 +84,7 @@
 (defvar-mode-local matlab-mode semanticdb-find-default-throttle
   '(project omniscience)
   "Search project files, then search this omniscience database.
-It is not necessary to to system or recursive searching because of
+It is not necessary to system or recursive searching because of
 the omniscience database.")
 
 ;;; Filename based methods
@@ -123,7 +123,7 @@ Create one of our special tables that can act as an intermediary."
 
 (cl-defmethod semanticdb-equivalent-mode ((table semanticdb-table-matlab) &optional buffer)
   "Return non-nil if TABLE's mode is equivalent to BUFFER.
-Equivalent modes are specified by by `semantic-equivalent-major-modes'
+Equivalent modes are specified by `semantic-equivalent-major-modes'
 local variable."
   (ignore table)
   (with-current-buffer buffer
@@ -139,12 +139,12 @@ This function is currently a stub."
 
 ;;; Usage
 ;;
-;; Unlike other tables, an omniscent database does not need to
+;; Unlike other tables, an omniscient database does not need to
 ;; be associated with a path.  Use this routine to always add ourselves
 ;; to a search list.
 (define-mode-local-override semanticdb-find-translate-path matlab-mode
   (path brutish)
-  "Return a list of semanticdb tables asociated with PATH.
+  "Return a list of semanticdb tables associated with PATH.
 If brutish, do the default action.
 If not brutish, do the default action, and append the system
 database (if available.)"
@@ -348,7 +348,7 @@ Return a list of tags."
 
 (cl-defmethod semanticdb-find-tags-for-completion-method
   ((table semanticdb-table-matlab) prefix &optional tags)
-  "In TABLE, find all occurances of tags matching PREFIX.
+  "In TABLE, find all occurrences of tags matching PREFIX.
 Optional argument TAGS is a list of tags to search.
 Returns a table of all matching tags."
   (ignore table)
@@ -390,3 +390,7 @@ Returns a table of all matching tags."
 (provide 'semanticdb-matlab)
 
 ;;; semanticdb-matlab.el ends here
+
+;; LocalWords:  Engster dengste skel Ludlam eieio eval'd defclass initform defmethod tmp boundp
+;; LocalWords:  newtable oset FILENAME's TABLE's fboundp mapcar defun setq cdr setcdr dirs dolist
+;; LocalWords:  subdirs nondirectory ctxt delq compdb compshell stringp mapc

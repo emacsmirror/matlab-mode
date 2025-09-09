@@ -133,7 +133,7 @@ the command `matlab-sections-minor-mode' to turn matlab-sections mode on."
 ;; Function to obtain range of current code section
 
 (defun matlab-sections--get-heading (&optional range)
-  "Return the \"%% descrition\" heading or nil if not in a code section.
+  "Return the \"%% description\" heading or nil if not in a code section.
 RANGE is (START-PT . END-PT) of the section or nil.  If nil, we'll
 determine the RANGE."
   (when (not range)

@@ -69,3 +69,5 @@ in Emacs.
 If you'd like to use super (aka Windows) key bindings instead of the above key bindings, you can
 
  : M-x customize-variable RET matlab-sections-use-super-key RET
+
+# LocalWords:  showall classdef's SPC netshell emacsrunregion matlabsection

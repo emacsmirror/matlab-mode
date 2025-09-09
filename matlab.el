@@ -1006,7 +1006,7 @@ This matcher will handle a range of variable features."
                 '("properties" "events" "arguments"))
     (let ((start-point (point)))
 
-      ;; Skip over comments to next lanugage element so that our regex matchers below do not find
+      ;; Skip over comments to next language element so that our regex matchers below do not find
       ;; items in them.
       (forward-comment (point-max))
 
@@ -3059,7 +3059,7 @@ desired."
 ;;; matlab.el ends here
 
 ;; LocalWords:  SPDX Wette mwette edu Ludlam eludlam Uwe Brauer oub ucm defconst compat easymenu dem
-;; LocalWords:  elec defcustom mfiles objc sexp sg Fns Alist symbolp defun mfile
+;; LocalWords:  elec defcustom mfiles objc sexp sg Fns Alist symbolp defun mfile setcar netshell
 ;; LocalWords:  keymap setq decl memq classdef's progn mw vf functionname booleanp torkel fboundp
 ;; LocalWords:  gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob featurep defface commanddual
 ;; LocalWords:  docstring cdr animatedline rlim thetalim cartesian stackedplot bubblechart

@@ -43,7 +43,7 @@ eng.quit()
 #+end_src
 
 #+BEGIN_SRC emacs-lisp
-(setq org-confirm-babel-evaluate nil)   ;don't prompt me to confirm everytime I want to evaluate a block
+(setq org-confirm-babel-evaluate nil)   ;don't prompt me to confirm every time I want to evaluate a block
 ;;; display/update images in the buffer after I evaluate
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
     
@@ -109,3 +109,5 @@ p_{0}&\pm \lambda_{1-\frac{\alpha }{2}}\sqrt{\frac{p_{0}(1-p_{0})}{n}}=0.283019 
 \end{align*}
 
 
+# LocalWords:  notranslate usr sudo jupyter setuptools pexpect matlabkernel ipython dinojr eng setq
+# LocalWords:  lang noweb hlines defalias

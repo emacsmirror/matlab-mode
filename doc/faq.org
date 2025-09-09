@@ -69,3 +69,4 @@ In this case, add the following hook to your config:
 Ensure that this is included after matlab-mode as well as your syntax
 highlighter are initialized in your config.
 
+# LocalWords:  showall mfiles emacsclient
