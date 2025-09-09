@@ -55,17 +55,17 @@ buffer created by `matlab-ts-mode-view-parse-errors'."
 
 (ert-deftest test-matlab-ts-mode-view-parse-errors ()
   "Test `matlab-ts-mode-view-parse-errors'.
-Using ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m, compare
+Using ./test-matlab-ts-mode-view-parse-errors-files/NAME.m, compare
 `matlab-ts-mode-view-parse-errors' against
-./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt.  This loops
-on all ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m files.
+./test-matlab-ts-mode-view-parse-errors-files/NAME_expected.txt.  This loops
+on all ./test-matlab-ts-mode-view-parse-errors-files/NAME.m files.
 
 To add a test, create
-  ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m
+  ./test-matlab-ts-mode-view-parse-errors-files/NAME.m
 and run this function.  The baseline is saved for you as
-  ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt~
+  ./test-matlab-ts-mode-view-parse-errors-files/NAME_expected.txt~
 after validating it, rename it to
-  ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt"
+  ./test-matlab-ts-mode-view-parse-errors-files/NAME_expected.txt"
 
   (let* ((test-name "test-matlab-ts-mode-view-parse-errors")
          (m-files (t-utils-get-files
