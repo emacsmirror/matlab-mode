@@ -44,7 +44,7 @@ location. This lets you develop Emacs MATLAB Mode in a clean environment. See [[
 
 * Install MATLAB tree-sitter grammar
 
-If using Emacs 30 or later you need to [[file:doc/install-matlab-tree-sitter-grammar.org][install the MATLAB tree-sitter grammar]]. This is needed for
+If using Emacs 30 or later you need to [[file:../doc/install-matlab-tree-sitter-grammar.org][install the MATLAB tree-sitter grammar]]. This is needed for
 the tests.
 
 * Build Emacs-MATLAB-Mode
