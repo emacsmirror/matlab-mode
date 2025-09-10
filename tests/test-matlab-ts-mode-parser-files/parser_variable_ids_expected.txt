@@ -11,7 +11,7 @@
      (binary_operator
       left: (binary_operator left: (identifier[75,78]{in1}) * right: (number[81,82]{2}))
       +
-      right: (field_expression object: (identifier[85,88]{foo}) field: . (identifier[89,93]{out1}))))
+      right: (field_expression object: (identifier[85,88]{foo}) . field: (identifier[89,93]{out1}))))
    ;
    (assignment left: (identifier[99,103]{out1}) =
     right: 

@@ -2600,10 +2600,85 @@ end of the last line of NODE.
 
 Similar `treesit--explorer-draw-node' but designed for test baselines."
 
+  ;; Replacing (field-name (when named ...) with (field-name (treesit-node-field-name node)) will
+  ;; return incorrect results with Emacs 30 on Debian 12 because Debian 12 is using a buggy version
+  ;; of libtree-sitter.so. See https://github.com/tree-sitter/tree-sitter/pull/2104
+  ;; "lib: fix ts_node_field_name_for_child implementation #2104"
+  ;;
+  ;; Therefore4, we search for the matching child node to get the field-name.
+  ;;
+  ;; Consider foo.m containing:
+  ;;   foo.out1
+  ;; If we use (field-name (treesit-node-field-name node)) we get different answers
+  ;; dependening on the version of libtree-sitter.so or .dll. Adding in the let below
+  ;;   (message "\
+  ;;   node: %S
+  ;;   field-name: %S
+  ;;   named: %S
+  ;;   " node field-name named)
+  ;; we see with Emacs 30 differences:
+  ;;
+  ;; Debian 12                                        Windows
+  ;; ----                                             -------
+  ;; t-utils--syntax-tree-draw-node                   t-utils--syntax-tree-draw-node
+  ;; node: #<treesit-node source_file in 1-10>        node: #<treesit-node source_file in 1-10>
+  ;; field-name: nil                                  field-name: nil
+  ;; named: t                                         named: t
+  ;;
+  ;; node: #<treesit-node field_expression in 1-9>    node: #<treesit-node field_expression in 1-9>
+  ;; field-name: nil                                  field-name: nil
+  ;; named: t                                         named: t
+  ;;
+  ;; node: #<treesit-node identifier in 1-4>          node: #<treesit-node identifier in 1-4>
+  ;; field-name: "object"                             field-name: "object"
+  ;; named: t                                         named: t
+  ;;
+  ;; node: #<treesit-node "." in 4-5>              != node: #<treesit-node "." in 4-5>
+  ;; field-name: "field"                              field-name: nil
+  ;; named: nil                                       named: nil
+  ;;
+  ;; node:  #<treesit-node identifier in 5-9>      != node: #<treesit-node identifier in 5-9>
+  ;; field-name: nil                                  field-name: "field"
+  ;; named: t                                         named: t
+  ;;
+  ;; node: #<treesit-node "\n" in 9-10>               node: #<treesit-node "\n" in 9-10>
+  ;; field-name: nil                                  field-name: nil
+  ;; named: nil                                       named: nil
+  ;;
+  ;; Debian 12 gives:
+  ;;   (source_file
+  ;;    (field_expression object: (identifier[1,4]{foo}) field: . (identifier[5,9]{out1}))
+  ;;    \\n)
+  ;;
+  ;; Windows gives the right answer because it's using a newer libtree-sitter.dll:
+  ;;   (source_file
+  ;;    (field_expression object: (identifier[1,4]{foo}) . field: (identifier[5,9]{out1}))
+  ;;    \\n)
+
   (let* ((type (treesit-node-type node))
-         (field-name (treesit-node-field-name node))
          (children (treesit-node-children node))
          (named (treesit-node-check node 'named))
+         (field-name (when named
+                       ;; (treesit-node-field-name node) does not work. See
+                       ;;   https://github.com/tree-sitter/tree-sitter/pull/2104
+                       ;;   lib: fix ts_node_field_name_for_child implementation #2104
+                       ;; Thus need to search for the matching node to get the field name.
+                       (let ((parent (treesit-node-parent node))
+                             (child-field-names '())
+                             node-field-name)
+                         (when parent
+                           (dolist (child (treesit-node-children parent))
+                             (let ((field-name (treesit-node-field-name child)))
+                               (when field-name
+                                 (push field-name child-field-names))))
+                           (while (and (not node-field-name)
+                                       child-field-names)
+                             (let* ((child-field-name (car child-field-names))
+                                    (n (treesit-node-child-by-field-name parent child-field-name)))
+                               (when (equal n node)
+                                 (setq node-field-name child-field-name)))
+                             (setq child-field-names (cdr child-field-names)))
+                           node-field-name))))
          ;; Column number of the start of the field-name, aka start of
          ;; the whole node.
          (before-field-column (current-column))
