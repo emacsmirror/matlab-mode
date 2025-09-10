@@ -34,24 +34,33 @@ extract the first *.m file in it and validate it enters a MATLAB mode.
 Also, validate `matlab-is-matlab-file' returns t."
   (let* ((m-file "test-matlab-is-matlab-file-files/archive.zip")
          (zip-buf (get-file-buffer m-file))
-         m-file-major-mode
-         is-matlab-file)
+         (all-entered-a-matlab-mode 'unknown)
+         (all-are-matlab-file 'unknown))
     (when zip-buf
       (kill-buffer zip-buf))
     (setq zip-buf (find-file-noselect m-file))
 
     (with-current-buffer zip-buf
       (goto-char (point-min))
-      (re-search-forward "\\.m$")
-      (let ((m-buf (archive-extract)))
-        (setq m-file-major-mode major-mode)
-        (setq is-matlab-file (matlab-is-matlab-file))
-        (kill-buffer m-buf)))
+      (while (re-search-forward "\\.m$" nil t)
+        (let ((m-buf (archive-extract))
+              (is-a-matlab-mode (or (eq major-mode 'matlab-ts-mode)
+                                    (eq major-mode 'matlab-mode)))
+              (is-matlab-file (matlab-is-matlab-file)))
+          (message "test-matlab-is-matlab-file: checking %s" (buffer-file-name))
+          (when (or (eq all-entered-a-matlab-mode 'unknown)
+                    (not is-a-matlab-mode))
+            (setq all-entered-a-matlab-mode is-a-matlab-mode))
+
+          (when (or (eq all-are-matlab-file 'unknown)
+                    (not is-matlab-file))
+            (setq all-are-matlab-file is-matlab-file))
+          (kill-buffer m-buf)
+          (set-buffer zip-buf))))
 
     (kill-buffer zip-buf)
-    (should (or (eq m-file-major-mode 'matlab-ts-mode)
-                (eq m-file-major-mode 'matlab-mode)))
-    (should (eq is-matlab-file t))))
+    (should (eq all-entered-a-matlab-mode t))
+    (should (eq all-are-matlab-file t))))
 
 (provide 'test-matlab-is-matlab-file)
 ;;; test-matlab-is-matlab-file.el ends here
