@@ -82,6 +82,14 @@
 ;;          ./tests/test-NAME-files/test_file3_expected.EXT
 ;;          ./tests/test-NAME-files/test_file3.skip.txt       // content says why test is disabled
 ;;
+;;      If you want the *.skip.txt to only apply on a given system type, you add to it's contents
+;;         skip-system-type: <value>
+;;      The value to place is (symbol-name system-type).  This field can be repeated.  For example,
+;;      if a test fails on Windows and Mac, but passes elsewhere, you would add to *.skip.txt
+;;      contents:
+;;         skip-system-type: windows-nt
+;;         skip-system-type: darwin
+;;
 ;;   4. Execute-and-record tests
 ;;
 ;;      Within your ./tests/test-NAME-files/test_file1.lang you can place in comments
@@ -287,6 +295,16 @@ Optional TEST-DESCRIPTION defaults to \"this test input\"."
     (message "%s:1: warning: skipping %s because %s exists\n%s"
              test-file (or test-description "this test input") skip-file skip-file-contents)))
 
+(defun t-utils--skip-test-case (skip-file)
+  "Does SKIP-FILE say to skip the test case?
+See `t-utils-get-files' for details."
+  (with-temp-buffer
+    (insert-file-contents-literally skip-file)
+    (goto-char (point-min))
+    (if (re-search-forward "^[ \t]*skip-system-type:[ \t]*\\([-a-z0-9_]+\\)" nil t)
+        t
+      (goto-char (point-min))
+      (not (re-search-forward "^[ \t]*skip-system-type:" nil t)))))
 
 (defun t-utils-get-files (test-name base-regexp &optional skip-regexp file-to-use)
   "Return list of test input files, /abs/path/to/TEST-NAME-files/FILE.LANG.
@@ -296,7 +314,14 @@ file and the result is a list of one file.
 
 For each:   /abs/path/to/TEST-NAME-files/FILE.LANG
 if exists:  /abs/path/to/TEST-NAME-files/FILE.skip.txt
-then this test input file is skipped.
+then this test input file is skipped if the contents do not contain
+  skip-system-type: <value>
+or the contents contain
+  skip-system-type: <value>
+and value matches (symbol-name `system-type').  For example,
+to skip a test case on Windows and Mac you would add to *.skip.txt
+  skip-system-type: windows-nt
+  skip-system-type: darwin
 
 TEST-NAME is used to locate the TEST-NAME-files directory.
 
@@ -328,7 +353,8 @@ skipping all *_expected.lang files."
     (let ((files-not-skipped '()))
       (dolist (file files)
         (let ((skip-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.txt" file)))
-          (if (file-exists-p skip-file)
+          (if (and (file-exists-p skip-file)
+                   (t-utils--skip-test-case skip-file))
               (t-utils--skip-message file skip-file)
             ;; Not skipped. Note we ignore hidden link files, e.g. .#foo.lang
             (when (not (string-match-p "\\`\\.#" file))

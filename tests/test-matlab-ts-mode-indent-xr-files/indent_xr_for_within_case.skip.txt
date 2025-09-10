@@ -1,0 +1,7 @@
+skip-system-type: windows-nt
+  On Windows,
+    tests/test-matlab-ts-mode-indent-xr-files/indent_xr_for_within_case.m
+  passes when run interactively via
+    M-x ert
+    test-matlab-ts-mode-indent-xr
+  but fails when run via make (batch emacs).
