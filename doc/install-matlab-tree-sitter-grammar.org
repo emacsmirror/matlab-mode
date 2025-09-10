@@ -49,7 +49,7 @@ For Emacs 30, you need to build the MATLAB tree-sitter grammar for ABI 14 becaus
 version 14 of the tree-sitter application binary interface and as of Sep-2025, the latest
 tree-sitter ABI is 15. There are different methods for installing this.
 
-- Method 1 :: Install pre-built binaries.
+** Method 1 - Install pre-built binaries
 
   *Does not work* as of Sep-2025 because the grammar build is too old. Please use one of the other
   methods.
@@ -61,7 +61,7 @@ tree-sitter ABI is 15. There are different methods for installing this.
 
   and install matlab (and other languages tree-sitter shared objects if you'd like).
 
-- Method 2 :: Install from abi/14 branch.
+** Method 2 - Install from abi/14 branch
 
   + _Unix_
 
@@ -116,7 +116,7 @@ tree-sitter ABI is 15. There are different methods for installing this.
          cl /LD /I src\tree_sitter src\parser.c src\scanner.c /link /out:%HOME%\.emacs.d\tree-sitter\libtree-sitter-matlab.dll
        #+end_src
 
-- Method 3 :: Generate the grammar for ABI 14 and install.
+** Method 3 - Generate the grammar for ABI 14 and install
 
   1. Install C/C++ compiler if not installed. See Method 2 for tips on installing the C/C++ compiler.
 
