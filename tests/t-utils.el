@@ -1436,6 +1436,9 @@ This test:
     If optional INDENT-CHECKER function is provided, that is called with
     the temporary buffer in context after the `indent-region'.
 
+    The `indent-region' results is compared against baseline
+    NAME_expected.LANG.
+
     During the indent, `treesit--indent-verbose' is set to t and
     messages are captured.  The indented file plus the captured messages
     are compared against NAME_expected_msgs.LANG.  If the match fails or
@@ -1450,6 +1453,13 @@ This test:
     where we assume messages starting with \"-->\" are debugging
     message and the \"Indenting region\" are progress messages
     from `indent-region'.
+
+    On Windows the technique we are using to capture the messages
+    produced from treesit via `treesit--indent-verbose' does not work in
+    Emacs 30, so the message check (NAME_expected_msgs.LANG) is disabled
+    on Windows.  Therefore, be sure to run tests on Unix.
+
+    TODO: see if we can get message check working on Windows.
 
  2. Indent the unindented contents of lang-file when there are no
     error nodes in lang-file.  In a temporary buffer
@@ -1580,22 +1590,29 @@ To debug a specific indent test file
 
               (message "%s" start-msg)
 
-              ;; indent-region, collecting messages to create NAME_expected_msgs.LANG baseline
-              (let ((treesit--indent-verbose t))
+              ;; Indent
+              (pcase system-type
+                ;; indent-region w/o collecting the messages, see help above
+                ('windows-nt
+                 (indent-region (point-min) (point-max)))
 
-                (unwind-protect
-                    (progn
-                      (setq t-utils--test-indent-msgs (make-hash-table :test 'equal))
-                      (advice-add #'message :override #'t-utils--test-indent-msg-capture)
+                ;; indent-region, collecting messages to create NAME_expected_msgs.LANG baseline
+                (_ ;; assume a Unix variant, e.g. Linux
+                 (let ((treesit--indent-verbose t))
 
-                      (indent-region (point-min) (point-max))
+                   (unwind-protect
+                       (progn
+                         (setq t-utils--test-indent-msgs (make-hash-table :test 'equal))
+                         (advice-add #'message :override #'t-utils--test-indent-msg-capture)
 
-                      (setq indent-expected-msgs-error-msg
-                            (t-utils--test-indent-expected-msgs test-name lang-file)))
-                  ;; unwind-protect unwind forms
-                  (progn
-                    (setq t-utils--test-indent-msgs nil)
-                    (advice-remove #'message #'t-utils--test-indent-msg-capture))))
+                         (indent-region (point-min) (point-max))
+
+                         (setq indent-expected-msgs-error-msg
+                               (t-utils--test-indent-expected-msgs test-name lang-file)))
+                     ;; unwind-protect unwind forms
+                     (progn
+                       (setq t-utils--test-indent-msgs nil)
+                       (advice-remove #'message #'t-utils--test-indent-msg-capture))))))
 
               (when indent-checker
                 (funcall indent-checker))
