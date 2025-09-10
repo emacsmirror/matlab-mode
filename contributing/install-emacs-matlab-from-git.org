@@ -35,7 +35,7 @@
 
 
 When contributing or trying out newer changes, you'll need to install the Emacs-MATLAB-Mode package
-from git. The install below uses =~/emacs-workarea= as a work area. You can change that as desired.
+from git. The install below uses =~/emacs-projects= as a work area. You can change that as desired.
 
 * Consider creating a temporary home
 
@@ -44,12 +44,13 @@ location. This lets you develop Emacs MATLAB Mode in a clean environment. See [[
 
 * Install MATLAB tree-sitter grammar
 
-If using Emacs 30 or later you need to [[file:install-matlab-tree-sitter-grammar.org][install the MATLAB tree-sitter grammar]]. This is needed for the tests.
+If using Emacs 30 or later you need to [[file:doc/install-matlab-tree-sitter-grammar.org][install the MATLAB tree-sitter grammar]]. This is needed for
+the tests.
 
 * Build Emacs-MATLAB-Mode
 
 #+begin_src bash
-  cd ~/emacs-workarea
+  cd ~/emacs-projects
 
   git clone https://github.com/mathworks/Emacs-MATLAB-Mode.git
 
