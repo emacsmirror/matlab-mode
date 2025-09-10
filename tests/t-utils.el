@@ -131,7 +131,7 @@
 ;;        */
 ;;
 ;;      To create a test that contains a number of tests cases (*.lang files), you write a test
-;;      driver, say test-LANGAGE-ts-mode-indent-xr that invokes `t-utils-test-xr'.
+;;      driver, say test-LANGUAGE-ts-mode-indent-xr that invokes `t-utils-test-xr'.
 ;;
 ;;   5. Sweep tests
 ;;
@@ -2463,12 +2463,28 @@ each element is a cons pair (NAME . NODE)."
              (end-col (save-excursion
                         (goto-char end-point)
                         (1+ (current-column)))))
-        (push (format "%s node at line %d:%d to %d:%d (point %d to %d)"
+        (push (format "%s node at line %d:%d to %d:%d (point %d to %d)
+%5d | %s
+      | %s^
+"
                       (treesit-node-type error-node)
                       start-line start-col
                       end-line end-col
                       start-point
-                      end-point)
+                      end-point
+                      start-line
+                      ;; error line
+                      (buffer-substring (save-excursion
+                                          (goto-char start-point)
+                                          (line-beginning-position))
+                                        (save-excursion
+                                          (goto-char start-point)
+                                          (line-end-position)))
+                      ;; space padding for the pointer (^)
+                      (save-excursion
+                        (goto-char start-point)
+                        (let ((n-spaces (- start-point (line-beginning-position))))
+                          (make-string n-spaces ? ))))
               result-list)))
     (reverse result-list)))
 
@@ -2636,7 +2652,7 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
   ;; Consider foo.m containing:
   ;;   foo.out1
   ;; If we use (field-name (treesit-node-field-name node)) we get different answers
-  ;; dependening on the version of libtree-sitter.so or .dll. Adding in the let below
+  ;; depending on the version of libtree-sitter.so or .dll. Adding in the let below
   ;;   (message "\
   ;;   node: %S
   ;;   field-name: %S
@@ -2910,7 +2926,7 @@ To debug a specific -parser test file
 (provide 't-utils)
 ;;; t-utils.el ends here
 
-;; LocalWords:  lang defun alist eos treesit lf setq truename dolist nondirectory bos buf funcall
+;; LocalWords:  lang defun alist eos treesit lf setq truename dolist nondirectory bos buf funcall nt
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash
-;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's
+;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's darwin libtree
