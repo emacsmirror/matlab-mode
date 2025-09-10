@@ -267,6 +267,8 @@ These are items that will appear in the next ELPA release. These items are avail
 
 13. Fixed Emacs 30 lisp compiler warnings. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/89b585e6d935fd36176791caa66d4dad0405407b][89b585e]].
 
+14. Fixed [[https://github.com/mathworks/Emacs-MATLAB-Mode/issues/56][issue #56]], *.m files within archives, e.g. foo.zip containing bar.m
+
 * Release 6.3 Dec 8, 2024
 
 This is the first [[https://elpa.gnu.org/packages//matlab-mode.html][ELPA matlab-mode]] release (commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/tree/935137844e16551a5369f928d2591556be7fb9c2][9351378]]).  This release provides:
