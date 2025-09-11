@@ -1,0 +1,68 @@
+* MELPA
+
+** Configuration
+
+*** Information
+The logic is simple: there is a recipe file that specifies which subdirectories and files to use from the repository.
+[[file:~/ALLES/src/matlab-recip.patch][file:~/ALLES/src/matlab-recip.patch]]
+
+*** lisp
+#+begin_src elisp :noexport
+  (defconst package-build-default-files-spec
+   '("*.el" "lisp/*.el"
+     "dir" "*.info" "*.texi" "*.texinfo"
+     "doc/dir" "doc/*.info" "doc/*.texi" "doc/*.texinfo"
+     "docs/dir" "docs/*.info" "docs/*.texi" "docs/*.texinfo"
+     (:exclude
+      ".dir-locals.el" "lisp/.dir-locals.el"
+      "test.el" "tests.el" "*-test.el" "*-tests.el"
+      "lisp/test.el" "lisp/tests.el" "lisp/*-test.el" "lisp/*-tests.el"))
+   "Default value for `:files' attribute in recipes.")
+#+end_src
+
+*** Fork and set up
+To contribute to MELPA:
+1. Fork the melpa directory to your local repository using the provided button.
+2. Clone it locally.
+3. Edit and commit your changes.
+4. Test using `make recipes/matlab-mode`, comparing the generated tar file with your version.
+5. Push your changes.
+6. In the repository, use the highlighted yellow indicators to compare and submit a pull request.
+
+** Actualise
+Every push to our GitHub repository triggers an automatic release in MELPA, using the current date as the reference.
+
+Example
+#+begin_src
+  matlab-mode                    20250529.56    available    melpa    Major mode for MATLAB(R) dot-m files
+#+end_src
+
+* ELPA
+
+ELPA is configured.
+
+The current configuration resides in `=.elpaignore=`, which may be updated if the need arises.
+
+However, to issue a new release, the version number must be explicitly changed in the relevant file—currently `matlab.el`.
+
+Relevant lines:
+#+begin_src
+;;; matlab.el --- major mode for MATLAB(R) dot-m files -*- lexical-binding: t -*-
+
+;; Copyright (C) 1991-2025 Free Software Foundation, Inc.
+
+;; Version: 6.3
+#+end_src
+
+It is also prudent to update the header in `matlab-mode.el`:
+#+begin_src
+;;; matlab-mode.el --- Major mode for MATLAB(R) dot-m files -*- lexical-binding: t -*-
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
+;; Version: 6.3
+;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
+;; SPDX-License-Identifier: GPL-3.0-or-later
+#+end_src
+
+
