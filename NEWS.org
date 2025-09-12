@@ -3,169 +3,165 @@
 
 # Copyright 2025 Free Software Foundation, Inc.
 
-* Release 7.0 MMM DD, YYYY
+* Release 7.0 Sep 12, 2025
 
-These are items that will appear in the next ELPA release. These items are available from MELPA.
+1. New matlab-ts-mode.
 
-1. New matlab-ts-mode. Commit XXX.
+   matlab-ts-mode is a [[https://tree-sitter.github.io/tree-sitter][tree-sitter]], based MATLAB mode using
+   https://github.com/acristoffers/tree-sitter-matlab. This new MATLAB mode is a replacement
+   for the matlab-mode.
 
-* News for matlab-ts-mode
+   + Improved font-lock (semantic coloring) performance, making editing even more smooth.
 
-  matlab-ts-mode is a [[https://tree-sitter.github.io/tree-sitter][tree-sitter]], based MATLAB mode using
-  https://github.com/acristoffers/tree-sitter-matlab. This new MATLAB mode is a replacement
-  for the matlab-mode.
+     - More accurate fontification, we now identify language elements accurately and use
+       more faces to color them.
 
-  + Improved font-lock (semantic coloring) performance, making editing even more smooth.
+     - Fixes edge-case fontification issues when compared with matlab-mode
 
-    - More accurate fontification, we now identify language elements accurately and use
-      more faces to color them.
+       Create issue for this:
+         #+begin_src matlab-ts
+         x = [1 2; 3 4];
+         y = x''               % this is valid double transpose where matlab-mode gets it wrong
+         #+end_src
 
-    - Fixes edge-case fontification issues when compared with matlab-mode
+       Function identification, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/48
 
-      Create issue for this:
-        #+begin_src matlab-ts
-        x = [1 2; 3 4];
-        y = x''               % this is valid double transpose where matlab-mode gets it wrong
-        #+end_src
+     - In comments, we now highlight =FIXME=, =TODO=, and =XXX= markers.
 
-      Function identification, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/48
+     - Fixed fontification of "%% section" to require that the be the start of a comment and
+       on their own line.
 
-    - In comments, we now highlight =FIXME=, =TODO=, and =XXX= markers.
+     - Variable creation/assignment will be semantically colored.
 
-    - Fixed fontification of "%% section" to require that the be the start of a comment and
-      on their own line.
+     - Now fontify all MATLAB/Simulink factory builtin provided functions, class
+       methods/properties, enums, etc. Note, if you override a builtin function with a variable,
+       the variable creation/assignment will be colored as a variable, but the use will continue to
+       be a function.  To avoid this confusing state, use variable names that collide with builtin
+       items.
 
-    - Variable creation/assignment will be semantically colored.
+   + Improved indent
 
-    - Now fontify all MATLAB/Simulink factory builtin provided functions, class
-      methods/properties, enums, etc. Note, if you override a builtin function with a variable,
-      the variable creation/assignment will be colored as a variable, but the use will continue to
-      be a function.  To avoid this confusing state, use variable names that collide with builtin
-      items.
+     - Simplified the semantics for indent. The indent rules are described in matlab-ts-mode.el
+       for completeness.
 
-  + Improved indent
+     - Improved indent performance, making editing very smooth.
 
-    - Simplified the semantics for indent. The indent rules are described in matlab-ts-mode.el
-      for completeness.
+     - Fixes various edge-case indent issues, some are
 
-    - Improved indent performance, making editing very smooth.
+       + Fixed indent of function definition when ellipsis continuations are used.
 
-    - Fixes various edge-case indent issues, some are
+       + Auto-indentation of end, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/33
 
-      + Fixed indent of function definition when ellipsis continuations are used.
+       + Fixed cell and matrices indent alignment problems
 
-      + Auto-indentation of end, see https://github.com/mathworks/Emacs-MATLAB-Mode/issues/33
+   + There's no longer prompting if you want functions to have end's. This is now computed
+     automatically.
 
-      + Fixed cell and matrices indent alignment problems
+   + Improved fill-paragraph, =M-q=, which will now fill comments and when not in a comment, indent
+     the current function or statement.
 
-  + There's no longer prompting if you want functions to have end's. This is now computed
-    automatically.
+   + Accurate type of m-file detection, which improves matlab-sections-minor-mode.
 
-  + Improved fill-paragraph, =M-q=, which will now fill comments and when not in a comment, indent
-    the current function or statement.
+   + Change Log command now work with MATLAB *.m files.
 
-  + Accurate type of m-file detection, which improves matlab-sections-minor-mode.
+     Running =C-x 4 a= (add-change-log-entry-other-window) will now insert the name of the function
+     or classdef for the current point.
 
-  + Change Log command now work with MATLAB *.m files.
+   + Added support for =M-x outline-minor-mode=. Outline headings are =function='s, =classdef='s,
+     and "%% heading" comments.
 
-    Running =C-x 4 a= (add-change-log-entry-other-window) will now insert the name of the function
-    or classdef for the current point.
+   + On save fix of function/classdef name now handles buffer names that aren't valid MATLAB
+     identifiers.  On save fix of function/classdef name handles buffers not associated with files
+     on disk.  Also fixed cases where detection of scripts failed.
 
-  + Added support for =M-x outline-minor-mode=. Outline headings are =function='s, =classdef='s,
-    and "%% heading" comments.
+   + Improved handling of single quotes for =M-x electric-pair-mode=. These will automatically
+     pair
+     - Single quote when used to create a single-quoted string, but not when used elsewhere,
+       e.g. a matrix transpose.
+     - Double quotes for a double-quoted string.
+     - Parenthesis =()=, Vectors, =[]=, and Cells ={}=.
 
-  + On save fix of function/classdef name now handles buffer names that aren't valid MATLAB
-    identifiers.  On save fix of function/classdef name handles buffers not associated with files
-    on disk.  Also fixed cases where detection of scripts failed.
+   + We now highlight starting and ending string quote when the point is on the start or end single
+     or double quote.
 
-  + Improved handling of single quotes for =M-x electric-pair-mode=. These will automatically
-    pair
-    - Single quote when used to create a single-quoted string, but not when used elsewhere,
-      e.g. a matrix transpose.
-    - Double quotes for a double-quoted string.
-    - Parenthesis =()=, Vectors, =[]=, and Cells ={}=.
+   + Improved (more predictable) s-expression commands
 
-  + We now highlight starting and ending string quote when the point is on the start or end single
-    or double quote.
+     #+begin_example
+       C-M-f   Move forward by s-expression, forward-sexp
+               - If point is on the start of an s-expression, move to the end.
+               - If point is on the end of an s-expression, move to the start of the next s-expression
+                 at the same level. If there is no next s-expression, no movement occurs.
+       C-M-b   Move backward by s-expression, backward-sexp
+               - If point is on the end of an s-expression, move to the start.
+               - If point is on the start of an s-expression, move to the start of the prior s-expression
+                 at the same level. If there is no prior s-expression, no movement occurs.
+       C-M-SPC Mark s-expression, place point at beginning of sexp and mark at the end, mark-sexp
+       C-M-@   Same as C-M-SPC.
+       C-M-k   Kill s-expression, kill-sexp
+       C-M-t   Transpose s-expressions, transpose-sexp
+     #+end_example
 
-  + Improved (more predictable) s-expression commands
+   + Improved sentence commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
+     "Wrong number of arguments: (0 . 0), 1" and now works in matlab-ts-mode.
 
-    #+begin_example
-      C-M-f   Move forward by s-expression, forward-sexp
-              - If point is on the start of an s-expression, move to the end.
-              - If point is on the end of an s-expression, move to the start of the next s-expression
-                at the same level. If there is no next s-expression, no movement occurs.
-      C-M-b   Move backward by s-expression, backward-sexp
-              - If point is on the end of an s-expression, move to the start.
-              - If point is on the start of an s-expression, move to the start of the prior s-expression
-                at the same level. If there is no prior s-expression, no movement occurs.
-      C-M-SPC Mark s-expression, place point at beginning of sexp and mark at the end, mark-sexp
-      C-M-@   Same as C-M-SPC.
-      C-M-k   Kill s-expression, kill-sexp
-      C-M-t   Transpose s-expressions, transpose-sexp
-    #+end_example
+     #+begin_example
+       M-e      Move forward to next end of sentence, forward-sentence
+       M-a      Move backward to start of sentence, backward-sentence
+       M-k      Kill from point to end of sentence, kill-sentence
+       C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
+     #+end_example
 
-  + Improved sentence commands. Also fixes bugs, e.g. M-a in old matlab-mode can result in error
-    "Wrong number of arguments: (0 . 0), 1" and now works in matlab-ts-mode.
+   + Some older matlab-mode menu items and keybindings have been removed because there are
+     standard replacements. Examples:
 
-    #+begin_example
-      M-e      Move forward to next end of sentence, forward-sentence
-      M-a      Move backward to start of sentence, backward-sentence
-      M-k      Kill from point to end of sentence, kill-sentence
-      C-x DEL  Kill back from point to start of sentence, backward-kill-sentence
-    #+end_example
+     - To comment or uncomment code use select the code and type =M-;= which is the standard
+       way to do this in Emacs. The older =C-c ;= and =C-c :" matlab only comment and uncomment
+       commands no longer exist.
 
-  + Some older matlab-mode menu items and keybindings have been removed because there are
-    standard replacements. Examples:
+     - Completion - we used to have =M-TAB= to complete symbol and this has been replaced by
+       using LSP mode.
 
-    - To comment or uncomment code use select the code and type =M-;= which is the standard
-      way to do this in Emacs. The older =C-c ;= and =C-c :" matlab only comment and uncomment
-      commands no longer exist.
+   + matlab-shell now has one correct ways of running code sections, via menu =MATLAB -> Code
+     Sections -> Run Section (C-c C-<return>)= or and the older =MATLAB -> Run Code Section=
+     (matlab-shell-run-code-section) because it was duplication and wasn't correctly handling all
+     cases.
 
-    - Completion - we used to have =M-TAB= to complete symbol and this has been replaced by
-      using LSP mode.
+   + Builtin items such as namespaces, functions, classes, enumerations, etc. provided by the
+     MATLAB/Simulink products are shown in =font-lock-builtin-face=. Using a different face for
+     builtins vs items you created improves readability. It also helps to avoid mistakes where you
+     override a builtin with a variable. The number of builtin items in the MATLAB/Simulink
+     R2025a.update1 product family is 153,627.
 
-  + matlab-shell now has one correct ways of running code sections, via menu =MATLAB -> Code
-    Sections -> Run Section (C-c C-<return>)= or and the older =MATLAB -> Run Code Section=
-    (matlab-shell-run-code-section) because it was duplication and wasn't correctly handling all
-    cases.
+   + When creating a variable that matches a builtin item
+     matlab-ts-mode-variable-override-builtin-face. This makes it easy to see when you are
+     accidently shadowing a builtin function, class, etc. For example, in the following
+     we create a lines variable that shadows the MATLAB built-in lines function:
 
-  + Builtin items such as namespaces, functions, classes, enumerations, etc. provided by the
-    MATLAB/Simulink products are shown in =font-lock-builtin-face=. Using a different face for
-    builtins vs items you created improves readability. It also helps to avoid mistakes where you
-    override a builtin with a variable. The number of builtin items in the MATLAB/Simulink
-    R2025a.update1 product family is 153,627.
+      #+begin_src matlab
+        lines = ['line1', 'line2']
+      #+end_src
 
-  + When creating a variable that matches a builtin item
-    matlab-ts-mode-variable-override-builtin-face. This makes it easy to see when you are
-    accidently shadowing a builtin function, class, etc. For example, in the following
-    we create a lines variable that shadows the MATLAB built-in lines function:
+    Using a non-builtin name for a variable results in the standard =font-lock-variable-name-face=
+    being used:
 
-     #+begin_src matlab
-       lines = ['line1', 'line2']
-     #+end_src
+      #+begin_src matlab
+        myLines = ['line1', 'line2']
+      #+end_src
 
-   Using a non-builtin name for a variable results in the standard =font-lock-variable-name-face=
-   being used:
+   + MLint MATLAB code analyzer integration via flycheck. Flycheck is an improved on-the-fly
+     error reporting system when compared with the mlint integration in the older matlab-mode.
 
-     #+begin_src matlab
-       myLines = ['line1', 'line2']
-     #+end_src
+   + New "MATLAB -> View mlint code analyzer messages" menu item.
 
-  + MLint MATLAB code analyzer integration via flycheck. Flycheck is an improved on-the-fly
-    error reporting system when compared with the mlint integration in the older matlab-mode.
+   + New "MATLAB -> View tree-sitter parse errors" menu item that lets one inspect
+     the parse errors found by the MATLAB tree-sitter backing the new matlab-ts-mode.
 
-  + New "MATLAB -> View mlint code analyzer messages" menu item.
+   + New "MATLAB -> Jump to function" menu item.
 
-  + New "MATLAB -> View tree-sitter parse errors" menu item that lets one inspect
-    the parse errors found by the MATLAB tree-sitter backing the new matlab-ts-mode.
+   + New "MATLAB -> Check setup" menu item that helps validate flycheck and lsp-mode are
+     setup correctly.
 
-  + New "MATLAB -> Jump to function" menu item.
-
-  + New "MATLAB -> Check setup" menu item that helps validate flycheck and lsp-mode are
-    setup correctly.
-
-  + New "MATLAB -> Editing -> ..." submenu that contains helpful editing commands.
+   + New "MATLAB -> Editing -> ..." submenu that contains helpful editing commands.
 
 2. Added [[file:doc/matlab-netshell-for-windows.org][doc/matlab-netshell-for-windows.org]]. Commit [[https://github.com/mathworks/Emacs-MATLAB-Mode/commit/b0222ac2c067292b43fba91a60b39a262c6149d3][b0222ac]].
 
