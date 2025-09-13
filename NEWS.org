@@ -3,7 +3,11 @@
 
 # Copyright 2025 Free Software Foundation, Inc.
 
-* Release 7.0 Sep 12, 2025
+* Release 7.0.1 Sep 13, 2025
+
+1. emacsrunregion fix, https://github.com/mathworks/Emacs-MATLAB-Mode/pull/55
+
+* Release 7.0.0 Sep 12, 2025
 
 1. New matlab-ts-mode.
 
