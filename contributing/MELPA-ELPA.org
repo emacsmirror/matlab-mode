@@ -70,7 +70,7 @@ It is also prudent to update the header in `matlab-mode.el`:
 
 Updates to Emacs are processed using:
 
-#+begin_src emacs-lisp
+#+begin_src bash
   git clone --single-branch https://git.sv.gnu.org/git/emacs/elpa.git
   cd elpa
   make                       # Setup the infrastructure
