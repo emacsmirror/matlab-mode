@@ -66,3 +66,14 @@ It is also prudent to update the header in `matlab-mode.el`:
 #+end_src
 
 
+** ELPA Check
+
+Updates to Emacs are processed using:
+
+#+begin_src emacs-lisp
+  git clone --single-branch https://git.sv.gnu.org/git/emacs/elpa.git
+  cd elpa
+  make                       # Setup the infrastructure
+  make packages/matlab-mode  # Create a worktree of the package
+  make build/matlab-mode     # Build the tarballs into archive(-devel)/
+#+end_src
