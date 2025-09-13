@@ -1,7 +1,7 @@
 #+startup: showall
 #+options: toc:nil
 
-# Copyright 2025 Free Software Foundation, Inc.
+# Copyright (C) 2025 Free Software Foundation, Inc.
 
 * Release 7.0.1 Sep 13, 2025
 

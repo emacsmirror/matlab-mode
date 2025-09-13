@@ -1,6 +1,6 @@
 ;;; metest.el --- Testing suite for MATLAB Emacs -*- lexical-binding: t -*-
 
-;; Copyright 2019-2024 Eric Ludlam
+;; Copyright (C) 2019-2024 Eric Free Software Foundation, Inc.
 ;;
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published

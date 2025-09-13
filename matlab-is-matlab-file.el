@@ -4,7 +4,7 @@
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; Copyright 1991-2025 Free Software Foundation, Inc.
+;; Copyright (C) 1991-2025 Free Software Foundation, Inc.
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as

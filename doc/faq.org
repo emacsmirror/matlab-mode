@@ -3,7 +3,7 @@
 #+startup: showall
 #+options: toc:nil
 
-# Copyright 2025 Free Software Foundation, Inc.
+# Copyright (C) 2025 Free Software Foundation, Inc.
 
 * Q: How do I customize matlab-mode?
 

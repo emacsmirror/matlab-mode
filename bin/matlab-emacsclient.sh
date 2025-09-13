@@ -15,7 +15,7 @@
 #   checkMacApp(applicationName, 'emacs') of edit.m to return false, therefore cannot use
 #   emacsclient.sh and therefore use matlab-emacsclient.sh
 
-# Copyright 2020-2025 Free Software Foundation Inc.
+# Copyright (C) 2020-2025 Free Software Foundation Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

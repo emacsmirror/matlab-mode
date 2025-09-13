@@ -1,6 +1,6 @@
 ;;; doc/.dir-locals.el ---
 ;;
-;; Copyright 2025 Free Software Foundation
+;; Copyright (C) 2025 Free Software Foundation
 ;;
 ;; Author: John Ciolfi <ciolfi@mathworks.com>
 ;;

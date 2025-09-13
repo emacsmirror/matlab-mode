@@ -1,7 +1,7 @@
 #+startup: showall
 #+options: toc:nil
 
-# Copyright 2025 Free Software Foundation, Inc.
+# Copyright (C) 2025 Free Software Foundation, Inc.
 
 * Contributing
 
@@ -79,11 +79,12 @@ haven't gotten to yet!
 
 4. Copyrights and license notification. See https://www.gnu.org/licenses/gpl-howto.en.html.
 
-   Copyrights are of the form: "Copyright /Year/ Free Software Foundation, Inc." or when work is
-   done over multiple years, "Copyright /StartYear-EndYear/ Free Software Foundation, Inc.". Do not
-   use "(c)" characters which is a abbreviation for copyright. Writing "Copyright (c) ..." is like
-   writing "Copyright Copyright ...". See https://www.copyright.gov/circs/circ03.pdf.  After the
-   copyright, in source code files, there should be a license notification.
+   Copyrights are of the form: "Copyright (C) /Year/ Free Software Foundation, Inc." or when work is
+   done over multiple years, "Copyright (C) /StartYear-EndYear/ Free Software Foundation, Inc.".
+   Note we add the extra "(C)" characters becuase this is an Emacs convention. The extra characters
+   are not required and is like writing "Copyright Copyright ...". See
+   https://www.copyright.gov/circs/circ03.pdf.  After the copyright, in source code files, there
+   should be a license notification.
 
    - If a copyright exists, increment the end year as needed. The start year should remian the
      unchanged.

@@ -3,7 +3,7 @@
 #+startup: showall
 #+options: toc:nil
 
-# Copyright 2025 Free Software Foundation, Inc.
+# Copyright (C) 2025 Free Software Foundation, Inc.
 
 matlab-mode and tlc-mode provides [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][imenu]] support which lets you jump quickly to functions in the
 current ~*.m~ file you are visiting.  Typing ~M-g i~ (or ~M-x imenu~) will prompt you in the
