@@ -79,6 +79,26 @@ haven't gotten to yet!
 
 *Again, thanks for contributing, and we look forward to your issues and pull requests!*
 
+* Version Numbers
+
+This project uses semantic versioning, see
+
+- https://www.geeksforgeeks.org/software-engineering/introduction-semantic-versioning/
+- https://semver.org/
+- https://en.wikipedia.org/wiki/Software_versioning
+
+Versions are of the form /MAJOR.MINOR.PATCH/
+
+- Increment the /MAJOR/ version number when there's behavior or other changes that impact the way
+  you use the MATLAB Emacs package.  Major updates are typically done on another branch and then
+  merged into default.
+- Increment the /MINOR/ version when there are new minor features that don't change the
+  way you use the MATLAB Emacs package.
+- Increment the /PATCH/ version when there is a backwards compatible bug fix
+
+The MATLAB Emacs Package is this repository that contains matlab-ts-mode, matlab-mode, tlc-mode,
+and more.
+
 * Maintainers
 
 Maintainers (those with write access) can either use branches, forks, or commit directly
@@ -92,6 +112,6 @@ to the primary ~default~ branch.
 
 3. Direct commits. For simple stuff, maintainers can directly submit to the ~default~ branch.
 
-[[oub@mat.ucm.es][Uwe Brauer]] is the primary maintainer and tries to look at all significant changes. He however prefers direct commits or branches.
+[[mailto:oub@mat.ucm.es][Uwe Brauer]] is the primary maintainer and tries to look at all significant changes. He however prefers direct commits or branches.
 
 # LocalWords:  showall md LF flycheck Sure's oub ucm Uwe Brauer
