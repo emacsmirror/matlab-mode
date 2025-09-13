@@ -1,38 +1,31 @@
 ;;; mlgud.el --- parts of gud.el for matlab-shell -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024 Free Software Foundation, Inc.
-
-;; This contains parts of gud.el prefixed with matlab and modified to support `matlab-shell'. gud
-;; does not support multiple debuggers. For matlab-shell, we'd need to be able to debug MATLAB in
-;; `matlab-shell', while in another buffer uses `gud-gdb' or `gdb' from gud.el to debug C++ code.
-
-;; Emacs 24 gud.el info:
-
-;;; gud.el --- Grand Unified Debugger mode for running GDB and other debuggers
-
-;; Copyright (C) 1992-1996, 1998, 2000-2015 Free Software Foundation,
-;; Inc.
-
-;; Author: Eric S. Raymond <esr@snark.thyrsus.com>
-;; Maintainer: emacs-devel@gnu.org
-;; Keywords: unix, tools
-
-;; This file is part of GNU Emacs.
-
+;; Copyright 1992-2025 Free Software Foundation, Inc.
+;;
 ;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
-
+;;
 ;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-
+;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+
+;; This contains parts of gud.el prefixed with matlab and modified to support `matlab-shell'.  gud
+;; does not support multiple debuggers.  For matlab-shell, we'd need to be able to debug MATLAB in
+;; `matlab-shell', while in another buffer uses `gud-gdb' or `gdb' from gud.el to debug C++ code.
+
+;; Emacs 24 gud.el info:
+
+;; Author: Eric S. Raymond <esr@snark.thyrsus.com>
+;; Maintainer: emacs-devel@gnu.org
+;; Keywords: unix, tools
 
 ;; The ancestral gdb.el was by W. Schelter <wfs@rascal.ics.utexas.edu>.
 ;; It was later rewritten by rms.  Some ideas were due to Masanobu.  Grand

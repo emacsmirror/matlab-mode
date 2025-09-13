@@ -1,14 +1,11 @@
 ;;; mlint.el --- run mlint in a MATLAB buffer -*- lexical-binding: t -*-
 
-;; Copyright (C) 2002-2025 Free Software Foundation, Inc.
-
 ;; Author: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Maintainer: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Created: June 25, 2002
 
-(defvar mlint-version "1.3.2"
-  "The current version of mlint minor mode.")
-
+;; Copyright 2002-2025 Free Software Foundation, Inc.
+;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 3, or (at your option)
@@ -29,6 +26,9 @@
 ;;
 
 ;;; Code:
+
+(defvar mlint-version "1.3.2"
+  "The current version of mlint minor mode.")
 
 (require 'matlab)
 (require 'matlab--access)

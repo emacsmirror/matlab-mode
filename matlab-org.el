@@ -1,8 +1,8 @@
 ;;; matlab-org.el --- enable use of MATLAB with org-mode -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024 Free Software Foundation, Inc.
-
 ;; Author: John Ciolfi <john.ciolfi.32@gmail.com>
+
+;; Copyright 2024-2025 Free Software Foundation, Inc.
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to
 ;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-;;
+
 ;;; Commentary:
 ;;
 ;; Enable use of org-mode with MATLAB for creation of scientific papers, thesis, etc.

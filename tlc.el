@@ -1,28 +1,24 @@
 ;;; tlc --- Major mode for editing tlc files -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024 Free Software Foundation, Inc.
-
 ;; Author: Eric M. Ludlam <eludlam@mathworks.com>
 ;; Keywords: tlc
 ;; X-Abstract: Major mode for editing tlc files
 
-(defvar tlc-version "1.3"
-  "The current version of TLC mode.")
-
-;; This program is derived from free software; you can redistribute it
-;; and/or modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 3, or
-;; (at your option) any later version.
+;; Copyright 1998-2024 Free Software Foundation, Inc.
 ;;
-;; This program is distributed in the hope that it will be useful,
+;; This file is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published
+;; by the Free Software Foundation, either version 3 of the License,
+;; or (at your option) any later version.
+;;
+;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-;;
+;; along with this file.  If not, see <https://www.gnu.org/licenses/>.
+
 ;;; Commentary:
 ;;
 ;;  This is a major mode for editing Target Language Compiler, TLC, programs.
@@ -109,8 +105,8 @@
 ;;      will have the "2 + ..." and "3" line shown using tlc-font-lock-output-code.
 ;;      To fix, we probably need to use Multiline Font Lock constructs.
 
-;;; History:
-;;
+;; History:
+;; --------
 ;;  10Sep1998 by Eric M.  Ludlam <eludlam@mathworks.com>
 ;;    Posted First revision onto the FTP site.
 ;;
@@ -120,9 +116,13 @@
 ;;    - added autoload cookies.
 ;;    - CVS storage elsewhere without changing the version number.
 ;;
-;;  Recent history is in the ChangeLog and the matlab-emacs repository.
+;;  Recent history is in the repository commits.
 
 ;;; Code:
+
+(defvar tlc-version "1.3"
+  "The current version of TLC mode.")
+
 (defun tlc-version ()
   "Display the current version of TLC mode."
   (interactive)

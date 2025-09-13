@@ -1,12 +1,12 @@
 ;;; matlab--access.el --- MATLAB access -*- lexical-binding: t -*-
 
-;; Copyright 2001-2025 Free Software Foundation, Inc.
-;;
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
 ;; Author: John Ciolfi <john.ciolfi.32@gmail.com>
 
+;; Copyright 2001-2025 Free Software Foundation, Inc.
+;;
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
 ;; by the Free Software Foundation, either version 3 of the License,

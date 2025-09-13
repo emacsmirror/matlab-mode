@@ -1,10 +1,10 @@
 ;;; matlab-sections.el --- Support for code sections in matlab mode -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024-2025 Free Software Foundation, Inc.
-
 ;; Author: Nidish Narayanaa Balaji <nidbid@gmail.com>, John Ciolfi <john.ciolfi.32@gmail.com>, Eric Ludlam <zappo@gnu.org>
 ;; Created: 2024-05-14
 ;; Renamed: 2024-10-22
+
+;; Copyright 2024-2025 Free Software Foundation, Inc.
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-;;
+
 ;;; Commentary:
 ;;
 ;; This provides `matlab-sections-minor-mode' contains utilities for working with MATLAB code
