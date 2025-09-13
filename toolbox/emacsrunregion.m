@@ -44,8 +44,7 @@ function emacsrunregion(file, startchar, endchar)
 
     % See if startchar and endchar are on the first column of a lines and if so display that. Note,
     % fileContents can contain POSIX newlines (LF) or be Windows CRFL (13, 10) line endings.
-    if (startchar == 1 || fileContents(startchar-1) == newline) && ...
-            regexp(fileContents(endchar), '[\r\n]', 'once')
+    if (startchar == 1 || fileContents(startchar-1) == newline) && ~isempty(regexp(fileContents(endchar), '[\r\n]', 'once'))
         startLineNum = length(strfind(fileContents(1:startchar), newline)) + 1;
         endLineNum = length(strfind(fileContents(1:endchar), newline));
         if fileContents(endchar) == 13 || endchar == length(fileContents)
