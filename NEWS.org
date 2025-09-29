@@ -3,6 +3,17 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.1.0 Sep 29, 2025
+
+1. Improved matlab-ts-mode imenu. The imenu index now creates indices for code sections defined by
+   "%% heading comments". In addition, the menu was updated to have structure:
+
+   - Class
+   - Function
+   - Section
+
+   Previously, imenu was a flat list without code sections index entries.
+
 * Release 7.0.1 Sep 13, 2025
 
 1. emacsrunregion fix, https://github.com/mathworks/Emacs-MATLAB-Mode/pull/55
@@ -296,4 +307,4 @@ prior to sourceforge no longer exist.
 See older history [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/2ff6f96294353f3f17757a2522a64c427929ff01/ChangeLog][ChangeLog]], [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/528a4fc79426adc7cf9a484d231dec7defd9c5f4/ChangeLog.old1][ChangeLog.old1]], [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/528a4fc79426adc7cf9a484d231dec7defd9c5f4/ChangeLog.old2][ChangeLog.old2]], and older [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/b7e170ee37a23b6852e461772de1c4e986bb6833/NEWS.org][NEWS.org]].
 
 # LocalWords:  showall ELPA MELPA fontification fontify sexp SPC LSP builtins MLint flycheck lsp
-# LocalWords:  netshell emacsinit imenu matlabls netsell sourceforge MMM YYYY
+# LocalWords:  netshell emacsinit imenu matlabls netsell sourceforge MMM YYYY emacsrunregion

@@ -1,0 +1,6 @@
+Function / imenu_foobar1 - point 21
+Function / foobar2 - point 59
+Function / gen_pulse_avg_lin_data - point 91
+Function / gen_pulse_avg_log_data - point 137
+Function / gen_beamsharpened_data - point 183
+Function / foobar3 - point 229

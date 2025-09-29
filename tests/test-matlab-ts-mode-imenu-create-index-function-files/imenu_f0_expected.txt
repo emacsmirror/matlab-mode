@@ -1,0 +1,11 @@
+Function / imenu_f0 - point 21
+Function / f1 - point 164
+Function / f2 - point 214
+Function / f3 - point 249
+Function / f3.f5 - point 345
+Function / f3.f5.F6 - point 403
+Function / f4 - point 476
+Function / f4.f5 - point 561
+Function / F6 - point 657
+Function / f7 - point 714
+Function / foo123567890123567890123567890123567890123567890 - point 760

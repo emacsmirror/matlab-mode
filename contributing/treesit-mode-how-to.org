@@ -1585,8 +1585,8 @@ tree-sitter parse tree and generate the index.
 
 ** Test: IMenu
 
-We leverage =t-utils-test-imenu= from t-utils.el to create tests similar to the above test
-patterns.
+We leverage =t-utils-test-imenu-create-index-function= from t-utils.el to create tests similar to
+the above test patterns.
 
 * Setup: Outline, treesit-outline-predicate
 

@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 7.0.1
+;; Version: 7.1.0
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -194,7 +194,7 @@ This will also add \"% \" for documentation comments.  For example,
 
 ;;; Global variables used in multiple code ";;; sections"
 
-(defvar matlab-ts-mode--comment-heading-re
+(defvar matlab-ts-mode--comment-section-heading-re
   "^[ \t]*\\(%%\\(?:[ \t].+\\)?\\)$"
   "Regexp matching \"%% headings\" lines.")
 
@@ -558,7 +558,7 @@ start-point and end-point."
   (save-excursion
     (goto-char (treesit-node-start comment-node))
     (beginning-of-line)
-    (when (looking-at matlab-ts-mode--comment-heading-re)
+    (when (looking-at matlab-ts-mode--comment-section-heading-re)
       (let ((heading-start (match-beginning 1))
             (heading-end (match-end 1)))
         (treesit-fontify-with-override heading-start heading-end
@@ -699,7 +699,7 @@ Example, disp variable is overriding the disp builtin function:
       (:match "\\`%#.+\\'" @matlab-ts-mode-pragma-face)) ;; %#pragma's
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_heading.m
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_sections.m
-     ((comment) @matlab-ts-mode--comment-heading-capture) ;; %% comment heading
+     ((comment) @matlab-ts-mode--comment-heading-capture) ;; %% comment section heading
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_no_doc_help.m
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_fcn.m
      (function_definition (comment) @matlab-ts-mode--doc-comment-capture) ;; doc help comments
@@ -1660,7 +1660,7 @@ incomplete statements where NODE is nil and PARENT is line_continuation."
                  (when (looking-at "(")
                    id-node))
                (treesit-node-parent anchor-node))
-      ))))
+           ))))
 
 (defvar matlab-ts-mode--i-next-line-pair)
 
@@ -2538,7 +2538,7 @@ Example:
      (,#'matlab-ts-mode--i-row-matcher
       ,#'matlab-ts-mode--i-row-anchor
       0)
-      
+
      ;; I-Rule:  a = [   ...    |    a = { ...
      ;; <TAB>          2 ...    |          2 ...
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_matrix.m
@@ -2750,20 +2750,20 @@ used to do the movement."
 
       ;; Find inner statement node
       (while (and search-node
-                    (let ((type (treesit-node-type search-node)))
-                      (when (equal type "ERROR")
-                        ;; No movement if we have a syntax error
-                        (unless no-message
-                          (message "Not in statement due to syntax error"))
-                        (cl-return-from matlab-ts-mode-beginning-of-statement))
-                      (not (string-match-p statement-type-re type))))
-          (setq search-node (treesit-node-parent search-node)))
+                  (let ((type (treesit-node-type search-node)))
+                    (when (equal type "ERROR")
+                      ;; No movement if we have a syntax error
+                      (unless no-message
+                        (message "Not in statement due to syntax error"))
+                      (cl-return-from matlab-ts-mode-beginning-of-statement))
+                    (not (string-match-p statement-type-re type))))
+        (setq search-node (treesit-node-parent search-node)))
 
-        (when search-node
-          (setq statement-node search-node)
-          (if find-outermost-statement
-              (setq search-node (treesit-node-parent search-node))
-            (setq search-node nil))))
+      (when search-node
+        (setq statement-node search-node)
+        (if find-outermost-statement
+            (setq search-node (treesit-node-parent search-node))
+          (setq search-node nil))))
 
     (when (not statement-node)
       (unless no-message
@@ -2976,7 +2976,11 @@ This will return alist of functions and classes in the current buffer:
    \\='((\"function1\" . start-point1)
      (\"function2\" . start-point2)"
   (let ((root (treesit-buffer-root-node))
-        (index '()))
+        class-index
+        fcn-index
+        section-index)
+
+    ;; Find classdef and function entries
     (treesit-search-subtree
      root
      (lambda (node)
@@ -2984,11 +2988,9 @@ This will return alist of functions and classes in the current buffer:
          (pcase type
 
            ("class_definition"
-            (let* ((name (concat
-                          "-classdef:"
-                          (treesit-node-text (treesit-node-child-by-field-name node "name"))))
+            (let* ((name (treesit-node-text (treesit-node-child-by-field-name node "name")))
                    (start-pt (treesit-node-start node)))
-              (push `(,name . ,start-pt) index)))
+              (push `(,name . ,start-pt) class-index)))
 
            ("function_definition"
             (let* ((name-node (treesit-node-child-by-field-name node "name"))
@@ -3009,9 +3011,38 @@ This will return alist of functions and classes in the current buffer:
                          (treesit-node-text (treesit-node-child-by-field-name parent "name"))))
                     (setq name (concat parent-name "." name))))
                 (setq parent (treesit-node-parent parent)))
-              (push `(,name . ,start-pt) index))))
+              (push `(,name . ,start-pt) fcn-index))))
          nil)))
-    index))
+
+    (setq class-index (reverse class-index))
+    (setq fcn-index (reverse fcn-index))
+
+    ;; comment section headings
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward matlab-ts-mode--comment-section-heading-re nil t)
+        (let* ((heading-start (match-beginning 1))
+               (heading (match-string 1))
+               (start-point (let ((node (treesit-node-at heading-start)))
+                              (goto-char (treesit-node-end node))
+                              ;; (when (looking-at "[ \t\r\n]")
+                              ;;   (re-search-forward "[^ \t\r\n]" nil t))
+                              (point))))
+          (setq heading (replace-regexp-in-string "^%%[ \t]*" "" (string-trim heading)))
+          (when (string= heading "")
+            (setq heading (format "Section at line %d" (line-number-at-pos))))
+          (push `(,heading . ,start-point) section-index)))
+      (setq section-index (reverse section-index)))
+
+    ;; Return the index
+    (let (index)
+      (when section-index
+        (push `("Section" . ,section-index) index))
+      (when fcn-index
+        (push `("Function" . ,fcn-index) index))
+      (when class-index
+        (push `("Class" . ,class-index) index))
+      index)))
 
 (defun matlab-ts-mode--imenu-setup ()
   "Configure imenu to use tree-sitter, even when lsp-mode is available."
@@ -3042,7 +3073,7 @@ Returns t if tree-sitter NODE defines an outline heading."
              (save-excursion
                (goto-char (treesit-node-start node))
                (beginning-of-line)
-               (looking-at matlab-ts-mode--comment-heading-re t))))))
+               (looking-at matlab-ts-mode--comment-section-heading-re t))))))
 
 ;;; Save hooks
 
@@ -3630,8 +3661,8 @@ provided."
 ;; so the mode line indicator, "matlab-ts-parse-errors" is slightly shorter
 
 (define-compilation-mode matlab-ts-parse-errors-mode "m-ts-parse-errors"
-  "The variant of `compilation-mode' used for `matlab-ts-view-parse-errors'."
-  (setq-local matlab-ts-parse-errors-compilation--current-buffer (current-buffer)))
+                         "The variant of `compilation-mode' used for `matlab-ts-view-parse-errors'."
+                         (setq-local matlab-ts-parse-errors-compilation--current-buffer (current-buffer)))
 
 (defun matlab-ts-view-parse-errors (&optional no-pop-to-buffer)
   "View parse errors in matlab-ts-mode current buffer.
@@ -4065,66 +4096,66 @@ so configuration variables of that mode, do not affect this mode.
       (setq msg (concat msg "\
 - [x] Package company is installed (needed for TAB completions)\n")))
 
-  ;;--------------------;;
-  ;; mlint and flycheck ;;
-  ;;--------------------;;
-  (cond
-   ((not matlab-ts-mode-enable-mlint-flycheck)
-    (setq msg (concat msg "\
+    ;;--------------------;;
+    ;; mlint and flycheck ;;
+    ;;--------------------;;
+    (cond
+     ((not matlab-ts-mode-enable-mlint-flycheck)
+      (setq msg (concat msg "\
 - MATLAB mlint is disabled.  To enable,
   M-x customize-variable RET matlab-ts-mode-enable-mlint-flycheck\n")))
 
-   ((not (featurep 'flycheck))
-    (setq msg (concat msg "\
+     ((not (featurep 'flycheck))
+      (setq msg (concat msg "\
 - [ ] Package flycheck is not installed (needed to view code issues as you type).
       To install, see C-h v matlab-ts-mode-enable-mlint-flycheck\n")))
 
-   ((not (matlab--get-mlint-exe))
-    (setq msg (concat msg "\
+     ((not (matlab--get-mlint-exe))
+      (setq msg (concat msg "\
 - [ ] MATLAB mlint is not found, to fix place /path/to/MATLAB-install on your system path\n")))
 
-   ((not flycheck-mode)
-    (setq msg (concat msg "\
+     ((not flycheck-mode)
+      (setq msg (concat msg "\
 - [ ] M-x flycheck-mode is not enabled.  A fix is to add to ~/.emacs
       (global-flycheck-mode)\n")))
 
-   (t
-    (setq msg (concat msg (format "\
+     (t
+      (setq msg (concat msg (format "\
 - [x] matlab-mlint flycheck is setup.
       Use \"%s\" to view mlint errors or click FlyC on the mode line.\n"
-                      (substitute-command-keys "\\[flycheck-list-errors]"))))))
+                                    (substitute-command-keys "\\[flycheck-list-errors]"))))))
 
-  ;;----------;;
-  ;; lsp-mode ;;
-  ;;----------;;
+    ;;----------;;
+    ;; lsp-mode ;;
+    ;;----------;;
 
-  ;; TODO [future] check lsp-matlab configuration, location of matlabls index.js
-  ;; TODO [future] check that we have latest matlabls version
-  ;; TODO [future] add auto-install of the language server, perhaps using the vscode bundle?
+    ;; TODO [future] check lsp-matlab configuration, location of matlabls index.js
+    ;; TODO [future] check that we have latest matlabls version
+    ;; TODO [future] add auto-install of the language server, perhaps using the vscode bundle?
 
-  (cond
-   ((not (featurep 'lsp-mode))
-    (setq msg (concat msg "\
+    (cond
+     ((not (featurep 'lsp-mode))
+      (setq msg (concat msg "\
 - [ ] Package lsp-mode is not installed.
       lsp-mode provides code navigation, symbol rename, and more.
       To install, see
          https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/\
 matlab-language-server-lsp-mode.org\n")))
 
-   ((and (not (member 'lsp          matlab-ts-mode-hook))
-         (not (member 'lsp-deferred matlab-ts-mode-hook)))
-    (setq msg (concat msg "\
+     ((and (not (member 'lsp          matlab-ts-mode-hook))
+           (not (member 'lsp-deferred matlab-ts-mode-hook)))
+      (setq msg (concat msg "\
 - The matlab-ts-mode-hook does not contain #'lsp or #'lsp-deferred.  To fix, see
   https://github.com/mathworks/Emacs-MATLAB-Mode/blob/default/doc/\
 matlab-language-server-lsp-mode.org\n"
-                      )))
+                        )))
 
-   (t
-    (setq msg (concat msg "\
+     (t
+      (setq msg (concat msg "\
 - [x] lsp-mode for code navigation, symbol rename, and more is setup\n"))))
 
-  ;; Display check result
-  (message "%s" msg)))
+    ;; Display check result
+    (message "%s" msg)))
 
 (provide 'matlab-ts-mode)
 ;;; matlab-ts-mode.el ends here

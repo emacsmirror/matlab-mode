@@ -1422,7 +1422,7 @@ the indented code to create NAME_expected_msgs.txt of form:
       (goto-char (point-min))
       (while (not (eobp))
         (let* ((current-line (buffer-substring-no-properties (line-beginning-position)
-                                                            (line-end-position)))
+                                                             (line-end-position)))
                (line-num (line-number-at-pos))
                (current-msgs (gethash line-num t-utils--test-indent-msgs)))
           (setq got (concat got
@@ -2142,7 +2142,37 @@ Where ./tests/test-LANGUAGE-ts-mode-treesit-defun-name.el contains:
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
 
-(defun t-utils-test-imenu (test-name lang-files)
+(defun t-utils--get-imenu-str (imenu-index)
+  "Return a string for IMENU-INDEX, the result of `imenu-create-index-function'."
+  (let ((imenu-str (if (listp (car (cdr imenu-index)))
+                       ;; imenu-index of form
+                       ;; ((MENU-TITLE1 . SUB-ALIST1)
+                       ;;  (MENU-TITLE2 . SUB-ALIST2)
+                       ;;  ....)
+                       (string-join
+                        (mapcar (lambda (el) (let ((menu-title (substring-no-properties (car el))))
+                                               (string-join
+                                                (mapcar (lambda (sub-el)
+                                                          (format "%s / %s - point %d"
+                                                                  menu-title
+                                                                  (substring-no-properties
+                                                                   (car sub-el))
+                                                                  (cdr sub-el)))
+                                                        (cdr el))
+                                                "\n")))
+                                imenu-index)
+                        "\n---\n")
+                     (string-join
+                      (mapcar (lambda (el) (format "%s - point %d"
+                                                   (substring-no-properties (car el))
+                                                   (cdr el)))
+                              imenu-index)
+                      "\n"))))
+    (when imenu-str
+      (setq imenu-str (concat imenu-str "\n")))
+    imenu-str))
+
+(defun t-utils-test-imenu-create-index-function (test-name lang-files)
   "Test imenu support.
 Compare the result of `imenu-create-index-function' on each NAME.LANG in
 LANG-FILES against NAME_expected.txt.  TEST-NAME is used in messages.
@@ -2213,10 +2243,7 @@ Where ./tests/test-LANGUAGE-ts-mode-imenu.el contains:
                              (with-temp-buffer
                                (insert-file-contents-literally expected-file)
                                (buffer-string))))
-                 (got (concat (string-join
-                               (mapcar (lambda (el) (substring-no-properties (car el))) index)
-                               "\n")
-                              "\n"))
+                 (got (t-utils--get-imenu-str index))
                  (got-file (concat expected-file "~")))
 
             (kill-buffer)

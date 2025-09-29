@@ -1,0 +1,6 @@
+Function / imenu_g0 - point 21
+Function / g1 - point 104
+Function / g2 - point 172
+Function / g3 - point 231
+Function / g4 - point 330
+Function / g4.g5 - point 449

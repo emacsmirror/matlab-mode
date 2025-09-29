@@ -48,20 +48,37 @@ gives:
   myFunc3
   myFunc4
 #+end_example
- 
+
 and you can select the one you'd like by clicking on it or by typing the name with tab completion.
 
-** Fcns Menu
+** Imenu Menu
 
-To add a "Fcns" menu to Emacs for MATLAB and/or TLC files.
+1. If you are using =matlab-ts-mode=
 
- : M-x customize-variable RET matlab-mode-hook RET
- : M-x customize-variable RET tlc-mode-hook RET
+   In your =~/.emacs=, add
 
-and add:
+   #+begin_src emacs-lisp
+     (add-hook 'matlab-ts-mode-hook (lambda () (imenu-add-to-menubar "Imenu")))
+   #+end_src
 
-#+begin_src emacs-lisp
-   (lambda () (imenu-add-to-menubar "Fcns"))
-#+end_src
+2. If you are using =matlab-mode=
+
+   : M-x customize-variable RET matlab-mode-hook RET
+
+    and add:
+
+    #+begin_src emacs-lisp
+       (lambda () (imenu-add-to-menubar "Imenu"))
+    #+end_src
+
+3. If you are using =tlc-mode=
+
+   : M-x customize-variable RET tlc-mode-hook RET
+
+    and add:
+
+    #+begin_src emacs-lisp
+       (lambda () (imenu-add-to-menubar "Imenu"))
+    #+end_src
 
 # LocalWords:  showall Func

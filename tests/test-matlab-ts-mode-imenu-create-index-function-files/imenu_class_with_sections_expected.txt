@@ -1,0 +1,9 @@
+Class / imenu_class_with_sections - point 22
+---
+Function / foo1 - point 152
+Function / foo2 - point 299
+---
+Section / Section at line 17 - point 211
+Section / Section at line 20 - point 250
+Section / foo2 - section1 - point 384
+Section / foo2 - section2 - point 462

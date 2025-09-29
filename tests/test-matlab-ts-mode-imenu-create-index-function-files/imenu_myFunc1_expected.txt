@@ -1,0 +1,4 @@
+Function / imenu_myFunc1 - point 21
+Function / myFunc2 - point 105
+Function / myFunc3 - point 155
+Function / myFunc4 - point 207
