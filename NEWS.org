@@ -3,6 +3,11 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.1.1 Oct 1, 2025
+
+1. matlab-ts-mode: fix semantic movement in strings. Now C-M-f, C-M-b, C-M-SPC work when point is
+   within strings.
+
 * Release 7.1.0 Sep 29, 2025
 
 1. Improved matlab-ts-mode imenu. The imenu index now creates indices for code sections defined by

@@ -1,0 +1,83 @@
+#+startup: showall
+
+* Executing commands from thing_mark_sexp.m:3:9:
+
+  Case1: (t-utils-xr (re-search-forward "first") "C-M-b" "C-M-f")
+
+- Invoking      : (re-search-forward "first")
+  Start point   :   87
+  Moved to point:   98
+  : 4:10: a = "first string %d \t ''"
+  :                 ^
+  No buffer modifications
+
+- Invoking      : "C-M-b" = backward-sexp
+  Start point   :   98
+  Moved to point:   92
+  : 4:4: a = "first string %d \t ''"
+  :          ^
+  No buffer modifications
+
+- Invoking      : "C-M-f" = forward-sexp
+  Start point   :   92
+  Moved to point:  115
+  : 4:27: a = "first string %d \t ''"
+  :                                  ^
+  No buffer modifications
+
+* Executing commands from thing_mark_sexp.m:6:9:
+
+  Case2: (t-utils-xr (re-search-forward "second") "C-M-b" "C-M-f")
+
+- Invoking      : (re-search-forward "second")
+  Start point   :  183
+  Moved to point:  195
+  : 7:11: b = 'second asdf" %d \t \n';
+  :                  ^
+  No buffer modifications
+
+- Invoking      : "C-M-b" = backward-sexp
+  Start point   :  195
+  Moved to point:  188
+  : 7:4: b = 'second asdf" %d \t \n';
+  :          ^
+  No buffer modifications
+
+- Invoking      : "C-M-f" = forward-sexp
+  Start point   :  188
+  Moved to point:  211
+  : 7:27: b = 'second asdf" %d \t \n';
+  :                                  ^
+  No buffer modifications
+
+* Executing commands from thing_mark_sexp.m:9:9:
+
+  Case3: (t-utils-xr (re-search-forward "%d") "C-b" "C-M-b" "C-M-f")
+
+- Invoking      : (re-search-forward "%d")
+  Start point   :  282
+  Moved to point:  302
+  : 10:19: c = 'third asdf" %d \t \n';
+  :                           ^
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  302
+  Moved to point:  301
+  : 10:18: c = 'third asdf" %d \t \n';
+  :                          ^
+  No buffer modifications
+
+- Invoking      : "C-M-b" = backward-sexp
+  Start point   :  301
+  Moved to point:  287
+  : 10:4: c = 'third asdf" %d \t \n';
+  :           ^
+  No buffer modifications
+
+- Invoking      : "C-M-f" = forward-sexp
+  Start point   :  287
+  Moved to point:  309
+  : 10:26: c = 'third asdf" %d \t \n';
+  :                                  ^
+  No buffer modifications

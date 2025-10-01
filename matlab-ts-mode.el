@@ -2934,30 +2934,58 @@ the normal s-expression movement by calling
          (match-paren (if move-back
                           (member (char-before) '(?\] ?\) ?\}))
                         (member (char-after) '(?\[ ?\( ?\{))))
-         node)
+         node
+         node-type)
+
     (if (or match-paren
-            (equal (setq node (let ((pt-and-node (matlab-ts-mode--real-node-at-point)))
-                                (cdr pt-and-node)))
-                   "comment"))
+            (progn
+              (setq node (let ((pt-and-node (matlab-ts-mode--real-node-at-point)))
+                           (cdr pt-and-node)))
+              (setq node-type (treesit-node-type node))
+              (equal node-type "comment")))
         ;; See tests/test-matlab-ts-mode-thing-settings-files/thing_forward_sexp1.m
         (forward-sexp-default-function arg)
 
-      ;; Else ask treesit to do the movement.
-      ;; Note, treesit doesn't behave well when point is not at the end or start of the node,
-      ;; so fix that. Consider
-      ;;     function foo
-      ;;         ^          <== point here and C-M-f
-      ;;     end
-      ;;      ^             <== point here and C-M-b
-      ;; See: tests/test-matlab-ts-mode-thing-settings-files/thing_fun_sexp.m
-      (when (and node
-                 (>= (point) (treesit-node-start node))
-                 (< (point) (treesit-node-end node)))
-        (if move-back
-            (when (string= (treesit-node-type node) "end")
-              (goto-char (treesit-node-end node)))
-          (goto-char (treesit-node-start node))))
-      (treesit-forward-sexp arg))))
+      ;; ELSE if in string handle that locally, else use `treesit-forward-sexp'
+
+      (let ((string-node (and node
+                              (or (when (string-match-p (rx bos (or "'"
+                                                                    "\""
+                                                                    "string_content"
+                                                                    "formatting_sequence"
+                                                                    "escape_sequence")
+                                                            eos)
+                                                        node-type)
+                                    ;; For "'", the parent could be a postfix_operator, e.g.
+                                    ;; a transpose: [1 2; 3 4]'
+                                    (let ((parent-node (treesit-node-parent node)))
+                                      (when (string= (treesit-node-type parent-node) "string")
+                                        parent-node)))
+                                  (when (string= "string" node-type)
+                                    node)))))
+        (if string-node
+            ;; See: tests/test-matlab-ts-mode-thing-settings-files/thing_mark_sexp.m
+            (goto-char (if move-back
+                           (treesit-node-start string-node)
+                         (treesit-node-end string-node)))
+
+          ;; Use treesit-forward-sexp
+          ;;
+          ;; Treesit doesn't behave well when point is not at the end or start of the node,
+          ;; so fix that. Consider
+          ;;     function foo
+          ;;         ^          <== point here and C-M-f
+          ;;     end
+          ;;      ^             <== point here and C-M-b
+          ;; See: tests/test-matlab-ts-mode-thing-settings-files/thing_fun_sexp.m
+          (when (and node
+                     (>= (point) (treesit-node-start node))
+                     (< (point) (treesit-node-end node)))
+            (if move-back
+                (when (string= (treesit-node-type node) "end")
+                  (goto-char (treesit-node-end node)))
+              (goto-char (treesit-node-start node))))
+          (treesit-forward-sexp arg))))))
 
 ;;; Change Log
 
