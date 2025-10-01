@@ -40,16 +40,36 @@ for simplicity we require that the versions of these be the same."
           (let ((ver (match-string 1))
                 (ver-line (format "%s:%d: %s\n"
                                   el-file (line-number-at-pos)
-                                  (buffer-substring (line-beginning-position) (line-end-position)))))
+                                  (buffer-substring (line-beginning-position)
+                                                    (line-end-position)))))
             (setq version-lines (concat version-lines ver-line))
             (if (not first-ver)
                 (setq first-ver ver)
               (when (not (string= first-ver ver))
                 (setq all-versions-consistent nil)))))))
 
+    (when (not first-ver)
+      (error "Failed to find Version's in *.el files"))
+
+    (let ((news-release-version (with-temp-buffer
+                                  (insert-file-contents-literally "../NEWS.org")
+                                  (goto-char (point-min))
+                                  (re-search-forward "^\\* Release \\([.0-9]+\\)")
+                                  (let ((ver (match-string 1))
+                                        (ver-line (format "%s:%d: %s\n"
+                                                          "../NEWS.org"
+                                                          (line-number-at-pos)
+                                                          (buffer-substring
+                                                           (line-beginning-position)
+                                                           (line-end-position)))))
+                                    (setq version-lines (concat version-lines ver-line))
+                                    ver))))
+      (when (not (string= first-ver news-release-version))
+        (setq all-versions-consistent nil)))
+
     (when (not all-versions-consistent)
       (message "Versions are not consistent:\n%s" version-lines))
-      
+
     (should (eq all-versions-consistent t))))
 
 
