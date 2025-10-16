@@ -3,6 +3,12 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.1.2 Oct 16, 2025
+
+1. matlab-is-matlab-file: This function identifies when the content of a *.m file
+   is MATLAB code, if it's not MATLAB code, Emacs defaults to Objective-C. This fixes
+   a case where a *.m contains MATLAB code and the first line is a @function_handle.
+
 * Release 7.1.1 Oct 1, 2025
 
 1. matlab-ts-mode: fix semantic movement in strings. Now C-M-f, C-M-b, C-M-SPC work when point is

@@ -89,13 +89,25 @@ This will also enter MATLAB mode for empty files *.m files when
         ;; Objective-c is identified by
         ;;   - comment start chars: // or /*,
         ;;   - # char (as in #import)
-        ;;   - @ char (as in @interface)
+        ;;   - @ char (as in @interface compiler directive)
+        ;;     Scope check to a list of all compiler directives that start with an @
+        ;;     character (at-directives) that can be on the first line in an Objective-C
+        ;;     file to prevent confusion with '@' syntax in matlab files. For example,
+        ;;     this is a valid MATLAB file:
+        ;;       @foo;
+        ;;     where @foo is a function handle.
         ;; MATLAB scripts are identified by the start of a valid identifier, i.e. a letter or
         ;; some math operation, e.g. [1,2,3]*[1,2,3]', thus all we really need to look for
         ;; is a non-whitespace character which could be a MATLAB comment, generic MATLAB commands,
         ;; function/classdef, etc.
-        (and (not (looking-at "^[[:space:]\n]*\\(//\\|/\\*\\|#\\|@\\)"))
-             (looking-at "^[[:space:]\n]*[^[:space:]\n]"))
+        (and
+         ;; Have non-whitespace content in the buffer
+         (looking-at (rx bos (zero-or-more (any " \t\n\r")) (not (any " \t\n\r"))))
+         ;; which is not Objective-C content
+         (not (looking-at (rx bos (zero-or-more (any " \t\n\r"))
+                              (or "//" "/*" "#"
+                                  "@class" "@compatibility_alias" "@implementation" "@import"
+                                  "@interface" "@protocol")))))
         ;; Empty file - enter matlab-mode based on `matlab-mode-for-new-mfiles' setting
         (and (= (buffer-size) 0)
              (or (equal matlab-mode-for-new-mfiles t)

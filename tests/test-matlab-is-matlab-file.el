@@ -28,12 +28,15 @@
 (ert-deftest test-matlab-is-matlab-file ()
   "Test `matlab-is-matlab-file'.
 Using ./test-matlab-is-matlab-file-files/archive.zip,
-extract the first *.m file in it and validate it enters a MATLAB mode.
-Also, validate `matlab-is-matlab-file' returns t."
+extract the *.m files and validate they enter Objective-C mode
+if the file starts with objc, else they should enter MATLAB mode.
+When the file starts with objc, the content must be Objective-C
+content in archive.zip.
+
+Also, validate `matlab-is-matlab-file' returns t or nil."
   (let* ((m-file "test-matlab-is-matlab-file-files/archive.zip")
          (zip-buf (get-file-buffer m-file))
-         (all-entered-a-matlab-mode 'unknown)
-         (all-are-matlab-file 'unknown))
+         (all-good t))
     (when zip-buf
       (kill-buffer zip-buf))
     (setq zip-buf (find-file-noselect m-file))
@@ -42,23 +45,33 @@ Also, validate `matlab-is-matlab-file' returns t."
       (goto-char (point-min))
       (while (re-search-forward "\\.m$" nil t)
         (let ((m-buf (archive-extract))
-              (is-a-matlab-mode (or (eq major-mode 'matlab-ts-mode)
-                                    (eq major-mode 'matlab-mode)))
               (is-matlab-file (matlab-is-matlab-file)))
           (message "test-matlab-is-matlab-file: checking %s" (buffer-file-name))
-          (when (or (eq all-entered-a-matlab-mode 'unknown)
-                    (not is-a-matlab-mode))
-            (setq all-entered-a-matlab-mode is-a-matlab-mode))
 
-          (when (or (eq all-are-matlab-file 'unknown)
-                    (not is-matlab-file))
-            (setq all-are-matlab-file is-matlab-file))
+          (cond
+
+           ((string-match-p "^objc" (buffer-name))
+            ;; should be objective-c
+            (when (not (eq major-mode 'objc-mode))
+              (message "error: %s did not enter objc-mode" (buffer-file-name))
+              (setq all-good nil))
+            (when is-matlab-file
+              (message "error: %s says its a MATLAB file" (buffer-file-name))))
+
+           (t
+            ;; should be a MATLAB mode
+            (when (not (or (eq major-mode 'matlab-ts-mode)
+                           (eq major-mode 'matlab-mode)))
+              (message "error: %s did not enter a MATLAB mode" (buffer-file-name))
+              (setq all-good nil))
+            (when (not is-matlab-file)
+              (message "error: %s says its NOT a MATLAB file" (buffer-file-name)))))
+
           (kill-buffer m-buf)
           (set-buffer zip-buf))))
 
     (kill-buffer zip-buf)
-    (should (eq all-entered-a-matlab-mode t))
-    (should (eq all-are-matlab-file t))))
+    (should (eq all-good t))))
 
 (provide 'test-matlab-is-matlab-file)
 ;;; test-matlab-is-matlab-file.el ends here
