@@ -3689,8 +3689,7 @@ provided."
 ;; so the mode line indicator, "matlab-ts-parse-errors" is slightly shorter
 
 (define-compilation-mode matlab-ts-parse-errors-mode "m-ts-parse-errors"
-                         "The variant of `compilation-mode' used for `matlab-ts-view-parse-errors'."
-                         (setq-local matlab-ts-parse-errors-compilation--current-buffer (current-buffer)))
+                         "Variant of `compilation-mode' used for `matlab-ts-view-parse-errors'.")
 
 (defun matlab-ts-view-parse-errors (&optional no-pop-to-buffer)
   "View parse errors in matlab-ts-mode current buffer.
