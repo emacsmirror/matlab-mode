@@ -1,106 +1,135 @@
 #+startup: showall
 
-* Executing commands from indent_xr_i_cont_incomplete3.m:2:9:
+* Executing commands from indent_xr_i_cont_incomplete3.m:4:2:
 
-  Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "a = ...") "C-m" (insert "99;") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
+  Case1: (t-utils-xr
 
-- Invoking      : "C-n" = next-line
-  Start point   :  189
-  Moved to point:  231
-  : 3:41: function a = indent_xr_i_cont_incomplete3
-  :                                                ^
+  (re-search-forward "^fun") "C-e" "C-m"
+  (insert "output1 = ...")         "C-m"
+  (insert "99;")                   "C-i"
+
+  (re-search-backward "^fun")
+  (t-utils-xr-print-code (point) (point-max))
+
+  )
+
+- Invoking      : (re-search-forward "^fun")
+  Start point   :  252
+  Moved to point:  259
+  : 15:3: function output1 = indent_xr_i_cont_incomplete3
+  :          ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  231
-  No point movement
+  Start point   :  259
+  Moved to point:  303
+  : 15:47: function output1 = indent_xr_i_cont_incomplete3
+  :                                                       ^
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  231
-  Moved to point:  236
-  : 4:4:     
+  Start point   :  303
+  Moved to point:  308
+  : 16:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -13,4 +13,5 @@
+   )
+ %}
+ function output1 = indent_xr_i_cont_incomplete3
++    
+ end
+  #+end_src diff
+
+- Invoking      : (insert "output1 = ...")
+  Start point   :  308
+  Moved to point:  321
+  : 16:17:     output1 = ...
+  :                         ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -13,5 +13,5 @@
+   )
+ %}
+ function output1 = indent_xr_i_cont_incomplete3
+-    
++    output1 = ...
+ end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  321
+  Moved to point:  322
+  : 17:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -14,4 +14,5 @@
+ %}
+ function output1 = indent_xr_i_cont_incomplete3
+     output1 = ...
++
+ end
+  #+end_src diff
+
+- Invoking      : (insert "99;")
+  Start point   :  322
+  Moved to point:  325
+  : 17:3: 99;
   :          ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,4 +1,5 @@
- % -*- matlab-ts -*-
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "a = ...") "C-m" (insert "99;") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
- function a = indent_xr_i_cont_incomplete3
-+    
+@@ -14,5 +14,5 @@
+ %}
+ function output1 = indent_xr_i_cont_incomplete3
+     output1 = ...
+-
++99;
  end
   #+end_src diff
 
-- Invoking      : (insert "a = ...")
-  Start point   :  236
-  Moved to point:  243
-  : 4:11:     a = ...
-  :                  ^
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  325
+  Moved to point:  333
+  : 17:11:         99;
+  :                   ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,5 +1,5 @@
- % -*- matlab-ts -*-
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "a = ...") "C-m" (insert "99;") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
- function a = indent_xr_i_cont_incomplete3
--    
-+    a = ...
- end
-  #+end_src diff
-
-- Invoking      : "C-m" = newline
-  Start point   :  243
-  Moved to point:  252
-  : 5:8:         
-  :              ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -2,4 +2,5 @@
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "a = ...") "C-m" (insert "99;") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
- function a = indent_xr_i_cont_incomplete3
-     a = ...
-+        
- end
-  #+end_src diff
-
-- Invoking      : (insert "99;")
-  Start point   :  252
-  Moved to point:  255
-  : 5:11:         99;
-  :                  ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -2,5 +2,5 @@
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "a = ...") "C-m" (insert "99;") (re-search-backward "^fun") (print (buffer-substring-no-properties (point) (point-max))))
- function a = indent_xr_i_cont_incomplete3
-     a = ...
--        
+@@ -14,5 +14,5 @@
+ %}
+ function output1 = indent_xr_i_cont_incomplete3
+     output1 = ...
+-99;
 +        99;
  end
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  255
-  Moved to point:  190
-  : 3:0: function a = indent_xr_i_cont_incomplete3
-  :      ^
+  Start point   :  333
+  Moved to point:  256
+  : 15:0: function output1 = indent_xr_i_cont_incomplete3
+  :       ^
   No buffer modifications
 
-- Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
-  Start point   :  190
+- Invoking      : (t-utils-xr-print-code (point) (point-max))
+  Start point   :  256
   No point movement
   standard-output:
-  #+begin_example
-function a = indent_xr_i_cont_incomplete3
-    a = ...
+  #+begin_src matlab-ts
+function output1 = indent_xr_i_cont_incomplete3
+    output1 = ...
         99;
 end
-  #+end_example
+  #+end_src
   No buffer modifications

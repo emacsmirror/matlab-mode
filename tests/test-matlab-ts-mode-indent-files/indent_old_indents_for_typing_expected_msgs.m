@@ -94,7 +94,7 @@ function B = ends_in_comments_and_strings() %  <{Matched rule: ((lambda (node pa
         A = C; %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
 
     end; B = [ 1 2 ...  % is this the end? %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
-               3 4 ];   % !!15 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
+               3 4 ];   % !!15 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
 
     % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
@@ -146,7 +146,7 @@ function out = array_constant_decls() %  <{Matched rule: ((lambda (node parent _
     multinest = { [ 1 2               %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
                     3 4 ];            %!!20 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
                   { 5 6 7 ...         %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-                    8 9 10 ...        %!!20 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
+                    8 9 10 ...        %!!20 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
                   };                  %!!18 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
                   fcncall(10, ...     %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
                           12, ...     %!!26 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
@@ -159,7 +159,7 @@ function out = array_constant_decls() %  <{Matched rule: ((lambda (node parent _
              [ ...    %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
                2 3    %!!10 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
              ] ...    %!!8 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
-             3        %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
+             3        %!!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
            };    %!!11 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     cascade_long_name = ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>

@@ -13,7 +13,7 @@ function indent_xr_if_cond(a, b)
         disp('1');
     end
 
-    % Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
+    % Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1") "C-i")
     while a > 1 && ...
 
     end

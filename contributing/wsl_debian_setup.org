@@ -69,6 +69,7 @@ me, MATLAB R2025a ran well enough to leverage it in Emacs matlab-shell.
      sudo apt install git
      sudo apt install -t bookworm-backports emacs
      sudo apt install -t bookworm-backports emacs-el
+     sudo apt install -t bookworm-backports emacs-common-non-dfsg
      sudo apt install chromium
      sudo apt install shellcheck
    #+end_src

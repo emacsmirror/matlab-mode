@@ -1,0 +1,15 @@
+#+startup: showall
+
+* Executing commands from on_save_no_fix_syntax_error.m:5:9:
+
+  Case1: (t-utils-xr (rename-buffer "tmp__on_save_no_fix_syntax_error.m") (matlab-ts-mode-on-save-fix-name t))
+
+- Invoking      : (rename-buffer "tmp__on_save_no_fix_syntax_error.m")
+  Start point   :  216
+  No point movement
+  No buffer modifications
+
+- Invoking      : (matlab-ts-mode-on-save-fix-name t)
+  Start point   :  216
+  No point movement
+  No buffer modifications

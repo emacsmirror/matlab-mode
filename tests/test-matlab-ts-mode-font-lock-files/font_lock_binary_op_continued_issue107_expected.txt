@@ -1,0 +1,30 @@
+c ccc ccccccccc ccc
+
+c ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+vv o bn o nbD
+
+vv o b ccc
+       n ccc
+       o ccc
+       n
+     bD
+BBBBBBbBBBBBBBbddD ddbb
+
+vv o bn o nbD
+
+vv o b ccc
+       n ccc
+       o ccc
+       n
+     bD
+
+BBBBBBbBBBBBBBbddD ddbb
+
+vv o n o nD
+
+vv o bn ccc
+      o ccc
+      nbD
+
+BBBBBBbBBBBBBBbddD ddbb

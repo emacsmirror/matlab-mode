@@ -18,9 +18,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   :  142
-  Moved to point:  160
-  : 7:17:                  
-  :                        ^
+  Moved to point:  143
+  : 7:0: 
+  :      ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -29,17 +29,17 @@
  
      % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "b > 1") "C-m")
      if a > 1 && ...
-+                 
++
      end
  
      % Case2: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
   #+end_src diff
 
 - Invoking      : (insert "b > 1")
-  Start point   :  160
-  Moved to point:  165
-  : 7:22:                  b > 1
-  :                             ^
+  Start point   :  143
+  Moved to point:  148
+  : 7:5: b > 1
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -48,15 +48,15 @@
  
      % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "b > 1") "C-m")
      if a > 1 && ...
--                 
-+                 b > 1
+-
++b > 1
      end
  
      % Case2: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  165
+  Start point   :  148
   Moved to point:  164
   : 8:8:         
   :              ^
@@ -68,7 +68,7 @@
  
      % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "b > 1") "C-m")
      if a > 1 && ...
--                 b > 1
+-b > 1
 +       b > 1
 +        
      end
@@ -96,8 +96,28 @@
 
 - Invoking      : "C-i" = indent-for-tab-command
   Start point   :  259
+  Moved to point:  265
+  : 13:6:       
+  :             ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -10,7 +10,7 @@
+ 
+     % Case2: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
+     switch a > 1 && ...
+-
++      
+       case 1:
+         disp('1');
+     end
+  #+end_src diff
+
+- Invoking      : (insert "b > 1")
+  Start point   :  265
   Moved to point:  270
-  : 13:11:            
+  : 13:11:       b > 1
   :                   ^
   Buffer modified:
   #+begin_src diff
@@ -107,28 +127,8 @@
  
      % Case2: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
      switch a > 1 && ...
--
-+           
-       case 1:
-         disp('1');
-     end
-  #+end_src diff
-
-- Invoking      : (insert "b > 1")
-  Start point   :  270
-  Moved to point:  275
-  : 13:16:            b > 1
-  :                        ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -10,7 +10,7 @@
- 
-     % Case2: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
-     switch a > 1 && ...
--           
-+           b > 1
+-      
++      b > 1
        case 1:
          disp('1');
      end
@@ -136,25 +136,25 @@
 
 * Executing commands from indent_xr_if_cond.m:18:13:
 
-  Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
+  Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   :  378
-  Moved to point:  401
+  Start point   :  379
+  Moved to point:  402
   : 19:22:     while a > 1 && ...
   :                              ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  401
-  Moved to point:  402
+  Start point   :  402
+  Moved to point:  403
   : 20:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  402
-  Moved to point:  410
+  Start point   :  403
+  Moved to point:  411
   : 20:8:         
   :               ^
   Buffer modified:
@@ -163,7 +163,7 @@
 +++ end_contents
 @@ -17,7 +17,7 @@
  
-     % Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
+     % Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1") "C-i")
      while a > 1 && ...
 -
 +        
@@ -173,8 +173,8 @@
   #+end_src diff
 
 - Invoking      : (insert "b > 1")
-  Start point   :  410
-  Moved to point:  415
+  Start point   :  411
+  Moved to point:  416
   : 20:13:         b > 1
   :                     ^
   Buffer modified:
@@ -183,10 +183,30 @@
 +++ end_contents
 @@ -17,7 +17,7 @@
  
-     % Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1"))
+     % Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1") "C-i")
      while a > 1 && ...
 -        
 +        b > 1
+     end
+ 
+ end
+  #+end_src diff
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  416
+  Moved to point:  418
+  : 20:15:           b > 1
+  :                       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,7 +17,7 @@
+ 
+     % Case3: (t-utils-xr "C-n" "C-n" "C-i" (insert "b > 1") "C-i")
+     while a > 1 && ...
+-        b > 1
++          b > 1
      end
  
  end
@@ -197,7 +217,7 @@
   Case4: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
 
 - Invoking      : (t-utils-xr-print-code (point-min) (point-max))
-  Start point   :  499
+  Start point   :  502
   No point movement
   standard-output:
   #+begin_src matlab-ts
@@ -213,14 +233,14 @@ function indent_xr_if_cond(a, b)
 
     % Case2: (t-utils-xr \"C-n\" \"C-n\" \"C-i\" (insert \"b > 1\"))
     switch a > 1 && ...
-           b > 1
+      b > 1
       case 1:
         disp('1');
     end
 
-    % Case3: (t-utils-xr \"C-n\" \"C-n\" \"C-i\" (insert \"b > 1\"))
+    % Case3: (t-utils-xr \"C-n\" \"C-n\" \"C-i\" (insert \"b > 1\") \"C-i\")
     while a > 1 && ...
-        b > 1
+          b > 1
     end
 
 end

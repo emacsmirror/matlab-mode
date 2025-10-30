@@ -3,6 +3,16 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.2.0 Oct 29, 2025
+
+1. Updated matlab-ts-mode to use latest matlab tree-sitter v1.2.3 branch [[https://github.com/acristoffers/tree-sitter-matlab/tree/abi/14][abi/14]] at [[https://github.com/acristoffers/tree-sitter-matlab/tree/9a4e65df4bb08e2b019ca2ef16b2d8f3d95ce978][9a4e65d]]. This
+   fixes parse on a number of MATLAB language constructs, which is visible behavior improvements,
+   so bumping revision to 7.2.0.
+
+2. In matlab-ts-mode, don't offer to fix function/classdef names when there are syntax errors
+   because this can lead to changing the name of other identifiers and not the function/classdef
+   name.
+
 * Release 7.1.2 Oct 16, 2025
 
 1. matlab-is-matlab-file: This function identifies when the content of a *.m file

@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 7.1.2
+;; Version: 7.2.0
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -2049,6 +2049,8 @@ Prev-siblings:
       (setq parent last-child-of-error-node))
 
     (when (or last-child-of-error-node
+              ;; Is node, parent, or grandparent an error? We could look to other ancestors,
+              ;; but that would indicate many syntax errors and result in unexpected indent.
               (and node (string= (treesit-node-type node) "ERROR"))
               (string-match-p (rx (seq bos (or "ERROR" "\n") eos)) (treesit-node-type parent))
               (equal (treesit-node-type (treesit-node-parent parent)) "ERROR"))
@@ -3122,6 +3124,7 @@ Returns t if tree-sitter NODE defines an outline heading."
 (defun matlab-ts-mode-on-save-fix-name (&optional no-prompt)
   "If file name and function/classdef name are different, offer to fix.
 If optional NO-PROMPT is t, fix the name if needed without prompting."
+  ;; See ./tests/test-matlab-ts-mode-on-save-fixes.el
   (interactive)
   (when (or no-prompt (not noninteractive)) ;; can only prompt if in interactive mode
     (let* ((root (treesit-buffer-root-node))
@@ -3132,6 +3135,14 @@ If optional NO-PROMPT is t, fix the name if needed without prompting."
                   ;; Case: function_definition or class_definition
                   ((string-match-p (rx bos (or "function_definition" "class_definition") eos)
                                    child-type)
+                   (when (treesit-search-subtree child (rx bos "ERROR" eos))
+                     ;; Don't try to fix code if there's an error, e.g. don't change in1:
+                     ;;   function ...
+                     ;;       [    ...
+                     ;;        in1,  ... comment about in1
+                     ;; See: test-matlab-ts-mode-on-save-fixes-files/on_save_no_fix_syntax_error.m
+                     (cl-return))
+
                    (let* ((def-name-node (treesit-node-child-by-field-name child "name"))
                           (def-name (treesit-node-text def-name-node))
                           (file-name (file-name-nondirectory (or (buffer-file-name) (buffer-name))))
@@ -3156,7 +3167,7 @@ If optional NO-PROMPT is t, fix the name if needed without prompting."
                              (insert base-name-no-ext))))))
                    (cl-return))
 
-                  ;; Case: any other code means this is a script, so no on save fix
+                  ;; Case: any other code means this is a script, so no "on save fix name"
                   ((not (string-match-p (rx bos (or "comment"
                                                     "line_continuation"
                                                     "\n")

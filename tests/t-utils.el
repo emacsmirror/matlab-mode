@@ -287,9 +287,16 @@
 Optional TEST-DESCRIPTION defaults to \"this test input\"."
   (let ((skip-file-contents (with-temp-buffer
                               (insert-file-contents-literally skip-file)
+                              (let ((max-lines-to-show 6)
+                                    (n-lines (count-lines (point-min) (point-max))))
+                                (when (> n-lines max-lines-to-show)
+                                  (goto-char (point-min))
+                                  (forward-line max-lines-to-show)
+                                  (delete-region (point) (point-max))
+                                  (goto-char (point-max))
+                                  (insert "<snip>\n")))
                               (string-trim-right
-                               (replace-regexp-in-string "^" "    "
-                                                         (buffer-string))))))
+                               (replace-regexp-in-string "^" "    " (buffer-string))))))
     (message "%s:1: warning: skipping %s because %s exists\n%s"
              test-file (or test-description "this test input") skip-file skip-file-contents)))
 

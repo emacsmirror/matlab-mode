@@ -28,6 +28,9 @@
 Emacs MATLAB mode package consists of several major and minor modes and
 for simplicity we require that the versions of these be the same."
 
+  (when (not (file-exists-p "../matlab-ts-mode.el"))
+    (error "../matlab-ts-mode.el doesn't exist, is the current directory correct?"))
+
   (let ((el-files (directory-files ".." t "\\.el\\'"))
         (version-lines "")
         (all-versions-consistent t)

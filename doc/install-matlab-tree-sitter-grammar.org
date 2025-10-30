@@ -49,19 +49,9 @@ For Emacs 30, you need to build the MATLAB tree-sitter grammar for ABI 14 becaus
 version 14 of the tree-sitter application binary interface and as of Sep-2025, the latest
 tree-sitter ABI is 15. There are different methods for installing this.
 
-** Method 1 - Install pre-built binaries
+** Method 1 - Install from abi/14 branch
 
-  *Does not work* as of Sep-2025 because the grammar build is too old. Please use one of the other
-  methods.
-
-  Install the pre-built binaries from http://github.com/emacs-tree-sitter/tree-sitter-langs
-  using the following after installing the MATLAB package from [[file:../README.org][MELPA]]:
-
-  :  M-x matlab-ts-langs-install
-
-  and install matlab (and other languages tree-sitter shared objects if you'd like).
-
-** Method 2 - Install from abi/14 branch
+  Oct-29-2025 matlab-ts-mode is known to work with matlab tree-sitter v1.2.3 branch [[https://github.com/acristoffers/tree-sitter-matlab/tree/abi/14][abi/14]] at [[https://github.com/acristoffers/tree-sitter-matlab/tree/9a4e65df4bb08e2b019ca2ef16b2d8f3d95ce978][9a4e65d]].
 
   + _Unix_
 
@@ -116,7 +106,7 @@ tree-sitter ABI is 15. There are different methods for installing this.
          cl /LD /I src\tree_sitter src\parser.c src\scanner.c /link /out:%HOME%\.emacs.d\tree-sitter\libtree-sitter-matlab.dll
        #+end_src
 
-** Method 3 - Generate the grammar for ABI 14 and install
+** Method 2 - Generate the grammar for ABI 14 and install
 
   1. Install C/C++ compiler if not installed. See Method 2 for tips on installing the C/C++ compiler.
 
@@ -175,6 +165,18 @@ tree-sitter ABI is 15. There are different methods for installing this.
      - _Windows_
 
        Follow the same Windows build step as in Method 2.
+
+** Method 3 - Install pre-built binaries
+
+  *Does not work* as of Sep-2025 because the grammar build is too old. Please use one of the other
+  methods.
+
+  Install the pre-built binaries from http://github.com/emacs-tree-sitter/tree-sitter-langs
+  using the following after installing the MATLAB package from [[file:../README.org][MELPA]]:
+
+  :  M-x matlab-ts-langs-install
+
+  and install matlab (and other languages tree-sitter shared objects if you'd like).
 
 * Setup Emacs to use the MATLAB tree-sitter grammar
 
