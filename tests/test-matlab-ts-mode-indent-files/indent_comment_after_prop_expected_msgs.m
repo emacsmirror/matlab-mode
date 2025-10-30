@@ -72,7 +72,7 @@ classdef indent_comment_after_prop < handle %  <{Matched rule: ((lambda (node pa
                         % comment %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
                     catch ME %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
                         disp('caught error'); %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
-                        % comment %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
+                        % comment %  <{Matched rule: ((n-p-gp nil "\\`block\\'" "\\`catch_clause\\'") grand-parent 4)}>
                     end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
                 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
 

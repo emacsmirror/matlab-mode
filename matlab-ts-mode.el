@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 7.2.0
+;; Version: 7.2.1
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -2487,6 +2487,12 @@ Example:
      ;; I-Rule: try<RET>    |   catch<RET>
      ((parent-is ,(rx bos (or "try_statement" "catch_clause") eos))
       parent ,matlab-ts-mode--indent-level)
+
+     ;; I-Rule:  catch err %#ok          (the comment causes a block to appear)
+     ;;    TAB>     disp('catch');
+     ;; See: tests/test-matlab-ts-mode-indent-files/indent_catch_with_comment.m
+     ((n-p-gp nil ,(rx bos "block" eos) ,(rx bos "catch_clause" eos))
+      grand-parent ,matlab-ts-mode--indent-level)
 
      ;; I-Rule: function a
      ;;             x = 1;
