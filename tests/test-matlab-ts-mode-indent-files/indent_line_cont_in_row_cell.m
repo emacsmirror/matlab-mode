@@ -3,8 +3,8 @@
 % See: https://github.com/acristoffers/tree-sitter-matlab/issues/116
 
 fcn1({a() ...
-      newline ...
-      b()});
+         newline ...
+   b()});
 
 function fcn1(x)
     disp(x);
@@ -17,4 +17,3 @@ end
 function out = b
     out = "b string";
 end
-

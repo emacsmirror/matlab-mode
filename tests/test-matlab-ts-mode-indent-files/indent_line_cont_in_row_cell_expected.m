@@ -17,4 +17,3 @@ end
 function out = b
     out = "b string";
 end
-
