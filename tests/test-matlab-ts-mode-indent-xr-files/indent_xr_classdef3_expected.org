@@ -856,9 +856,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   : 1995
-  Moved to point: 2008
-  : 67:12:             
-  :                    ^
+  Moved to point: 2012
+  : 67:16:                 
+  :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -870,15 +870,15 @@
 -            arguments
 \ No newline at end of file
 +            arguments
-+            
++                
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : (insert "a")
-  Start point   : 2008
-  Moved to point: 2009
-  : 67:13:             a
-  :                     ^
+  Start point   : 2012
+  Moved to point: 2013
+  : 67:17:                 a
+  :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -887,17 +887,17 @@
  
              % comment8
              arguments
--            
+-                
 \ No newline at end of file
-+            a
++                a
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 2009
-  Moved to point: 2026
-  : 68:12:             
-  :                    ^
+  Start point   : 2013
+  Moved to point: 2030
+  : 68:16:                 
+  :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -906,18 +906,18 @@
  
              % comment8
              arguments
--            a
+-                a
 \ No newline at end of file
 +                a
-+            
++                
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : (insert "% comment9")
-  Start point   : 2026
-  Moved to point: 2036
-  : 68:22:             % comment9
-  :                              ^
+  Start point   : 2030
+  Moved to point: 2040
+  : 68:26:                 % comment9
+  :                                  ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -926,17 +926,17 @@
              % comment8
              arguments
                  a
--            
+-                
 \ No newline at end of file
-+            % comment9
++                % comment9
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 2036
-  Moved to point: 2053
-  : 69:12:             
-  :                    ^
+  Start point   : 2040
+  Moved to point: 2057
+  : 69:16:                 
+  :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -945,18 +945,18 @@
              % comment8
              arguments
                  a
--            % comment9
+-                % comment9
 \ No newline at end of file
 +                % comment9
-+            
++                
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 2053
-  Moved to point: 2056
-  : 69:15:             end
-  :                       ^
+  Start point   : 2057
+  Moved to point: 2060
+  : 69:19:                 end
+  :                           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -965,17 +965,17 @@
              arguments
                  a
                  % comment9
--            
+-                
 \ No newline at end of file
-+            end
++                end
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 2056
-  Moved to point: 2069
-  : 70:12:             
-  :                    ^
+  Start point   : 2060
+  Moved to point: 2073
+  : 70:16:                 
+  :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -984,18 +984,18 @@
              arguments
                  a
                  % comment9
--            end
+-                end
 \ No newline at end of file
 +            end
-+            
++                
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 2069
-  Moved to point: 2072
-  : 70:15:             end
-  :                       ^
+  Start point   : 2073
+  Moved to point: 2076
+  : 70:19:                 end
+  :                           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -1004,14 +1004,14 @@
                  a
                  % comment9
              end
--            
+-                
 \ No newline at end of file
-+            end
++                end
 \ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 2072
+  Start point   : 2076
   Moved to point: 2077
   : 71:8:         
   :               ^
@@ -1023,7 +1023,7 @@
                  a
                  % comment9
              end
--            end
+-                end
 \ No newline at end of file
 +        end
 +        

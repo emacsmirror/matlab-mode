@@ -1,0 +1,41 @@
+#+startup: showall
+
+* Executing commands from electric_pair_before_fcn.m:4:9:
+
+  Case1: (t-utils-xr (re-search-forward "s1") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))))
+
+- Invoking      : (re-search-forward "s1")
+  Start point   :  174
+  Moved to point:  177
+  : 5:2: s1
+  :        ^
+  No buffer modifications
+
+- Invoking      : (insert " = '")
+  Start point   :  177
+  Moved to point:  181
+  : 5:6: s1 = '
+  :            ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ 
+ % String: s1 = ''
+ % Case1: (t-utils-xr (re-search-forward "s1") (insert " = '") (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before))))
+-s1
++s1 = '
+ 
+ fcn('asdf','asdf')
+ 
+  #+end_src diff
+
+- Invoking      : (print (matlab-ts-mode--electric-pair-inhibit-predicate (char-before)))
+  Start point   :  181
+  No point movement
+  standard-output:
+  #+begin_example
+nil
+  #+end_example
+  No buffer modifications

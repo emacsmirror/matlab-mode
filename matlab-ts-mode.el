@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 7.2.1
+;; Version: 7.3.0
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -3225,12 +3225,10 @@ single quote string."
        ;;    double up if starting a new string => return nil
        ;; For:     s = '
        ;; we have: (source_file
-       ;;           (postfix_operator operand: (identifier)
-       ;;            (ERROR =)
-       ;;            ')
-       ;;           \n)
-       ((string= "'" type-back1 )
-        (not (equal (treesit-node-type (treesit-node-prev-sibling node-back1)) "ERROR")))
+       ;;           (ERROR (identifier) = '))
+       ((string= "'" type-back1)
+        (not (or (equal (treesit-node-type (treesit-node-prev-sibling node-back1)) "ERROR")
+                 (equal (treesit-node-type (treesit-node-parent node-back1)) "ERROR"))))
 
        ;; Case: inside a single quote string
        ;;    s = 'foobar'

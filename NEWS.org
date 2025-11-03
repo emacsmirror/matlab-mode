@@ -3,6 +3,11 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.3.0 Nov 3, 2025
+
+1. Updated matlab-ts-mode to work with tree-sitter-matlab commit. This fixes all known parse issues
+   in matlab-ts-mode.
+
 * Release 7.2.1 Oct 30, 2025
 
 1. In matlab-ts-mode, fix indent involving catch clause with a comment.

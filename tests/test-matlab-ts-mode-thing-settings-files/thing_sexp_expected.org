@@ -183,13 +183,13 @@
 
 - Invoking      : "C-M-f" = forward-sexp
   Start point   :  615
-  Moved to point:  706
-  : 29:15:             end
-  :                       ^
+  Moved to point:  708
+  : 31:0:             global gVar1 gVar2
+  :       ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  706
+  Start point   :  708
   Moved to point:  738
   : 31:30:             global gVar1 gVar2
   :                                      ^

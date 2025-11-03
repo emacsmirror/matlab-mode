@@ -23,15 +23,24 @@
 (require 't-utils)
 (require 'matlab-ts-mode)
 
+(defvar test-package-version--el-files-dir nil
+  "Cache location of the *.el files.
+This enables running of the test be run from any directory after it's
+been run once.")
+
 (ert-deftest test-package-version ()
   "Validate the package version numbers in ../*.el are the same.
 Emacs MATLAB mode package consists of several major and minor modes and
 for simplicity we require that the versions of these be the same."
 
-  (when (not (file-exists-p "../matlab-ts-mode.el"))
-    (error "../matlab-ts-mode.el doesn't exist, is the current directory correct?"))
+  (when (not test-package-version--el-files-dir)
+    (when (not (file-exists-p "../matlab-ts-mode.el"))
+      (error "../matlab-ts-mode.el doesn't exist, is the current directory correct?"))
+    (setq test-package-version--el-files-dir
+          (file-name-as-directory (file-truename ".."))))
 
-  (let ((el-files (directory-files ".." t "\\.el\\'"))
+  (let ((el-files (directory-files test-package-version--el-files-dir t
+                                   "\\.el\\'"))
         (version-lines "")
         (all-versions-consistent t)
         first-ver)
@@ -55,7 +64,9 @@ for simplicity we require that the versions of these be the same."
       (error "Failed to find Version's in *.el files"))
 
     (let ((news-release-version (with-temp-buffer
-                                  (insert-file-contents-literally "../NEWS.org")
+                                  (insert-file-contents-literally
+                                   (concat test-package-version--el-files-dir
+                                           "NEWS.org"))
                                   (goto-char (point-min))
                                   (re-search-forward "^\\* Release \\([.0-9]+\\)")
                                   (let ((ver (match-string 1))
