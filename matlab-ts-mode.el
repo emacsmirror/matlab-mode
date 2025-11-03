@@ -1219,7 +1219,16 @@ is where we start looking for the error node."
                              (treesit-node-type check-node))
         (goto-char (treesit-node-start check-node))
         (if (re-search-backward "[^ \t\n\r]" nil t)
-            (setq check-node (treesit-node-at (point)))
+            (let* ((pt (point))
+                   (node-at-pt (treesit-node-at pt)))
+              ;; Be robust to node-at-point range not covering pt
+              ;; See: https://github.com/acristoffers/tree-sitter-matlab/issues/116
+              ;; TODO - do we need to do this elsewhere?
+              (while (and node-at-pt
+                          (or (<  pt (treesit-node-start node-at-pt))
+                              (>= pt (treesit-node-end   node-at-pt))))
+                (setq node-at-pt (treesit-node-parent node-at-pt)))
+              (setq check-node node-at-pt))
           ;; at start of buffer
           (setq check-node nil)))
 
