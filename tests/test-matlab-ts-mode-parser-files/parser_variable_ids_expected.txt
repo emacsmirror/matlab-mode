@@ -1,23 +1,24 @@
-# tree-sitter parse tree annotated with [NODE_START,NODE_END)@{NODE_TEXT}@
+# -*- t-utils-ts-syntax-tree -*-
+# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@
 # where node is of length NODE-END - NODE_START
-(source_file (comment[1,20)@{% -*- matlab-ts -*-}@)
- (function_definition function
-  (function_output (identifier[31,35)@{out1}@) =)
-  name: (identifier[38,57)@{parser_variable_ids}@)
-  (function_arguments ( arguments: (identifier[58,61)@{in1}@) ))
-  \n
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[22,30]
+  (function_output (identifier[31,35]@{out1}@) =[36,37])
+  name: (identifier[38,57]@{parser_variable_ids}@)
+  (function_arguments ([57,58] arguments: (identifier[58,61]@{in1}@) )[61,62])
+  \n[63,64]
   (block
-   (assignment left: (identifier[68,72)@{out1}@) =
+   (assignment left: (identifier[68,72]@{out1}@) =[73,74]
     right: 
      (binary_operator
-      left: (binary_operator left: (identifier[75,78)@{in1}@) * right: (number[81,82)@{2}@))
-      +
-      right: (field_expression object: (identifier[85,88)@{foo}@) . field: (identifier[89,93)@{out1}@))))
-   ;
-   (assignment left: (identifier[99,103)@{out1}@) =
+      left: (binary_operator left: (identifier[75,78]@{in1}@) *[79,80] right: (number[81,82]@{2}@))
+      +[83,84]
+      right: (field_expression object: (identifier[85,88]@{foo}@) .[88,89] field: (identifier[89,93]@{out1}@))))
+   ;[93,94]
+   (assignment left: (identifier[99,103]@{out1}@) =[104,105]
     right: 
-     (binary_operator left: (identifier[106,110)@{out1}@) +
-      right: (binary_operator left: (number[113,114)@{2}@) * right: (identifier[117,121)@{out1}@))))
-   ; \n)
-  end)
- \n)
+     (binary_operator left: (identifier[106,110]@{out1}@) +[111,112]
+      right: (binary_operator left: (number[113,114]@{2}@) *[115,116] right: (identifier[117,121]@{out1}@))))
+   ;[121,122] \n[122,123])
+  end[123,126])
+ \n[126,128])

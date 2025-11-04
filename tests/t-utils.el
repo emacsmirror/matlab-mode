@@ -2792,15 +2792,19 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
                 (setq node-text (replace-regexp-in-string (car pair) (cdr pair) node-text)))
               (when (> (length node-text) 50)
                 (setq node-text (concat (substring node-text 0 50) "...")))
-              (insert (format "[%d,%d)@{%s}@"
+              (insert (format "[%d,%d]@{%s}@"
                               (treesit-node-start node)
                               (treesit-node-end node)
                               node-text)))))
+      ;; else unnamed node
       (pcase type
         ("\n" (insert "\\n"))
         ("\t" (insert "\\t"))
         (" "  (insert "SPC"))
-        (_    (insert type))))
+        (_    (insert type)))
+      (insert (format "[%d,%d]"
+                      (treesit-node-start node)
+                      (treesit-node-end node))))
 
     ;; Draw children.
     (dolist (child children)
@@ -2826,12 +2830,77 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
   (let ((root (or (treesit-buffer-root-node)
                   (error "No tree-sitter root node"))))
     (with-temp-buffer
-      (insert "# tree-sitter parse tree annotated with [NODE_START,NODE_END)@{NODE_TEXT}@\n")
+      (insert "# -*- t-utils-ts-syntax-tree -*-\n")
+      (insert "# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@\n")
       (insert "# where node is of length NODE-END - NODE_START\n")
       (t-utils--syntax-tree-draw-node root)
       (goto-char (point-max))
       (insert "\n")
       (buffer-string))))
+
+(defvar t-utils--ts-syntax-tree-mode-syntax-table
+  (let ((table (make-syntax-table)))
+    (modify-syntax-entry ?\# "<" table)
+    (modify-syntax-entry ?\n ">" table)
+    (modify-syntax-entry ?'  "_" table)
+    (modify-syntax-entry ?\" "_" table)
+    table)
+  "Syntax table for `t-utils-ts-syntax-tree-mode'.")
+
+(defface t-utils-ts-syntax-tree-code-face
+  '((t
+     :inherit default
+     :box t
+     :bold t))
+  "The face used for code.")
+
+(defvar t-utils--ts-syntax-tree-font-lock-keywords
+  (list
+   ;; (NODE_TYPE[NODE_START,NODE_END)@{NODE_TEXT}@
+   (list (concat "\\((\\)"                      ;; 1 (
+                 "\\([a-zA-Z][^[ \t\n\r]+\\)"   ;; 2 NODE_TYPE
+                 "\\(\\["                       ;; 3 [
+                 "[0-9]+"                       ;;   NODE_START
+                 ","                            ;;   ,
+                 "[0-9]+"                       ;;   NODE_END
+                 "\\]\\)"                         ;;   ]
+                 "\\(@{\\)"                     ;; 4 @{
+                 "\\(.+?\\)"                    ;; 5 NODE_TEXT
+                 "\\(}@\\)")                    ;; 6 }@
+         '(1 'shadow)
+         '(2 'font-lock-function-name-face)
+         '(3 'font-lock-constant-face)
+         '(4 'shadow)
+         '(5 't-utils-ts-syntax-tree-code-face prepend)
+         '(6 'shadow prepend))
+   ;; FIELD:
+   (list "\\([a-zA-Z]+:\\)"
+         '(1 'font-lock-property-name-face))
+   ;; CODE[START,END)
+   (list (concat "\\([^ \t\n\r]+\\)" ;; 1 CODE
+                 "\\(\\["            ;; 2 [
+                 "[0-9]+"            ;;   START
+                 ","                 ;;   ,
+                 "[0-9]+"            ;;   END
+                 "\\]\\)")           ;;   ]
+         '(1 't-utils-ts-syntax-tree-code-face)
+         '(2 ''font-lock-constant-face))
+   ;; (NODE
+   (list (concat "\\((\\)"              ;; 1 (
+                 "\\([^ \t\n\r]+\\)")   ;; 2 NODE
+         '(1 'shadow)
+         '(2 'font-lock-keyword-face))
+   ;; ) closing end of node
+   (list "\\()\\)"
+         '(1 'shadow))
+   )
+  "Keywords to fontify in `sbmgr-mode'.")
+
+(define-derived-mode t-utils-ts-syntax-tree-mode fundamental-mode "ts-syntax-tree" ()
+  "Major mode for treesit syntax trees created by `t-utils--get-syntax-tree'."
+  (set-syntax-table t-utils--ts-syntax-tree-mode-syntax-table)
+  (setq-local font-lock-defaults '((t-utils--ts-syntax-tree-font-lock-keywords) nil nil nil))
+  (read-only-mode 1))
 
 (defun t-utils--test-parser-error-node-checker (lang-file _got _got-file _expected _expected-file)
   "Check ERROR node status for `t-utils-test-parser'.
@@ -2946,8 +3015,6 @@ To debug a specific -parser test file
                               test-name start-time
                               lang-file got got-file expected expected-file
                               #'t-utils--test-parser-error-node-checker)))
-
-              (kill-buffer)
 
               (when error-msg
                 (push error-msg error-msgs)))))))

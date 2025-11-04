@@ -1,64 +1,65 @@
-# tree-sitter parse tree annotated with [NODE_START,NODE_END)@{NODE_TEXT}@
+# -*- t-utils-ts-syntax-tree -*-
+# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@
 # where node is of length NODE-END - NODE_START
-(source_file (comment[1,20)@{% -*- matlab-ts -*-}@) (comment[22,89)@{% See https://github.com/acristoffers/tree-sitter-...}@)
- (assignment left: (identifier[91,93)@{v1}@) =
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[91,93]@{v1}@) =[94,95]
   right: 
-   (cell {
+   (cell {[96,97]
     (row
-     (binary_operator left: (number[97,98)@{1}@) + right: (number[101,102)@{2}@)))
-    }))
- ;
- (assignment left: (identifier[106,108)@{v2}@) =
+     (binary_operator left: (number[97,98]@{1}@) +[99,100] right: (number[101,102]@{2}@)))
+    }[102,103]))
+ ;[103,104]
+ (assignment left: (identifier[106,108]@{v2}@) =[109,110]
   right: 
-   (cell { (line_continuation[113,117)@{...\n}@)
+   (cell {[111,112] (line_continuation[113,117]@{...\n}@)
     (row
-     (binary_operator left: (number[124,125)@{1}@) (line_continuation[126,137)@{...\n       }@) + (line_continuation[139,143)@{...\n}@) right: (number[150,151)@{2}@)))
-    }))
- ;
- (function_call name: (identifier[161,167)@{assert}@) (
+     (binary_operator left: (number[124,125]@{1}@) (line_continuation[126,137]@{...\n       }@) +[137,138] (line_continuation[139,143]@{...\n}@) right: (number[150,151]@{2}@)))
+    }[157,158]))
+ ;[158,159]
+ (function_call name: (identifier[161,167]@{assert}@) ([167,168]
   (arguments
    argument: 
-    (function_call name: (identifier[168,175)@{isequal}@) (
-     (arguments argument: (identifier[176,178)@{v1}@) , (identifier[180,182)@{v2}@))
-     )))
-  ))
- \n
- (assignment left: (identifier[186,188)@{v3}@) =
+    (function_call name: (identifier[168,175]@{isequal}@) ([175,176]
+     (arguments argument: (identifier[176,178]@{v1}@) ,[178,179] (identifier[180,182]@{v2}@))
+     )[182,183]))
+  )[183,184])
+ \n[184,186]
+ (assignment left: (identifier[186,188]@{v3}@) =[189,190]
   right: 
-   (matrix [
+   (matrix [[191,192]
     (row
-     (binary_operator left: (number[192,193)@{1}@) + right: (number[196,197)@{2}@)))
-    ]))
- ;
- (assignment left: (identifier[201,203)@{v4}@) =
+     (binary_operator left: (number[192,193]@{1}@) +[194,195] right: (number[196,197]@{2}@)))
+    ][197,198]))
+ ;[198,199]
+ (assignment left: (identifier[201,203]@{v4}@) =[204,205]
   right: 
-   (matrix [ (line_continuation[208,212)@{...\n}@)
+   (matrix [[206,207] (line_continuation[208,212]@{...\n}@)
     (row
-     (binary_operator left: (number[219,220)@{1}@) (line_continuation[221,232)@{...\n       }@) + (line_continuation[234,238)@{...\n}@) right: (number[245,246)@{2}@)))
-    ]))
- ;
- (function_call name: (identifier[256,262)@{assert}@) (
+     (binary_operator left: (number[219,220]@{1}@) (line_continuation[221,232]@{...\n       }@) +[232,233] (line_continuation[234,238]@{...\n}@) right: (number[245,246]@{2}@)))
+    ][252,253]))
+ ;[253,254]
+ (function_call name: (identifier[256,262]@{assert}@) ([262,263]
   (arguments
    argument: 
-    (function_call name: (identifier[263,270)@{isequal}@) (
-     (arguments argument: (identifier[271,273)@{v3}@) , (identifier[275,277)@{v4}@))
-     )))
-  ))
- \n
- (assignment left: (identifier[281,283)@{v5}@) =
-  right: (binary_operator left: (number[286,287)@{1}@) + right: (number[290,291)@{2}@)))
- ;
- (assignment left: (identifier[294,296)@{v6}@) =
+    (function_call name: (identifier[263,270]@{isequal}@) ([270,271]
+     (arguments argument: (identifier[271,273]@{v3}@) ,[273,274] (identifier[275,277]@{v4}@))
+     )[277,278]))
+  )[278,279])
+ \n[279,281]
+ (assignment left: (identifier[281,283]@{v5}@) =[284,285]
+  right: (binary_operator left: (number[286,287]@{1}@) +[288,289] right: (number[290,291]@{2}@)))
+ ;[291,292]
+ (assignment left: (identifier[294,296]@{v6}@) =[297,298]
   right: 
-   (parenthesis (
-    (binary_operator left: (number[300,301)@{1}@) (line_continuation[302,306)@{...\n}@) + (line_continuation[314,318)@{...\n}@) right: (number[324,325)@{2}@))
-    )))
- ;
- (function_call name: (identifier[329,335)@{assert}@) (
+   (parenthesis ([299,300]
+    (binary_operator left: (number[300,301]@{1}@) (line_continuation[302,306]@{...\n}@) +[312,313] (line_continuation[314,318]@{...\n}@) right: (number[324,325]@{2}@))
+    )[325,326]))
+ ;[326,327]
+ (function_call name: (identifier[329,335]@{assert}@) ([335,336]
   (arguments
    argument: 
-    (function_call name: (identifier[336,343)@{isequal}@) (
-     (arguments argument: (identifier[344,346)@{v5}@) , (identifier[348,350)@{v6}@))
-     )))
-  ))
- \n)
+    (function_call name: (identifier[336,343]@{isequal}@) ([343,344]
+     (arguments argument: (identifier[344,346]@{v5}@) ,[346,347] (identifier[348,350]@{v6}@))
+     )[350,351]))
+  )[351,352])
+ \n[352,353])

@@ -1,6 +1,7 @@
-# tree-sitter parse tree annotated with [NODE_START,NODE_END)@{NODE_TEXT}@
+# -*- t-utils-ts-syntax-tree -*-
+# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@
 # where node is of length NODE-END - NODE_START
-(source_file (comment[1,20)@{% -*- matlab-ts -*-}@)
- (ERROR (identifier[22,23)@{a}@) =
-  (binary_operator left: (number[26,27)@{1}@) + right: (number[30,31)@{2}@))
-  +))
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (ERROR (identifier[22,23]@{a}@) =[24,25]
+  (binary_operator left: (number[26,27]@{1}@) +[28,29] right: (number[30,31]@{2}@))
+  +[32,33]))

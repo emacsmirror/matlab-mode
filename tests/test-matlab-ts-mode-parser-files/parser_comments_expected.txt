@@ -1,0 +1,14 @@
+# -*- t-utils-ts-syntax-tree -*-
+# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@
+# where node is of length NODE-END - NODE_START
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[22,30]
+  (function_output (identifier[31,34]@{out}@) =[35,36])
+  name: (identifier[37,52]@{parser_comments}@) \n[52,53]
+  (block
+   (assignment left: (identifier[57,58]@{a}@) =[59,60] right: (number[61,62]@{1}@))
+   ;[62,63] (comment[64,68]@{%#ok}@)
+   (assignment left: (identifier[73,76]@{out}@) =[77,78] right: (number[79,80]@{1}@))
+   ;[80,81] \n[81,82])
+  end[82,85])
+ \n[85,86])
