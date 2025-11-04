@@ -1,5 +1,6 @@
-# tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}
-(source_file (comment[1,20]{% -*- matlab-ts -*-})
- (assignment left: (identifier[22,23]{a}) =
-  right: (binary_operator left: (number[26,27]{1}) + right: (number[30,31]{2})))
+# tree-sitter parse tree annotated with [NODE_START,NODE_END)@{NODE_TEXT}@
+# where node is of length NODE-END - NODE_START
+(source_file (comment[1,20)@{% -*- matlab-ts -*-}@)
+ (assignment left: (identifier[22,23)@{a}@) =
+  right: (binary_operator left: (number[26,27)@{1}@) + right: (number[30,31)@{2}@)))
  ; \n)

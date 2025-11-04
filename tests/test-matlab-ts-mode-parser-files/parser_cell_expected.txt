@@ -1,22 +1,23 @@
-# tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}
-(source_file (comment[1,20]{% -*- matlab-ts -*-})
- (assignment left: (identifier[22,23]{a}) =
+# tree-sitter parse tree annotated with [NODE_START,NODE_END)@{NODE_TEXT}@
+# where node is of length NODE-END - NODE_START
+(source_file (comment[1,20)@{% -*- matlab-ts -*-}@)
+ (assignment left: (identifier[22,23)@{a}@) =
   right: 
    (cell {
     (row
      (cell {
-      (row (number[28,29]{1}) , (number[31,32]{2}))
+      (row (number[28,29)@{1}@) , (number[31,32)@{2}@))
       }))
     ;
     (row
      (cell {
-      (row (number[41,42]{3}) , (number[44,45]{4}))
+      (row (number[41,42)@{3}@) , (number[44,45)@{4}@))
       }))
-    ; (comment[53,64]{% comment 1})
+    ; (comment[53,64)@{% comment 1}@)
     (row
-     (range (number[70,71]{1}) : (number[72,74]{10})))
-    (comment[80,91]{% comment 2}) }))
+     (range (number[70,71)@{1}@) : (number[72,74)@{10}@)))
+    (comment[80,91)@{% comment 2}@) }))
  ;
- (assignment left: (identifier[100,101]{b}) =
-  right: (string " (string_content[105,117]{not a \{cell\}}) "))
- ; (comment[121,132]{%\{\n  foo\n%\}}) \n)
+ (assignment left: (identifier[100,101)@{b}@) =
+  right: (string " (string_content[105,117)@{not a \{cell\}}@) "))
+ ; (comment[121,132)@{%\{\n  foo\n%\}}@) \n)

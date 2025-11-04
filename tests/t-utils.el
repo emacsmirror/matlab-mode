@@ -2792,7 +2792,7 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
                 (setq node-text (replace-regexp-in-string (car pair) (cdr pair) node-text)))
               (when (> (length node-text) 50)
                 (setq node-text (concat (substring node-text 0 50) "...")))
-              (insert (format "[%d,%d]{%s}"
+              (insert (format "[%d,%d)@{%s}@"
                               (treesit-node-start node)
                               (treesit-node-end node)
                               node-text)))))
@@ -2826,7 +2826,8 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
   (let ((root (or (treesit-buffer-root-node)
                   (error "No tree-sitter root node"))))
     (with-temp-buffer
-      (insert "# tree-sitter parse tree annotated with [NODE-START,NODE-END]{NODE-TEXT}\n")
+      (insert "# tree-sitter parse tree annotated with [NODE_START,NODE_END)@{NODE_TEXT}@\n")
+      (insert "# where node is of length NODE-END - NODE_START\n")
       (t-utils--syntax-tree-draw-node root)
       (goto-char (point-max))
       (insert "\n")
