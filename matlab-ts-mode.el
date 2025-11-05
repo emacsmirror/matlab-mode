@@ -1478,6 +1478,27 @@ Similar for case and otherwise statements."
     (and prev-sibling
          (string= (treesit-node-type prev-sibling) "line_continuation"))))
 
+(defvar matlab-ts-mode--i-prior-line-anchor-point nil)
+
+(defun matlab-ts-mode--i-prior-line-anchor (&rest _)
+  "Return anchor point for `matlab-ts-mode--i-prior-line-matcher'."
+  matlab-ts-mode--i-prior-line-anchor-point)
+
+(defun matlab-ts-mode--i-prior-line-matcher (node _parent bol &rest _)
+  "Keep current indent level when NODE is nil.
+This occurs when RET was typed on prior line.
+BOL is beginning of line point for NODE.
+See: tests/test-matlab-ts-mode-indent-files/indent_line_cont_multiple_times.m"
+  (when (not node) ;; RET on prior line?
+    (save-excursion
+      (goto-char bol)
+      (when (>= (forward-line -1) 0)
+        (beginning-of-line)
+        (when (looking-at "^[ \t]*\\.\\.\\.")
+          (back-to-indentation)
+          (setq matlab-ts-mode--i-prior-line-anchor-point (point))
+          t)))))
+
 (defun matlab-ts-mode--i-cont-offset (node parent _bol &rest _)
   "Get the ellipsis continuation offset based on NODE with PARENT.
 This is `matlab-ts-mode--indent-level' or 0 when in a cell or matrix
@@ -1507,10 +1528,25 @@ row."
 
 (defvar matlab-ts-mode--i-cont-incomplete-matcher-pair)
 
-(cl-defun matlab-ts-mode--i-cont-incomplete-matcher (node parent _bol &rest _)
+(cl-defun matlab-ts-mode--i-cont-incomplete-matcher (node parent bol &rest _)
   "Is current line part of an ellipsis line continuation?
 If so, set `matlab-ts-mode--i-cont-incomplete-matcher-pair'.  This is for
-incomplete statements where NODE is nil and PARENT is line_continuation."
+incomplete statements where NODE is nil and PARENT is line_continuation
+or when NODE is non-nil and is a line_continuation only line.
+NODE is at BOL."
+
+  (when (and (equal (treesit-node-type node) "line_continuation")
+             (save-excursion
+               (goto-char bol)
+               (beginning-of-line)
+               (looking-at "^[ \t]*\\.\\.\\.")))
+    (save-excursion
+      (when (>= (forward-line -1) 0)
+        (beginning-of-line)
+        (back-to-indentation)
+        (setq matlab-ts-mode--i-cont-incomplete-matcher-pair
+              (cons (treesit-node-start (treesit-node-at (point))) 0))
+        (cl-return-from matlab-ts-mode--i-cont-incomplete-matcher t))))
 
   ;; Case when code is incomplete:
   ;;
@@ -2669,6 +2705,11 @@ Example:
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation.m
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_line_continuation_row.m
      (,#'matlab-ts-mode--i-cont-matcher parent ,#'matlab-ts-mode--i-cont-offset)
+
+     ;; I-Rule: prior line node
+     (,#'matlab-ts-mode--i-prior-line-matcher
+      ,#'matlab-ts-mode--i-prior-line-anchor
+      0)
 
      ;; I-Rule: Assert if no rule matched and asserts are enabled.
      ,matlab-ts-mode--indent-assert-rule
