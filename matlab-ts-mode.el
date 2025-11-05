@@ -2151,6 +2151,9 @@ Prev-siblings:
                                  prev-sibling-error-node)))
               (when (and (or (not node)
                              (not (equal node error-node)))
+                         ;; For condition (not (= bol (treesit-node-start error-node))), see
+                         ;; tests/test-matlab-ts-mode-indent-files/indent_parse_error_in_class.m
+                         (not (= bol (treesit-node-start error-node)))
                          (> (treesit-node-start error-node) (treesit-node-start anchor-node)))
                 (setq anchor-node error-node)))
 
