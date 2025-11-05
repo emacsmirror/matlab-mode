@@ -137,6 +137,11 @@
 ;;      example, `t-utils-sweep-test-indent' will run indent-region on all matched files under a
 ;;      directory tree looking for indent issues.
 ;;
+;;   6. Debugging the parse tree produced by tree-sitter
+;;
+;;      - Visit the file
+;;      - M-x t-utils-view-parse-tree
+;;
 ;; ----------------------------
 ;; | Example: font-lock tests |
 ;; ----------------------------
@@ -2665,8 +2670,8 @@ otherwise the result is displayed on stdout."
 
     (t-utils--log log-file (format "FINISHED: %s %s\n" test-name (t-utils--took start-time)))))
 
-(defun t-utils--syntax-tree-draw-node (node)
-  "Draw the syntax tree of NODE in the current buffer.
+(defun t-utils--parse-tree-draw-node (node)
+  "Draw the parse tree of NODE in the current buffer.
 
 When this function is called, point should be at the position where the
 node should start.  When this function returns, it leaves point at the
@@ -2694,7 +2699,7 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
   ;;
   ;; Debian 12                                        Windows
   ;; ----                                             -------
-  ;; t-utils--syntax-tree-draw-node                   t-utils--syntax-tree-draw-node
+  ;; t-utils--parse-tree-draw-node                    t-utils--parse-tree-draw-node
   ;; node: #<treesit-node source_file in 1-10>        node: #<treesit-node source_file in 1-10>
   ;; field-name: nil                                  field-name: nil
   ;; named: t                                         named: t
@@ -2815,46 +2820,46 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
             ;; Draw children on the same line.
             (progn
               (insert " ")
-              (t-utils--syntax-tree-draw-node child))
+              (t-utils--parse-tree-draw-node child))
           ;; Draw children on the new line.
           (insert "\n")
           (indent-to-column children-indent)
-          (t-utils--syntax-tree-draw-node child))
+          (t-utils--parse-tree-draw-node child))
         (setq can-inline draw-inline)))
 
     ;; Done drawing children, draw the ending paren.
     (when named (insert ")"))))
 
-(defun t-utils--get-syntax-tree ()
+(defun t-utils--get-parse-tree ()
   "Return the syntax tree for the current buffer."
   (let ((root (or (treesit-buffer-root-node)
                   (error "No tree-sitter root node"))))
     (with-temp-buffer
-      (insert "# -*- t-utils-ts-syntax-tree -*-\n")
+      (insert "# -*- t-utils-ts-parse-tree -*-\n")
       (insert "# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@\n")
-      (insert "# where node is of length NODE-END - NODE_START\n")
-      (t-utils--syntax-tree-draw-node root)
+      (insert "# where NODE_TEXT is of length NODE-END - NODE_START\n")
+      (t-utils--parse-tree-draw-node root)
       (goto-char (point-max))
       (insert "\n")
       (buffer-string))))
 
-(defvar t-utils--ts-syntax-tree-mode-syntax-table
+(defvar t-utils--ts-parse-tree-mode-syntax-table
   (let ((table (make-syntax-table)))
     (modify-syntax-entry ?\# "<" table)
     (modify-syntax-entry ?\n ">" table)
     (modify-syntax-entry ?'  "_" table)
     (modify-syntax-entry ?\" "_" table)
     table)
-  "Syntax table for `t-utils-ts-syntax-tree-mode'.")
+  "Syntax table for `t-utils-ts-parse-tree-mode'.")
 
-(defface t-utils-ts-syntax-tree-code-face
+(defface t-utils-ts-parse-tree-code-face
   '((t
      :inherit default
      :box t
      :bold t))
   "The face used for code.")
 
-(defvar t-utils--ts-syntax-tree-font-lock-keywords
+(defvar t-utils--ts-parse-tree-font-lock-keywords
   (list
    ;; (NODE_TYPE[NODE_START,NODE_END)@{NODE_TEXT}@
    (list (concat "\\((\\)"                      ;; 1 (
@@ -2871,7 +2876,8 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
          '(2 'font-lock-function-name-face)
          '(3 'font-lock-constant-face)
          '(4 'shadow)
-         '(5 't-utils-ts-syntax-tree-code-face prepend)
+         ;; prepend to cover when code text has a # which are header comments, but not when in code.
+         '(5 't-utils-ts-parse-tree-code-face prepend)
          '(6 'shadow prepend))
    ;; FIELD:
    (list "\\([a-zA-Z]+:\\)"
@@ -2883,7 +2889,7 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
                  ","                 ;;   ,
                  "[0-9]+"            ;;   END
                  "\\]\\)")           ;;   ]
-         '(1 't-utils-ts-syntax-tree-code-face)
+         '(1 't-utils-ts-parse-tree-code-face)
          '(2 ''font-lock-constant-face))
    ;; (NODE
    (list (concat "\\((\\)"              ;; 1 (
@@ -2894,13 +2900,29 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
    (list "\\()\\)"
          '(1 'shadow))
    )
-  "Keywords to fontify in `sbmgr-mode'.")
+  "Keywords to fontify in `t-utils-ts-parse-tree-mode'.")
 
-(define-derived-mode t-utils-ts-syntax-tree-mode fundamental-mode "ts-syntax-tree" ()
-  "Major mode for treesit syntax trees created by `t-utils--get-syntax-tree'."
-  (set-syntax-table t-utils--ts-syntax-tree-mode-syntax-table)
-  (setq-local font-lock-defaults '((t-utils--ts-syntax-tree-font-lock-keywords) nil nil nil))
+(define-derived-mode t-utils-ts-parse-tree-mode fundamental-mode "ts-parse-tree" ()
+  "Major mode for treesit parse trees created by `t-utils--get-parse-tree'."
+  (set-syntax-table t-utils--ts-parse-tree-mode-syntax-table)
+  (setq-local font-lock-defaults '((t-utils--ts-parse-tree-font-lock-keywords) nil nil nil))
   (read-only-mode 1))
+
+(defun t-utils-view-parse-tree ()
+  "View the tree-sitter parse/syntax tree for the current buffer."
+  (interactive)
+  (let* ((parse-tree (t-utils--get-parse-tree))
+         (view-buf-name (concat "*" (buffer-name) "-parse-tree*"))
+         (view-buf (get-buffer-create view-buf-name)))
+    (with-current-buffer view-buf
+      (read-only-mode -1)
+      (buffer-disable-undo)
+      (erase-buffer)
+      (insert parse-tree)
+      (goto-char (point-min))
+      (t-utils-ts-parse-tree-mode))
+    (pop-to-buffer view-buf)
+    view-buf))
 
 (defun t-utils--test-parser-error-node-checker (lang-file _got _got-file _expected _expected-file)
   "Check ERROR node status for `t-utils-test-parser'.
@@ -3009,7 +3031,7 @@ To debug a specific -parser test file
 
             (t-utils--insert-file-for-test lang-file)
 
-            (setq got (t-utils--get-syntax-tree))
+            (setq got (t-utils--get-parse-tree))
 
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
@@ -3030,3 +3052,4 @@ To debug a specific -parser test file
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash
 ;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's darwin libtree
+;; LocalWords:  defface fontify
