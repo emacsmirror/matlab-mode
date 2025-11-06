@@ -129,52 +129,56 @@ If UPDATE-IF-NEEDED is t, update the file by copying it, else return a
 string which is empty if no-updates needed, otherwise the string tells
 you that updates are needed."
 
-  (setq test-matlab-ts-mode-parser--file-ht (make-hash-table :test #'equal))
+  (let* ((me (symbol-file 'test-matlab-ts-mode-parser--all-files))
+         (my-dir (file-name-directory me))
+         (default-directory my-dir))
 
-  (let* ((all-m-files (cl-delete-if (lambda (m-file)
-                                      (let ((use (test-matlab-ts-mode-parser--use-file m-file)))
-                                        (not use)))
-                                    (directory-files-recursively "." (rx ".m" eos))))
-         (copy-of-m-files (cl-delete-if (lambda (m-file)
-                                          (not (string-match-p
-                                                "^./test-matlab-ts-mode-parser-files/copy-of-"
-                                                m-file)))
-                                        (directory-files-recursively
-                                         "./test-matlab-ts-mode-parser-files" (rx ".m" eos))))
-         (updates (mapcar #'test-matlab-ts-mode-parser--update-file all-m-files))
-         (n-updates 0))
+    (setq test-matlab-ts-mode-parser--file-ht (make-hash-table :test #'equal))
 
-    (dolist (tuple updates)
-      (let ((update (nth 0 tuple))
-            (m-file (nth 1 tuple))
-            (test-m-file (nth 2 tuple)))
-        (when update
+    (let* ((all-m-files (cl-delete-if (lambda (m-file)
+                                        (let ((use (test-matlab-ts-mode-parser--use-file m-file)))
+                                          (not use)))
+                                      (directory-files-recursively "." (rx ".m" eos))))
+           (copy-of-m-files (cl-delete-if (lambda (m-file)
+                                            (not (string-match-p
+                                                  "^./test-matlab-ts-mode-parser-files/copy-of-"
+                                                  m-file)))
+                                          (directory-files-recursively
+                                           "./test-matlab-ts-mode-parser-files" (rx ".m" eos))))
+           (updates (mapcar #'test-matlab-ts-mode-parser--update-file all-m-files))
+           (n-updates 0))
+
+      (dolist (tuple updates)
+        (let ((update (nth 0 tuple))
+              (m-file (nth 1 tuple))
+              (test-m-file (nth 2 tuple)))
+          (when update
+            (setq n-updates (1+ n-updates))
+            (when update-if-needed
+              (let ((dir (file-name-directory test-m-file)))
+                (when (not (file-directory-p dir))
+                  (make-directory dir t)))
+              (copy-file m-file test-m-file t)))))
+
+      (dolist (copy-of-m-file copy-of-m-files)
+        (when (not (gethash copy-of-m-file test-matlab-ts-mode-parser--file-ht))
           (setq n-updates (1+ n-updates))
           (when update-if-needed
-            (let ((dir (file-name-directory test-m-file)))
-              (when (not (file-directory-p dir))
-                (make-directory dir t)))
-            (copy-file m-file test-m-file t)))))
+            (delete-file copy-of-m-file))
+          (let ((expected (replace-regexp-in-string "\\.m$" "_expected.txt" copy-of-m-file)))
+            (when (file-exists-p expected)
+              (delete-file expected)
+              (when update-if-needed
+                expected)))))
 
-    (dolist (copy-of-m-file copy-of-m-files)
-      (when (not (gethash copy-of-m-file test-matlab-ts-mode-parser--file-ht))
-        (setq n-updates (1+ n-updates))
-        (when update-if-needed
-          (delete-file copy-of-m-file))
-        (let ((expected (replace-regexp-in-string "\\.m$" "_expected.txt" copy-of-m-file)))
-          (when (file-exists-p expected)
-            (delete-file expected)
-            (when update-if-needed
-              expected)))))
-
-    (if update-if-needed
-        (format "%d file(s) updated" n-updates)
-      (if (= n-updates 0)
-          ""
-        (format (concat "%d ./test-matlab-ts-mode-parser-files/*.m require updating, run  "
-                        "M-: (test-matlab-ts-mode-parser--all-files t)  "
-                        "to update them")
-                n-updates)))))
+      (if update-if-needed
+          (format "%d file(s) updated" n-updates)
+        (if (= n-updates 0)
+            ""
+          (format (concat "%d ./test-matlab-ts-mode-parser-files/*.m require updating, run  "
+                          "M-: (test-matlab-ts-mode-parser--all-files t)  "
+                          "to update them")
+                  n-updates))))))
 
 (provide 'test-matlab-ts-mode-parser)
 ;;; test-matlab-ts-mode-parser.el ends here
