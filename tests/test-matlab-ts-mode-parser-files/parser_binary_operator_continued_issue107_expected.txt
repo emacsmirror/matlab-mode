@@ -1,6 +1,4 @@
 # -*- t-utils-ts-parse-tree -*-
-# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@
-# where NODE_TEXT is of length NODE-END - NODE_START
 (source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
  (assignment left: (identifier[91,93]@{v1}@) =[94,95]
   right: 

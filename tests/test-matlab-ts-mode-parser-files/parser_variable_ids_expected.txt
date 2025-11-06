@@ -1,6 +1,4 @@
 # -*- t-utils-ts-parse-tree -*-
-# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@
-# where NODE_TEXT is of length NODE-END - NODE_START
 (source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
  (function_definition function[22,30]
   (function_output (identifier[31,35]@{out1}@) =[36,37])

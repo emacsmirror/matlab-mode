@@ -52,7 +52,10 @@ To add a test, create
 and run this function.  The baseline is saved for you as
   ./test-matlab-ts-mode-parser-files/NAME_expected.txt~
 after validating it, rename it to
-  ./test-matlab-ts-mode-parser-files/NAME_expected.txt"
+  ./test-matlab-ts-mode-parser-files/NAME_expected.txt
+
+To understand the format of NAME_expected.txt files, see
+`t-utils-view-parse-tree'."
 
   (let* ((test-name "test-matlab-ts-mode-parser")
          (m-files (t-utils-get-files

@@ -2677,6 +2677,8 @@ otherwise the result is displayed on stdout."
 
     (t-utils--log log-file (format "FINISHED: %s %s\n" test-name (t-utils--took start-time)))))
 
+(defvar t-utils--parse-tree-max-text-chars-to-show 50)
+
 (defun t-utils--parse-tree-draw-node (node)
   "Draw the parse tree of NODE in the current buffer.
 
@@ -2802,8 +2804,11 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
                                   '("{"  . "\\\\{")
                                   '("}"  . "\\\\}")))
                 (setq node-text (replace-regexp-in-string (car pair) (cdr pair) node-text)))
-              (when (> (length node-text) 50)
-                (setq node-text (concat (substring node-text 0 50) "...")))
+              (when (> (length node-text) t-utils--parse-tree-max-text-chars-to-show)
+                (setq node-text (concat (substring node-text
+                                                   0
+                                                   t-utils--parse-tree-max-text-chars-to-show)
+                                        "...")))
               (insert (format "[%d,%d]@{%s}@"
                               (treesit-node-start node)
                               (treesit-node-end node)
@@ -2842,22 +2847,22 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
   (let ((root (or (treesit-buffer-root-node)
                   (error "No tree-sitter root node"))))
     (with-temp-buffer
+      (indent-tabs-mode 0)
       (insert "# -*- t-utils-ts-parse-tree -*-\n")
-      (insert "# tree-sitter parse tree annotated with [NODE_START,NODE_END]@{NODE_TEXT}@\n")
-      (insert "# where NODE_TEXT is of length NODE-END - NODE_START\n")
       (t-utils--parse-tree-draw-node root)
       (goto-char (point-max))
       (insert "\n")
       (buffer-string))))
 
-(defvar t-utils--ts-parse-tree-mode-syntax-table
-  (let ((table (make-syntax-table)))
-    (modify-syntax-entry ?\# "<" table)
-    (modify-syntax-entry ?\n ">" table)
-    (modify-syntax-entry ?'  "_" table)
-    (modify-syntax-entry ?\" "_" table)
-    table)
-  "Syntax table for `t-utils-ts-parse-tree-mode'.")
+;;xxx
+;; (defvar t-utils--ts-parse-tree-mode-syntax-table
+;;   (let ((table (make-syntax-table)))
+;;     (modify-syntax-entry ?\# "<" table)
+;;     (modify-syntax-entry ?\n ">" table)
+;;     (modify-syntax-entry ?'  "_" table)
+;;     (modify-syntax-entry ?\" "_" table)
+;;     table)
+;;   "Syntax table for `t-utils-ts-parse-tree-mode'.")
 
 (defface t-utils-ts-parse-tree-code-face
   '((t
@@ -2868,6 +2873,10 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
 
 (defvar t-utils--ts-parse-tree-font-lock-keywords
   (list
+   ;; # comment lines. Note we don't use the syntax-table comment entries because
+   ;; the '#' character can appear in node text
+   (list "^\\(#.+\\)$"
+         '(1 'font-lock-comment-face))
    ;; (NODE_TYPE[NODE_START,NODE_END)@{NODE_TEXT}@
    (list (concat "\\((\\)"                      ;; 1 (
                  "\\([a-zA-Z][^[ \t\n\r]+\\)"   ;; 2 NODE_TYPE
@@ -2883,9 +2892,8 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
          '(2 'font-lock-function-name-face)
          '(3 'font-lock-constant-face)
          '(4 'shadow)
-         ;; prepend to cover when code text has a # which are header comments, but not when in code.
-         '(5 't-utils-ts-parse-tree-code-face prepend)
-         '(6 'shadow prepend))
+         '(5 't-utils-ts-parse-tree-code-face)
+         '(6 'shadow))
    ;; FIELD:
    (list "\\([a-zA-Z]+:\\)"
          '(1 'font-lock-property-name-face))
@@ -2909,26 +2917,79 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
    )
   "Keywords to fontify in `t-utils-ts-parse-tree-mode'.")
 
+(defvar-local t-utils-ts-parse-tree--code-buf nil)
+
+(defun t-utils-ts-parse-tree-update ()
+  "Update the parse tree shown by `t-utils-view-parse-tree'."
+  (interactive)
+  (unless t-utils-ts-parse-tree--code-buf
+    (error "No previously parsed buffer"))
+  (when (not (buffer-live-p t-utils-ts-parse-tree--code-buf))
+    (error "Previously parsed buffer was killed"))
+  (with-current-buffer t-utils-ts-parse-tree--code-buf
+    (t-utils-view-parse-tree 'no-pop-to-buffer)))
+
+(defvar-keymap t-utils-ts-parse-tree-mode-map
+  "g" #'t-utils-ts-parse-tree-update)
+
 (define-derived-mode t-utils-ts-parse-tree-mode fundamental-mode "ts-parse-tree" ()
   "Major mode for treesit parse trees created by `t-utils--get-parse-tree'."
-  (set-syntax-table t-utils--ts-parse-tree-mode-syntax-table)
+;;xxx  (set-syntax-table t-utils--ts-parse-tree-mode-syntax-table)
   (setq-local font-lock-defaults '((t-utils--ts-parse-tree-font-lock-keywords) nil nil nil))
   (read-only-mode 1))
 
-(defun t-utils-view-parse-tree ()
-  "View the tree-sitter parse/syntax tree for the current buffer."
+(defun t-utils-view-parse-tree (&optional no-pop-to-buffer)
+  "View the tree-sitter parse tree for the current buffer.
+
+Optional NO-POP-TO-BUFFER, if non-nil will not run `pop-to-buffer'.
+
+The parse tree is a concrete syntax tree for the current buffer.
+The tree contains named and anonymous nodes.  Consider:
+
+ a = 1;
+ b = 2;
+ c = a + b;
+
+The parse tree is:
+
+ (source_file
+  (assignment left: (identifier[1,2]@{a}@) =[3,4] right: (number[5,6]@{1}@))
+  ;[6,7]
+  (assignment left: (identifier[8,9]@{b}@) =[10,11] right: (number[12,13]@{2}@))
+  ;[13,14]
+  (binary_operator left: (identifier[16,17]@{a}@) +[18,19] right:
+                                                       (identifier[20,21]@{b}@))
+  ;[21,22] \n[22,24])
+
+Named nodes    : source_file  assignment  identifier  number  binary_operator
+Anonymous nodes: =  +
+
+Notice that near each node we have a range of form [START,END] where the
+node text starts at START point and ends one before END point.  The
+length of text for the node is END-START.  For named nodes, the first
+`t-utils--parse-tree-max-text-chars-to-show' characters of the node text
+is shown in @{NODE_TEXT}@.
+
+The program code node text is shown using
+`t-utils-ts-parse-tree-code-face', which by default uses a font that
+places a box around the text if that font is available."
+
   (interactive)
-  (let* ((parse-tree (t-utils--get-parse-tree))
+  (let* ((code-buf (current-buffer))
+         (parse-tree (t-utils--get-parse-tree))
          (view-buf-name (concat "*" (buffer-name) "-parse-tree*"))
          (view-buf (get-buffer-create view-buf-name)))
     (with-current-buffer view-buf
       (read-only-mode -1)
+      (auto-revert-mode 0) ;; no need to save history
       (buffer-disable-undo)
       (erase-buffer)
       (insert parse-tree)
       (goto-char (point-min))
-      (t-utils-ts-parse-tree-mode))
-    (pop-to-buffer view-buf)
+      (t-utils-ts-parse-tree-mode)
+      (setq-local t-utils-ts-parse-tree--code-buf code-buf))
+    (when (not no-pop-to-buffer)
+      (pop-to-buffer view-buf 'other-window))
     view-buf))
 
 (defun t-utils--test-parser-error-node-checker (lang-file _got _got-file _expected _expected-file)
@@ -3059,4 +3120,4 @@ To debug a specific -parser test file
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash
 ;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's darwin libtree
-;; LocalWords:  defface fontify
+;; LocalWords:  defface fontify keymap
