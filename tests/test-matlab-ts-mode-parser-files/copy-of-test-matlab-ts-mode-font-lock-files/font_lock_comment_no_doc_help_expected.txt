@@ -1,0 +1,12 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
+ (function_definition function[27,35]
+  (function_output (identifier[36,39]@{out}@) =[40,41])
+  name: (identifier[42,63]@{small_no_help_comment}@)
+  (function_arguments ([63,64] arguments: (identifier[64,66]@{in}@) )[66,67])
+  (comment[73,87]@{% code comment}@) \n[87,88]
+  (block
+   (assignment left: (identifier[92,95]@{out}@) =[96,97] right: (identifier[98,100]@{in}@))
+   ;[100,101] \n[101,102])
+  end[102,105])
+ \n[105,106])

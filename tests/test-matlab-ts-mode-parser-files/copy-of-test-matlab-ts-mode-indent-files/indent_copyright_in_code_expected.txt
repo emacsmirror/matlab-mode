@@ -1,0 +1,10 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,217]@{% t-utils-test-indent: no-line-by-line-indent - mu...}@)
+ (function_definition function[222,230]
+  (function_output (identifier[231,232]@{b}@) =[233,234])
+  name: (identifier[235,259]@{indent_copyright_in_code}@) (comment[263,309]@{%\{\n     sadf\n   \n         asdfasd     \n     %...}@) (comment[317,332]@{% foo\n    % foo}@) (comment[357,373]@{% copyright blah}@) (comment[383,388]@{% foo}@) \n[388,389]
+  (block
+   (assignment left: (identifier[399,400]@{b}@) =[401,402] right: (number[403,404]@{1}@))
+   ;[404,405] \n[405,406])
+  end[407,410])
+ \n[410,411])

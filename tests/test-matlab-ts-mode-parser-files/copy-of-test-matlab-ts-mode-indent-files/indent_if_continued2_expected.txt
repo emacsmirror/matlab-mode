@@ -1,0 +1,73 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[22,30] name: (identifier[31,51]@{indent_if_continued2}@) \n[51,53]
+  (block
+   (if_statement if[57,59]
+    condition: 
+     (boolean_operator
+      left: (boolean_operator left: (identifier[60,70]@{condition1}@) ||[71,73] (line_continuation[74,78]@{...\n}@) right: (identifier[85,95]@{condition2}@))
+      ||[96,98] (line_continuation[99,103]@{...\n}@)
+      right: 
+       (function_call name: (identifier[110,118]@{fcn_call}@) ([118,119]
+        (arguments argument: (identifier[119,123]@{arg1}@) ,[123,124] (identifier[125,129]@{arg2}@))
+        )[129,130]))
+    (block
+     (function_call name: (identifier[140,150]@{line_in_if}@) ([150,151] )[151,152])
+     ;[152,153] \n[153,155])
+    (elseif_clause elseif[159,165]
+     condition: 
+      (boolean_operator
+       left: 
+        (comparison_operator
+         (binary_operator left: (identifier[166,176]@{condition1}@) +[177,178] right: (identifier[179,189]@{condition2}@))
+         ==[190,192] (line_continuation[193,197]@{...\n}@) (number[208,215]@{2770000}@))
+       ||[216,218] (line_continuation[219,223]@{...\n}@)
+       right: 
+        (function_call name: (identifier[228,236]@{fcn_call}@) ([236,237]
+         (arguments argument: (identifier[237,241]@{arg1}@) ,[241,242] (identifier[243,247]@{arg2}@))
+         )[247,248]))
+     (block
+      (function_call name: (identifier[259,269]@{line_in_if}@) ([269,270] )[270,271])
+      ;[271,272] \n[272,273]))
+    (elseif_clause elseif[277,283]
+     condition: 
+      (parenthesis ([284,285]
+       (boolean_operator left: (identifier[285,295]@{condition2}@) ||[296,298] (line_continuation[299,303]@{...\n}@)
+        right: 
+         (parenthesis ([315,316]
+          (boolean_operator left: (identifier[316,326]@{condition3}@) &&[327,329] (line_continuation[330,334]@{...\n}@) right: (identifier[347,357]@{condition4}@))
+          )[357,358]))
+       )[358,359])
+     (block
+      (function_call name: (identifier[368,372]@{disp}@) ([372,373]
+       (arguments
+        argument: (string '[373,374] (string_content[374,379]@{hello}@) '[379,380]))
+       )[380,381])
+      \n[381,382]))
+    (elseif_clause elseif[386,392] (line_continuation[393,397]@{...\n}@)
+     condition: 
+      (boolean_operator left: (identifier[405,415]@{condition2}@) ||[416,418] (line_continuation[419,423]@{...\n}@)
+       right: 
+        (parenthesis ([431,432]
+         (boolean_operator left: (identifier[432,442]@{condition3}@) &&[443,445] (line_continuation[446,450]@{...\n}@) right: (identifier[459,469]@{condition4}@))
+         )[469,470]))
+     (block
+      (function_call name: (identifier[480,484]@{disp}@) ([484,485]
+       (arguments
+        argument: (string '[485,486] (string_content[486,491]@{hello}@) '[491,492]))
+       )[492,493])
+      \n[493,494]))
+    (else_clause else[498,502] (line_continuation[503,507]@{...\n}@) \n[515,517])
+    end[521,524])
+   \n[524,526]
+   (if_statement if[530,532] condition: (identifier[534,535]@{a}@) \n[535,536] \n[544,546] end[550,553])
+   \n[553,555]
+   (if_statement if[559,561] (line_continuation[565,569]@{...\n}@)
+    condition: 
+     (comparison_operator
+      (binary_operator left: (identifier[577,580]@{foo}@) +[581,582] (line_continuation[583,587]@{...\n}@) right: (identifier[595,599]@{bar2}@))
+      ==[600,602] (number[603,605]@{10}@))
+    \n[605,607] end[611,614])
+   \n[614,616])
+  end[616,619])
+ \n[619,620])

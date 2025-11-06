@@ -1,0 +1,22 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] name: (identifier[30,63]@{indent_failure_with_indent_region}@) \n[63,64]
+  (block
+   (assignment left: (identifier[68,77]@{var_types}@) =[78,79]
+    right: 
+     (cell {[80,81]
+      (row
+       (string '[90,91] (string_content[91,95]@{bool}@) '[95,96]))
+      ;[96,97]
+      (row
+       (string '[106,107] (string_content[107,111]@{int8}@) '[111,112]))
+      ;[112,113]
+      (row
+       (string '[122,123] (string_content[123,127]@{int8}@) '[127,128]))
+      ;[128,129]
+      (row
+       (string '[138,139] (string_content[139,143]@{int8}@) '[143,144]))
+      }[161,162]))
+   ;[162,163] \n[163,165])
+  end[165,168])
+ \n[168,169])

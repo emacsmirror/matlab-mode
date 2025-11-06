@@ -53,9 +53,8 @@ after validating it, rename it to
   (let* ((test-name "test-matlab-ts-mode-imenu-create-index-function")
          (m-files (t-utils-get-files
                    test-name
-                   (rx ".m" eos)
-                   nil
-                   test-matlab-ts-mode-imenu-create-index-function--file)))
+                   :base-regexp (rx ".m" eos)
+                   :file-to-use test-matlab-ts-mode-imenu-create-index-function--file)))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-imenu-create-index-function test-name m-files)))
 

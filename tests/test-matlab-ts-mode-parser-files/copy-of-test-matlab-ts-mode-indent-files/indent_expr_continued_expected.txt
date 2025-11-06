@@ -1,0 +1,45 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,118]@{% For boolean expressions when in an if statement ...}@)
+ (if_statement if[120,122]
+  condition: 
+   (boolean_operator
+    left: 
+     (boolean_operator
+      left: (field_expression object: (identifier[123,126]@{obj}@) .[126,127] field: (identifier[127,145]@{IsSomeLongFunction}@))
+      &&[146,148] (line_continuation[149,153]@{...\n}@)
+      right: 
+       (not_operator ~[156,157]
+        (function_call name: (identifier[157,163]@{strcmp}@) ([163,164]
+         (arguments
+          argument: (field_expression object: (identifier[164,167]@{obj}@) .[167,168] field: (identifier[168,177]@{property1}@))
+          ,[177,178]
+          (field_expression object: (identifier[179,182]@{obj}@) .[182,183] field: (identifier[183,192]@{property2}@)))
+         )[192,193])))
+    &&[194,196] (line_continuation[197,201]@{...\n}@) right: (identifier[204,217]@{someOtherCond}@))
+  (block
+   (function_call name: (identifier[222,226]@{disp}@) ([226,227]
+    (arguments
+     argument: (string '[227,228] (string_content[228,235]@{is true}@) '[235,236]))
+    )[236,237])
+   ;[237,238] \n[238,239])
+  end[239,242])
+ \n[242,244]
+ (assignment
+  left: (field_expression object: (identifier[244,245]@{s}@) .[245,246] field: (identifier[246,261]@{theThingEnabled}@))
+  =[262,263]
+  right: 
+   (boolean_operator
+    left: 
+     (boolean_operator
+      left: (field_expression object: (identifier[264,267]@{obj}@) .[267,268] field: (identifier[268,286]@{IsSomeLongFunction}@))
+      &&[287,289] (line_continuation[290,294]@{...\n}@)
+      right: 
+       (not_operator ~[314,315]
+        (function_call name: (identifier[315,321]@{strcmp}@) ([321,322]
+         (arguments
+          argument: (field_expression object: (identifier[322,325]@{obj}@) .[325,326] field: (identifier[326,335]@{property1}@))
+          ,[335,336]
+          (field_expression object: (identifier[337,340]@{obj}@) .[340,341] field: (identifier[341,350]@{property2}@)))
+         )[350,351])))
+    &&[352,354] (line_continuation[355,359]@{...\n}@) right: (identifier[379,392]@{someOtherCond}@)))
+ ;[392,393] \n[393,394])

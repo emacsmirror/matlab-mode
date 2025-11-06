@@ -1,0 +1,85 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] (line_continuation[30,40]@{... % foo\n}@) name: (identifier[44,52]@{imenu_g0}@) \n[52,53]
+  (block
+   (command (command_name[57,59]@{g1}@))
+   \n[59,60]
+   (command (command_name[64,66]@{g2}@))
+   \n[66,67]
+   (assignment left: (identifier[71,72]@{x}@) =[73,74] right: (identifier[75,77]@{g3}@))
+   ;[77,78]
+   (assignment
+    left: (multioutput_variable [[83,84] (identifier[84,85]@{a}@) ,[85,86] (identifier[87,88]@{b}@) ][88,89])
+    =[90,91]
+    right: 
+     (function_call name: (identifier[92,94]@{g4}@) ([94,95]
+      (arguments argument: (number[95,96]@{2}@))
+      )[96,97]))
+   ;[97,98] \n[98,99])
+  end[99,102])
+ \n[102,104]
+ (function_definition function[104,112] (line_continuation[112,116]@{...\n}@)
+  (function_output (identifier[124,125]@{a}@) =[126,127])
+  (line_continuation[128,138]@{... % foo\n}@) name: (identifier[146,148]@{g1}@) \n[148,149]
+  (block
+   (function_call name: (identifier[153,157]@{disp}@) ([157,158]
+    (arguments
+     argument: (string '[158,159] (string_content[159,164]@{in g1}@) '[164,165]))
+    )[165,166])
+   \n[166,167])
+  end[167,170])
+ \n[170,172]
+ (function_definition function[172,180] (line_continuation[181,185]@{...\n}@) (line_continuation[185,189]@{...\n}@) (line_continuation[189,197]@{...%foo\n}@) name: (identifier[205,207]@{g2}@) \n[207,208]
+  (block
+   (function_call name: (identifier[212,216]@{disp}@) ([216,217]
+    (arguments
+     argument: (string '[217,218] (string_content[218,223]@{in g2}@) '[223,224]))
+    )[224,225])
+   \n[225,226])
+  end[226,229])
+ \n[229,231]
+ (function_definition function[231,239]
+  (function_output (identifier[240,241]@{x}@) =[242,243])
+  (line_continuation[244,258]@{... % [a,b] =\n}@) name: (identifier[266,268]@{g3}@) \n[268,269]
+  (block
+   (function_call name: (identifier[273,277]@{disp}@) ([277,278]
+    (arguments
+     argument: (string '[278,279] (string_content[279,284]@{in g3}@) '[284,285]))
+    )[285,286])
+   \n[286,287]
+   (assignment left: (identifier[291,300]@{function2}@) =[301,302] right: (number[303,304]@{1}@))
+   ;[304,305]
+   (assignment left: (identifier[310,311]@{x}@) =[312,313] right: (identifier[314,323]@{function2}@))
+   ;[323,324] \n[324,325])
+  end[325,328])
+ \n[328,330]
+ (function_definition function[330,338]
+  (function_output
+   (multioutput_variable [[339,340] (line_continuation[341,345]@{...\n}@) (identifier[349,350]@{a}@) ,[350,351] (line_continuation[352,372]@{... % comment for a\n}@) (identifier[376,377]@{b}@) (line_continuation[379,399]@{... % comment for b\n}@) ][408,409])
+   (line_continuation[410,415]@{... \n}@) =[424,425])
+  (line_continuation[426,430]@{...\n}@) name: (identifier[439,441]@{g4}@)
+  (function_arguments ([441,442] arguments: (identifier[442,443]@{c}@) )[443,444])
+  \n[444,445]
+  (block
+   (function_definition function[449,457] name: (identifier[458,460]@{g5}@) \n[460,461]
+    (block
+     (function_call name: (identifier[469,473]@{disp}@) ([473,474]
+      (arguments
+       argument: (string '[474,475] (string_content[475,480]@{in g5}@) '[480,481]))
+      )[481,482])
+     \n[482,483])
+    end[487,490])
+   \n[490,492]
+   (function_call name: (identifier[496,500]@{disp}@) ([500,501]
+    (arguments
+     argument: (string '[501,502] (string_content[502,507]@{in g4}@) '[507,508]))
+    )[508,509])
+   \n[509,510]
+   (command (command_name[514,516]@{g5}@))
+   ;[516,517]
+   (assignment left: (identifier[522,523]@{a}@) =[524,525] right: (identifier[526,527]@{c}@))
+   ;[527,528]
+   (assignment left: (identifier[533,534]@{b}@) =[535,536] right: (identifier[537,538]@{c}@))
+   ;[538,539] \n[539,540])
+  end[540,543])
+ \n[543,544])

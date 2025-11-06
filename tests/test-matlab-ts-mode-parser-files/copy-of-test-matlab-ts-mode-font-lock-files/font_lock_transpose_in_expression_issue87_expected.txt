@@ -1,0 +1,23 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[90,91]@{v}@) =[91,92]
+  right: 
+   (cell {[92,93]
+    (row (number[93,94]@{1}@) ,[94,95] (number[95,96]@{2}@))
+    }[96,97]))
+ ;[97,98]
+ (function_call name: (identifier[99,104]@{myFcn}@) ([104,105]
+  (arguments
+   argument: 
+    (matrix [[105,106]
+     (row
+      (postfix_operator operand: (identifier[106,107]@{v}@) '[107,108]))
+     ;[109,110]
+     (row
+      (cell {[111,112]
+       (row
+        (matrix [[112,113] ][113,114]))
+       }[114,115]))
+     ][115,116]))
+  )[116,117])
+ ;[117,118] \n[118,119])

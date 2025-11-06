@@ -1,0 +1,15 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[21,29] name: (identifier[30,50]@{font_lock_class_enum}@)
+  (superclasses <[51,52]
+   (property_name (identifier[53,58]@{int32}@)))
+  \n[58,59]
+  (enumeration enumeration[62,73] \n[73,74]
+   (enum (identifier[80,83]@{Low}@) ([87,88] (number[88,89]@{0}@) )[89,90])
+   \n[90,91]
+   (enum (identifier[97,103]@{Medium}@) ([104,105] (number[105,106]@{1}@) )[106,107])
+   \n[107,108]
+   (enum (identifier[114,118]@{High}@) ([121,122] (number[122,123]@{2}@) )[123,124])
+   \n[124,125] end[128,131])
+  end[132,135])
+ \n[135,136])

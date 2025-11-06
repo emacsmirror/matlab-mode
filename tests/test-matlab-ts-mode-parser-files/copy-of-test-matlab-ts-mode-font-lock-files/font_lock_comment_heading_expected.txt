@@ -1,0 +1,14 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29]
+  (function_output
+   (multioutput_variable [[30,31] (identifier[31,32]@{a}@) ,[32,33] (identifier[34,35]@{b}@) ][35,36])
+   =[37,38])
+  name: (identifier[39,59]@{test_comment_heading}@) (comment[60,142]@{% help for test_comment_heading\n%\n% % isn't a se...}@) (comment[148,173]@{%%% not a comment heading}@) (comment[179,236]@{%%foo not a comment heading, must have at least on...}@) (comment[242,361]@{%% comment heading 1\n    % text here\n    %\n    ...}@) \n[361,363]
+  (block
+   (assignment left: (identifier[367,368]@{a}@) =[369,370] right: (number[371,372]@{1}@))
+   ;[372,373] (comment[374,398]@{%% not a comment heading}@) (comment[404,424]@{%% comment heading 2}@)
+   (assignment left: (identifier[430,431]@{b}@) =[432,433] right: (number[434,435]@{1}@))
+   ;[435,436] \n[436,437])
+  end[437,440])
+ \n[440,441])

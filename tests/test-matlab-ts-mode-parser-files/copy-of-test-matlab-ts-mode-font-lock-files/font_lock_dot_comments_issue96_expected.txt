@@ -1,0 +1,26 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (function_definition function[90,98] name: (identifier[99,102]@{foo}@)
+  (function_arguments ([102,103] arguments: (identifier[103,106]@{in1}@) )[106,107])
+  (comment[113,135]@{%.... block start ....}@) \n[135,137]
+  (block
+   (if_statement if[141,143]
+    condition: (comparison_operator (identifier[144,147]@{in1}@) <[148,149] (number[150,151]@{2}@))
+    (block
+     (function_call name: (identifier[160,164]@{disp}@) ([164,165]
+      (arguments
+       argument: (string '[165,166] (string_content[166,167]@{a}@) '[167,168]))
+      )[168,169])
+     \n[169,170])
+    (elseif_clause elseif[174,180]
+     condition: (comparison_operator (identifier[181,184]@{in1}@) >=[185,187] (number[188,189]@{2}@))
+     (block
+      (function_call name: (identifier[198,202]@{disp}@) ([202,203]
+       (arguments
+        argument: (string '[203,204] (string_content[204,205]@{c}@) '[205,206]))
+       )[206,207])
+      ;[207,208] \n[208,209]))
+    end[213,216])
+   (comment[222,242]@{%.... block end ....}@) \n[242,244])
+  end[244,247])
+ \n[247,249])

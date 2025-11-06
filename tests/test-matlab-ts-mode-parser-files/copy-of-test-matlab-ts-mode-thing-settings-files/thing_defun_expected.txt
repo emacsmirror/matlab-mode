@@ -1,0 +1,85 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[22,30]
+  (function_output (identifier[31,32]@{b}@) =[33,34])
+  name: (identifier[35,46]@{thing_defun}@)
+  (function_arguments ([46,47] arguments: (identifier[47,48]@{a}@) )[48,49])
+  (comment[55,131]@{% Case1: (t-utils-xr (beginning-of-defun))\n    % ...}@) \n[131,132]
+  (block
+   (assignment left: (identifier[136,137]@{x}@) =[138,139] right: (number[140,141]@{1}@))
+   ;[141,142] (comment[148,287]@{% Case3: (t-utils-xr (end-of-defun) (end-of-defun)...}@)
+   (assignment left: (identifier[293,294]@{b}@) =[295,296]
+    right: 
+     (binary_operator
+      left: 
+       (function_call name: (identifier[297,304]@{nested1}@) ([304,305]
+        (arguments argument: (identifier[305,306]@{a}@))
+        )[306,307])
+      +[308,309]
+      right: 
+       (function_call name: (identifier[310,317]@{nested2}@) ([317,318]
+        (arguments argument: (identifier[318,319]@{a}@))
+        )[319,320])))
+   ;[320,321] \n[321,323]
+   (function_definition function[327,335]
+    (function_output (identifier[336,339]@{out}@) =[340,341])
+    name: (identifier[342,349]@{nested1}@)
+    (function_arguments ([349,350] arguments: (identifier[350,352]@{in}@) )[352,353])
+    \n[353,354]
+    (block
+     (assignment left: (identifier[362,365]@{out}@) =[366,367]
+      right: 
+       (binary_operator left: (identifier[368,369]@{x}@) +[370,371]
+        right: 
+         (function_call name: (identifier[372,379]@{helper1}@) ([379,380]
+          (arguments argument: (identifier[380,382]@{in}@))
+          )[382,383])))
+     ;[383,384] (comment[393,530]@{% Case5: (t-utils-xr "C-M-a")\n        % Case6: (t...}@) \n[530,531])
+    end[535,538])
+   \n[538,540]
+   (function_definition function[544,552]
+    (function_output (identifier[553,556]@{out}@) =[557,558])
+    name: (identifier[559,566]@{nested2}@)
+    (function_arguments ([566,567] arguments: (identifier[567,569]@{in}@) )[569,570])
+    (comment[580,609]@{% Case8: (t-utils-xr "C-M-a")}@) \n[609,610]
+    (block
+     (assignment left: (identifier[618,621]@{out}@) =[622,623]
+      right: 
+       (binary_operator
+        left: (binary_operator left: (number[624,625]@{2}@) *[626,627] right: (identifier[628,629]@{x}@))
+        +[630,631] right: (identifier[632,634]@{in}@)))
+     ;[634,635] (comment[644,673]@{% Case9: (t-utils-xr "C-M-a")}@) \n[673,674])
+    end[678,681])
+   \n[681,683]
+   (assignment left: (identifier[687,688]@{b}@) =[689,690]
+    right: (binary_operator left: (number[691,692]@{2}@) *[693,694] right: (identifier[695,696]@{b}@)))
+   ;[696,697] \n[697,698])
+  end[698,701])
+ \n[701,703]
+ (function_definition function[703,711]
+  (function_output (identifier[712,715]@{out}@) =[716,717])
+  name: (identifier[718,725]@{helper1}@)
+  (function_arguments ([725,726] arguments: (identifier[726,728]@{in}@) )[728,729])
+  \n[729,730]
+  (block
+   (assignment left: (identifier[734,737]@{out}@) =[738,739]
+    right: 
+     (binary_operator left: (number[740,741]@{1}@) +[742,743]
+      right: 
+       (function_call name: (identifier[744,751]@{helper2}@) ([751,752]
+        (arguments argument: (identifier[752,754]@{in}@))
+        )[754,755])))
+   ;[755,756] \n[756,757])
+  end[757,760])
+ \n[760,762]
+ (function_definition function[762,770]
+  (function_output (identifier[771,774]@{out}@) =[775,776])
+  name: (identifier[777,784]@{helper2}@)
+  (function_arguments ([784,785] arguments: (identifier[785,787]@{in}@) )[787,788])
+  \n[788,789]
+  (block
+   (assignment left: (identifier[793,796]@{out}@) =[797,798]
+    right: (binary_operator left: (identifier[799,801]@{in}@) *[802,803] right: (number[803,804]@{2}@)))
+   ;[804,805] (comment[810,864]@{% Case10: (t-utils-xr "C-M-a" "C-M-a" "C-M-a" "C-M...}@) \n[864,865])
+  end[865,868])
+ \n[868,869])

@@ -220,10 +220,9 @@
 ;;   (let* ((test-name "test-LANGUAGE-ts-mode-font-lock")
 ;;          (LANGUAGE-ts-mode-font-lock-level 4)
 ;;          (lang-files (t-utils-get-files
-;;                    test-name
-;;                    (rx ".lang" eos)
-;;                    nil
-;;                    test-LANGUAGE-ts-mode-font-lock--file))
+;;                       test-name
+;;                       :base-regexp (rx ".lang" eos)
+;;                       :file-to-use test-LANGUAGE-ts-mode-font-lock--file))
 ;;          (code-to-face '(
 ;;                          ("b" . font-lock-bracket-face)
 ;;                          ("B" . font-lock-builtin-face)
@@ -316,11 +315,13 @@ See `t-utils-get-files' for details."
       (goto-char (point-min))
       (not (re-search-forward "^[ \t]*skip-system-type:" nil t)))))
 
-(defun t-utils-get-files (test-name base-regexp &optional skip-regexp file-to-use)
+(cl-defun t-utils-get-files (test-name
+                             &key recursively base-regexp skip-regexp file-to-use)
   "Return list of test input files, /abs/path/to/TEST-NAME-files/FILE.LANG.
 The basename of each returned file matches BASE-REGEXP and not optional
 SKIP-REGEXP.  Optional FILE-TO-USE narrow the list of full paths to that
-file and the result is a list of one file.
+file and the result is a list of one file.  Optional RECURSIVELY will
+recursively find all files under /abs/path/to/TEST-NAME-files/.
 
 For each:   /abs/path/to/TEST-NAME-files/FILE.LANG
 if exists:  /abs/path/to/TEST-NAME-files/FILE.skip.txt
@@ -337,18 +338,27 @@ TEST-NAME is used to locate the TEST-NAME-files directory.
 
 For example,
   (t-utils-get-files \"test-LANGUAGE-ts-mode-indent\"
-                     \"\\\\.lang\\\\\\='\" \"_expected\\\\.lang\\\\\\='\" nil)
+                     :base-regexp \"\\\\.lang\\\\\\='\"
+                     :file-to-use \"_expected\\\\.lang\\\\\\='\")
 will return a list of files matching glob
    /abs/path/to/test-LANGUAGE-ts-mode-indent-files/*.lang
 skipping all *_expected.lang files."
 
+  (when (not base-regexp)
+    (error "Key, base-regexp, must be provided"))
+
   (let* ((test-file (or (symbol-file (intern test-name))
                         (error "Failed to locate test file for test-name, %s" test-name)))
-         (files-dir (replace-regexp-in-string "\\.el\\'" "-files" test-file))
+         (files-dir (let ((files-dir (replace-regexp-in-string "\\.el\\'" "-files" test-file)))
+                      (when (not (file-directory-p files-dir))
+                        (error "Directory %s does not exist" files-dir))
+                      (file-truename files-dir)))
          (files (cl-delete-if (lambda (file)
                                 (and skip-regexp
                                      (string-match skip-regexp file)))
-                              (directory-files files-dir t base-regexp))))
+                              (if recursively
+                                  (directory-files-recursively files-dir base-regexp)
+                                (directory-files files-dir t base-regexp)))))
     (when file-to-use
       ;; Narrow result to (list (file-truename (file-to-use)))
       (let ((true-file-to-use (file-truename file-to-use)))
@@ -924,10 +934,9 @@ Where ./tests/test-LANGUAGE-ts-mode-movement.el contains:
 
     (let* ((test-name \"test-LANGUAGE-ts-mode-movement\")
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx \".lang\" eos)
-                     nil
-                     test-LANGUAGE-ts-mode-movement--file)))
+                        test-name
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-movement--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-xr test-name lang-files)))
 
@@ -1079,10 +1088,9 @@ containing the LANGUAGE tree-sitter parse errors.
 
     (let* ((test-name \"test-LANGUAGE-ts-mode-view-parse-errors\")
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx \".lang\" eos)
-                     nil
-                     test-LANGUAGE-ts-mode-view-parse-errors--file)))
+                        test-name
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-view-parse-errors--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-action test-name lang-files
                            :action-fun #\\='test-LANGUAGE-ts-mode-view-parse-errors-action-fun)))"
@@ -1198,10 +1206,9 @@ Where ./tests/test-LANGUAGE-ts-mode-font-lock.el contains:
     (let* ((test-name \"test-LANGUAGE-ts-mode-font-lock\")
            (LANGUAGE-ts-mode-font-lock-level 4)
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx \".lang\" eos)
-                     nil
-                     test-LANGUAGE-ts-mode-font-lock--file))
+                        test-name
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-font-lock--file))
            (code-to-face \\='(
                            (\"b\" . font-lock-bracket-face)
                            (\"B\" . font-lock-builtin-face)
@@ -1578,9 +1585,8 @@ for you):
     (let* ((test-name \"test-LANGUAGE-ts-mode-indent\")
            (lang-files (t-utils-get-files
                         test-name
-                        (rx \".lang\" eos)
-                        nil
-                        test-LANGUAGE-ts-mode-indent--file)))
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-indent--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-indent test-name lang-files)))
 
@@ -2009,10 +2015,9 @@ Where ./tests/test-LANGUAGE-ts-mode-syntax-table.el contains:
 
     (let* ((test-name \"test-LANGUAGE-ts-mode-syntax-table\")
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx \".lang\" eos)
-                     nil
-                     test-LANGUAGE-ts-mode-syntax-table--file)))
+                        test-name
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-syntax-table--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-syntax-table test-name lang-files)))"
 
@@ -2110,10 +2115,9 @@ Where ./tests/test-LANGUAGE-ts-mode-treesit-defun-name.el contains:
 
     (let* ((test-name \"test-LANGUAGE-ts-mode-treesit-defun-name\")
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx \".lang\" eos)
-                     nil
-                     test-LANGUAGE-ts-mode-treesit-defun-name--file)))
+                        test-name
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-treesit-defun-name--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-treesit-defun-name test-name lang-files)))"
 
@@ -2240,10 +2244,9 @@ Where ./tests/test-LANGUAGE-ts-mode-imenu.el contains:
 
     (let* ((test-name \"test-LANGUAGE-ts-mode-imenu\")
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx \".lang\" eos)
-                     nil
-                     test-LANGUAGE-ts-mode-imenu--file)))
+                        test-name
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-imenu--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-imenu test-name lang-files)))"
 
@@ -2325,10 +2328,9 @@ Where ./tests/test-LANGUAGE-ts-mode-outline.el contains:
 
     (let* ((test-name \"test-LANGUAGE-ts-mode-outline\")
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx \".lang\" eos)
-                     nil
-                     test-LANGUAGE-ts-mode-outline--file)))
+                        test-name
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-outline--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-outline-search-function test-name lang-files)))"
 
@@ -2416,10 +2418,9 @@ Where ./tests/test-LANGUAGE-ts-mode-file-encoding.el contains:
   (ert-deftest test-LANGUAGE-ts-mode-file-encoding ()
     (let* ((test-name \"test-LANGUAGE-ts-mode-file-encoding\")
            (lang-files (t-utils-get-files
-                     test-name
-                     (rx \".lang\" eos)
-                     nil
-                     test-LANGUAGE-ts-mode-file-encoding--file)))
+                        test-name
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-file-encoding--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-file-encoding test-name lang-files
                                   :file-major-mode \\='#LANGUAGE-ts-mode)))
@@ -3002,11 +3003,11 @@ name, then the parse tree must not have an ERROR node."
                                                   (rx (seq bos "ERROR" eos))))
          (tree-has-error (when tree-error-node t))
          (lang-file-name (file-name-nondirectory lang-file))
-         (name-has-error (when (string-match-p (rx (seq bow "error" eow)) lang-file-name) t)))
+         (name-has-error (when (string-match-p "error" lang-file-name) t)))
     (cond
      ((equal tree-has-error (not name-has-error))
       (cons
-       (list (concat "Parse tree for " lang-file
+       (list (concat "Parse tree for " lang-file " "
                      "contains an ERROR node and file name does not contain the word \"error\" "
                      "indicating that the parse tree should not have an ERROR node"))
        nil ;; nil ==> do not do standard baseline check
@@ -3014,7 +3015,7 @@ name, then the parse tree must not have an ERROR node."
 
      ((equal (not tree-has-error) name-has-error)
       (cons
-       (list (concat "Parse tree for " lang-file
+       (list (concat "Parse tree for " lang-file " "
                      "does not contain an ERROR node and file name contains word \"error\" "
                      "indicating the parse tree should have an ERROR node"))
        nil ;; nil ==> do not do standard baseline check
@@ -3062,9 +3063,8 @@ Where ./tests/test-LANGUAGE-ts-mode-parser.el contains:
     (let* ((test-name \"test-LANGUAGE-ts-mode-parser\")
            (lang-files (t-utils-get-files
                         test-name
-                        (rx \".lang\" eos)
-                        nil
-                        test-LANGUAGE-ts-mode-parser--file)))
+                        :base-regexp (rx \".lang\" eos)
+                        :file-to-use test-LANGUAGE-ts-mode-parser--file)))
       (t-utils-error-if-no-treesit-for \\='LANGUAGE test-name)
       (t-utils-test-parser test-name lang-files \\='#LANGUAGE-ts-mode)))
 

@@ -1,0 +1,72 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[22,30]
+  (function_output (identifier[31,32]@{a}@) =[32,33])
+  name: (identifier[33,51]@{indent_odd_else_if}@)
+  (function_arguments ([51,52] arguments: (identifier[52,53]@{b}@) )[53,54])
+  \n[54,55]
+  (block
+   (if_statement if[59,61]
+    condition: (comparison_operator (identifier[62,63]@{b}@) >=[64,66] (number[67,68]@{1}@))
+    (block
+     (assignment left: (identifier[77,78]@{a}@) =[78,79] right: (number[79,80]@{1}@))
+     ;[80,81] \n[81,82])
+    (else_clause else[86,90]
+     (block
+      (if_statement if[91,93]
+       condition: 
+        (comparison_operator (identifier[94,95]@{b}@) <=[96,98]
+         (unary_operator -[99,100] operand: (number[100,101]@{1}@)))
+       (block
+        (assignment left: (identifier[115,116]@{a}@) =[117,118]
+         right: (unary_operator -[119,120] operand: (number[120,121]@{1}@)))
+        ;[121,122] \n[122,123])
+       (else_clause else[132,136]
+        (block
+         (assignment left: (identifier[150,151]@{a}@) =[151,152] right: (number[152,153]@{0}@))
+         ;[153,154] \n[154,155]))
+       end[164,167])
+      \n[167,168]
+      (assignment left: (identifier[177,178]@{a}@) =[179,180]
+       right: 
+        (binary_operator left: (identifier[181,182]@{a}@) +[183,184]
+         right: 
+          (function_call name: (identifier[185,195]@{ok_else_if}@) ([195,196]
+           (arguments argument: (identifier[196,197]@{b}@))
+           )[197,198])))
+      ;[198,199] \n[199,200]))
+    end[204,207])
+   \n[207,208])
+  end[208,211])
+ \n[211,213]
+ (function_definition function[213,221]
+  (function_output (identifier[222,223]@{a}@) =[223,224])
+  name: (identifier[224,234]@{ok_else_if}@)
+  (function_arguments ([234,235] arguments: (identifier[235,236]@{b}@) )[236,237])
+  (comment[238,302]@{% test_m_odd_else_if_unindented "if statement" is ...}@) \n[302,303]
+  (block
+   (if_statement if[307,309]
+    condition: (comparison_operator (identifier[310,311]@{b}@) >=[312,314] (number[315,316]@{1}@))
+    (block
+     (assignment left: (identifier[325,326]@{a}@) =[326,327] right: (number[327,328]@{1}@))
+     ;[328,329] \n[329,330])
+    (else_clause else[334,338] \n[338,339]
+     (block
+      (if_statement if[347,349]
+       condition: 
+        (comparison_operator (identifier[350,351]@{b}@) <=[352,354]
+         (unary_operator -[355,356] operand: (number[356,357]@{1}@)))
+       (block
+        (assignment left: (identifier[370,371]@{a}@) =[372,373]
+         right: (unary_operator -[374,375] operand: (number[375,376]@{1}@)))
+        ;[376,377] \n[377,378])
+       (else_clause else[386,390]
+        (block
+         (assignment left: (identifier[403,404]@{a}@) =[404,405] right: (number[405,406]@{0}@))
+         ;[406,407] \n[407,408]))
+       end[416,419])
+      \n[419,420]))
+    end[424,427])
+   \n[427,428])
+  end[428,431])
+ \n[431,432])

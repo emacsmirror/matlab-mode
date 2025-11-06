@@ -1,0 +1,271 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[22,30]
+  (attributes ([31,32]
+   (attribute (identifier[32,40]@{abstract}@))
+   )[40,41])
+  name: (identifier[42,71]@{font_lock_keywords_as_others2}@)
+  (superclasses <[72,73]
+   (property_name (identifier[74,80]@{handle}@))
+   &[81,82]
+   (property_name (identifier[83,89]@{matlab}@) .[89,90] (identifier[90,95]@{mixin}@) .[95,96] (identifier[96,112]@{SetGetExactNames}@)))
+  \n[112,113]
+  (properties properties[117,127]
+   (attributes ([128,129]
+    (attribute (identifier[129,135]@{Access}@) =[135,136]
+     (string '[136,137] (string_content[137,143]@{public}@) '[143,144]))
+    )[144,145])
+   \n[145,146]
+   (property name: (identifier[154,156]@{AP}@)
+    (default_value =[157,158]
+     (matrix [[159,160] ][160,161]))
+    ;[161,162] \n[162,163])
+   (property name: (identifier[171,173]@{AB}@)
+    (default_value =[174,175]
+     (string '[176,177] (string_content[177,195]@{charvec with space}@) '[195,196]))
+    ;[196,197] \n[197,198])
+   (property name: (identifier[206,208]@{AC}@)
+    (default_value =[209,210]
+     (string "[211,212] (string_content[212,236]@{string with space and ( }@) "[236,237]))
+    ;[237,238] \n[238,239])
+   (property name: (identifier[247,249]@{AD}@)
+    (default_value =[250,251]
+     (function_call name: (identifier[252,260]@{fun_call}@) ([260,261]
+      (arguments argument: (number[261,262]@{1}@) ,[262,263] (number[263,264]@{2}@))
+      )[264,265]))
+    ;[265,266] \n[266,267])
+   (property name: (identifier[275,277]@{AE}@)
+    (dimensions ([278,279] (number[279,280]@{1}@) ,[280,281]
+     (spread_operator :[281,282])
+     )[282,283])
+    (identifier[284,290]@{double}@)
+    (validation_functions {[291,292] (identifier[292,306]@{mustBePositive}@) }[306,307])
+    (default_value =[308,309] (number[310,311]@{1}@))
+    ;[311,312] \n[312,313])
+   end[317,320])
+  (properties properties[326,336]
+   (attributes ([337,338]
+    (attribute (identifier[338,346]@{AbortSet}@) =[346,347] (identifier[347,351]@{true}@))
+    ,[351,352]
+    (attribute (identifier[353,364]@{NonCopyable}@) =[364,365] (identifier[365,369]@{true}@))
+    )[369,370])
+   \n[370,371]
+   (property name: (identifier[379,381]@{AF}@)
+    (dimensions ([382,383] (number[383,384]@{1}@) ,[384,385] (number[385,386]@{1}@) )[386,387])
+    (identifier[388,392]@{char}@)
+    (validation_functions {[393,394]
+     (function_call name: (identifier[394,406]@{mustBeMember}@) ([406,407]
+      (arguments argument: (identifier[407,409]@{AF}@) ,[409,410]
+       (cell {[411,412]
+        (row
+         (string '[412,413] (string_content[413,417]@{High}@) '[417,418])
+         ,[418,419]
+         (string '[419,420] (string_content[420,426]@{Medium}@) '[426,427])
+         ,[427,428]
+         (string '[428,429] (string_content[429,432]@{Low}@) '[432,433]))
+        }[433,434]))
+      )[434,435])
+     }[435,436])
+    (default_value =[437,438]
+     (string '[439,440] (string_content[440,443]@{Low}@) '[443,444]))
+    ;[444,445] \n[445,446])
+   (property name: (identifier[454,456]@{AG}@)
+    (dimensions ([457,458] (number[458,459]@{1}@) ,[459,460] (number[460,461]@{1}@) )[461,462])
+    (property_name (identifier[463,469]@{matlab}@) .[469,470] (identifier[470,474]@{lang}@) .[474,475] (identifier[475,491]@{OnOffSwitchState}@))
+    (default_value =[492,493]
+     (string '[494,495] (string_content[495,497]@{on}@) '[497,498]))
+    ;[498,499] \n[499,500])
+   end[504,507])
+  (events events[513,519] \n[519,520] (identifier[528,534]@{Event1}@) \n[534,535] (identifier[543,549]@{Event2}@) \n[549,550] end[554,557])
+  (methods methods[563,570] \n[570,571]
+   (function_definition function[579,587]
+    (function_output (identifier[588,591]@{obj}@) =[592,593])
+    name: (identifier[594,600]@{mclass}@)
+    (function_arguments ([600,601] )[601,602])
+    \n[602,603]
+    (block
+     (assignment
+      left: (field_expression object: (identifier[615,618]@{obj}@) .[618,619] field: (identifier[619,621]@{AB}@))
+      =[622,623]
+      right: 
+       (field_expression object: (identifier[624,627]@{obj}@) .[627,628]
+        field: 
+         (function_call name: (identifier[628,630]@{AP}@) ([630,631]
+          (arguments
+           argument: 
+            (range (number[631,632]@{1}@) :[632,633]
+             (end_keyword end[633,636])))
+          )[636,637])))
+     ;[637,638]
+     (assignment left: (identifier[651,660]@{unusedvar}@) =[661,662] right: (number[663,664]@{1}@))
+     ;[664,665]
+     (function_call name: (identifier[678,682]@{disp}@) ([682,683]
+      (arguments
+       argument: (string '[683,684] (string_content[684,722]@{charvect with if and for words [ in it}@) '[722,723]))
+      )[723,724])
+     ;[724,725]
+     (function_call name: (identifier[738,744]@{notify}@) ([744,745]
+      (arguments argument: (identifier[745,748]@{obj}@) ,[748,749]
+       (string '[749,750] (string_content[750,756]@{Event1}@) '[756,757])
+       ,[757,758] (line_continuation[758,762]@{...\n}@)
+       (string '[785,786] (string_content[786,797]@{indent test}@) '[797,798]))
+      )[798,799])
+     ;[799,800]
+     (function_call name: (identifier[813,819]@{notify}@) ([819,820]
+      (arguments argument: (identifier[820,823]@{obj}@) ,[823,824]
+       (string '[825,826] (string_content[826,832]@{Event1}@) '[832,833])
+       ,[833,834]
+       (string '[835,836] (string_content[836,847]@{indent test}@) '[847,848]))
+      )[848,849])
+     ;[849,850] \n[850,851]
+     (while_statement while[863,868]
+      condition: (field_expression object: (identifier[869,872]@{obj}@) .[872,873] field: (identifier[873,875]@{AB}@))
+      (block
+       (function_call name: (identifier[892,896]@{disp}@) ([896,897]
+        (arguments
+         argument: (string "[897,898] (string_content[898,924]@{while loop going on here (}@) "[924,925]))
+        )[925,926])
+       ;[926,927] \n[927,928])
+      end[940,943])
+     \n[943,944]
+     (function_call name: (identifier[956,961]@{error}@) ([961,962]
+      (arguments
+       argument: (string '[962,963] (string_content[963,991]@{function mclass in charvec \}}@) '[991,992]))
+      )[992,993])
+     ;[993,994] \n[994,995])
+    end[1003,1006])
+   \n[1006,1007] end[1011,1014])
+  (methods methods[1019,1026]
+   (attributes ([1027,1028]
+    (attribute (identifier[1028,1034]@{Access}@) =[1034,1035]
+     (string '[1035,1036] (string_content[1036,1042]@{public}@) '[1042,1043]))
+    )[1043,1044])
+   \n[1044,1045]
+   (function_definition function[1053,1061] name: (identifier[1062,1066]@{meth}@)
+    (function_arguments ([1066,1067] arguments: (identifier[1067,1070]@{obj}@) )[1070,1071])
+    \n[1071,1072]
+    (block
+     (if_statement if[1084,1086]
+      condition: (field_expression object: (identifier[1087,1090]@{obj}@) .[1090,1091] field: (identifier[1091,1093]@{AP}@))
+      (block
+       (function_call name: (identifier[1110,1114]@{disp}@) ([1114,1115]
+        (arguments
+         argument: (string '[1115,1116] (string_content[1116,1141]@{display the word end here}@) '[1141,1142]))
+        )[1142,1143])
+       ;[1143,1144] \n[1144,1145])
+      (else_clause else[1157,1161] \n[1161,1162]
+       (block
+        (try_statement try[1178,1181] \n[1181,1182]
+         (catch_clause catch[1198,1203] \n[1203,1204])
+         end[1220,1223])
+        \n[1223,1224]))
+      end[1236,1239])
+     \n[1239,1240])
+    end[1248,1251])
+   \n[1251,1252] end[1256,1259])
+  (methods methods[1264,1271]
+   (attributes ([1272,1273]
+    (attribute (identifier[1273,1281]@{Abstract}@))
+    ,[1281,1282]
+    (attribute (identifier[1283,1289]@{Hidden}@) =[1289,1290] (identifier[1290,1294]@{true}@))
+    )[1294,1295])
+   \n[1295,1296]
+   (function_signature
+    (function_output (identifier[1304,1310]@{result}@) =[1311,1312])
+    name: (identifier[1313,1321]@{abs_func}@)
+    (function_arguments ([1321,1322] arguments: (identifier[1322,1323]@{a}@) ,[1323,1324] (identifier[1324,1325]@{b}@) )[1325,1326]))
+   \n[1326,1327]
+   (function_signature
+    (function_output (identifier[1335,1341]@{result}@) =[1342,1343])
+    name: (identifier[1344,1357]@{other_abs_fun}@)
+    (function_arguments ([1357,1358] arguments: (identifier[1358,1359]@{a}@) ,[1359,1360] (identifier[1360,1361]@{b}@) )[1361,1362]))
+   \n[1362,1363] end[1367,1370])
+  (methods methods[1375,1382] \n[1382,1383]
+   (function_definition function[1391,1399] name: (identifier[1400,1417]@{end_separate_line}@)
+    (function_arguments ([1417,1418]
+     arguments: (ignored_argument ~[1418,1419])
+     )[1419,1420])
+    \n[1420,1421] end[1429,1432])
+   \n[1432,1433]
+   (function_definition function[1441,1449] name: (identifier[1450,1463]@{end_same_line}@)
+    (function_arguments ([1463,1464]
+     arguments: (ignored_argument ~[1464,1465])
+     )[1465,1466])
+    ,[1466,1467] end[1468,1471])
+   \n[1471,1472]
+   (function_definition function[1480,1488] name: (identifier[1489,1508]@{after_end_same_line}@)
+    (function_arguments ([1508,1509]
+     arguments: (ignored_argument ~[1509,1510])
+     )[1510,1511])
+    ,[1511,1512] end[1513,1516])
+   \n[1516,1517] end[1521,1524])
+  (methods methods[1529,1536] \n[1536,1537]
+   (function_definition function[1545,1553] name: (identifier[1554,1564]@{properties}@)
+    (function_arguments ([1564,1565]
+     arguments: (ignored_argument ~[1565,1566])
+     )[1566,1567])
+    \n[1567,1568] end[1576,1579])
+   \n[1579,1580]
+   (function_definition function[1588,1596]
+    name: (identifier methods[1597,1604])
+    (function_arguments ([1604,1605]
+     arguments: (ignored_argument ~[1605,1606])
+     )[1606,1607])
+    \n[1607,1608] end[1616,1619])
+   \n[1619,1620]
+   (function_definition function[1628,1636]
+    name: (identifier events[1637,1643])
+    (function_arguments ([1643,1644]
+     arguments: (ignored_argument ~[1644,1645])
+     )[1645,1646])
+    \n[1646,1647] end[1655,1658])
+   \n[1658,1659]
+   (function_definition function[1667,1675]
+    name: (identifier arguments[1676,1685])
+    (function_arguments ([1685,1686]
+     arguments: (ignored_argument ~[1686,1687])
+     )[1687,1688])
+    \n[1688,1689] end[1697,1700])
+   \n[1700,1701]
+   (function_definition function[1709,1717]
+    name: (identifier enumeration[1718,1729])
+    (function_arguments ([1729,1730]
+     arguments: (ignored_argument ~[1730,1731])
+     )[1731,1732])
+    \n[1732,1733] end[1741,1744])
+   \n[1744,1745]
+   (function_definition function[1753,1761] name: (identifier[1762,1770]@{usestuff}@)
+    (function_arguments ([1770,1771] arguments: (identifier[1771,1774]@{obj}@) )[1774,1775])
+    \n[1775,1776]
+    (block
+     (field_expression object: (identifier[1788,1791]@{obj}@) .[1791,1792]
+      field: (function_call name: (identifier[1792,1802]@{properties}@) ([1802,1803] )[1803,1804]))
+     ;[1804,1805]
+     (field_expression object: (identifier[1818,1821]@{obj}@) .[1821,1822]
+      field: 
+       (function_call
+        name: (identifier methods[1822,1829])
+        ([1829,1830] )[1830,1831]))
+     ;[1831,1832]
+     (field_expression object: (identifier[1845,1848]@{obj}@) .[1848,1849]
+      field: 
+       (function_call
+        name: (identifier events[1849,1855])
+        ([1855,1856] )[1856,1857]))
+     ;[1857,1858]
+     (field_expression object: (identifier[1871,1874]@{obj}@) .[1874,1875]
+      field: 
+       (function_call
+        name: (identifier arguments[1875,1884])
+        ([1884,1885] )[1885,1886]))
+     ;[1886,1887]
+     (field_expression object: (identifier[1900,1903]@{obj}@) .[1903,1904]
+      field: 
+       (function_call
+        name: (identifier enumeration[1904,1915])
+        ([1915,1916] )[1916,1917]))
+     ;[1917,1918] \n[1918,1919])
+    end[1927,1930])
+   \n[1930,1931] end[1935,1938])
+  end[1939,1942])
+ \n[1942,1943])

@@ -1,0 +1,46 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[21,29] name: (identifier[30,47]@{font_lock_MyClass}@) (comment[48,62]@{% help comment}@) (comment[68,95]@{% comment about properities}@) \n[95,96]
+  (properties properties[100,110] \n[110,111]
+   (property name: (identifier[119,129]@{MyProperty}@) (identifier[130,136]@{double}@)
+    (default_value =[137,138] (number[139,140]@{0}@))
+    ;[140,141] (comment[142,180]@{% Public property with a default value}@) \n[180,181])
+   end[185,188])
+  (methods methods[194,201] \n[201,202]
+   (function_definition function[210,218]
+    (function_output (identifier[219,222]@{obj}@) =[223,224])
+    name: (identifier[225,232]@{MyClass}@)
+    (function_arguments ([232,233] arguments: (identifier[233,245]@{initialValue}@) )[245,246])
+    (comment[255,275]@{% Constructor method}@) \n[275,276]
+    (block
+     (assignment
+      left: (field_expression object: (identifier[288,291]@{obj}@) .[291,292] field: (identifier[292,302]@{MyProperty}@))
+      =[303,304] right: (identifier[305,317]@{initialValue}@))
+     ;[317,318] \n[318,319])
+    end[327,330])
+   \n[330,332]
+   (function_definition function[340,348]
+    (function_output (identifier[349,357]@{newValue}@) =[358,359])
+    name: (identifier[360,373]@{getMyProperty}@)
+    (function_arguments ([373,374] arguments: (identifier[374,377]@{obj}@) )[377,378])
+    (comment[387,402]@{% Getter method}@) \n[402,403]
+    (block
+     (assignment left: (identifier[415,423]@{newValue}@) =[424,425]
+      right: (field_expression object: (identifier[426,429]@{obj}@) .[429,430] field: (identifier[430,440]@{MyProperty}@)))
+     ;[440,441] \n[441,442])
+    end[450,453])
+   \n[453,455]
+   (function_definition function[463,471]
+    (function_output (identifier[472,475]@{obj}@) =[476,477])
+    name: (identifier[478,491]@{setMyProperty}@)
+    (function_arguments ([491,492] arguments: (identifier[492,495]@{obj}@) ,[495,496] (identifier[497,505]@{newValue}@) )[505,506])
+    (comment[515,530]@{% Setter method}@) \n[530,531]
+    (block
+     (assignment
+      left: (field_expression object: (identifier[543,546]@{obj}@) .[546,547] field: (identifier[547,557]@{MyProperty}@))
+      =[558,559] right: (identifier[560,568]@{newValue}@))
+     ;[568,569] \n[569,570])
+    end[578,581])
+   \n[581,582] end[586,589])
+  end[590,593])
+ \n[593,594])

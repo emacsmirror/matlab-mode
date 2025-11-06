@@ -1,0 +1,21 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[21,29] name: (identifier[30,52]@{font_lock_class_events}@)
+  (superclasses <[53,54]
+   (property_name (identifier[55,61]@{handle}@)))
+  \n[61,62]
+  (events events[66,72] \n[72,73] (identifier[80,91]@{StateChange}@) \n[91,92] end[96,99])
+  (methods methods[104,111] \n[111,112]
+   (function_definition function[119,127] name: (identifier[128,140]@{triggerEvent}@)
+    (function_arguments ([140,141] arguments: (identifier[141,144]@{obj}@) )[144,145])
+    \n[145,146]
+    (block
+     (function_call name: (identifier[156,162]@{notify}@) ([162,163]
+      (arguments argument: (identifier[163,166]@{obj}@) ,[166,167]
+       (string '[167,168] (string_content[168,179]@{StateChange}@) '[179,180]))
+      )[180,181])
+     \n[181,182])
+    end[189,192])
+   \n[192,193] end[197,200])
+  end[201,204])
+ \n[204,205])

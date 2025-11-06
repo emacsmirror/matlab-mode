@@ -1,0 +1,166 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[21,29] name: (identifier[30,48]@{font_lock_keywords}@)
+  (superclasses <[49,50]
+   (property_name (identifier[51,57]@{handle}@)))
+  \n[57,58]
+  (properties properties[62,72] \n[72,73]
+   (property name: (identifier[81,83]@{p1}@)
+    (default_value =[84,85] (number[86,87]@{0}@))
+    \n[87,88])
+   end[92,95])
+  (methods methods[100,107] \n[107,108]
+   (function_definition function[116,124] name: (identifier[125,132]@{method1}@)
+    (function_arguments ([132,133] arguments: (identifier[133,135]@{in}@) )[135,136])
+    \n[136,137]
+    (arguments_statement arguments[142,151] \n[151,152]
+     (property name: (identifier[161,163]@{in}@)
+      (dimensions ([164,165] (number[165,166]@{1}@) ,[166,167] (number[167,168]@{1}@) )[168,169])
+      (identifier[170,176]@{double}@) \n[176,177])
+     end[183,186] \n[188,190])
+    (block
+     (global_operator global[195,201] (identifier[202,207]@{gVar1}@) (identifier[208,213]@{gVar2}@))
+     \n[213,214]
+     (global_operator global[219,225] (identifier[226,231]@{pVar1}@) (identifier[232,237]@{pVar2}@))
+     \n[237,239]
+     (try_statement try[244,247] \n[247,248]
+      (block
+       (switch_statement switch[264,270] condition: (identifier[271,273]@{in}@) \n[273,274]
+        (case_clause case[292,296] condition: (number[297,299]@{10}@) \n[299,300]
+         (block
+          (function_call name: (identifier[320,324]@{disp}@) ([324,325]
+           (arguments
+            argument: (string '[325,326] (string_content[326,328]@{10}@) '[328,329]))
+           )[329,330])
+          \n[330,331]))
+        (otherwise_clause otherwise[335,344]
+         (block
+          (function_call name: (identifier[351,355]@{disp}@) ([355,356]
+           (arguments
+            argument: (string '[356,357] (string_content[357,360]@{~10}@) '[360,361]))
+           )[361,362])
+          \n[362,363]))
+        end[379,382])
+       \n[382,383])
+      (catch_clause catch[395,400] (identifier[401,403]@{me}@) \n[403,404]
+       (block
+        (function_call name: (identifier[413,420]@{rethrow}@) ([420,421]
+         (arguments argument: (identifier[421,423]@{me}@))
+         )[423,424])
+        \n[424,425]))
+      end[430,433])
+     \n[433,435]
+     (assignment left: (identifier[440,441]@{j}@) =[442,443] right: (number[444,445]@{0}@))
+     ;[445,446] \n[446,447]
+     (for_statement for[452,455]
+      (iterator (identifier[456,457]@{n}@) =[458,459]
+       (range (number[460,461]@{1}@) :[461,462] (identifier[462,464]@{in}@)))
+      \n[464,465]
+      (block
+       (if_statement if[474,476]
+        condition: 
+         (function_call name: (identifier[477,480]@{mod}@) ([480,481]
+          (arguments argument: (identifier[481,482]@{n}@) ,[482,483] (number[484,485]@{5}@))
+          )[485,486])
+        \n[486,487]
+        (block
+         (continue_statement continue[493,501])
+         \n[501,502])
+        (elseif_clause elseif[518,524]
+         condition: 
+          (function_call name: (identifier[525,528]@{mod}@) ([528,529]
+           (arguments argument: (identifier[529,530]@{n}@) ,[530,531] (number[532,533]@{7}@))
+           )[533,534])
+         \n[534,535]
+         (block
+          (continue_statement continue[541,549])
+          \n[549,550]))
+        (else_clause else[552,556]
+         (block
+          (assignment left: (identifier[563,564]@{j}@) =[565,566]
+           right: (binary_operator left: (identifier[567,568]@{j}@) +[569,570] right: (number[571,572]@{1}@)))
+          ;[572,573] \n[573,574]))
+        end[590,593])
+       \n[593,594]
+       (function_call name: (identifier[610,614]@{disp}@) ([614,615]
+        (arguments
+         argument: 
+          (matrix [[615,616]
+           (row
+            (string '[616,617] (string_content[617,639]@{Divisible by 5 or 7 : }@) '[639,640])
+            ,[641,641]
+            (function_call name: (identifier[641,648]@{num2str}@) ([648,649]
+             (arguments argument: (identifier[649,650]@{n}@))
+             )[650,651]))
+           ][651,652]))
+        )[652,653])
+       \n[653,654])
+      end[666,669])
+     \n[669,671]
+     (assignment left: (identifier[683,684]@{x}@) =[685,686] right: (number[687,688]@{0}@))
+     \n[688,689]
+     (while_statement while[694,699]
+      condition: (comparison_operator (identifier[700,701]@{x}@) <[702,703] (number[704,706]@{10}@))
+      (block
+       (assignment left: (identifier[716,717]@{x}@) =[718,719]
+        right: (binary_operator left: (identifier[720,721]@{x}@) +[722,723] right: (number[724,725]@{1}@)))
+       ;[725,726] \n[726,727])
+      end[739,742])
+     \n[742,743])
+    end[751,754])
+   \n[754,756]
+   (function_definition function[764,772] name: (identifier[773,780]@{method2}@)
+    (function_arguments ([780,781] )[781,782])
+    \n[782,783]
+    (block
+     (assignment left: (identifier[795,796]@{n}@) =[797,798] right: (number[799,802]@{200}@))
+     ;[802,803]
+     (assignment left: (identifier[816,817]@{A}@) =[818,819] right: (number[820,823]@{500}@))
+     ;[823,824]
+     (assignment left: (identifier[837,838]@{a}@) =[839,840]
+      right: 
+       (function_call name: (identifier[841,846]@{zeros}@) ([846,847]
+        (arguments argument: (number[847,848]@{1}@) ,[848,849] (identifier[849,850]@{n}@))
+        )[850,851]))
+     ;[851,852] \n[852,853]
+     (for_statement parfor[865,871]
+      (iterator (identifier[872,873]@{i}@) =[874,875]
+       (range (number[876,877]@{1}@) :[877,878] (identifier[878,879]@{n}@)))
+      (block
+       (assignment
+        left: 
+         (function_call name: (identifier[896,897]@{a}@) ([897,898]
+          (arguments argument: (identifier[898,899]@{i}@))
+          )[899,900])
+        =[901,902]
+        right: 
+         (function_call name: (identifier[903,906]@{max}@) ([906,907]
+          (arguments
+           argument: 
+            (function_call name: (identifier[907,910]@{abs}@) ([910,911]
+             (arguments
+              argument: 
+               (function_call name: (identifier[911,914]@{eig}@) ([914,915]
+                (arguments
+                 argument: 
+                  (function_call name: (identifier[915,919]@{rand}@) ([919,920]
+                   (arguments argument: (identifier[920,921]@{A}@))
+                   )[921,922]))
+                )[922,923]))
+             )[923,924]))
+          )[924,925]))
+       ;[925,926] \n[926,927])
+      end[939,942])
+     \n[942,944]
+     (return_statement return[949,955])
+     \n[955,956])
+    end[957,960])
+   \n[960,961] end[965,968])
+  (events events[974,980] \n[980,981] end[985,988])
+  (enumeration enumeration[994,1005] \n[1005,1006]
+   (enum (identifier[1013,1016]@{one}@))
+   \n[1016,1017]
+   (enum (identifier[1024,1027]@{two}@))
+   \n[1027,1028] end[1032,1035])
+  end[1037,1040])
+ \n[1040,1041])

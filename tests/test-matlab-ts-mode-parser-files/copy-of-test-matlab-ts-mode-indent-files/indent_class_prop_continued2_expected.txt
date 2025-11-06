@@ -1,0 +1,53 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,161]@{% t-utils-test-indent: no-line-by-line-indent - ty...}@)
+ (class_definition classdef[163,171] name: (identifier[172,200]@{indent_class_prop_continued2}@) \n[200,202]
+  (properties properties[206,216]
+   (attributes ([217,218]
+    (attribute (identifier[218,226]@{Constant}@))
+    )[226,227])
+   \n[227,228]
+   (property name: (identifier[236,245]@{property1}@)
+    (default_value =[246,247]
+     (field_expression object: (identifier[248,258]@{containers}@) .[258,259]
+      field: 
+       (function_call name: (identifier[259,262]@{Map}@) ([262,263] (line_continuation[263,267]@{...\n}@)
+        (arguments
+         argument: 
+          (cell {[279,280]
+           (row
+            (string '[295,296] (string_content[296,299]@{one}@) '[299,300]))
+           (row
+            (string '[315,316] (string_content[316,319]@{two}@) '[319,320]))
+           }[333,334])
+         (line_continuation[335,339]@{...\n}@) ,[351,352] (line_continuation[353,357]@{...\n}@)
+         (cell {[369,370]
+          (row
+           (string '[385,386] (string_content[386,389]@{foo}@) '[389,390]))
+          (row
+           (string '[405,406] (string_content[406,409]@{bar}@) '[409,410]))
+          }[423,424]))
+        )[424,425])))
+    ;[425,426] \n[426,428])
+   (property name: (identifier[436,445]@{property2}@)
+    (default_value =[446,447]
+     (function_call name: (identifier[448,455]@{someFcn}@) ([455,456] (line_continuation[456,460]@{...\n}@)
+      (arguments
+       argument: 
+        (cell {[472,473]
+         (row
+          (string '[488,489] (string_content[489,492]@{one}@) '[492,493]))
+         (row
+          (string '[508,509] (string_content[509,512]@{two}@) '[512,513]))
+         }[526,527])
+       (line_continuation[528,532]@{...\n}@) ,[544,545] (line_continuation[546,550]@{...\n}@)
+       (cell {[562,563]
+        (row
+         (string '[578,579] (string_content[579,582]@{foo}@) '[582,583]))
+        (row
+         (string '[598,599] (string_content[599,602]@{bar}@) '[602,603]))
+        }[616,617]))
+      )[617,618]))
+    ;[618,619] \n[619,620])
+   end[624,627])
+  end[628,631])
+ \n[631,632])

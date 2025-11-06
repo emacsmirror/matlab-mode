@@ -55,11 +55,9 @@ after validating them, rename them to
 
   (let* ((matlab-ts-mode-electric-ends nil)
          (test-name "test-matlab-ts-mode-indent")
-         (m-files (t-utils-get-files
-                   test-name
-                   (rx ".m" eos)
-                   nil
-                   test-matlab-ts-mode-indent--file))
+         (m-files (t-utils-get-files test-name
+                                     :base-regexp (rx ".m" eos)
+                                     :file-to-use test-matlab-ts-mode-indent--file))
          (indent-checker (lambda ()
                            (setq test-matlab-ts-mode-indent--current-indent-level
                                  matlab-ts-mode--function-indent-level)))

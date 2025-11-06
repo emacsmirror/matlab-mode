@@ -1,0 +1,18 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (try_statement try[22,25]
+  (block
+   (assignment left: (identifier[30,31]@{a}@) =[32,33]
+    right: (function_call name: (identifier[34,38]@{foo1}@) ([38,39] )[39,40]))
+   ;[40,41] \n[41,42])
+  (catch_clause catch[42,47]
+   (block
+    (command (command_name[48,51]@{err}@))
+    (comment[52,56]@{%#ok}@) \n[56,57]
+    (function_call name: (identifier[61,65]@{disp}@) ([65,66]
+     (arguments
+      argument: (string '[66,67] (string_content[67,72]@{catch}@) '[72,73]))
+     )[73,74])
+    ;[74,75] \n[75,76]))
+  end[76,79])
+ \n[79,80])

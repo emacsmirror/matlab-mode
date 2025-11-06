@@ -1,0 +1,11 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[25,33] name: (identifier[34,50]@{indent_copyright}@) (comment[51,120]@{% indent_copyright help\n  % comment\n% that is se...}@) (comment[125,177]@{% Copyright after help comment shouldn't be indent...}@) (comment[179,223]@{% this is a comment about the following code}@) \n[223,224]
+  (block
+   (function_call name: (identifier[231,235]@{disp}@) ([235,236]
+    (arguments
+     argument: (string '[236,237] (string_content[237,241]@{here}@) '[241,242]))
+    )[242,243])
+   \n[243,245])
+  end[245,248])
+ \n[248,249])

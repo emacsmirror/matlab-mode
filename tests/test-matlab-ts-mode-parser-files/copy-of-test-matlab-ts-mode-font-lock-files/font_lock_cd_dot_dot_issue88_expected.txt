@@ -1,0 +1,4 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (command (command_name[90,92]@{cd}@) (command_argument[93,95]@{..}@))
+ \n[95,97])

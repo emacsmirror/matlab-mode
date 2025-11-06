@@ -1,0 +1,12 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (command (command_name[90,124]@{font_lock_command_dual_issue65_cmd}@) (command_argument[125,136]@{theFirstArg}@) (line_continuation[136,140]@{...\n}@) (command_argument[144,156]@{theSecondArg}@))
+ \n[156,157]
+ (assignment
+  left: (multioutput_variable [[157,158] (identifier[158,159]@{a}@) ,[159,160] (identifier[160,161]@{b}@) ][161,162])
+  =[164,165]
+  right: 
+   (function_call name: (identifier[166,170]@{deal}@) ([170,171]
+    (arguments argument: (number[171,172]@{2}@))
+    )[172,173]))
+ \n[173,177])

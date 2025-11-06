@@ -1,0 +1,21 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment left: (identifier[22,29]@{someStr}@) =[30,31]
+  right: 
+   (binary_operator
+    left: 
+     (binary_operator
+      left: 
+       (binary_operator
+        left: 
+         (binary_operator
+          left: (string "[32,33] (string_content[33,34]@{[}@) "[34,35])
+          +[36,37] (line_continuation[38,42]@{...\n}@)
+          right: (string "[52,53] (string_content[53,78]@{[[""A"", 1], [""B"", 2]],}@) "[78,79]))
+        +[80,81] (line_continuation[82,86]@{...\n}@)
+        right: (string "[99,100] (string_content[100,113]@{[[""C"", 3]],}@) "[113,114]))
+      +[115,116] (line_continuation[117,121]@{...\n}@)
+      right: (string "[132,133] (string_content[133,169]@{[[""D"", 4], [""E"", 5], [""F"", 6]]}@) "[169,170]))
+    +[171,172] (line_continuation[173,177]@{...\n}@)
+    right: (string "[182,183] (string_content[183,184]@{]}@) "[184,185])))
+ ;[185,186] \n[186,187])

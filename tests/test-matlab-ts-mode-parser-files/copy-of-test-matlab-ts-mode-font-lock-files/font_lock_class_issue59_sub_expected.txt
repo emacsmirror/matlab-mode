@@ -1,0 +1,23 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[21,29] name: (identifier[30,57]@{font_lock_class_issue59_sub}@)
+  (superclasses <[58,59]
+   (property_name (identifier[60,89]@{font_lock_class_issue59_super}@)))
+  \n[89,90]
+  (methods methods[94,101] \n[101,102]
+   (function_definition function[110,118]
+    (function_output (identifier[119,122]@{obj}@) =[122,123])
+    name: (identifier[123,150]@{font_lock_class_issue59_sub}@) \n[150,151]
+    (block
+     (function_call name: (identifier[163,166]@{obj}@) @[166,167]
+      (superclass (identifier[167,196]@{font_lock_class_issue59_super}@)))
+     ;[196,197]
+     (function_call name: (identifier[210,214]@{disp}@) ([214,215]
+      (arguments
+       argument: (string '[215,216] (string_content[216,227]@{in SubClass}@) '[227,228]))
+      )[228,229])
+     \n[229,230])
+    end[238,241])
+   \n[241,242] end[246,249])
+  end[250,253])
+ \n[253,254])

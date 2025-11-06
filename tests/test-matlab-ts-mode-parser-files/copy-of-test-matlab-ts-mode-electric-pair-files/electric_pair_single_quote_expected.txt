@@ -1,0 +1,18 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment left: (identifier[21,22]@{a}@) =[23,24]
+  right: 
+   (matrix [[25,26]
+    (row (number[26,27]@{1}@) ,[27,28] (number[28,29]@{2}@))
+    ][29,30]))
+ ;[30,31] (comment[34,151]@{% Case1: (t-utils-xr (re-search-forward "'") (prin...}@)
+ (postfix_operator operand: (identifier[152,153]@{a}@) '[153,154])
+ (comment[156,273]@{% Case2: (t-utils-xr (re-search-forward "'") (prin...}@) \n[273,274]
+ (assignment left: (identifier[274,275]@{b}@) =[276,277]
+  right: (string "[278,279] (string_content[279,286]@{foo'bar}@) "[286,287]))
+ (comment[289,458]@{% Case3: (t-utils-xr (re-search-forward "foo") (in...}@) \n[458,459]
+ (assignment left: (identifier[459,460]@{s}@) =[460,461]
+  right: (string '[461,462] (string_content[462,468]@{foobar}@) '[468,469]))
+ (comment[471,667]@{% Start string: s2 = ''\n% Case4: (t-utils-xr (re-...}@) \n[667,668]
+ (command (command_name[668,670]@{s2}@))
+ \n[670,672])

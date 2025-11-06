@@ -1,0 +1,42 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,84]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
+ (class_definition classdef[86,94] name: (identifier[95,127]@{font_lock_class_issue55_subclass}@)
+  (superclasses <[128,129]
+   (property_name (identifier[130,162]@{font_lock_class_issue55_abstract}@)))
+  \n[162,163]
+  (properties properties[167,177] \n[177,178]
+   (property name: (identifier[186,188]@{p1}@)
+    (default_value =[189,190] (number[191,193]@{10}@))
+    \n[193,194])
+   end[198,201])
+  (methods methods[207,214] \n[214,215]
+   (function_definition function[223,231]
+    (function_output (identifier[232,233]@{a}@) =[234,235])
+    name: (identifier[236,239]@{foo}@)
+    (function_arguments ([239,240] arguments: (identifier[240,243]@{obj}@) )[243,244])
+    \n[244,245]
+    (block
+     (assignment left: (identifier[257,258]@{a}@) =[259,260]
+      right: 
+       (binary_operator
+        left: (field_expression object: (identifier[261,264]@{obj}@) .[264,265] field: (identifier[265,267]@{p1}@))
+        +[268,269] right: (number[270,272]@{10}@)))
+     ;[272,273] \n[273,274])
+    end[282,285])
+   \n[285,287]
+   (function_definition function[295,303]
+    (function_output (identifier[304,305]@{b}@) =[306,307])
+    name: (identifier[308,311]@{goo}@)
+    (function_arguments ([311,312] arguments: (identifier[312,315]@{obj}@) )[315,316])
+    \n[316,317]
+    (block
+     (assignment left: (identifier[329,330]@{b}@) =[331,332]
+      right: 
+       (binary_operator
+        left: (field_expression object: (identifier[333,336]@{obj}@) .[336,337] field: (identifier[337,339]@{p1}@))
+        +[340,341] right: (number[342,344]@{20}@)))
+     ;[344,345] \n[345,346])
+    end[354,357])
+   \n[357,358] end[362,365])
+  end[366,369])
+ \n[369,370])

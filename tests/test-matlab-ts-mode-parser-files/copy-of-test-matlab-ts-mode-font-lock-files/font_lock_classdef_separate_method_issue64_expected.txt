@@ -1,0 +1,26 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (class_definition classdef[91,99] name: (identifier[100,142]@{font_lock_classdef_separate_method_issue64}@) \n[142,143]
+  (properties properties[147,157] \n[157,158]
+   (property name: (identifier[166,168]@{p1}@) \n[168,169])
+   end[173,176])
+  (methods methods[182,189] \n[189,190]
+   (function_definition function[198,206]
+    (function_output (identifier[207,210]@{obj}@) =[210,211])
+    name: (identifier[211,214]@{foo}@)
+    (function_arguments ([214,215] arguments: (identifier[215,217]@{in}@) )[217,218])
+    \n[218,219]
+    (block
+     (assignment
+      left: (field_expression object: (identifier[231,234]@{obj}@) .[234,235] field: (identifier[235,237]@{p1}@))
+      =[238,239] right: (identifier[240,242]@{in}@))
+     ;[242,243] \n[243,244])
+    end[252,255])
+   (comment[265,447]@{% Declare f2. Implementation in ./@foo/f2.m\n     ...}@) \n[447,449]
+   (function_signature
+    (function_output (identifier[457,461]@{out1}@) =[462,463])
+    name: (identifier[464,466]@{f2}@)
+    (function_arguments ([466,467] arguments: (identifier[467,470]@{obj}@) ,[470,471] (identifier[472,475]@{in1}@) )[475,476]))
+   ;[476,477] \n[477,478] end[482,485])
+  end[487,490])
+ \n[490,494])

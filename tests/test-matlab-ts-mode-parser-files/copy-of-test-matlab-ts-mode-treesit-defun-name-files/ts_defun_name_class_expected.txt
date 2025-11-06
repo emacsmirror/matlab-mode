@@ -1,0 +1,49 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[21,29] name: (identifier[30,49]@{ts_defun_name_class}@) \n[49,50]
+  (properties properties[54,64] \n[64,65]
+   (property name: (identifier[73,78]@{Value}@)
+    (validation_functions {[79,80] (identifier[80,93]@{mustBeNumeric}@) }[93,94])
+    \n[94,95])
+   end[99,102])
+  (methods methods[107,114] \n[114,115]
+   (function_definition function[123,131]
+    (function_output (identifier[132,133]@{r}@) =[134,135])
+    name: (identifier[136,144]@{roundOff}@)
+    (function_arguments ([144,145] arguments: (identifier[145,148]@{obj}@) )[148,149])
+    \n[149,150]
+    (block
+     (assignment left: (identifier[162,163]@{r}@) =[164,165]
+      right: 
+       (function_call name: (identifier[166,171]@{round}@) ([171,172]
+        (arguments
+         argument: 
+          (matrix [[172,173]
+           (row
+            (field_expression object: (identifier[173,176]@{obj}@) .[176,177] field: (identifier[177,182]@{Value}@)))
+           ][182,183])
+         ,[183,184] (number[185,186]@{2}@))
+        )[186,187]))
+     ;[187,188] \n[188,189])
+    end[197,200])
+   \n[200,201]
+   (function_definition function[209,217]
+    (function_output (identifier[218,219]@{r}@) =[220,221])
+    name: (identifier[222,232]@{multiplyBy}@)
+    (function_arguments ([232,233] arguments: (identifier[233,236]@{obj}@) ,[236,237] (identifier[238,239]@{n}@) )[239,240])
+    \n[240,241]
+    (block
+     (assignment left: (identifier[253,254]@{r}@) =[255,256]
+      right: 
+       (binary_operator
+        left: 
+         (matrix [[257,258]
+          (row
+           (field_expression object: (identifier[258,261]@{obj}@) .[261,262] field: (identifier[262,267]@{Value}@)))
+          ][267,268])
+        *[269,270] right: (identifier[271,272]@{n}@)))
+     ;[272,273] \n[273,274])
+    end[282,285])
+   \n[285,286] end[290,293])
+  end[294,297])
+ \n[297,298])

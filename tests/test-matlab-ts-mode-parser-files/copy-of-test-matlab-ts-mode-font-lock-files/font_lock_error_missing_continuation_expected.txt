@@ -1,0 +1,18 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,140]@{% -*- matlab-ts -*-\n% Missing continuation should...}@)
+ (function_definition function[141,149] name: (identifier[150,186]@{font_lock_error_missing_continuation}@)
+  (function_arguments ([186,187]
+   (ERROR (ERROR[234,235]@{i}@))
+   arguments: (identifier[235,236]@{n}@) )[282,283])
+  \n[283,284]
+  (block
+   (function_call name: (identifier[288,292]@{disp}@) ([292,293]
+    (arguments
+     argument: 
+      (function_call name: (identifier[293,300]@{num2str}@) ([300,301]
+       (arguments argument: (identifier[301,303]@{in}@))
+       )[303,304]))
+    )[304,305])
+   ;[305,306] \n[306,307])
+  end[307,310])
+ \n[335,336])

@@ -1,0 +1,12 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (class_definition classdef[90,98] name: (identifier[99,129]@{font_lock_methods_in_namespace}@) \n[129,130]
+  (methods methods[133,140] \n[140,141]
+   (function_definition function[147,155]
+    (function_output (identifier[156,167]@{objNspClass}@) =[168,169])
+    name: (property_name (identifier[170,177]@{nspname}@) .[177,178] (identifier[178,186]@{NspClass}@))
+    (function_arguments ([186,187] arguments: (identifier[187,197]@{objMyclass}@) )[197,198])
+    \n[198,199] end[205,208])
+   \n[208,209] end[212,215])
+  end[216,219])
+ \n[219,220])

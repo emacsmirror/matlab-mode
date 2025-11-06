@@ -1,0 +1,28 @@
+#+startup: showall
+
+* Executing commands from show_paren_error_classdef_missing_end.m:3:9:
+
+  Case1: (t-utils-xr "C-a" "C-n" (prin1 (matlab-ts-mode--show-paren-or-block)))
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  102
+  Moved to point:   23
+  : 3:0: % Case1: (t-utils-xr "C-a" "C-n" (prin1 (matlab-ts-mode--show-paren-or-block)))
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :   23
+  Moved to point:  103
+  : 4:0: classdef show_paren_error_classdef_missing_end
+  :      ^
+  No buffer modifications
+
+- Invoking      : (prin1 (matlab-ts-mode--show-paren-or-block))
+  Start point   :  103
+  No point movement
+  standard-output:
+  #+begin_example
+(103 111 nil nil t)
+  #+end_example
+  No buffer modifications

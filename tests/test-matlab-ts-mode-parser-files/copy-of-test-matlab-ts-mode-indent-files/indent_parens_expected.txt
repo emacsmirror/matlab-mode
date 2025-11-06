@@ -1,0 +1,58 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[22,30] name: (identifier[31,44]@{indent_parens}@)
+  (function_arguments ([44,45] arguments: (identifier[45,59]@{inputArgument1}@) )[59,60])
+  \n[60,61]
+  (block
+   (if_statement if[65,67]
+    condition: 
+     (parenthesis ([68,69]
+      (comparison_operator
+       (parenthesis ([69,70]
+        (field_expression object: (identifier[70,83]@{someNamespace}@) .[83,84]
+         field: 
+          (function_call name: (identifier[84,97]@{getStartValue}@) ([97,98]
+           (arguments
+            argument: 
+             (parenthesis ([98,99]
+              (binary_operator
+               left: 
+                (binary_operator
+                 left: 
+                  (parenthesis ([99,100]
+                   (binary_operator left: (identifier[100,114]@{inputArgument1}@) +[115,116]
+                    right: 
+                     (function_call name: (identifier[117,134]@{someOtherFunction}@) ([134,135]
+                      (arguments argument: (identifier[135,136]@{b}@))
+                      )[136,137]))
+                   )[137,138])
+                 *[139,140] right: (number[141,142]@{2}@))
+               -[143,144] (line_continuation[145,149]@{...\n}@) right: (identifier[187,193]@{offset}@))
+              )[193,194]))
+           )[194,195]))
+        )[195,196])
+       >[197,198] (line_continuation[199,203]@{...\n}@)
+       (binary_operator left: (number[211,212]@{2}@) *[213,214]
+        right: 
+         (parenthesis ([215,216]
+          (binary_operator
+           left: 
+            (field_expression object: (identifier[216,265]@{someOtherLongFunctionInANamespaceThatGetsEndValue}@) .[265,266]
+             field: 
+              (function_call name: (identifier[266,271]@{myFcn}@) ([271,272]
+               (arguments argument: (identifier[272,286]@{inputArgument1}@) ,[286,287] (line_continuation[288,292]@{...\n}@)
+                (string '[361,362] (string_content[362,365]@{end}@) '[365,366]))
+               )[366,367]))
+           +[368,369] (line_continuation[370,374]@{...\n}@) right: (number[387,390]@{100}@))
+          )[390,391])))
+      )[391,392])
+    (block
+     (function_call name: (identifier[401,405]@{disp}@) ([405,406]
+      (arguments
+       argument: (string '[406,407] (string_content[407,411]@{here}@) '[411,412]))
+      )[412,413])
+     \n[413,414])
+    end[418,421])
+   \n[421,422])
+  end[422,425])
+ \n[425,426])

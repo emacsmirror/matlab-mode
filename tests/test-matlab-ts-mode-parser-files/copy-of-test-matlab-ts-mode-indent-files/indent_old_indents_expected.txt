@@ -1,0 +1,578 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,154]@{% -*- matlab-ts -*-\n% See ../indents.m which is u...}@)
+ (function_definition function[155,163] name: (identifier[164,182]@{indent_old_indents}@)
+  (function_arguments ([182,183] arguments: (identifier[183,184]@{a}@) ,[184,185] (identifier[185,186]@{b}@) ,[186,187] (identifier[187,192]@{stuff}@) ,[192,193] (identifier[193,205]@{cmddual1fake}@) ,[205,206] (identifier[206,218]@{cmddual2fake}@) )[218,219])
+  (comment[220,259]@{% Help text\n% !!0\n% of many lines\n% !!0}@) (comment[269,325]@{% including a gap - comment for following code\n  ...}@) \n[325,326] \n[330,331]
+  (arguments_statement arguments[335,344]
+   (attributes ([345,346] argument: (identifier[346,355]@{Repeating}@) )[355,356])
+   (comment[357,362]@{% !!4}@) \n[362,363]
+   (property name: (identifier[371,372]@{a}@)
+    (dimensions ([373,374] (number[374,375]@{1}@) ,[375,376] (number[376,377]@{1}@) )[377,378])
+    (validation_functions {[379,380] (identifier[380,393]@{mustBeNumeric}@) }[393,394])
+    (comment[427,432]@{% !!8}@) \n[432,433])
+   (property name: (identifier[441,442]@{b}@)
+    (dimensions ([443,444]
+     (spread_operator :[444,445])
+     ,[445,446]
+     (spread_operator :[446,447])
+     )[447,448])
+    (identifier[449,455]@{double}@) (comment[497,502]@{% !!8}@) \n[502,503])
+   (property name: (identifier[511,516]@{stuff}@)
+    (validation_functions {[517,518]
+     (function_call name: (identifier[518,530]@{mustBeMember}@) ([530,531]
+      (arguments argument: (identifier[531,536]@{stuff}@) ,[536,537]
+       (cell {[538,539]
+        (row
+         (string '[540,541] (string_content[541,545]@{this}@) '[545,546])
+         ,[547,547]
+         (string '[547,548] (string_content[548,552]@{that}@) '[552,553])
+         ,[554,554]
+         (string '[554,555] (string_content[555,560]@{other}@) '[560,561]))
+        }[562,563]))
+      )[563,564])
+     }[564,565])
+    (comment[567,572]@{% !!8}@) \n[572,573])
+   (property name: (identifier[581,593]@{cmddual1fake}@) (identifier[594,600]@{double}@) (comment[602,607]@{% !!8}@) \n[607,608])
+   (property name: (identifier[616,628]@{cmddual2fake}@) (identifier[629,632]@{int}@) (comment[637,642]@{% !!8}@) \n[642,643])
+   end[647,650])
+  (comment[651,656]@{% !!4}@) \n[656,657] \n[661,662]
+  (block
+   (persistent_operator persistent[666,676] (identifier[677,681]@{var1}@))
+   (comment[682,687]@{% !!4}@) \n[687,688]
+   (global_operator global[692,698] (identifier[703,707]@{var2}@))
+   (comment[708,713]@{% !!4}@) \n[713,714]
+   (persistent_operator persistent[718,728] (identifier[729,733]@{var3}@))
+   (comment[734,739]@{% !!4}@) \n[739,740]
+   (assignment left: (identifier[754,760]@{locala}@) =[761,762] right: (identifier[763,764]@{a}@))
+   ;[764,765] (comment[766,770]@{%#ok}@)
+   (assignment left: (identifier[775,781]@{localb}@) =[782,783] right: (identifier[784,785]@{b}@))
+   ;[785,786] (comment[787,791]@{%#ok}@)
+   (assignment left: (identifier[796,806]@{localstuff}@) =[807,808] right: (identifier[809,814]@{stuff}@))
+   ;[814,815] (comment[816,820]@{%#ok}@) \n[820,821] \n[825,826]
+   (if_statement if[830,832]
+    condition: 
+     (function_call name: (identifier[833,840]@{isempty}@) ([840,841]
+      (arguments argument: (identifier[841,845]@{var1}@))
+      )[845,846])
+    (block
+     (assignment left: (identifier[847,851]@{var1}@) =[851,852] right: (number[852,853]@{1}@))
+     ;[853,854])
+    end[855,858])
+   (comment[859,867]@{%#ok !!4}@) \n[867,868]
+   (if_statement if[872,874]
+    condition: 
+     (function_call name: (identifier[875,882]@{isempty}@) ([882,883]
+      (arguments argument: (identifier[883,887]@{var3}@))
+      )[887,888])
+    (block
+     (assignment left: (identifier[889,893]@{var3}@) =[893,894] right: (number[894,895]@{2}@))
+     ;[895,896])
+    end[897,900])
+   (comment[901,909]@{%#ok !!4}@) \n[909,910]
+   (function_call name: (identifier[919,947]@{ends_in_comments_and_strings}@) ([947,948]
+    (arguments argument: (identifier[948,952]@{var1}@) ,[952,953] (identifier[954,958]@{var2}@) ,[958,959] (identifier[960,964]@{var3}@))
+    )[964,965])
+   ;[965,966] (comment[967,988]@{% !!4 has end in name}@) (comment[998,1003]@{% !!4}@)
+   (function_call name: (identifier[1013,1049]@{block_starts_in_comments_and_strings}@) ([1049,1050]
+    (arguments argument: (identifier[1050,1062]@{cmddual1fake}@) ,[1062,1063] (identifier[1063,1075]@{cmddual2fake}@))
+    )[1075,1076])
+   ;[1076,1077]
+   (function_call name: (identifier[1082,1102]@{array_constant_decls}@) ([1102,1103] )[1103,1104])
+   ;[1104,1105] (comment[1115,1120]@{% !!4}@)
+   (function_call name: (identifier[1130,1162]@{continuations_and_block_comments}@) ([1162,1163] )[1163,1164])
+   ;[1164,1165] (comment[1175,1220]@{% $$$ !!0  \n    % $$$ special ignore comments}@)
+   (function_call name: (identifier[1230,1244]@{has_nested_fcn}@) ([1244,1245] )[1245,1246])
+   ;[1246,1247] (comment[1248,1253]@{% !!4}@) (comment[1263,1293]@{% !!4  - after ignore comments}@) \n[1293,1294] \n[1298,1299])
+  end[1299,1302])
+ (comment[1303,1327]@{% Comment with end in it}@) (comment[1329,1333]@{%!!0}@) \n[1333,1335]
+ (function_definition function[1335,1343]
+  (function_output (identifier[1344,1345]@{B}@) =[1346,1347])
+  name: (identifier[1348,1376]@{ends_in_comments_and_strings}@)
+  (function_arguments ([1376,1377] )[1377,1378])
+  (comment[1379,1384]@{% !!0}@) (comment[1394,1399]@{% >>6}@) \n[1399,1400]
+  (block
+   (if_statement if[1404,1406] condition: (identifier[1407,1410]@{foo}@)
+    (block
+     (assignment left: (identifier[1419,1420]@{A}@) =[1421,1422] right: (number[1423,1424]@{1}@))
+     ;[1424,1425] \n[1425,1426])
+    end[1430,1433])
+   (comment[1434,1464]@{% <<6 end in comment after end}@) (comment[1474,1479]@{% !!4}@) \n[1479,1480]
+   (command (command_name[1489,1510]@{symbol_with_end_in_it}@))
+   ;[1510,1511]
+   (assignment left: (identifier[1521,1522]@{B}@) =[1523,1524]
+    right: 
+     (function_call name: (identifier[1525,1526]@{A}@) ([1526,1527]
+      (arguments
+       argument: 
+        (range (number[1527,1528]@{1}@) :[1528,1529]
+         (end_keyword end[1529,1532])))
+      )[1532,1533]))
+   ;[1533,1534] (comment[1535,1539]@{%#ok}@) (comment[1549,1574]@{%% cell start comment !!4}@) \n[1574,1575]
+   (if_statement if[1579,1581] condition: (identifier[1582,1585]@{foo}@) (comment[1586,1590]@{%!!4}@)
+    (block
+     (assignment left: (identifier[1599,1600]@{C}@) =[1601,1602]
+      right: (string "[1603,1604] (string_content[1604,1631]@{this is the end of the line}@) "[1631,1632]))
+     ;[1632,1633] (comment[1642,1647]@{% !!8}@) \n[1647,1648])
+    (else_clause else[1652,1656] (comment[1657,1661]@{%!!4}@) (comment[1679,1684]@{% !!8}@) \n[1684,1685])
+    end[1689,1692])
+   ;[1692,1693]
+   (assignment left: (identifier[1695,1696]@{D}@) =[1697,1698]
+    right: (string "[1699,1700] (string_content[1700,1717]@{string end string}@) "[1717,1718]))
+   ;[1718,1719] (comment[1724,1729]@{% !!4}@)
+   (assignment left: (identifier[1739,1740]@{E}@) =[1741,1742]
+    right: 
+     (matrix [[1743,1744]
+      (row (identifier[1745,1746]@{D}@) ,[1747,1747] (identifier[1747,1748]@{C}@))
+      ][1748,1749]))
+   ;[1749,1750] \n[1750,1751] \n[1755,1756]
+   (if_statement if[1760,1762] condition: (identifier[1763,1766]@{bar}@)
+    (block
+     (assignment left: (identifier[1784,1785]@{A}@) =[1786,1787] right: (identifier[1788,1789]@{E}@))
+     ;[1789,1790] \n[1790,1791] \n[1799,1800])
+    end[1804,1807])
+   ;[1807,1808]
+   (assignment left: (identifier[1809,1810]@{B}@) =[1811,1812]
+    right: 
+     (function_call name: (identifier[1813,1814]@{A}@) ([1814,1815]
+      (arguments
+       argument: 
+        (range (number[1815,1816]@{1}@) :[1816,1817]
+         (end_keyword end[1817,1820])))
+      )[1820,1821]))
+   ;[1821,1822] (comment[1827,1832]@{% !!4}@)
+   (assignment left: (identifier[1842,1843]@{E}@) =[1844,1845] right: (identifier[1846,1847]@{B}@))
+   ;[1847,1848] \n[1848,1849] \n[1853,1854]
+   (if_statement if[1858,1860] condition: (identifier[1861,1864]@{baz}@)
+    (block
+     (assignment left: (identifier[1882,1883]@{A}@) =[1884,1885] right: (identifier[1886,1887]@{C}@))
+     ;[1887,1888] \n[1888,1889] \n[1897,1898])
+    end[1902,1905])
+   ;[1905,1906]
+   (assignment left: (identifier[1907,1908]@{B}@) =[1909,1910]
+    right: 
+     (matrix [[1911,1912]
+      (row (number[1913,1914]@{1}@) ,[1915,1915] (number[1915,1916]@{2}@) (line_continuation[1917,1956]@{...  % is this the end?\n               }@) ,[1956,1956] (number[1956,1957]@{3}@) ,[1958,1958] (number[1958,1959]@{4}@))
+      ][1960,1961]))
+   ;[1961,1962] (comment[1965,1971]@{% !!15}@) (comment[1981,1986]@{% !!4}@) \n[1986,1987] \n[1991,1992]
+   (if_statement if[1996,1998] condition: (identifier[1999,2002]@{foo}@)
+    (block
+     (assignment left: (identifier[2020,2021]@{A}@) =[2022,2023] right: (identifier[2024,2025]@{E}@))
+     ;[2025,2026] \n[2026,2027] \n[2035,2036])
+    end[2040,2043])
+   (line_continuation[2044,2062]@{... the other end\n}@) (comment[2066,2072]@{% !! 4}@) \n[2072,2073]
+   (assignment left: (identifier[2082,2083]@{B}@) =[2084,2085]
+    right: 
+     (matrix [[2086,2087]
+      (row (identifier[2088,2089]@{B}@) ,[2090,2090] (identifier[2090,2091]@{A}@))
+      ][2092,2093]))
+   ;[2093,2094] (comment[2095,2100]@{% !!4}@)
+   (assignment left: (identifier[2110,2113]@{str}@) =[2114,2115]
+    right: (string '[2116,2117] (string_content[2117,2152]@{This is a char array with ... in it}@) '[2152,2153]))
+   ;[2153,2154]
+   (function_call name: (identifier[2159,2162]@{foo}@) ([2162,2163]
+    (arguments argument: (identifier[2163,2166]@{str}@))
+    )[2166,2167])
+   ;[2167,2168] (comment[2169,2174]@{% !!4}@)
+   (function_call name: (identifier[2184,2191]@{fcncall}@) ([2191,2192]
+    (arguments argument: (identifier[2192,2196]@{arg1}@) ,[2196,2197]
+     (string '[2198,2199] (string_content[2199,2202]@{...}@) '[2202,2203])
+     ,[2203,2204] (identifier[2205,2209]@{arg3}@))
+    )[2209,2210])
+   ;[2210,2211] (comment[2212,2217]@{% !!4}@) \n[2217,2218] (number[2222,2223]@{1}@) ;[2223,2224] (comment[2225,2230]@{% !!4}@) (comment[2236,2260]@{% Multi- end s\n    % >>8}@) \n[2260,2261]
+   (if_statement if[2265,2267] condition: (identifier[2268,2271]@{foo}@) (comment[2272,2276]@{%#ok}@) \n[2276,2277]
+    (block
+     (if_statement if[2285,2287] condition: (identifier[2288,2291]@{bar}@) (comment[2292,2296]@{%#ok}@) \n[2296,2297]
+      (block
+       (if_statement if[2309,2311] condition: (identifier[2312,2315]@{baz}@)
+        (block
+         (assignment left: (identifier[2349,2350]@{A}@) =[2351,2352] right: (identifier[2353,2354]@{B}@))
+         ;[2354,2355] \n[2355,2356] \n[2372,2373])
+        (else_clause else[2385,2389] \n[2389,2390] \n[2406,2407])
+        end[2419,2422])
+       ;[2422,2423])
+      end[2424,2427])
+     ;[2427,2428])
+    end[2429,2432])
+   (comment[2433,2456]@{% <<8 comment end thing}@) (comment[2466,2471]@{% !!4}@) \n[2471,2472]
+   (assignment left: (identifier[2476,2477]@{B}@) =[2478,2479] right: (identifier[2480,2481]@{A}@))
+   ;[2481,2482] \n[2482,2483] \n[2487,2488])
+  end[2488,2491])
+ \n[2491,2493]
+ (function_definition function[2493,2501]
+  (function_output (identifier[2502,2505]@{out}@) =[2506,2507])
+  name: (identifier[2508,2528]@{array_constant_decls}@)
+  (function_arguments ([2528,2529] )[2529,2530])
+  \n[2530,2531]
+  (block
+   (assignment left: (identifier[2540,2541]@{A}@) =[2542,2543]
+    right: 
+     (matrix [[2544,2545]
+      (row (number[2546,2547]@{1}@) ,[2548,2548] (number[2548,2549]@{2}@) ,[2550,2550] (number[2550,2551]@{3}@))
+      ][2552,2553]))
+   ;[2553,2554] (comment[2555,2559]@{%!!4}@)
+   (assignment left: (identifier[2569,2574]@{Blong}@) =[2575,2576]
+    right: 
+     (matrix [[2577,2578]
+      (row (number[2579,2580]@{1}@) ,[2581,2581] (number[2581,2582]@{2}@))
+      ;[2582,2583] (comment[2584,2588]@{%!!4}@)
+      (row (number[2603,2604]@{3}@) ,[2605,2605] (number[2605,2606]@{4}@))
+      ;[2606,2607] (comment[2608,2613]@{%!!14}@) ][2626,2627]))
+   ;[2627,2628] (comment[2629,2634]@{%!!12}@)
+   (assignment left: (identifier[2644,2648]@{Csep}@) =[2649,2650]
+    right: 
+     (matrix [[2651,2652] \n[2653,2654]
+      (row (number[2667,2668]@{1}@) ,[2669,2669] (number[2669,2670]@{2}@))
+      ;[2670,2671] (comment[2672,2676]@{%!!8}@)
+      (row (number[2690,2691]@{3}@) ,[2692,2692] (number[2692,2693]@{4}@))
+      ;[2693,2694] (comment[2695,2699]@{%!!8}@) ][2711,2712]))
+   ;[2712,2713] (comment[2714,2719]@{%!!11}@)
+   (assignment left: (identifier[2729,2738]@{multinest}@) =[2739,2740]
+    right: 
+     (cell {[2741,2742]
+      (row
+       (matrix [[2743,2744]
+        (row (number[2745,2746]@{1}@) ,[2747,2747] (number[2747,2748]@{2}@))
+        (comment[2763,2767]@{%!!4}@)
+        (row (number[2788,2789]@{3}@) ,[2790,2790] (number[2790,2791]@{4}@))
+        ][2792,2793]))
+      ;[2793,2794] (comment[2806,2811]@{%!!20}@)
+      (row
+       (cell {[2830,2831]
+        (row (number[2832,2833]@{5}@) ,[2834,2834] (number[2834,2835]@{6}@) ,[2836,2836] (number[2836,2837]@{7}@) (line_continuation[2838,2876]@{...         %!!18\n                    }@) ,[2876,2876] (number[2876,2877]@{8}@) ,[2878,2878] (number[2878,2879]@{9}@) ,[2880,2880] (number[2880,2882]@{10}@))
+        (line_continuation[2883,2918]@{...        %!!20\n                  }@) }[2918,2919]))
+      ;[2919,2920] (comment[2938,2943]@{%!!18}@)
+      (row
+       (function_call name: (identifier[2962,2969]@{fcncall}@) ([2969,2970]
+        (arguments argument: (number[2970,2972]@{10}@) ,[2972,2973] (line_continuation[2974,2988]@{...     %!!18\n}@) (number[3014,3016]@{12}@) ,[3016,3017] (line_continuation[3018,3032]@{...     %!!26\n}@)
+         (matrix [[3058,3059]
+          (row (number[3060,3062]@{13}@) ,[3063,3063] (number[3063,3065]@{14}@))
+          ;[3065,3066] (comment[3070,3075]@{%!!26}@)
+          (row (number[3104,3106]@{15}@) ,[3107,3107] (number[3107,3109]@{16}@))
+          ][3110,3111]))
+        )[3111,3112]))
+      (comment[3114,3119]@{%!!28}@) }[3136,3137]))
+   ;[3138,3139] (comment[3141,3146]@{%!!16}@)
+   (assignment left: (identifier[3156,3160]@{nest}@) =[3161,3162]
+    right: 
+     (cell {[3163,3164] (line_continuation[3165,3174]@{... %!!4\n}@)
+      (row (number[3187,3188]@{1}@))
+      (comment[3196,3200]@{%!!8}@)
+      (row
+       (matrix [[3214,3215] (line_continuation[3216,3228]@{...    %!!8\n}@)
+        (row (number[3243,3244]@{2}@) ,[3245,3245] (number[3245,3246]@{3}@))
+        (comment[3250,3255]@{%!!10}@) ][3269,3270])
+       (line_continuation[3271,3296]@{...    %!!8\n             }@) ,[3296,3296] (number[3296,3297]@{3}@))
+      (comment[3305,3309]@{%!!8}@) }[3321,3322]))
+   ;[3322,3323] (comment[3327,3332]@{%!!11}@)
+   (assignment left: (identifier[3342,3359]@{cascade_long_name}@) =[3360,3361] (line_continuation[3362,3371]@{... %!!4\n}@)
+    right: 
+     (cell {[3379,3380] (line_continuation[3381,3404]@{...               %!!8\n}@)
+      (row (number[3414,3415]@{1}@))
+      (comment[3432,3437]@{%!!10}@)
+      (row (number[3448,3449]@{2}@))
+      (comment[3466,3471]@{%!!10}@) }[3480,3481]))
+   ;[3481,3482] (comment[3500,3504]@{%!!8}@) (comment[3514,3642]@{% TODO\n    % I don't know why the below indents t...}@)
+   (field_expression object: (identifier[3647,3652]@{thing}@) .[3652,3653] field: (identifier[3653,3658]@{thing}@) .[3658,3659] (identifier[3659,3663]@{long}@) .[3663,3664] (identifier[3664,3668]@{long}@) .[3668,3669]
+    (function_call name: (identifier[3669,3677]@{longname}@) ([3677,3678]
+     (arguments
+      argument: 
+       (cell {[3678,3679]
+        (row
+         (string '[3680,3681] (string_content[3681,3684]@{str}@) '[3684,3685]))
+        (comment[3686,3690]@{%!!4}@)
+        (row
+         (string '[3728,3729] (string_content[3729,3732]@{str}@) '[3732,3733]))
+        (comment[3734,3739]@{%!!37}@)
+        (row
+         (string '[3777,3778] (string_content[3778,3781]@{str}@) '[3781,3782]))
+        (comment[3783,3788]@{%!!37}@)
+        (row
+         (string '[3826,3827] (string_content[3827,3830]@{str}@) '[3830,3831]))
+        (comment[3832,3837]@{%!!37}@) }[3873,3874]))
+     )[3874,3875]))
+   ;[3875,3876] (comment[3879,3884]@{%!!35}@)
+   (field_expression object: (identifier[3894,3899]@{thing}@) .[3899,3900] field: (identifier[3900,3905]@{thing}@) .[3905,3906] (identifier[3906,3910]@{long}@) .[3910,3911] (identifier[3911,3915]@{long}@) .[3915,3916]
+    (function_call name: (identifier[3916,3924]@{longname}@) ([3924,3925]
+     (arguments
+      argument: (string '[3925,3926] (string_content[3926,3929]@{str}@) '[3929,3930])
+      ,[3930,3931] (line_continuation[3932,3941]@{... %!!4\n}@)
+      (string '[3976,3977] (string_content[3977,3980]@{str}@) '[3980,3981])
+      ,[3981,3982] (line_continuation[3983,3993]@{... %!!35\n}@)
+      (string '[4028,4029] (string_content[4029,4032]@{str}@) '[4032,4033])
+      ,[4033,4034] (line_continuation[4035,4045]@{... %!!35\n}@)
+      (string '[4080,4081] (string_content[4081,4084]@{str}@) '[4084,4085]))
+     (line_continuation[4086,4097]@{...  %!!35\n}@) )[4123,4124]))
+   ;[4124,4125] (comment[4128,4133]@{%!!34}@) (comment[4143,4181]@{% Line starting with end inside parens}@)
+   (function_call name: (identifier[4186,4190]@{disp}@) ([4190,4191]
+    (arguments
+     argument: 
+      (function_call name: (identifier[4191,4195]@{Csep}@) ([4195,4196]
+       (arguments
+        argument: 
+         (range (number[4196,4197]@{1}@) :[4197,4198] (line_continuation[4200,4210]@{...  %!!4\n}@)
+          (end_keyword end[4224,4227])))
+       )[4227,4228]))
+    )[4228,4229])
+   ;[4229,4230] (comment[4233,4238]@{%!!14}@) (comment[4244,4321]@{% This array has bad syntactic expression parsing ...}@)
+   (assignment left: (identifier[4326,4334]@{Closures}@) =[4335,4336]
+    right: 
+     (matrix [[4337,4338] \n[4339,4340]
+      (row (number[4357,4363]@{755009}@))
+      ;[4364,4365] (line_continuation[4366,4412]@{... % 21-Feb-2067 Washington's Birthday (Mon)\n}@)
+      (row (number[4429,4435]@{755010}@))
+      ;[4436,4437] (comment[4442,4447]@{% !!8}@) ][4463,4464]))
+   ;[4464,4465]
+   (assignment left: (identifier[4475,4478]@{dep}@) =[4479,4480]
+    right: 
+     (matrix [[4481,4482] \n[4482,4483]
+      (row
+       (function_call name: (identifier[4495,4499]@{root}@) ([4499,4500]
+        (arguments
+         argument: 
+          (field_expression object: (identifier[4500,4504]@{info}@) .[4504,4505]
+           field: (identifier function[4505,4513]))
+         ,[4513,4514] (identifier[4515,4522]@{factory}@) ,[4522,4523] (identifier[4524,4533]@{workspace}@) ,[4533,4534]
+         (matrix [[4535,4536] ][4536,4537]))
+        )[4537,4538])
+       ,[4538,4539] (line_continuation[4540,4579]@{...    % likewise this isn't a keyword\n}@)
+       (field_expression object: (identifier[4591,4595]@{fcn3}@) .[4595,4596] field: (identifier[4596,4604]@{finalize}@)))
+      (comment[4643,4687]@{% the single quote used to break [] scanning}@) ][4698,4699]))
+   ;[4699,4700] (comment[4710,4821]@{% This long fcn name last symbol starts with 'get'...}@) \n[4821,4822]
+   (if_statement if[4826,4828]
+    condition: 
+     (field_expression object: (identifier[4829,4839]@{qesimcheck}@) .[4839,4840] field: (identifier[4840,4845]@{utils}@) .[4845,4846]
+      (function_call name: (identifier[4846,4860]@{GetYesNoAnswer}@) ([4860,4861]
+       (arguments
+        argument: (string '[4861,4862] (string_content[4862,4865]@{Do }@) '[4865,4866])
+        ,[4866,4867] (line_continuation[4867,4875]@{... !!4\n}@)
+        (string '[4914,4915] (string_content[4915,4916]@{n}@) '[4916,4917])
+        ,[4917,4918] (line_continuation[4918,4928]@{...  !!39\n}@)
+        (string '[4967,4968] (string_content[4968,4972]@{once}@) '[4972,4973]))
+       )[4973,4974]))
+    (comment[4975,4980]@{%!!39}@)
+    (block
+     (function_call name: (identifier[4989,4993]@{code}@) ([4993,4994] )[4994,4995])
+     ;[4995,4996] (comment[4998,5002]@{%!!8}@) \n[5002,5003])
+    end[5007,5010])
+   (comment[5012,5016]@{%!!4}@) (comment[5036,5041]@{% !!4}@) \n[5041,5042]
+   (assignment left: (identifier[5046,5049]@{out}@) =[5050,5051]
+    right: 
+     (cell {[5052,5053]
+      (row (identifier[5054,5055]@{A}@))
+      (comment[5060,5064]@{%!!4}@)
+      (row (identifier[5077,5082]@{Blong}@))
+      (comment[5083,5088]@{%!!12}@)
+      (row (identifier[5101,5105]@{Csep}@))
+      (comment[5107,5112]@{%!!12}@)
+      (row (identifier[5125,5129]@{nest}@))
+      (comment[5131,5136]@{%!!12}@)
+      (row (identifier[5149,5158]@{multinest}@))
+      (comment[5158,5163]@{%!!12}@)
+      (row (identifier[5176,5193]@{cascade_long_name}@))
+      (comment[5193,5198]@{%!!12}@)
+      (row (identifier[5211,5219]@{Closures}@))
+      (comment[5219,5224]@{%!!12}@)
+      (row (identifier[5237,5240]@{dep}@))
+      (comment[5241,5246]@{%!!12}@) }[5257,5258]))
+   ;[5258,5259] (comment[5265,5270]@{%!!10}@) \n[5270,5272])
+  end[5272,5275])
+ \n[5275,5277]
+ (function_definition function[5277,5285]
+  (function_output (identifier[5286,5287]@{C}@) =[5288,5289])
+  name: (identifier[5290,5326]@{block_starts_in_comments_and_strings}@)
+  (function_arguments ([5326,5327] arguments: (identifier[5327,5335]@{varargin}@) )[5335,5336])
+  (comment[5337,5342]@{% !!0}@) \n[5342,5343]
+  (block
+   (assignment left: (identifier[5352,5353]@{C}@) =[5354,5355] right: (number[5356,5357]@{0}@))
+   ;[5357,5358] \n[5358,5359] \n[5363,5364]
+   (if_statement if[5368,5370]
+    condition: 
+     (function_call name: (identifier[5371,5379]@{varargin}@) {[5379,5380]
+      (arguments argument: (number[5380,5381]@{1}@))
+      }[5381,5382])
+    (comment[5383,5392]@{% if true}@) (comment[5410,5415]@{% !!8}@) \n[5415,5416]
+    (else_clause else[5420,5424] (comment[5425,5430]@{% !!4}@) (comment[5440,5445]@{% !!8}@) \n[5445,5446])
+    end[5450,5453])
+   (comment[5454,5463]@{% if true}@) (comment[5478,5511]@{% see previous function\n    % !!4}@) \n[5511,5512]
+   (for_statement for[5516,5519]
+    (iterator (identifier[5520,5521]@{x}@) =[5521,5522]
+     (range (number[5522,5523]@{1}@) :[5523,5524]
+      (function_call name: (identifier[5524,5530]@{length}@) ([5530,5531]
+       (arguments argument: (identifier[5531,5532]@{C}@))
+       )[5532,5533])))
+    (comment[5534,5539]@{% !!4}@) \n[5539,5540]
+    (block
+     (if_statement if[5548,5550]
+      condition: 
+       (function_call name: (identifier[5551,5559]@{varargin}@) {[5559,5560]
+        (arguments argument: (number[5560,5561]@{2}@))
+        }[5561,5562])
+      (comment[5564,5569]@{% !!8}@) \n[5569,5570]
+      (block
+       (continue_statement continue[5582,5590])
+       (comment[5594,5600]@{% !!12}@) \n[5600,5601])
+      end[5609,5612])
+     (comment[5615,5620]@{% !!8}@) \n[5620,5621] \n[5629,5630]
+     (break_statement break[5638,5643])
+     (comment[5644,5670]@{% !!8\n              % !!14}@) (comment[5688,5692]@{%!!8}@) \n[5692,5693])
+    end[5697,5700])
+   \n[5700,5702]
+   (switch_statement switch[5706,5712]
+    condition: (function_call name: (identifier[5713,5716]@{foo}@) ([5716,5717] )[5717,5718])
+    (comment[5720,5724]@{%!!4}@) \n[5724,5725]
+    (case_clause case[5731,5735] condition: (number[5736,5737]@{1}@) (comment[5739,5743]@{%!!6}@) (comment[5761,5765]@{%!!8}@) \n[5765,5766])
+    (otherwise_clause otherwise[5772,5781] (comment[5782,5786]@{%!!6}@) (comment[5804,5808]@{%!!8}@) \n[5808,5809])
+    end[5813,5816])
+   (comment[5817,5821]@{%!!4}@) \n[5821,5823]
+   (try_statement try[5827,5830] (comment[5839,5844]@{% !!8}@) \n[5844,5845]
+    (catch_clause catch[5849,5854] (comment[5855,5863]@{%!!4    }@) (comment[5881,5886]@{% !!8}@) \n[5886,5887])
+    end[5891,5894])
+   \n[5894,5895] \n[5899,5900])
+  end[5900,5903])
+ \n[5903,5905]
+ (function_definition function[5905,5913]
+  (function_output (identifier[5914,5915]@{B}@) =[5916,5917])
+  name: (identifier[5918,5950]@{continuations_and_block_comments}@) (comment[5951,5992]@{% !!0\n% !!0\n% !!0\n%\{\n  !!2  \{  \}\n  !!2\n%\...}@) (comment[6002,6125]@{%\{\n      blank line means this block comment is ...}@) \n[6125,6127]
+  (block
+   (assignment left: (identifier[6131,6135]@{arg1}@) =[6135,6136] right: (number[6136,6137]@{1}@))
+   ;[6137,6138] (comment[6148,6188]@{%\{\n    %  !!4\n      !!6\n    % !!4\n    %\}}@) (comment[6198,6286]@{% Block comment indicators MUST be on a line by th...}@)
+   (function_call name: (identifier[6296,6299]@{foo}@) ([6299,6300]
+    (arguments argument: (number[6300,6301]@{1}@))
+    )[6301,6302])
+   ;[6302,6303] (comment[6304,6339]@{% !!4   - don't indent this special}@) (comment[6349,6383]@{%\} Not an end to a block comment \{}@)
+   (function_call name: (identifier[6393,6396]@{foo}@) ([6396,6397]
+    (arguments argument: (identifier[6397,6401]@{arg1}@) ,[6401,6402] (line_continuation[6403,6412]@{... %!!4\n}@) (identifier[6420,6424]@{arg2}@))
+    )[6424,6425])
+   ;[6425,6426] (comment[6428,6432]@{%!!8}@)
+   (function_call name: (identifier[6442,6454]@{foo_long_fcn}@) ([6454,6455]
+    (arguments argument: (identifier[6455,6459]@{arg1}@) ,[6459,6460] (line_continuation[6461,6470]@{... %!!4\n}@) (identifier[6487,6491]@{arg2}@))
+    )[6491,6492])
+   ;[6492,6493] (comment[6494,6499]@{%!!17}@)
+   (assignment left: (identifier[6509,6510]@{A}@) =[6511,6512]
+    right: 
+     (matrix [[6513,6514]
+      (row (number[6515,6516]@{1}@) ,[6517,6517] (number[6517,6518]@{2}@))
+      (comment[6520,6525]@{% !!4}@)
+      (row (number[6536,6537]@{3}@) ,[6538,6538] (number[6538,6539]@{4}@))
+      ][6540,6541]))
+   ;[6541,6542] (comment[6543,6549]@{% !!10}@)
+   (function_call name: (identifier[6559,6562]@{foo}@) ([6562,6563]
+    (arguments
+     argument: 
+      (matrix [[6563,6564]
+       (row
+        (string '[6564,6565] (string_content[6565,6591]@{this is a very long string}@) '[6591,6592])
+        ,[6592,6593] (line_continuation[6594,6603]@{... %!!4\n}@)
+        (string '[6612,6613] (string_content[6613,6661]@{with a continution to do something very exciting}@) '[6661,6662]))
+       ][6662,6663]))
+    )[6663,6664])
+   ;[6664,6665] (comment[6665,6669]@{%!!9}@)
+   (function_call name: (identifier[6679,6682]@{set}@) ([6682,6683]
+    (arguments argument: (identifier[6683,6686]@{gcf}@) ,[6686,6687]
+     (string '[6687,6688] (string_content[6688,6696]@{Position}@) '[6696,6697])
+     ,[6697,6698]
+     (matrix [[6698,6699]
+      (row (number[6700,6701]@{1}@) ,[6702,6702] (number[6702,6703]@{2}@) ,[6704,6704] (number[6704,6705]@{3}@) ,[6706,6706] (number[6706,6707]@{4}@))
+      ][6707,6708])
+     ,[6708,6709] (line_continuation[6710,6718]@{... !!4\n}@)
+     (string '[6730,6731] (string_content[6731,6736]@{Color}@) '[6736,6737])
+     ,[6737,6738]
+     (string '[6739,6740] (string_content[6740,6743]@{red}@) '[6743,6744]))
+    )[6744,6745])
+   ;[6745,6746] (comment[6748,6754]@{% !!12}@)
+   (assignment left: (identifier[6764,6765]@{B}@) =[6766,6767]
+    right: 
+     (binary_operator
+      left: 
+       (binary_operator
+        left: (binary_operator left: (identifier[6768,6769]@{A}@) +[6770,6771] right: (number[6772,6773]@{1}@))
+        +[6774,6775] right: (number[6776,6777]@{4}@))
+      (line_continuation[6778,6782]@{...\n}@) +[6790,6791] right: (number[6792,6793]@{6}@)))
+   ;[6793,6794] (comment[6795,6800]@{% !!8}@)
+   (function_call name: (identifier[6810,6818]@{foo_code}@) ([6818,6819] )[6819,6820])
+   ;[6820,6821] (comment[6823,6885]@{% eol-comment !!4\n                 % continuation...}@) (comment[6895,6969]@{% !!4 -blank between this & continuation comment\n...}@) \n[6969,6971]
+   (if_statement if[6975,6977]
+    condition: 
+     (boolean_operator left: (identifier[6978,6988]@{condition1}@) ||[6989,6991] (line_continuation[6992,7003]@{...  % !!4\n}@)
+      right: 
+       (function_call name: (identifier[7010,7018]@{fcn_call}@) ([7018,7019]
+        (arguments argument: (identifier[7019,7023]@{arg1}@) ,[7023,7024] (line_continuation[7025,7036]@{... % !!12\n}@) (identifier[7052,7056]@{arg2}@))
+        )[7056,7057]))
+    (comment[7059,7065]@{% !!21}@)
+    (block
+     (function_call name: (identifier[7074,7084]@{line_in_if}@) ([7084,7085] )[7085,7086])
+     ;[7086,7087] \n[7087,7088])
+    end[7092,7095])
+   (comment[7097,7102]@{% !!4}@) \n[7102,7103] \n[7107,7108] \n[7112,7113] \n[7117,7118])
+  end[7118,7121])
+ \n[7121,7123]
+ (function_definition function[7123,7131] name: (identifier[7132,7146]@{has_nested_fcn}@) \n[7146,7148]
+  (block
+   (function_call name: (identifier[7152,7156]@{plot}@) ([7156,7157]
+    (arguments
+     argument: (range (number[7157,7158]@{1}@) :[7158,7159] (number[7159,7161]@{10}@)))
+    )[7161,7162])
+   ;[7162,7163] (comment[7164,7168]@{%!!4}@)
+   (assignment left: (identifier[7178,7179]@{A}@) =[7180,7181] right: (number[7182,7183]@{1}@))
+   ;[7183,7184] \n[7184,7185] \n[7189,7190]
+   (function_definition function[7194,7202] name: (identifier[7203,7216]@{am_nested_fcn}@)
+    (function_arguments ([7216,7217] )[7217,7218])
+    (comment[7219,7294]@{%!!4\n                             % help\n       ...}@) \n[7294,7295]
+    (block
+     (function_call name: (identifier[7303,7307]@{code}@) ([7307,7308]
+      (arguments argument: (identifier[7308,7309]@{A}@))
+      )[7309,7310])
+     ;[7310,7311] (comment[7316,7320]@{%!!8}@) \n[7320,7321])
+    end[7325,7328])
+   (comment[7338,7342]@{%!!4}@) \n[7342,7343]
+   (function_call name: (identifier[7347,7360]@{am_nested_fcn}@) ([7360,7361] )[7361,7362])
+   ;[7362,7363]
+   (function_call name: (identifier[7368,7390]@{function_end_same_line}@) ([7390,7391]
+    (arguments argument: (number[7391,7392]@{1}@))
+    )[7392,7393])
+   ;[7393,7394]
+   (function_call name: (identifier[7399,7427]@{function_after_end_same_line}@) ([7427,7428] )[7428,7429])
+   ;[7429,7430] \n[7430,7431])
+  end[7431,7434])
+ \n[7434,7436]
+ (function_definition function[7436,7444]
+  (function_output (identifier[7445,7446]@{b}@) =[7446,7447])
+  name: (identifier[7447,7469]@{function_end_same_line}@)
+  (function_arguments ([7469,7470] arguments: (identifier[7470,7471]@{a}@) )[7471,7472])
+  ,[7472,7473]
+  (block
+   (assignment left: (identifier[7474,7475]@{b}@) =[7475,7476] right: (identifier[7476,7477]@{a}@))
+   ;[7477,7478])
+  end[7479,7482])
+ (comment[7483,7487]@{%!!0}@) \n[7487,7489]
+ (function_definition function[7489,7497] name: (identifier[7498,7526]@{function_after_end_same_line}@)
+  (function_arguments ([7526,7527] )[7527,7528])
+  (comment[7528,7576]@{%!!0\n                                       %!!0}@) \n[7576,7577]
+  (block
+   (function_call name: (identifier[7581,7585]@{disp}@) ([7585,7586]
+    (arguments
+     argument: (string '[7586,7587] (string_content[7587,7590]@{foo}@) '[7590,7591]))
+    )[7591,7592])
+   ;[7592,7593] (comment[7593,7597]@{%!!4}@)
+   (function_call name: (identifier[7607,7621]@{debug_cmd_dual}@) ([7621,7622] )[7622,7623])
+   ;[7623,7624] \n[7624,7625] \n[7629,7630])
+  end[7630,7633])
+ (comment[7633,7637]@{%!!0}@) \n[7637,7639]
+ (function_definition function[7639,7647] name: (identifier[7648,7662]@{debug_cmd_dual}@)
+  (function_arguments ([7663,7664] )[7664,7665])
+  (comment[7666,7850]@{% These dbstop command dual content have 'if' bloc...}@) \n[7850,7851]
+  (block
+   (command (command_name[7860,7866]@{dbstop}@) (command_argument[7867,7869]@{in}@) (command_argument[7870,7881]@{hRandomFile}@) (command_argument[7882,7884]@{at}@) (command_argument[7885,7887]@{14}@) (command_argument[7888,7890]@{if}@) (command_argument[7891,7897]@{func()}@))
+   (comment[7898,7903]@{% !!4}@) \n[7903,7904]
+   (command (command_name[7908,7914]@{dbstop}@) (command_argument[7915,7917]@{in}@) (command_argument[7918,7929]@{hRandomFile}@) (command_argument[7930,7932]@{at}@) (command_argument[7933,7937]@{30@1}@) (command_argument[7938,7940]@{if}@) (command_argument[7941,7945]@{x==1}@))
+   (comment[7946,7951]@{% !!4}@) \n[7951,7952]
+   (command (command_name[7956,7962]@{dbstop}@) (command_argument[7963,7965]@{in}@) (command_argument[7966,7972]@{hPFile}@))
+   (comment[7994,7999]@{% !!4}@) \n[7999,8000]
+   (command (command_name[8004,8010]@{dbstop}@) (command_argument[8011,8013]@{in}@) (command_argument[8014,8025]@{hSimpleFile}@) (command_argument[8026,8028]@{at}@) (command_argument[8029,8030]@{2}@))
+   (comment[8042,8047]@{% !!4}@) \n[8047,8048]
+   (command (command_name[8052,8058]@{dbstop}@) (command_argument[8059,8061]@{if}@) (command_argument[8062,8067]@{error}@))
+   (comment[8090,8095]@{% !!4}@) (comment[8105,8109]@{%!!4}@) \n[8109,8111]
+   (function_call name: (identifier[8115,8129]@{debug_cmd_dual}@) ([8129,8130] )[8130,8131])
+   ;[8131,8132] (comment[8133,8137]@{%!!4}@) \n[8137,8138] \n[8142,8143])
+  end[8143,8146])
+ \n[8146,8147])

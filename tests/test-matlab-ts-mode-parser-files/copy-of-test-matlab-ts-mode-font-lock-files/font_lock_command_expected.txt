@@ -1,0 +1,10 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,65]@{% foocmd0 could be a variable or a function}@)
+ (command (command_name[66,73]@{foocmd0}@))
+ \n[73,75]
+ (command (command_name[75,81]@{foocmd}@) (command_argument[82,85]@{bar}@))
+ (comment[87,203]@{% Following is an error, though matlab tree-sitter...}@) \n[203,204]
+ (command (command_name[204,211]@{foocmd2}@) (command_argument[212,215]@{bar}@) (command_argument[216,219]@{goo}@))
+ (comment[221,269]@{% system "!" command supports multiple arguments}@) \n[269,270]
+ (command (command_name[270,274]@{! ls}@) (command_argument[275,278]@{*.m}@) (command_argument[279,284]@{*.txt}@))
+ \n[284,285])

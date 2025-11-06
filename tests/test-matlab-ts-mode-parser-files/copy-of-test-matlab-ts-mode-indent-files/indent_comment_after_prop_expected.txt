@@ -1,0 +1,139 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,31]@{% comment}@)
+ (class_definition classdef[32,40] name: (identifier[41,66]@{indent_comment_after_prop}@)
+  (superclasses <[67,68]
+   (property_name (identifier[69,75]@{handle}@)))
+  (comment[81,90]@{% comment}@) \n[90,91]
+  (properties properties[95,105] \n[105,106]
+   (property name: (identifier[114,117]@{foo}@) ;[117,118] \n[118,119])
+   (property name: (identifier[127,130]@{bar}@) ;[130,131] (comment[140,149]@{% comment}@) \n[149,150])
+   end[154,157])
+  (comment[163,172]@{% comment}@)
+  (events events[177,183] \n[183,184] (identifier[192,195]@{goo}@) ;[195,196] (comment[205,214]@{% comment}@) \n[214,215] end[219,222])
+  (comment[228,237]@{% comment}@)
+  (methods methods[242,249] (comment[259,268]@{% comment}@) \n[268,269]
+   (function_definition function[277,285] name: (identifier[286,290]@{foo1}@)
+    (function_arguments ([290,291] arguments: (identifier[291,292]@{a}@) )[292,293])
+    (comment[307,316]@{% comment}@) \n[316,317]
+    (arguments_statement arguments[329,338] \n[338,339]
+     (property name: (identifier[355,356]@{a}@) (comment[369,378]@{% comment}@) \n[378,379])
+     end[391,394])
+    (comment[408,417]@{% comment}@) \n[417,418]
+    (block
+     (if_statement if[430,432]
+      condition: (comparison_operator (identifier[433,434]@{a}@) >[435,436] (number[437,438]@{0}@))
+      (block
+       (function_call name: (identifier[455,459]@{disp}@) ([459,460]
+        (arguments
+         argument: (string '[460,461] (string_content[461,465]@{here}@) '[465,466]))
+        )[466,467])
+       \n[467,468]
+       (if_statement if[484,486]
+        condition: (comparison_operator (identifier[487,488]@{a}@) >[489,490] (number[491,493]@{10}@))
+        (block
+         (function_call name: (identifier[514,518]@{disp}@) ([518,519]
+          (arguments
+           argument: (string '[519,520] (string_content[520,526]@{a > 10}@) '[526,527]))
+          )[527,528])
+         ;[528,529] (comment[550,559]@{% comment}@) \n[559,560]
+         (switch_statement switch[580,586] condition: (identifier[587,588]@{a}@) (comment[611,620]@{% comment}@) \n[620,621]
+          (case_clause case[643,647] condition: (number[648,650]@{11}@) \n[650,651]
+           (block
+            (function_call name: (identifier[675,679]@{disp}@) ([679,680]
+             (arguments
+              argument: (string '[680,681] (string_content[681,688]@{a == 11}@) '[688,689]))
+             )[689,690])
+            (comment[715,724]@{% comment}@) \n[724,725]
+            (for_statement for[749,752]
+             (iterator (identifier[753,756]@{idx}@) =[756,757]
+              (range (number[757,758]@{1}@) :[758,759] (identifier[759,760]@{a}@)))
+             (block
+              (function_call name: (identifier[789,793]@{disp}@) ([793,794]
+               (arguments argument: (identifier[794,797]@{idx}@))
+               )[797,798])
+              ;[798,799] (comment[828,837]@{% comment}@) \n[837,838])
+             end[862,865])
+            (comment[891,900]@{% comment}@) \n[900,901]
+            (for_statement parfor[925,931]
+             (iterator (identifier[932,935]@{idx}@) =[935,936]
+              (range (number[936,937]@{1}@) :[937,938] (identifier[938,939]@{a}@)))
+             (block
+              (function_call name: (identifier[968,972]@{disp}@) ([972,973]
+               (arguments argument: (identifier[973,976]@{idx}@))
+               )[976,977])
+              ;[977,978] (comment[1007,1016]@{% comment}@) \n[1016,1017])
+             end[1041,1044])
+            \n[1044,1045]
+            (assignment left: (identifier[1069,1072]@{idx}@) =[1073,1074] right: (number[1075,1076]@{0}@))
+            (comment[1101,1110]@{% comment}@) \n[1110,1111]
+            (while_statement while[1135,1140]
+             condition: (comparison_operator (identifier[1141,1144]@{idx}@) <[1145,1146] (identifier[1147,1148]@{a}@))
+             (block
+              (assignment left: (identifier[1177,1180]@{idx}@) =[1181,1182]
+               right: (binary_operator left: (identifier[1183,1186]@{idx}@) +[1187,1188] right: (number[1189,1190]@{1}@)))
+              ;[1190,1191] (comment[1220,1229]@{% comment}@) \n[1229,1230])
+             end[1254,1257])
+            (comment[1282,1291]@{% comment}@) \n[1291,1292]))
+          (otherwise_clause otherwise[1314,1323]
+           (block
+            (function_call name: (identifier[1348,1352]@{disp}@) ([1352,1353]
+             (arguments
+              argument: (string '[1353,1354] (string_content[1354,1360]@{a > 11}@) '[1360,1361]))
+             )[1361,1362])
+            ;[1362,1363] (comment[1388,1397]@{% comment}@) \n[1397,1398]))
+          end[1418,1421])
+         (comment[1442,1451]@{% comment}@) \n[1451,1452])
+        (elseif_clause elseif[1468,1474]
+         condition: (comparison_operator (identifier[1475,1476]@{a}@) >[1477,1478] (number[1479,1481]@{11}@))
+         (block
+          (function_call name: (identifier[1502,1506]@{disp}@) ([1506,1507]
+           (arguments
+            argument: (string '[1507,1508] (string_content[1508,1514]@{a > 11}@) '[1514,1515]))
+           )[1515,1516])
+          (comment[1537,1546]@{% comment}@) \n[1546,1547]))
+        (else_clause else[1563,1567]
+         (block
+          (function_call name: (identifier[1588,1592]@{disp}@) ([1592,1593]
+           (arguments
+            argument: (string '[1593,1594] (string_content[1594,1600]@{a <= 0}@) '[1600,1601]))
+           )[1601,1602])
+          ;[1602,1603] (comment[1624,1633]@{% comment}@) \n[1633,1634]
+          (try_statement try[1654,1657]
+           (block
+            (function_call name: (identifier[1682,1687]@{error}@) ([1687,1688]
+             (arguments
+              argument: (string '[1688,1689] (string_content[1689,1692]@{foo}@) '[1692,1693]))
+             )[1693,1694])
+            ;[1694,1695] (comment[1720,1729]@{% comment}@) \n[1729,1730])
+           (catch_clause catch[1750,1755] (identifier[1756,1758]@{ME}@) \n[1758,1759]
+            (block
+             (function_call name: (identifier[1783,1787]@{disp}@) ([1787,1788]
+              (arguments
+               argument: (string '[1788,1789] (string_content[1789,1801]@{caught error}@) '[1801,1802]))
+              )[1802,1803])
+             ;[1803,1804] (comment[1829,1838]@{% comment}@) \n[1838,1839]))
+           end[1859,1862])
+          \n[1862,1863]))
+        end[1879,1882])
+       (comment[1900,1909]@{% comment}@) \n[1909,1910])
+      (elseif_clause elseif[1922,1928]
+       condition: (comparison_operator (identifier[1929,1930]@{a}@) ==[1931,1933] (number[1934,1935]@{0}@))
+       (block
+        (function_call name: (identifier[1952,1956]@{disp}@) ([1956,1957]
+         (arguments
+          argument: (string '[1957,1958] (string_content[1958,1964]@{a == 0}@) '[1964,1965]))
+         )[1965,1966])
+        ;[1966,1967] \n[1967,1968]))
+      (else_clause else[1980,1984]
+       (block
+        (function_call name: (identifier[2001,2005]@{disp}@) ([2005,2006]
+         (arguments
+          argument: (string '[2006,2007] (string_content[2007,2012]@{a < 0}@) '[2012,2013]))
+         )[2013,2014])
+        ;[2014,2015] (comment[2032,2041]@{% comment}@) \n[2041,2042]))
+      end[2054,2057])
+     (comment[2066,2075]@{% comment}@) \n[2075,2076])
+    end[2084,2087])
+   (comment[2092,2101]@{% comment}@) \n[2101,2102] end[2106,2109])
+  (comment[2111,2120]@{% comment}@) end[2121,2124])
+ \n[2124,2125])

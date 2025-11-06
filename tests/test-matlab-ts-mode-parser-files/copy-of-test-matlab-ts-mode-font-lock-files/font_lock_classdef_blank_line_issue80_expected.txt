@@ -1,0 +1,15 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,176]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (class_definition classdef[178,186] name: (identifier[187,224]@{font_lock_classdef_blank_line_issue80}@) \n[224,225]
+  (methods methods[229,236]
+   (attributes ([237,238]
+    (attribute (identifier[238,244]@{Access}@) =[244,245] (identifier[245,254]@{protected}@))
+    )[254,255])
+   \n[255,256] \n[264,265]
+   (function_signature
+    (function_output (identifier[273,276]@{blk}@) =[277,278])
+    name: (identifier[279,288]@{setValue_}@)
+    (function_arguments ([288,289] arguments: (identifier[289,292]@{blk}@) ,[292,293] (identifier[294,299]@{Value}@) )[299,300]))
+   \n[300,301] end[305,308])
+  end[309,312])
+ \n[312,313])

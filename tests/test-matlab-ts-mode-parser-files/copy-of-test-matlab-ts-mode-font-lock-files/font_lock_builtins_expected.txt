@@ -1,0 +1,18 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29]
+  (function_output (identifier[30,39]@{varargout}@) =[40,41])
+  name: (identifier[42,60]@{font_lock_builtins}@)
+  (function_arguments ([60,61] arguments: (identifier[61,68]@{vararin}@) )[68,69])
+  \n[69,70]
+  (block
+   (command (command_name[74,80]@{nargin}@))
+   \n[80,81]
+   (function_call name: (identifier[85,89]@{disp}@) ([89,90]
+    (arguments argument: (identifier[90,96]@{nargin}@))
+    )[96,97])
+   \n[97,98]
+   (assignment left: (identifier[102,111]@{varargout}@) =[112,113] right: (identifier[114,122]@{varargin}@))
+   \n[122,123])
+  end[123,126])
+ \n[126,127])

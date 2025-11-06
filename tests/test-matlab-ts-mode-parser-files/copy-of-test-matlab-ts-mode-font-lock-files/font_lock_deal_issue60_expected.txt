@@ -1,0 +1,47 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[90,96]@{person}@) =[97,98]
+  right: 
+   (function_call name: (identifier[99,105]@{struct}@) ([105,106]
+    (arguments
+     argument: (string '[106,107] (string_content[107,110]@{Age}@) '[110,111])
+     ,[111,112]
+     (cell {[113,114]
+      (row (number[114,116]@{30}@) ,[116,117] (number[118,120]@{25}@) ,[120,121] (number[122,124]@{15}@))
+      }[124,125])
+     ,[125,126]
+     (string '[127,128] (string_content[128,132]@{City}@) '[132,133])
+     ,[133,134]
+     (cell {[135,136]
+      (row
+       (string '[136,137] (string_content[137,139]@{c1}@) '[139,140])
+       ,[140,141]
+       (string '[142,143] (string_content[143,145]@{c2}@) '[145,146])
+       ,[146,147]
+       (string '[148,149] (string_content[149,151]@{c3}@) '[151,152]))
+      }[152,153]))
+    )[153,154]))
+ ;[154,155]
+ (assignment
+  left: 
+   (multioutput_variable [[156,157]
+    (field_expression
+     object: 
+      (function_call name: (identifier[157,163]@{person}@) ([163,164]
+       (arguments
+        argument: 
+         (matrix [[164,165]
+          (row
+           (range (number[165,166]@{1}@) :[166,167] (number[167,168]@{3}@))
+           ,[168,169] (number[169,170]@{1}@))
+          ][170,171]))
+       )[171,172])
+     .[172,173] field: (identifier[173,178]@{names}@))
+    ][178,179])
+  =[180,181]
+  right: 
+   (function_call name: (identifier[182,186]@{deal}@) ([186,187]
+    (arguments
+     argument: (string '[187,188] (string_content[188,195]@{no-name}@) '[195,196]))
+    )[196,197]))
+ ;[197,198] \n[198,199])

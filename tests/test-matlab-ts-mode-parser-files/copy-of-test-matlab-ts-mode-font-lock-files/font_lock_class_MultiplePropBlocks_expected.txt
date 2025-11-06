@@ -1,0 +1,26 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[21,29] name: (identifier[30,64]@{font_lock_class_MultiplePropBlocks}@) \n[64,65]
+  (properties properties[69,79]
+   (attributes ([80,81]
+    (attribute (identifier[81,90]@{SetAccess}@) =[91,92] (identifier[93,100]@{private}@))
+    ,[100,101]
+    (attribute (identifier[102,111]@{GetAccess}@) =[112,113]
+     (cell {[114,115]
+      (row
+       (metaclass_operator ?[115,116] (identifier[116,126]@{OtherClass}@)))
+      }[126,127]))
+    )[127,128])
+   \n[128,129]
+   (property name: (identifier[137,146]@{Property1}@) \n[146,147])
+   (property name: (identifier[155,164]@{Property2}@) \n[164,165])
+   end[169,172])
+  (properties properties[177,187]
+   (attributes ([188,189]
+    (attribute (identifier[189,197]@{Abstract}@))
+    )[197,198])
+   \n[198,199]
+   (property name: (identifier[207,216]@{Property3}@) \n[216,217])
+   end[221,224])
+  end[225,228])
+ \n[228,229])

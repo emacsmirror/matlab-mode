@@ -1,0 +1,19 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment left: (identifier[22,29]@{outFile}@) =[30,31]
+  right: (string '[32,33] (string_content[33,40]@{out.txt}@) '[40,41]))
+ ;[41,42]
+ (assignment left: (identifier[43,48]@{lines}@) =[49,50]
+  right: 
+   (matrix [[51,52]
+    (row
+     (string '[52,53] (string_content[53,58]@{line1}@) (escape_sequence[58,60]@{\n}@) '[60,61])
+     ,[61,62]
+     (string '[63,64] (string_content[64,69]@{line2}@) (escape_sequence[69,71]@{\n}@) '[71,72]))
+    ][72,73]))
+ ;[73,74]
+ (function_call name: (identifier[76,86]@{writelines}@) ([86,87]
+  (arguments argument: (identifier[87,92]@{lines}@) ,[92,93] (identifier[94,101]@{outFile}@) ,[101,102] (identifier[103,113]@{LineEnding}@) =[114,115]
+   (string '[116,117] (escape_sequence[117,119]@{\n}@) '[119,120]))
+  )[120,121])
+ ;[121,122] \n[122,123])

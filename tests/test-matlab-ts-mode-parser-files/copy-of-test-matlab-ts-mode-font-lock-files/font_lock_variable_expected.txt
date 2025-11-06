@@ -1,0 +1,61 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] name: (identifier[30,48]@{font_lock_variable}@) (comment[54,283]@{% ((assignment left: (identifier) @matlab-ts-mode-...}@) \n[283,284]
+  (block
+   (assignment left: (identifier[288,292]@{disp}@) =[293,294] right: (number[295,297]@{10}@))
+   ;[297,298] (comment[304,367]@{% (assignment left: (identifier) @font-lock-variab...}@)
+   (assignment left: (identifier[372,376]@{foo2}@) =[377,378]
+    right: (string '[379,380] (string_content[380,381]@{a}@) '[381,382]))
+   (comment[388,619]@{% (multioutput_variable (identifier) @matlab-ts-mo...}@) \n[619,620]
+   (assignment
+    left: (multioutput_variable [[624,625] (identifier[625,629]@{disp}@) ,[629,630] (identifier[631,635]@{plot}@) ][635,636])
+    =[637,638]
+    right: (function_call name: (identifier[639,643]@{fcn1}@) ([643,644] )[644,645]))
+   ;[645,646] (comment[652,719]@{% (multioutput_variable (identifier) @font-lock-va...}@)
+   (assignment
+    left: (multioutput_variable [[724,725] (identifier[725,726]@{a}@) ,[726,727] (identifier[728,729]@{b}@) ][729,730])
+    =[731,732]
+    right: (function_call name: (identifier[733,737]@{fcn1}@) ([737,738] )[738,739]))
+   ;[739,740] (comment[746,974]@{% (global_operator (identifier) @matlab-ts-mode-va...}@) \n[974,975]
+   (global_operator global[979,985] (identifier[986,990]@{disp}@) (identifier[991,995]@{plot}@))
+   (comment[1001,1063]@{% (global_operator (identifier) @font-lock-variabl...}@) \n[1063,1064]
+   (global_operator global[1068,1074] (identifier[1075,1079]@{bar1}@) (identifier[1080,1084]@{bar2}@))
+   (comment[1090,1320]@{% (persistent_operator (identifier) @matlab-ts-mod...}@) \n[1320,1321]
+   (persistent_operator persistent[1325,1335] (identifier[1336,1340]@{plot}@))
+   ;[1340,1341] (comment[1347,1413]@{% (persistent_operator (identifier) @font-lock-var...}@) \n[1413,1414]
+   (persistent_operator persistent[1418,1428] (identifier[1429,1433]@{foo1}@))
+   ;[1433,1434]
+   (assignment left: (identifier[1440,1445]@{total}@) =[1446,1447] right: (number[1448,1449]@{0}@))
+   ;[1449,1450] (comment[1456,1715]@{% (for_statement (iterator (identifier) @matlab-ts...}@) \n[1715,1716]
+   (for_statement for[1720,1723]
+    (iterator (identifier[1724,1728]@{plot}@) =[1729,1730]
+     (range (number[1731,1732]@{1}@) :[1732,1733] (number[1733,1735]@{10}@)))
+    (block
+     (assignment left: (identifier[1744,1749]@{total}@) =[1750,1751]
+      right: (binary_operator left: (identifier[1752,1757]@{total}@) +[1758,1759] right: (identifier[1760,1764]@{plot}@)))
+     ;[1764,1765] \n[1765,1766])
+    end[1770,1773])
+   (comment[1780,1851]@{% (for_statement (iterator (identifier) @font-lock...}@) \n[1851,1852]
+   (for_statement for[1856,1859]
+    (iterator (identifier[1860,1863]@{idx}@) =[1864,1865]
+     (range (number[1866,1867]@{1}@) :[1867,1868] (number[1868,1870]@{10}@)))
+    (block
+     (assignment left: (identifier[1879,1884]@{total}@) =[1885,1886]
+      right: (binary_operator left: (identifier[1887,1892]@{total}@) +[1893,1894] right: (identifier[1895,1898]@{idx}@)))
+     ;[1898,1899] \n[1899,1900])
+    end[1904,1907])
+   \n[1907,1910])
+  end[1910,1913])
+ \n[1913,1915]
+ (function_definition function[1915,1923]
+  (function_output
+   (multioutput_variable [[1924,1925] (identifier[1925,1926]@{a}@) ,[1926,1927] (identifier[1928,1929]@{b}@) ][1929,1930])
+   =[1931,1932])
+  name: (identifier[1933,1937]@{fcn1}@) \n[1937,1938]
+  (block
+   (assignment left: (identifier[1942,1943]@{a}@) =[1944,1945] right: (number[1946,1947]@{1}@))
+   ;[1947,1948]
+   (assignment left: (identifier[1953,1954]@{b}@) =[1955,1956] right: (number[1957,1958]@{2}@))
+   ;[1958,1959] \n[1959,1960])
+  end[1960,1963])
+ \n[1963,1965])

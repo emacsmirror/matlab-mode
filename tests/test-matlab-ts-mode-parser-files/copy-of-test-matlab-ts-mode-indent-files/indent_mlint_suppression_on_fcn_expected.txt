@@ -1,0 +1,12 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[22,30]
+  (function_output (identifier[31,32]@{a}@) =[33,34])
+  name: (identifier[35,66]@{indent_mlint_suppression_on_fcn}@)
+  (function_arguments ([66,67] arguments: (identifier[67,68]@{c}@) ,[68,69] (identifier[69,70]@{d}@) )[70,71])
+  (comment[72,110]@{%#ok<INUSD>\n% help for\n% this function}@) \n[110,111]
+  (block
+   (assignment left: (identifier[115,116]@{a}@) =[117,118] right: (number[119,120]@{1}@))
+   ;[120,121] \n[121,122])
+  end[122,125])
+ \n[125,126])

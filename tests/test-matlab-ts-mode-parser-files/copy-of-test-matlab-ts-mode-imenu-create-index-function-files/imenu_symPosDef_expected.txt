@@ -1,0 +1,56 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[21,29] name: (identifier[30,45]@{imenu_symPosDef}@) \n[45,46]
+  (properties properties[50,60] \n[60,61]
+   (property name: (identifier[69,80]@{inputMatrix}@)
+    (default_value =[81,82]
+     (matrix [[83,84]
+      (row (number[84,85]@{1}@) ,[86,86] (number[86,87]@{0}@))
+      ;[87,88]
+      (row (number[89,90]@{0}@) ,[91,91] (number[91,92]@{1}@))
+      ][92,93]))
+    \n[93,94])
+   end[98,101])
+  (methods methods[111,118] \n[118,119]
+   (function_definition function[127,135] name: (identifier[136,137]@{a}@) \n[137,138] end[146,149])
+   \n[149,150]
+   (function_definition function[158,166]
+    (function_output (identifier[167,170]@{obj}@) =[171,172])
+    set.[173,177] name: (identifier[177,188]@{inputMatrix}@)
+    (function_arguments ([188,189] arguments: (identifier[189,192]@{obj}@) ,[192,193] (identifier[194,197]@{val}@) )[197,198])
+    \n[198,199]
+    (block
+     (try_statement try[211,214]
+      (block
+       (function_call name: (identifier[215,219]@{chol}@) ([219,220]
+        (arguments argument: (identifier[220,223]@{val}@))
+        )[223,224])
+       \n[224,225]
+       (assignment
+        left: (field_expression object: (identifier[241,244]@{obj}@) .[244,245] field: (identifier[245,256]@{inputMatrix}@))
+        =[257,258] right: (identifier[259,262]@{val}@))
+       ;[262,263] \n[263,264])
+      (catch_clause catch[276,281] (identifier[282,284]@{ME}@) \n[284,285]
+       (block
+        (function_call name: (identifier[301,306]@{error}@) ([306,307]
+         (arguments
+          argument: (string "[307,308] (string_content[308,356]@{inputMatrix must be symmetric positive definite.}@) "[356,357]))
+         )[357,358])
+        \n[358,359]))
+      end[371,374])
+     \n[374,375])
+    end[383,386])
+   \n[386,388]
+   (function_definition function[396,404]
+    (function_output (identifier[405,406]@{m}@) =[407,408])
+    get.[409,413] name: (identifier[413,424]@{inputMatrix}@)
+    (function_arguments ([424,425] arguments: (identifier[425,428]@{obj}@) )[428,429])
+    \n[429,430]
+    (block
+     (assignment left: (identifier[442,443]@{m}@) =[444,445]
+      right: (field_expression object: (identifier[446,449]@{obj}@) .[449,450] field: (identifier[450,461]@{inputMatrix}@)))
+     ;[461,462] \n[462,463])
+    end[471,474])
+   \n[474,475] end[479,482])
+  end[483,486])
+ \n[486,487])

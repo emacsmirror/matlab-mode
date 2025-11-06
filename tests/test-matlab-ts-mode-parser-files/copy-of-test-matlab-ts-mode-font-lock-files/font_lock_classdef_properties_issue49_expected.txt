@@ -1,0 +1,9 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,139]@{% -*- matlab-ts -*-\n%\n% See: https://github.com/...}@)
+ (class_definition classdef[141,149] name: (identifier[150,187]@{font_lock_classdef_properties_issue49}@) \n[187,188]
+  (properties properties[192,202] \n[202,203]
+   (property name: (identifier[211,213]@{p0}@) \n[213,214])
+   (property name: (identifier[222,224]@{p1}@) (identifier[225,231]@{double}@) ;[231,232] \n[232,233])
+   end[237,240])
+  end[241,244])
+ \n[244,245])

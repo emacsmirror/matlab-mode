@@ -1,0 +1,11 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] (line_continuation[29,33]@{...\n}@) (line_continuation[41,45]@{...\n}@) name: (identifier[53,55]@{g2}@) \n[55,56]
+  (block
+   (function_call name: (identifier[60,64]@{disp}@) ([64,65]
+    (arguments
+     argument: (string '[65,66] (string_content[66,71]@{in g2}@) '[71,72]))
+    )[72,73])
+   \n[73,74])
+  end[74,77])
+ \n[77,78])

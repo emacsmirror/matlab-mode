@@ -1,0 +1,37 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment left: (identifier[22,23]@{A}@) =[24,25]
+  right: 
+   (matrix [[26,27]
+    (row
+     (binary_operator left: (number[27,28]@{1}@) +[28,29] right: (number[29,31]@{2i}@))
+     ,[31,32] (number[33,34]@{3}@))
+    ;[34,35]
+    (row (number[36,37]@{4}@) ,[37,38]
+     (binary_operator left: (number[39,40]@{5}@) -[40,41] right: (number[41,43]@{6i}@)))
+    ][43,44]))
+ ;[44,45] (comment[46,64]@{% A complex matrix}@)
+ (assignment left: (identifier[66,67]@{B}@) =[68,69]
+  right: (postfix_operator operand: (identifier[70,71]@{A}@) '[71,72]))
+ ;[72,73] (comment[76,105]@{% Complex conjugate transpose}@)
+ (assignment left: (identifier[106,107]@{C}@) =[108,109]
+  right: (postfix_operator operand: (identifier[110,111]@{A}@) .'[111,113]))
+ ;[113,114] (comment[116,141]@{% Non-conjugate transpose}@)
+ (function_call name: (identifier[143,147]@{disp}@) ([147,148]
+  (arguments
+   argument: (string '[148,149] (string_content[149,183]@{Complex conjugate transpose (A''):}@) '[183,184]))
+  )[184,185])
+ ;[185,186]
+ (function_call name: (identifier[187,191]@{disp}@) ([191,192]
+  (arguments argument: (identifier[192,193]@{B}@))
+  )[193,194])
+ ;[194,195]
+ (function_call name: (identifier[197,201]@{disp}@) ([201,202]
+  (arguments
+   argument: (string '[202,203] (string_content[203,234]@{Non-conjugate transpose (A.''):}@) '[234,235]))
+  )[235,236])
+ ;[236,237]
+ (function_call name: (identifier[238,242]@{disp}@) ([242,243]
+  (arguments argument: (identifier[243,244]@{C}@))
+  )[244,245])
+ ;[245,246] \n[246,248])

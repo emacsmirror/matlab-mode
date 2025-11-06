@@ -1,0 +1,26 @@
+% -*- matlab-ts -*-
+classdef font_lock_MyClass
+% help comment
+
+    % comment about properities
+    properties
+        MyProperty double = 0; % Public property with a default value
+    end
+
+    methods
+        function obj = MyClass(initialValue)
+        % Constructor method
+            obj.MyProperty = initialValue;
+        end
+
+        function newValue = getMyProperty(obj)
+        % Getter method
+            newValue = obj.MyProperty;
+        end
+
+        function obj = setMyProperty(obj, newValue)
+        % Setter method
+            obj.MyProperty = newValue;
+        end
+    end
+end

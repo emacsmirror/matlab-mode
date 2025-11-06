@@ -1,0 +1,13 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[90,91]@{m}@) =[92,93]
+  right: 
+   (function_call
+    name: (identifier methods[94,101])
+    ([101,102]
+    (arguments
+     argument: (string '[102,103] (string_content[103,106]@{foo}@) '[106,107]))
+    )[107,108]))
+ \n[108,110]
+ (command (command_name[110,117]@{methods}@) (command_argument[118,121]@{foo}@))
+ \n[121,123])

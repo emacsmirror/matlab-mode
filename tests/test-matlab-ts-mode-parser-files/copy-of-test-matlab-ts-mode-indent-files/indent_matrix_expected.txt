@@ -1,0 +1,84 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] name: (identifier[30,43]@{indent_matrix}@) \n[43,44]
+  (block
+   (assignment left: (identifier[48,49]@{a}@) =[50,51]
+    right: 
+     (matrix [[52,53] (line_continuation[54,58]@{...\n}@)
+      (row
+       (binary_operator left: (number[68,69]@{1}@) (line_continuation[70,84]@{...\n          }@) +[84,85] (line_continuation[86,90]@{...\n}@) right: (number[100,101]@{2}@)))
+      ][110,111]))
+   ;[111,112]
+   (function_call name: (identifier[117,121]@{disp}@) ([121,122]
+    (arguments argument: (identifier[122,123]@{a}@))
+    )[123,124])
+   ;[124,125]
+   (assignment left: (identifier[131,132]@{a}@) =[133,134]
+    right: 
+     (matrix [[135,136]
+      (row (number[140,141]@{2}@) (line_continuation[142,159]@{...\n             }@) ,[159,159] (number[159,160]@{1}@))
+      (line_continuation[161,173]@{...\n        }@) ][173,174]))
+   ;[174,175]
+   (function_call name: (identifier[180,184]@{disp}@) ([184,185]
+    (arguments argument: (identifier[185,186]@{a}@))
+    )[186,187])
+   ;[187,188]
+   (assignment left: (identifier[194,195]@{a}@) =[196,197]
+    right: 
+     (matrix [[198,199]
+      (row (number[199,200]@{1}@) ,[200,201] (number[202,203]@{2}@))
+      ;[203,204]
+      (row (number[214,215]@{3}@) ,[215,216] (number[217,218]@{4}@))
+      ][218,219]))
+   ;[219,220]
+   (function_call name: (identifier[225,229]@{disp}@) ([229,230]
+    (arguments argument: (identifier[230,231]@{a}@))
+    )[231,232])
+   ;[232,233]
+   (assignment left: (identifier[239,240]@{a}@) =[241,242]
+    right: 
+     (matrix [[243,244] (line_continuation[245,249]@{...\n}@)
+      (row
+       (binary_operator left: (number[259,260]@{2}@) +[261,262]
+        right: 
+         (matrix [[263,264]
+          (row (number[265,266]@{3}@))
+          (row (number[283,284]@{4}@) ,[284,285])
+          (row
+           (binary_operator left: (number[302,303]@{5}@) +[304,305]
+            right: 
+             (matrix [[306,307] (line_continuation[308,312]@{...\n}@)
+              (row (number[334,335]@{2}@))
+              ][356,357])))
+          ][372,373])))
+      ][382,383]))
+   ;[383,384]
+   (function_call name: (identifier[389,393]@{disp}@) ([393,394]
+    (arguments argument: (identifier[394,395]@{a}@))
+    )[395,396])
+   ;[396,397]
+   (assignment left: (identifier[403,404]@{a}@) =[405,406]
+    right: 
+     (matrix [[407,408] (line_continuation[409,413]@{...\n}@)
+      (row (number[423,424]@{1}@))
+      ;[424,425] (line_continuation[426,430]@{...\n}@)
+      (row (number[440,441]@{2}@))
+      (line_continuation[442,454]@{...\n        }@) ][454,455]))
+   ;[455,456]
+   (function_call name: (identifier[461,465]@{disp}@) ([465,466]
+    (arguments argument: (identifier[466,467]@{a}@))
+    )[467,468])
+   ;[468,469]
+   (assignment left: (identifier[475,490]@{long_variable_a}@) =[491,492] (line_continuation[493,497]@{...\n}@)
+    right: 
+     (matrix [[505,506] \n[506,507]
+      (row (number[517,518]@{2}@) ,[518,519] (number[520,523]@{123}@) ,[523,524] (number[525,528]@{456}@))
+      (row (number[539,540]@{3}@) ,[540,541] (number[544,545]@{2}@) ,[549,549] (number[549,550]@{7}@))
+      ][559,560]))
+   ;[560,561]
+   (function_call name: (identifier[566,570]@{disp}@) ([570,571]
+    (arguments argument: (identifier[571,586]@{long_variable_a}@))
+    )[586,587])
+   ;[587,588] \n[588,590])
+  end[590,593])
+ \n[593,594])

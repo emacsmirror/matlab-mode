@@ -1,0 +1,9 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29]
+  (function_output (identifier[30,40]@{myVariable}@) =[41,42])
+  name: (identifier[43,63]@{indent_syntax_error1}@)
+  (function_arguments ([63,64] arguments: (identifier[64,65]@{a}@) ,[65,66] (identifier[67,68]@{b}@) )[68,69])
+  \n[69,70])
+ (ERROR (identifier[74,84]@{myVariable}@) =[85,86] (number[87,88]@{1}@) +[89,90] (identifier[91,96]@{myfcn}@) ([96,97] (identifier[97,98]@{a}@))
+ (line_continuation[99,103]@{...\n}@))

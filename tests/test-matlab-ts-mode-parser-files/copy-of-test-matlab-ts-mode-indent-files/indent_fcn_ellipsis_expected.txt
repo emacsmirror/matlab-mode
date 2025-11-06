@@ -1,0 +1,29 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] (line_continuation[30,34]@{...\n}@)
+  (function_output
+   (multioutput_variable [[38,39] (line_continuation[43,47]@{...\n}@) (identifier[52,53]@{a}@) ,[53,54] (line_continuation[56,76]@{... comment about a\n}@) (identifier[81,82]@{b}@) (line_continuation[85,105]@{... comment about b\n}@) ][109,110])
+   (line_continuation[114,118]@{...\n}@) =[122,123])
+  name: (identifier[124,139]@{indent_ellipsis}@) (line_continuation[140,144]@{...\n}@)
+  (function_arguments ([148,149] (line_continuation[152,156]@{...\n}@) arguments: (identifier[161,162]@{c}@) ,[162,163] (line_continuation[164,185]@{...  comment about c\n}@) (identifier[190,191]@{d}@) ,[191,192] (line_continuation[193,214]@{...  comment about d\n}@) (identifier[219,220]@{e}@) (line_continuation[222,243]@{...  comment about e\n}@) )[247,248])
+  \n[248,250]
+  (block
+   (assignment left: (identifier[254,255]@{a}@) =[256,257] (line_continuation[262,266]@{...\n}@)
+    right: 
+     (binary_operator left: (number[274,275]@{1}@) +[276,277] (line_continuation[278,282]@{...\n}@)
+      right: 
+       (parenthesis ([290,291] (line_continuation[294,298]@{...\n}@)
+        (binary_operator left: (identifier[307,308]@{c}@) (line_continuation[309,313]@{...\n}@) *[322,323] (line_continuation[324,328]@{...\n}@) right: (identifier[337,338]@{d}@))
+        (line_continuation[339,343]@{...\n}@) )[351,352])))
+   ;[352,353]
+   (assignment left: (identifier[359,360]@{b}@) =[361,362]
+    right: 
+     (matrix [[363,364] (line_continuation[365,369]@{...\n}@)
+      (row
+       (binary_operator
+        left: (binary_operator left: (number[379,380]@{1}@) +[381,382] (line_continuation[383,387]@{...\n}@) right: (number[397,398]@{2}@))
+        +[399,400] (line_continuation[401,405]@{...\n}@) right: (number[415,416]@{3}@)))
+      (line_continuation[419,431]@{...\n        }@) ][431,432]))
+   ;[432,433] \n[433,435])
+  end[435,438])
+ \n[438,439])

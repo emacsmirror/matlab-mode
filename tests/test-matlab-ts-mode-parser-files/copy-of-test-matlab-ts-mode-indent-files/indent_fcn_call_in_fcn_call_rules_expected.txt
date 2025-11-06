@@ -1,0 +1,190 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,247]@{% Here MATLAB indent "SomeLongString" to be 4 from...}@)
+ (assignment
+  left: (field_expression object: (identifier[248,257]@{something}@) .[257,258] field: (identifier[258,261]@{foo}@))
+  =[262,263]
+  right: 
+   (function_call name: (identifier[264,277]@{someFunction1}@) ([277,278]
+    (arguments
+     argument: 
+      (function_call name: (identifier[278,291]@{someFunction2}@) ([291,292] (line_continuation[293,297]@{...\n}@)
+       (arguments
+        argument: (string "[331,332] (string_content[332,346]@{SomeLongString}@) "[346,347]))
+       )[347,348]))
+    )[348,349]))
+ ;[349,350] (comment[352,628]@{% Here MATLAB indents similar to the prior.\n% cla...}@)
+ (assignment
+  left: (field_expression object: (identifier[629,638]@{something}@) .[638,639] field: (identifier[639,642]@{foo}@))
+  =[643,644]
+  right: 
+   (function_call name: (identifier[645,658]@{someFunction1}@) ([658,659]
+    (arguments
+     argument: 
+      (function_call name: (identifier[659,672]@{someFunction2}@) ([672,673] (line_continuation[674,678]@{...\n}@)
+       (arguments
+        argument: (string "[712,713] (string_content[713,727]@{SomeLongString}@) "[727,728]))
+       )[728,729])
+     ,[729,730] (line_continuation[731,735]@{...\n}@) (identifier[765,769]@{arg2}@) ,[769,770] (line_continuation[771,775]@{...\n}@) (identifier[805,809]@{arg3}@))
+    )[809,810]))
+ ;[810,811] (comment[813,1031]@{% Here MATLAB indents similar to the prior.\n% Thi...}@)
+ (assignment
+  left: (field_expression object: (identifier[1032,1041]@{something}@) .[1041,1042] field: (identifier[1042,1045]@{foo}@))
+  =[1046,1047]
+  right: 
+   (function_call name: (identifier[1048,1061]@{someFunction1}@) ([1061,1062]
+    (arguments
+     argument: 
+      (function_call name: (identifier[1062,1075]@{someFunction2}@) ([1075,1076] (line_continuation[1077,1081]@{...\n}@)
+       (arguments
+        argument: (string "[1115,1116] (string_content[1116,1130]@{SomeLongString}@) "[1130,1131])
+        ,[1131,1132] (line_continuation[1133,1137]@{...\n}@) (identifier[1171,1175]@{arg2}@) ,[1175,1176] (line_continuation[1177,1181]@{...\n}@) (identifier[1215,1219]@{arg3}@))
+       )[1219,1220]))
+    )[1220,1221]))
+ ;[1221,1222] (comment[1224,1414]@{% *** Conclusion ***\n%   For consistency, MATLAB ...}@) (comment[1417,1450]@{% --- Test unnecessary spaces ---}@)
+ (assignment
+  left: (field_expression object: (identifier[1452,1461]@{something}@) .[1461,1462] field: (identifier[1462,1465]@{foo}@))
+  =[1466,1467]
+  right: 
+   (function_call name: (identifier[1468,1481]@{someFunction1}@) ([1483,1484]
+    (arguments
+     argument: 
+      (function_call name: (identifier[1484,1497]@{someFunction2}@) ([1499,1500] (line_continuation[1501,1505]@{...\n}@)
+       (arguments
+        argument: (string "[1541,1542] (string_content[1542,1556]@{SomeLongString}@) "[1556,1557]))
+       )[1557,1558]))
+    )[1558,1559]))
+ ;[1559,1560]
+ (assignment
+  left: (field_expression object: (identifier[1562,1571]@{something}@) .[1571,1572] field: (identifier[1572,1575]@{foo}@))
+  =[1576,1577]
+  right: 
+   (function_call name: (identifier[1578,1591]@{someFunction1}@) ([1593,1594]
+    (arguments
+     argument: 
+      (function_call name: (identifier[1594,1607]@{someFunction2}@) ([1609,1610] (line_continuation[1611,1615]@{...\n}@)
+       (arguments
+        argument: (string "[1651,1652] (string_content[1652,1666]@{SomeLongString}@) "[1666,1667]))
+       )[1667,1668])
+     ,[1668,1669] (line_continuation[1670,1674]@{...\n}@) (identifier[1706,1710]@{arg2}@) ,[1710,1711] (line_continuation[1712,1716]@{...\n}@) (identifier[1748,1752]@{arg3}@))
+    )[1752,1753]))
+ ;[1753,1754]
+ (assignment
+  left: (field_expression object: (identifier[1756,1765]@{something}@) .[1765,1766] field: (identifier[1766,1769]@{foo}@))
+  =[1770,1771]
+  right: 
+   (function_call name: (identifier[1772,1785]@{someFunction1}@) ([1787,1788]
+    (arguments
+     argument: 
+      (function_call name: (identifier[1788,1801]@{someFunction2}@) ([1803,1804] (line_continuation[1805,1809]@{...\n}@)
+       (arguments
+        argument: (string "[1845,1846] (string_content[1846,1860]@{SomeLongString}@) "[1860,1861])
+        ,[1861,1862] (line_continuation[1863,1867]@{...\n}@) (identifier[1903,1907]@{arg2}@) ,[1907,1908] (line_continuation[1909,1913]@{...\n}@) (identifier[1949,1953]@{arg3}@))
+       )[1953,1954]))
+    )[1954,1955]))
+ ;[1955,1956] (comment[1958,1983]@{% --- Test namespaces ---}@)
+ (assignment
+  left: (field_expression object: (identifier[1985,1994]@{something}@) .[1994,1995] field: (identifier[1995,1998]@{foo}@))
+  =[1999,2000]
+  right: 
+   (field_expression object: (identifier[2001,2013]@{fooNamespace}@) .[2013,2014]
+    field: 
+     (function_call name: (identifier[2014,2027]@{someFunction1}@) ([2027,2028]
+      (arguments
+       argument: 
+        (field_expression object: (identifier[2028,2040]@{fooNamespace}@) .[2040,2041]
+         field: 
+          (function_call name: (identifier[2041,2054]@{someFunction2}@) ([2054,2055] (line_continuation[2056,2060]@{...\n}@)
+           (arguments
+            argument: (string "[2107,2108] (string_content[2108,2122]@{SomeLongString}@) "[2122,2123]))
+           )[2123,2124])))
+      )[2124,2125])))
+ ;[2125,2126]
+ (assignment
+  left: (field_expression object: (identifier[2128,2137]@{something}@) .[2137,2138] field: (identifier[2138,2141]@{foo}@))
+  =[2142,2143]
+  right: 
+   (field_expression object: (identifier[2144,2156]@{fooNamespace}@) .[2156,2157]
+    field: 
+     (function_call name: (identifier[2157,2170]@{someFunction1}@) ([2170,2171]
+      (arguments
+       argument: 
+        (field_expression object: (identifier[2171,2183]@{fooNamespace}@) .[2183,2184]
+         field: 
+          (function_call name: (identifier[2184,2197]@{someFunction2}@) ([2197,2198] (line_continuation[2199,2203]@{...\n}@)
+           (arguments
+            argument: (string "[2250,2251] (string_content[2251,2265]@{SomeLongString}@) "[2265,2266]))
+           )[2266,2267]))
+       ,[2267,2268] (line_continuation[2269,2273]@{...\n}@) (identifier[2316,2320]@{arg2}@) ,[2320,2321] (line_continuation[2322,2326]@{...\n}@) (identifier[2369,2373]@{arg3}@))
+      )[2373,2374])))
+ ;[2374,2375]
+ (assignment
+  left: (field_expression object: (identifier[2377,2386]@{something}@) .[2386,2387] field: (identifier[2387,2390]@{foo}@))
+  =[2391,2392]
+  right: 
+   (field_expression object: (identifier[2393,2405]@{fooNamespace}@) .[2405,2406]
+    field: 
+     (function_call name: (identifier[2406,2419]@{someFunction1}@) ([2419,2420]
+      (arguments
+       argument: 
+        (field_expression object: (identifier[2420,2432]@{fooNamespace}@) .[2432,2433]
+         field: 
+          (function_call name: (identifier[2433,2446]@{someFunction2}@) ([2446,2447] (line_continuation[2448,2452]@{...\n}@)
+           (arguments
+            argument: (string "[2499,2500] (string_content[2500,2514]@{SomeLongString}@) "[2514,2515])
+            ,[2515,2516] (line_continuation[2517,2521]@{...\n}@) (identifier[2568,2572]@{arg2}@) ,[2572,2573] (line_continuation[2574,2578]@{...\n}@) (identifier[2625,2629]@{arg3}@))
+           )[2629,2630])))
+      )[2630,2631])))
+ ;[2631,2632] (comment[2634,2679]@{% --- Test namespaces with unnecessary spaces}@)
+ (assignment
+  left: (field_expression object: (identifier[2681,2690]@{something}@) .[2690,2691] field: (identifier[2691,2694]@{foo}@))
+  =[2695,2696]
+  right: 
+   (field_expression object: (identifier[2697,2709]@{fooNamespace}@) .[2709,2710]
+    field: 
+     (function_call name: (identifier[2710,2723]@{someFunction1}@) ([2725,2726]
+      (arguments
+       argument: 
+        (field_expression object: (identifier[2726,2738]@{fooNamespace}@) .[2738,2739]
+         field: 
+          (function_call name: (identifier[2739,2752]@{someFunction2}@) ([2754,2755] (line_continuation[2756,2760]@{...\n}@)
+           (arguments
+            argument: (string "[2809,2810] (string_content[2810,2824]@{SomeLongString}@) "[2824,2825]))
+           )[2825,2826])))
+      )[2826,2827])))
+ ;[2827,2828]
+ (assignment
+  left: (field_expression object: (identifier[2830,2839]@{something}@) .[2839,2840] field: (identifier[2840,2843]@{foo}@))
+  =[2844,2845]
+  right: 
+   (field_expression object: (identifier[2846,2858]@{fooNamespace}@) .[2858,2859]
+    field: 
+     (function_call name: (identifier[2859,2872]@{someFunction1}@) ([2874,2875]
+      (arguments
+       argument: 
+        (field_expression object: (identifier[2875,2887]@{fooNamespace}@) .[2887,2888]
+         field: 
+          (function_call name: (identifier[2888,2901]@{someFunction2}@) ([2903,2904] (line_continuation[2905,2909]@{...\n}@)
+           (arguments
+            argument: (string "[2958,2959] (string_content[2959,2973]@{SomeLongString}@) "[2973,2974]))
+           )[2974,2975]))
+       ,[2975,2976] (line_continuation[2977,2981]@{...\n}@) (identifier[3026,3030]@{arg2}@) ,[3030,3031] (line_continuation[3032,3036]@{...\n}@) (identifier[3081,3085]@{arg3}@))
+      )[3085,3086])))
+ ;[3086,3087]
+ (assignment
+  left: (field_expression object: (identifier[3089,3098]@{something}@) .[3098,3099] field: (identifier[3099,3102]@{foo}@))
+  =[3103,3104]
+  right: 
+   (field_expression object: (identifier[3105,3117]@{fooNamespace}@) .[3117,3118]
+    field: 
+     (function_call name: (identifier[3118,3131]@{someFunction1}@) ([3133,3134]
+      (arguments
+       argument: 
+        (field_expression object: (identifier[3134,3146]@{fooNamespace}@) .[3146,3147]
+         field: 
+          (function_call name: (identifier[3147,3160]@{someFunction2}@) ([3162,3163] (line_continuation[3164,3168]@{...\n}@)
+           (arguments
+            argument: (string "[3217,3218] (string_content[3218,3232]@{SomeLongString}@) "[3232,3233])
+            ,[3233,3234] (line_continuation[3235,3239]@{...\n}@) (identifier[3288,3292]@{arg2}@) ,[3292,3293] (line_continuation[3294,3298]@{...\n}@) (identifier[3347,3351]@{arg3}@))
+           )[3351,3352])))
+      )[3352,3353])))
+ ;[3353,3354] \n[3354,3355])

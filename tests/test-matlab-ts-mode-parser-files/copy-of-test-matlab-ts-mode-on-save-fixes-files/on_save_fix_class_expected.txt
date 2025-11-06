@@ -1,0 +1,15 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,122]@{% Case1: (t-utils-xr (rename-buffer "tmp__on_save_...}@)
+ (class_definition classdef[124,132] name: (identifier[133,136]@{foo}@) \n[136,137]
+  (methods methods[141,148] \n[148,150]
+   (function_definition function[158,166] name: (identifier[167,170]@{bar}@) \n[170,171]
+    (block
+     (function_call name: (identifier[183,187]@{disp}@) ([187,188]
+      (arguments
+       argument: (string '[188,189] (string_content[189,192]@{bar}@) '[192,193]))
+      )[193,194])
+     \n[194,195])
+    end[203,206])
+   \n[206,207] end[211,214])
+  end[215,218])
+ \n[218,219])

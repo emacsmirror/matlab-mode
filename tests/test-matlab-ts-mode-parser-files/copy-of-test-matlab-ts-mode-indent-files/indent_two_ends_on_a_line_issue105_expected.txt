@@ -1,0 +1,16 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (class_definition classdef[91,99] name: (identifier[100,107]@{myclass}@) \n[107,108]
+  (methods methods[112,119] \n[119,120]
+   (function_definition function[128,136]
+    (function_output (identifier[137,138]@{b}@) =[138,139])
+    name: (identifier[139,142]@{foo}@)
+    (function_arguments ([142,143] arguments: (identifier[143,144]@{a}@) )[144,145])
+    \n[145,146]
+    (block
+     (assignment left: (identifier[158,159]@{b}@) =[159,160] right: (identifier[160,161]@{a}@))
+     ;[161,162] \n[162,163])
+    end[171,174])
+   end[178,181])
+  end[182,185])
+ \n[185,186])

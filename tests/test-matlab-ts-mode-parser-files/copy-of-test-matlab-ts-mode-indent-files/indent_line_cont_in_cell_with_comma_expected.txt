@@ -1,0 +1,63 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,102]@{% t-utils-test-indent: no-line-by-line-indent - "\...}@)
+ (function_call name: (identifier[104,111]@{someFcn}@) ([111,112] (line_continuation[112,116]@{...\n}@)
+  (arguments
+   argument: (string '[120,121] (string_content[121,125]@{arg1}@) '[125,126])
+   ,[126,127] (line_continuation[128,132]@{...\n}@) (line_continuation[136,149]@{... comment1\n}@)
+   (string '[153,154] (string_content[154,159]@{-foo1}@) '[159,160])
+   ,[160,161] (line_continuation[162,166]@{...\n}@)
+   (cell {[170,171] \n[171,172] (line_continuation[178,192]@{... comment 2\n}@)
+    (row
+     (cell {[198,199]
+      (row
+       (string '[199,200] (string_content[200,204]@{foo2}@) '[204,205])
+       ,[205,206] (line_continuation[207,211]@{...\n}@)
+       (string '[218,219] (string_content[219,224]@{-foo3}@) '[224,225])
+       ,[225,226] (line_continuation[227,231]@{...\n}@)
+       (lambda @[238,239] ([239,240]
+        (arguments (identifier[240,241]@{f}@))
+        )[241,242]
+        expression: 
+         (function_call name: (identifier[242,245]@{cmd}@) ([245,246]
+          (arguments
+           argument: 
+            (matrix [[246,247]
+             (row (identifier[247,248]@{a}@) ,[249,249]
+              (string '[249,250] (string_content[250,251]@{/}@) '[251,252])
+              ,[253,253] (identifier[253,254]@{b}@) ,[255,255]
+              (string '[255,256] (string_content[256,257]@{c}@) '[257,258]))
+             ][258,259])
+           ,[259,260]
+           (string '[261,262] (string_content[262,266]@{foo4}@) '[266,267])
+           ,[267,268]
+           (string '[269,270] (string_content[270,272]@{on}@) '[272,273]))
+          )[273,274]))
+       ,[274,275] (line_continuation[276,280]@{...\n}@)
+       (string '[287,288] (string_content[288,293]@{-foo5}@) '[293,294])
+       ,[294,295]
+       (cell {[296,297]
+        (row
+         (string '[297,298] (string_content[298,299]@{x}@) '[299,300]))
+        }[300,301])
+       ,[301,302])
+      (line_continuation[303,307]@{...\n}@) }[313,314])
+     (line_continuation[315,325]@{...\n      }@) (line_continuation[325,335]@{...\n      }@) ,[335,336] (line_continuation[337,349]@{... comment\n}@)
+     (cell {[355,356]
+      (row
+       (string '[356,357] (string_content[357,360]@{foo}@) '[360,361])
+       ,[361,362] (line_continuation[363,367]@{...\n}@)
+       (string '[374,375] (string_content[375,378]@{bar}@) '[378,379]))
+      }[379,380]))
+    (line_continuation[381,389]@{...\n    }@) }[389,390]))
+  )[390,391])
+ ;[391,392] \n[392,394]
+ (function_definition function[394,402] name: (identifier[403,410]@{someFcn}@)
+  (function_arguments ([410,411] arguments: (identifier[411,419]@{varargin}@) )[419,420])
+  \n[420,421]
+  (block
+   (function_call name: (identifier[425,429]@{disp}@) ([429,430]
+    (arguments argument: (identifier[430,438]@{varargin}@))
+    )[438,439])
+   ;[439,440] \n[440,441])
+  end[441,444])
+ \n[444,445])

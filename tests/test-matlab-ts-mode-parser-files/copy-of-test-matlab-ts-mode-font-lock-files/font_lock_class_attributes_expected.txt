@@ -1,0 +1,27 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,87]@{% -*- matlab-ts -*-\n% See https://github.com/acri...}@)
+ (class_definition classdef[88,96] name: (identifier[97,123]@{font_lock_class_attributes}@) \n[123,124]
+  (methods methods[127,134]
+   (attributes ([135,136]
+    (attribute (identifier[136,142]@{Access}@) =[143,144] (identifier[145,154]@{protected}@))
+    )[154,155])
+   \n[155,156]
+   (function_definition function[162,170]
+    (function_output (identifier[171,174]@{out}@) =[175,176])
+    name: (identifier[177,184]@{method1}@)
+    (function_arguments ([184,185] arguments: (identifier[185,188]@{obj}@) ,[188,189] (identifier[189,197]@{inputArg}@) )[197,198])
+    \n[198,199] (line_continuation[208,212]@{...\n}@) end[218,221])
+   \n[221,222] end[225,228])
+  (methods methods[232,239]
+   (attributes ([240,241]
+    (attribute (identifier[241,247]@{Access}@) =[248,249] (identifier[250,257]@{private}@))
+    )[257,258])
+   \n[258,259]
+   (function_definition function[265,273]
+    (function_output (identifier[274,277]@{out}@) =[278,279])
+    name: (identifier[280,287]@{method2}@)
+    (function_arguments ([287,288] arguments: (identifier[288,291]@{obj}@) ,[291,292] (identifier[292,300]@{inputArg}@) )[300,301])
+    \n[301,302] (line_continuation[312,316]@{...\n}@) end[322,325])
+   \n[325,326] end[329,332])
+  end[333,336])
+ \n[336,337])

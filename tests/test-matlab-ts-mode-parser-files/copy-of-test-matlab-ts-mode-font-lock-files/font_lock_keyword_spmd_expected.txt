@@ -1,0 +1,17 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,83]@{% -*- matlab-ts -*-\n% https://github.com/acristof...}@)
+ (function_call name: (identifier[84,91]@{parpool}@) ([91,92]
+  (arguments argument: (number[92,93]@{3}@))
+  )[93,94])
+ \n[94,95]
+ (spmd_statement spmd[95,99]
+  (block
+   (assignment left: (identifier[104,105]@{q}@) =[106,107]
+    right: 
+     (function_call name: (identifier[108,113]@{magic}@) ([113,114]
+      (arguments
+       argument: (binary_operator left: (identifier[114,123]@{spmdIndex}@) +[124,125] right: (number[126,127]@{2}@)))
+      )[127,128]))
+   ;[128,129] \n[129,130])
+  end[130,133])
+ \n[133,134])

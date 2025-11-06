@@ -1,0 +1,42 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment left: (identifier[22,24]@{s1}@) =[25,26]
+  right: (string "[27,28] (string_content[28,31]@{abc}@) "[31,32]))
+ ;[32,33]
+ (assignment left: (identifier[34,36]@{s2}@) =[37,38]
+  right: (string '[39,40] (string_content[40,43]@{One}@) (escape_sequence[43,45]@{\n}@) (string_content[45,48]@{Two}@) '[48,49]))
+ ;[49,50]
+ (assignment left: (identifier[51,53]@{s3}@) =[54,55]
+  right: 
+   (function_call name: (identifier[56,63]@{sprintf}@) ([63,64]
+    (arguments
+     argument: (string "[64,65] (string_content[65,69]@{see }@) (formatting_sequence[69,71]@{%d}@) (string_content[71,72]@{:}@) (formatting_sequence[72,74]@{%d}@) "[74,75])
+     ,[75,76] (number[77,78]@{1}@) ,[78,79] (number[80,81]@{2}@))
+    )[81,82]))
+ \n[82,84]
+ (assignment left: (identifier[84,85]@{A}@) =[86,87]
+  right: 
+   (matrix [[88,89]
+    (row (number[89,90]@{1}@) ,[91,91] (number[91,92]@{2}@))
+    ;[92,93]
+    (row (number[94,95]@{3}@) ,[96,96] (number[96,97]@{4}@))
+    ][97,98]))
+ ;[98,99]
+ (assignment left: (identifier[100,101]@{B}@) =[102,103]
+  right: (postfix_operator operand: (identifier[104,105]@{A}@) '[105,106]))
+ ;[106,107] (comment[110,121]@{% transpose}@)
+ (assignment left: (identifier[122,123]@{C}@) =[124,125]
+  right: 
+   (postfix_operator
+    operand: (postfix_operator operand: (identifier[126,127]@{A}@) '[127,128])
+    '[128,129]))
+ ;[129,130] (comment[132,170]@{% transpose transpose ==> isequal(C,A)}@)
+ (assignment left: (identifier[171,172]@{D}@) =[173,174]
+  right: 
+   (postfix_operator
+    operand: 
+     (postfix_operator
+      operand: (postfix_operator operand: (identifier[175,176]@{A}@) '[176,177])
+      '[177,178])
+    '[178,179]))
+ ;[179,180] (comment[181,229]@{% transpose transpose transpose ==> isequal(D,B)}@) \n[229,230])

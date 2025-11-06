@@ -1,0 +1,27 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29]
+  (function_output (identifier[30,31]@{b}@) =[32,33])
+  name: (identifier[34,57]@{fill_paragraph_comments}@)
+  (function_arguments ([57,58] arguments: (identifier[58,59]@{a}@) )[59,60])
+  (comment[61,1228]@{%\n% Setup test to use a small fill column\n% Case...}@) (comment[1230,1435]@{% Test of fill paragraph on a regular comment\n% C...}@) \n[1435,1437]
+  (block
+   (if_statement if[1441,1443]
+    condition: (comparison_operator (identifier[1444,1445]@{a}@) >[1446,1447] (number[1448,1449]@{1}@))
+    (comment[1458,1577]@{% Test of fill paragraph on a regular comment afte...}@)
+    (block
+     (assignment left: (identifier[1586,1587]@{b}@) =[1588,1589]
+      right: (binary_operator left: (identifier[1590,1591]@{a}@) *[1592,1593] right: (number[1594,1595]@{2}@)))
+     ;[1595,1596] (comment[1597,1769]@{% A long comment at the end of a statement.  A lon...}@)
+     (assignment left: (identifier[1778,1779]@{b}@) =[1780,1781]
+      right: (binary_operator left: (identifier[1782,1783]@{x}@) *[1784,1785] right: (number[1786,1787]@{1}@)))
+     ;[1787,1788] \n[1788,1789])
+    (else_clause else[1793,1797] (comment[1806,1939]@{% Test of fill paragraph on a regular comment afte...}@)
+     (block
+      (assignment left: (identifier[1948,1949]@{b}@) =[1950,1951]
+       right: (binary_operator left: (identifier[1952,1953]@{c}@) *[1954,1955] right: (identifier[1956,1957]@{d}@)))
+      ;[1957,1958] (comment[1959,2131]@{% A long comment at the end of a statement.  A lon...}@) \n[2131,2132]))
+    end[2136,2139])
+   \n[2139,2140])
+  end[2140,2143])
+ \n[2143,2144])

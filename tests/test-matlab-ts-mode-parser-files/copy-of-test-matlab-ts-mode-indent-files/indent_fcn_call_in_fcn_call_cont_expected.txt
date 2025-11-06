@@ -1,0 +1,42 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[22,30] name: (identifier[31,63]@{indent_fcn_call_in_fcn_call_cont}@) \n[63,64]
+  (properties properties[68,78]
+   (attributes ([79,80]
+    (attribute (identifier[80,88]@{Constant}@))
+    )[88,89])
+   \n[89,90]
+   (property name: (identifier[98,107]@{tabularDs}@)
+    (default_value =[108,109]
+     (function_call name: (identifier[110,130]@{tabularTextDatastore}@) ([130,131]
+      (arguments
+       argument: 
+        (field_expression object: (identifier[131,135]@{some}@) .[135,136] field: (identifier[136,145]@{namespace}@) .[145,146]
+         (function_call name: (identifier[146,158]@{someFunction}@) ([158,159] (line_continuation[160,164]@{...\n}@)
+          (arguments
+           argument: (string '[209,210] (string_content[210,219]@{argument1}@) '[219,220])
+           ,[220,221]
+           (string '[222,223] (string_content[223,232]@{argument2}@) '[232,233])
+           ,[233,234]
+           (string '[235,236] (string_content[236,245]@{argument3}@) '[245,246]))
+          )[246,247]))
+       ,[247,248] (line_continuation[249,253]@{...\n}@)
+       (string "[294,295] (string_content[295,309]@{TreatAsMissing}@) "[309,310])
+       ,[310,311]
+       (string "[312,313] (string_content[313,315]@{NA}@) "[315,316])
+       ,[316,317]
+       (string "[318,319] (string_content[319,331]@{MissingValue}@) "[331,332])
+       ,[332,333] (number[334,335]@{0}@) ,[335,336] (line_continuation[337,341]@{...\n}@)
+       (string "[382,383] (string_content[383,404]@{SelectedVariableNames}@) "[404,405])
+       ,[405,406]
+       (cell {[407,408]
+        (row
+         (string '[408,409] (string_content[409,416]@{ArrTime}@) '[416,417])
+         ,[417,418]
+         (string '[419,420] (string_content[420,428]@{DepDelay}@) '[428,429]))
+        }[429,430]))
+      )[430,431]))
+    ;[431,432] \n[432,433])
+   end[437,440])
+  end[441,444])
+ \n[444,445])

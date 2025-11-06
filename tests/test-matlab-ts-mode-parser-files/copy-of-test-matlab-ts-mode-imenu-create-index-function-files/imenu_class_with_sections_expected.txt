@@ -1,0 +1,50 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition classdef[22,30] name: (identifier[31,56]@{imenu_class_with_sections}@) (comment[57,67]@{% my class}@) \n[67,68]
+  (properties properties[72,82] \n[82,83]
+   (property name: (identifier[91,92]@{a}@) \n[92,93])
+   (property name: (identifier[101,102]@{b}@) \n[102,103])
+   (property name: (identifier[111,112]@{c}@) \n[112,113])
+   (property name: (identifier[121,122]@{d}@) \n[122,123])
+   end[127,130])
+  (methods methods[136,143] \n[143,144]
+   (function_definition function[152,160]
+    (function_output (identifier[161,162]@{r}@) =[162,163])
+    name: (identifier[163,167]@{foo1}@) (comment[176,195]@{% in foo1\n        %}@) (comment[209,211]@{%%}@) \n[211,212]
+    (block
+     (assignment left: (identifier[224,225]@{r}@) =[226,227]
+      right: (binary_operator left: (identifier[228,229]@{a}@) +[230,231] right: (identifier[232,233]@{b}@)))
+     ;[233,234] (comment[248,250]@{%%}@)
+     (assignment left: (identifier[263,264]@{r}@) =[265,266]
+      right: 
+       (binary_operator left: (identifier[267,268]@{r}@) +[269,270]
+        right: (binary_operator left: (identifier[271,272]@{c}@) *[273,274] right: (identifier[275,276]@{d}@))))
+     ;[276,277] \n[277,278])
+    end[286,289])
+   \n[289,291]
+   (function_definition function[299,307] name: (identifier[308,312]@{foo2}@)
+    (function_arguments ([312,313] arguments: (identifier[313,316]@{obj}@) ,[316,317] (identifier[318,319]@{a}@) ,[319,320] (identifier[321,322]@{b}@) )[322,323])
+    (comment[332,352]@{% in foo2\n        % }@) (comment[366,384]@{%% foo2 - section1}@) \n[384,385]
+    (block
+     (assignment
+      left: (field_expression object: (identifier[397,400]@{obj}@) .[400,401] field: (identifier[401,402]@{a}@))
+      =[403,404] right: (identifier[405,406]@{a}@))
+     ;[406,407]
+     (assignment
+      left: (field_expression object: (identifier[420,423]@{obj}@) .[423,424] field: (identifier[424,425]@{b}@))
+      =[426,427] right: (identifier[428,429]@{b}@))
+     ;[429,430] (comment[444,462]@{%% foo2 - section2}@)
+     (assignment
+      left: (field_expression object: (identifier[475,478]@{obj}@) .[478,479] field: (identifier[479,480]@{c}@))
+      =[481,482]
+      right: (binary_operator left: (identifier[483,484]@{a}@) *[485,486] right: (number[487,488]@{2}@)))
+     ;[488,489]
+     (assignment
+      left: (field_expression object: (identifier[502,505]@{obj}@) .[505,506] field: (identifier[506,507]@{c}@))
+      =[508,509]
+      right: (binary_operator left: (identifier[510,511]@{a}@) *[512,513] right: (number[514,515]@{3}@)))
+     ;[515,516] \n[516,517] \n[529,530])
+    end[538,541])
+   \n[541,543] end[547,550])
+  end[552,555])
+ \n[555,557])

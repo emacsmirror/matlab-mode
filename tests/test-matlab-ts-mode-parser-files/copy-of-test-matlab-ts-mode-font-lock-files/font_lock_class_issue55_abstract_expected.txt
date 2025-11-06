@@ -1,0 +1,27 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,84]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
+ (class_definition classdef[86,94] name: (identifier[95,127]@{font_lock_class_issue55_abstract}@) \n[127,128]
+  (properties properties[132,142]
+   (attributes ([142,143]
+    (attribute (identifier[143,151]@{Abstract}@))
+    )[151,152])
+   \n[152,153]
+   (property name: (identifier[161,163]@{p1}@) \n[163,164])
+   end[168,171])
+  (methods methods[177,184]
+   (attributes ([184,185]
+    (attribute (identifier[185,193]@{Abstract}@))
+    )[193,194])
+   \n[194,195]
+   (function_signature
+    (function_output (identifier[203,204]@{a}@) =[205,206])
+    name: (identifier[207,210]@{foo}@)
+    (function_arguments ([210,211] arguments: (identifier[211,214]@{obj}@) )[214,215]))
+   ;[215,216] \n[216,217]
+   (function_signature
+    (function_output (identifier[225,226]@{b}@) =[227,228])
+    name: (identifier[229,232]@{goo}@)
+    (function_arguments ([232,233] arguments: (identifier[233,236]@{obj}@) )[236,237]))
+   ;[237,238] \n[238,239] end[243,246])
+  end[247,250])
+ \n[250,251])

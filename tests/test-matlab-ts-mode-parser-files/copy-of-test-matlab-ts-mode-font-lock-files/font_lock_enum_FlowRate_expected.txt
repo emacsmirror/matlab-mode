@@ -1,0 +1,23 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,87]@{% -*- matlab-ts -*-\n% See https://github.com/acri...}@)
+ (class_definition classdef[88,96] name: (identifier[97,120]@{font_lock_enum_FlowRate}@)
+  (superclasses <[121,122]
+   (property_name (identifier[123,128]@{int32}@)))
+  \n[128,129]
+  (enumeration enumeration[132,143] \n[143,144]
+   (enum (identifier[150,153]@{Low}@) ([157,158] (number[158,160]@{10}@) )[160,161])
+   \n[161,162]
+   (enum (identifier[168,174]@{Medium}@) ([175,176]
+    (binary_operator
+     left: (field_expression object: (identifier[176,184]@{FlowRate}@) .[184,185] field: (identifier[185,188]@{Low}@))
+     *[188,189] right: (number[189,190]@{5}@))
+    )[190,191])
+   \n[191,192]
+   (enum (identifier[198,202]@{High}@) ([205,206]
+    (binary_operator
+     left: (field_expression object: (identifier[206,214]@{FlowRate}@) .[214,215] field: (identifier[215,218]@{Low}@))
+     *[218,219] right: (number[219,221]@{10}@))
+    )[221,222])
+   \n[222,223] end[226,229])
+  end[230,233])
+ \n[233,234])

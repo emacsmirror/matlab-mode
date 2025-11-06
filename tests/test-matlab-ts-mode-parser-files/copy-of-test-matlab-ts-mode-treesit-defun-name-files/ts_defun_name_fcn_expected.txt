@@ -1,0 +1,71 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29]
+  (function_output (identifier[30,31]@{b}@) =[32,33])
+  name: (identifier[34,51]@{ts_defun_name_fcn}@)
+  (function_arguments ([51,52] arguments: (identifier[52,53]@{a}@) )[53,54])
+  \n[54,56]
+  (block
+   (assignment left: (identifier[60,61]@{b}@) =[62,63] right: (number[64,65]@{0}@))
+   ;[65,66] \n[66,67]
+   (if_statement if[71,73]
+    condition: (comparison_operator (identifier[74,75]@{a}@) >[76,77] (number[78,79]@{1}@))
+    \n[79,80]
+    (block
+     (if_statement if[88,90]
+      condition: (comparison_operator (identifier[91,92]@{a}@) >[93,94] (number[95,96]@{2}@))
+      (block
+       (function_call name: (identifier[109,113]@{disp}@) ([113,114]
+        (arguments
+         argument: (string '[114,115] (string_content[115,118]@{1 2}@) '[118,119]))
+        )[119,120])
+       \n[120,121]
+       (switch_statement switch[133,139] condition: (identifier[140,141]@{a}@) \n[141,142]
+        (case_clause case[156,160] condition: (number[161,162]@{2}@) \n[162,163]
+         (block
+          (function_call name: (identifier[179,183]@{disp}@) ([183,184]
+           (arguments
+            argument: (string '[184,185] (string_content[185,191]@{case 2}@) '[191,192]))
+           )[192,193])
+          \n[193,194]
+          (assignment left: (identifier[210,211]@{b}@) =[212,213]
+           right: 
+            (function_call name: (identifier[214,218]@{fcn1}@) ([218,219]
+             (arguments argument: (identifier[219,220]@{a}@))
+             )[220,221]))
+          ;[221,222] \n[222,223]))
+        end[235,238])
+       \n[238,239])
+      end[247,250])
+     \n[250,251])
+    end[255,258])
+   \n[258,259])
+  end[259,262])
+ \n[262,264]
+ (function_definition function[264,272]
+  (function_output (identifier[273,274]@{b}@) =[275,276])
+  name: (identifier[277,281]@{fcn1}@)
+  (function_arguments ([281,282] arguments: (identifier[282,283]@{a}@) )[283,284])
+  \n[284,285]
+  (block
+   (assignment left: (identifier[289,290]@{b}@) =[291,292]
+    right: 
+     (binary_operator left: (number[293,294]@{5}@) *[295,296]
+      right: 
+       (function_call name: (identifier[297,301]@{fcn2}@) ([301,302]
+        (arguments argument: (identifier[302,303]@{a}@))
+        )[303,304])))
+   ;[304,305] \n[305,307]
+   (function_definition function[311,319]
+    (function_output (identifier[320,321]@{d}@) =[322,323])
+    name: (identifier[324,328]@{fcn2}@)
+    (function_arguments ([328,329] arguments: (identifier[329,330]@{c}@) )[330,331])
+    \n[331,332]
+    (block
+     (assignment left: (identifier[340,341]@{d}@) =[342,343]
+      right: (binary_operator left: (identifier[344,345]@{c}@) *[346,347] right: (number[348,349]@{2}@)))
+     ;[349,350] \n[350,351])
+    end[355,358])
+   \n[358,359])
+  end[359,362])
+ \n[362,363])

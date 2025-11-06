@@ -49,11 +49,9 @@ after validating it, rename it to
   ./test-matlab-ts-mode-outline-files/NAME_expected.txt"
 
   (let* ((test-name "test-matlab-ts-mode-outline")
-         (m-files (t-utils-get-files
-                   test-name
-                   (rx ".m" eos)
-                   nil
-                   test-matlab-ts-mode-outline--file)))
+         (m-files (t-utils-get-files test-name
+                                     :base-regexp (rx ".m" eos)
+                                     :file-to-use test-matlab-ts-mode-outline--file)))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-outline-search-function test-name m-files)))
 

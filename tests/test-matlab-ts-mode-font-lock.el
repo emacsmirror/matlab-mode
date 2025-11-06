@@ -53,11 +53,9 @@ after validating it, rename it to
 
   (let* ((test-name "test-matlab-ts-mode-font-lock")
          (matlab-ts-mode-font-lock-level 4)
-         (m-files (t-utils-get-files
-                   test-name
-                   (rx ".m" eos)
-                   nil
-                   test-matlab-ts-mode-font-lock--file))
+         (m-files (t-utils-get-files test-name
+                                     :base-regexp (rx ".m" eos)
+                                     :file-to-use test-matlab-ts-mode-font-lock--file))
          (code-to-face '(
                          ("!" . matlab-ts-mode-system-command-face)
                          ("a" . matlab-ts-mode-command-arg-face)

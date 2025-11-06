@@ -49,11 +49,9 @@ after validating it, rename it to
   ./test-matlab-ts-mode-treesit-defun-name-files/NAME_expected.txt"
 
   (let* ((test-name "test-matlab-ts-mode-treesit-defun-name")
-         (m-files (t-utils-get-files
-                   test-name
-                   (rx ".m" eos)
-                   nil
-                   test-matlab-ts-mode-treesit-defun-name--file)))
+         (m-files (t-utils-get-files test-name
+                                     :base-regexp (rx ".m" eos)
+                                     :file-to-use test-matlab-ts-mode-treesit-defun-name--file)))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-treesit-defun-name test-name m-files)))
 

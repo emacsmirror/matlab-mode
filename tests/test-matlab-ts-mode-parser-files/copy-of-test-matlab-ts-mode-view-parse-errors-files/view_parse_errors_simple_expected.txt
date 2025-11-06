@@ -1,0 +1,10 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment left: (identifier[22,23]@{a}@)
+  (ERROR =[24,25])
+  =[26,27] right: (number[28,32]@{2000}@))
+ ;[32,33]
+ (assignment left: (identifier[35,36]@{b}@)
+  (ERROR =[37,38] *[39,40])
+  =[40,41] right: (number[42,43]@{2}@))
+ ;[43,44] \n[44,46])

@@ -1,0 +1,40 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (assignment left: (identifier[91,92]@{a}@) =[92,93]
+  right: (range (number[93,94]@{1}@) :[94,95] (number[95,97]@{10}@)))
+ ;[97,98]
+ (assignment
+  left: 
+   (multioutput_variable [[99,100]
+    (function_call name: (identifier[100,101]@{a}@) ([101,102]
+     (arguments
+      argument: 
+       (function_call name: (identifier[102,105]@{sum}@) ([105,106]
+        (arguments
+         argument: 
+          (matrix [[106,107]
+           (row (number[107,108]@{1}@) ,[109,109] (number[109,110]@{1}@))
+           ][110,111]))
+        )[111,112]))
+     )[112,113])
+    ][113,114])
+  =[115,116]
+  right: (unary_operator -[117,118] operand: (number[118,120]@{99}@)))
+ ;[120,121]
+ (assignment
+  left: 
+   (multioutput_variable [[122,123]
+    (function_call name: (identifier[123,124]@{a}@) ([124,125]
+     (arguments
+      argument: 
+       (matrix [[125,126]
+        (row
+         (function_call name: (identifier[126,127]@{a}@) ([127,128]
+          (arguments argument: (number[128,129]@{4}@))
+          )[129,130]))
+        ][130,131]))
+     )[131,132])
+    ][132,133])
+  =[134,135]
+  right: (unary_operator -[136,137] operand: (number[137,139]@{99}@)))
+ ;[139,140] \n[140,143])

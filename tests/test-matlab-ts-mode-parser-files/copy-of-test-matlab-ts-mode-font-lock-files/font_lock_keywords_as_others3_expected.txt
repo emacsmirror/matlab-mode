@@ -1,0 +1,8 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (field_expression object: (identifier[91,95]@{true}@) .[95,96] field: (identifier[96,100]@{some}@) .[100,101] (identifier[101,107]@{nested}@) .[107,108] (identifier[108,117]@{namespace}@) .[117,118] (identifier[118,121]@{foo}@))
+ \n[121,123]
+ (assignment
+  left: (field_expression object: (identifier[123,127]@{true}@) .[127,128] field: (identifier[128,131]@{foo}@) .[131,132] (identifier[132,135]@{bar}@))
+  =[136,137] right: (number[138,139]@{1}@))
+ ;[139,140] \n[140,141])

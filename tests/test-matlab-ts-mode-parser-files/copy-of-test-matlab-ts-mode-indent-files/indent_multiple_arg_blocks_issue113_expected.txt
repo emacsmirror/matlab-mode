@@ -1,0 +1,29 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (function_definition function[92,100]
+  (function_output (identifier[101,102]@{y}@) =[103,104])
+  name: (identifier[105,140]@{indent_multiple_arg_blocks_issue113}@)
+  (function_arguments ([140,141] arguments: (identifier[141,142]@{a}@) ,[142,143] (identifier[144,145]@{b}@) ,[145,146] (identifier[147,155]@{varargin}@) )[155,156])
+  \n[156,157]
+  (arguments_statement arguments[161,170] \n[170,171]
+   (property name: (identifier[179,180]@{a}@) (identifier[181,187]@{uint32}@) \n[187,188])
+   (property name: (identifier[196,197]@{b}@) (identifier[198,204]@{uint32}@) \n[204,205])
+   end[209,212] \n[212,213])
+  (arguments_statement arguments[217,226]
+   (attributes ([227,228] argument: (identifier[228,237]@{Repeating}@) )[237,238])
+   \n[238,239]
+   (property name: (identifier[247,255]@{varargin}@) \n[255,256])
+   end[260,263])
+  (block
+   (assignment left: (identifier[269,270]@{y}@) =[271,272]
+    right: 
+     (binary_operator
+      left: (binary_operator left: (identifier[273,274]@{a}@) +[275,276] right: (identifier[277,278]@{b}@))
+      +[279,280]
+      right: 
+       (function_call name: (identifier[281,287]@{length}@) ([287,288]
+        (arguments argument: (identifier[288,296]@{varargin}@))
+        )[296,297])))
+   ;[297,298] \n[298,300])
+  end[300,303])
+ \n[303,304])

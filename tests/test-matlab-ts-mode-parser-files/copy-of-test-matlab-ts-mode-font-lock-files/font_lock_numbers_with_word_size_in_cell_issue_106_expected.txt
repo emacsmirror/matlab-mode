@@ -1,0 +1,98 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@) (comment[92,396]@{% Doc https://www.mathworks.com/help/matlab/matlab...}@)
+ (assignment left: (identifier[398,399]@{a}@) =[400,401]
+  right: 
+   (cell {[402,403]
+    (row (number[403,409]@{0xFFs8}@) ,[409,410] (number[411,412]@{1}@))
+    }[412,413]))
+ \n[413,414]
+ (assignment left: (identifier[414,415]@{b}@) =[416,417]
+  right: 
+   (cell {[418,419]
+    (row (number[419,426]@{0xFFs16}@) ,[426,427] (number[428,429]@{1}@))
+    }[429,430]))
+ \n[430,431]
+ (assignment left: (identifier[431,432]@{c}@) =[433,434]
+  right: 
+   (cell {[435,436]
+    (row (number[436,443]@{0xFFs32}@) ,[443,444] (number[445,446]@{1}@))
+    }[446,447]))
+ \n[447,448]
+ (assignment left: (identifier[448,449]@{d}@) =[450,451]
+  right: 
+   (cell {[452,453]
+    (row (number[453,460]@{0xFFs64}@) ,[460,461] (number[462,463]@{1}@))
+    }[463,464]))
+ \n[464,466]
+ (assignment left: (identifier[466,467]@{e}@) =[468,469]
+  right: 
+   (cell {[470,471]
+    (row (number[471,477]@{0xFFu8}@) ,[477,478] (number[479,480]@{1}@))
+    }[480,481]))
+ \n[481,482]
+ (assignment left: (identifier[482,483]@{f}@) =[484,485]
+  right: 
+   (cell {[486,487]
+    (row (number[487,494]@{0xFFu16}@) ,[494,495] (number[496,497]@{1}@))
+    }[497,498]))
+ \n[498,499]
+ (assignment left: (identifier[499,500]@{g}@) =[501,502]
+  right: 
+   (cell {[503,504]
+    (row (number[504,511]@{0xFFu32}@) ,[511,512] (number[513,514]@{1}@))
+    }[514,515]))
+ \n[515,516]
+ (assignment left: (identifier[516,517]@{h}@) =[518,519]
+  right: 
+   (cell {[520,521]
+    (row (number[521,528]@{0xFFu64}@) ,[528,529] (number[530,531]@{1}@))
+    }[531,532]))
+ \n[532,534]
+ (assignment left: (identifier[534,535]@{i}@) =[536,537]
+  right: 
+   (cell {[538,539]
+    (row (number[539,547]@{0b0101s8}@) ,[547,548] (number[549,550]@{1}@))
+    }[550,551]))
+ \n[551,552]
+ (assignment left: (identifier[552,553]@{j}@) =[554,555]
+  right: 
+   (cell {[556,557]
+    (row (number[557,566]@{0b0101s16}@) ,[566,567] (number[568,569]@{1}@))
+    }[569,570]))
+ \n[570,571]
+ (assignment left: (identifier[571,572]@{k}@) =[573,574]
+  right: 
+   (cell {[575,576]
+    (row (number[576,585]@{0b0101s32}@) ,[585,586] (number[587,588]@{1}@))
+    }[588,589]))
+ \n[589,590]
+ (assignment left: (identifier[590,591]@{l}@) =[592,593]
+  right: 
+   (cell {[594,595]
+    (row (number[595,604]@{0b0101s64}@) ,[604,605] (number[606,607]@{1}@))
+    }[607,608]))
+ \n[608,610]
+ (assignment left: (identifier[610,611]@{m}@) =[612,613]
+  right: 
+   (cell {[614,615]
+    (row (number[615,623]@{0b0101u8}@) ,[623,624] (number[625,626]@{1}@))
+    }[626,627]))
+ \n[627,628]
+ (assignment left: (identifier[628,629]@{n}@) =[630,631]
+  right: 
+   (cell {[632,633]
+    (row (number[633,642]@{0b0101u16}@) ,[642,643] (number[644,645]@{1}@))
+    }[645,646]))
+ \n[646,647]
+ (assignment left: (identifier[647,648]@{o}@) =[649,650]
+  right: 
+   (cell {[651,652]
+    (row (number[652,661]@{0b0101u32}@) ,[661,662] (number[663,664]@{1}@))
+    }[664,665]))
+ \n[665,666]
+ (assignment left: (identifier[666,667]@{p}@) =[668,669]
+  right: 
+   (cell {[670,671]
+    (row (number[671,680]@{0b0101u64}@) ,[680,681] (number[682,683]@{1}@))
+    }[683,684]))
+ \n[684,686])

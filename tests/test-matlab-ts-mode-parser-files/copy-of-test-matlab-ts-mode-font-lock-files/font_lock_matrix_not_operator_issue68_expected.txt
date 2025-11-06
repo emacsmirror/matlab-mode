@@ -1,0 +1,11 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,87]@{% See http://github.com/acristoffers/tree-sitter-m...}@)
+ (assignment left: (identifier[89,90]@{a}@) =[91,92] right: (identifier[93,97]@{true}@))
+ ;[97,98]
+ (assignment left: (identifier[99,100]@{b}@) =[101,102]
+  right: 
+   (matrix [[103,104]
+    (row
+     (not_operator ~[104,105] (identifier[105,106]@{a}@)))
+    ][106,107]))
+ ;[107,108] \n[108,110])

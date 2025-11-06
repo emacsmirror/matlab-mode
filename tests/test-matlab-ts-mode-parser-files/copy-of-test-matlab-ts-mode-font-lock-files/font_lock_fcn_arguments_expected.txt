@@ -1,0 +1,38 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] name: (identifier[30,53]@{font_lock_fcn_arguments}@)
+  (function_arguments ([53,54] arguments: (identifier[54,57]@{in1}@) ,[57,58] (identifier[59,69]@{properties}@) ,[69,70] (identifier[71,74]@{foo}@) ,[74,75] (identifier[76,83]@{options}@) )[83,84])
+  \n[84,85]
+  (arguments_statement arguments[89,98] \n[98,99]
+   (property name: (identifier[107,110]@{in1}@)
+    (dimensions ([111,112] (number[112,113]@{1}@) ,[113,114]
+     (spread_operator :[114,115])
+     )[115,116])
+    (validation_functions {[117,118] (identifier[118,131]@{mustBeNumeric}@) }[131,132])
+    \n[132,133])
+   (property name: (identifier[141,151]@{properties}@) (identifier[152,158]@{double}@) \n[158,159])
+   (property name: (identifier[167,170]@{foo}@)
+    (dimensions ([171,172] (number[172,173]@{1}@) ,[173,174] (number[174,175]@{1}@) )[175,176])
+    (identifier[177,183]@{string}@) \n[183,184])
+   (property
+    name: (property_name (identifier[192,199]@{options}@) .[199,200] (identifier[200,203]@{goo}@))
+    \n[203,204])
+   (property
+    name: (property_name (identifier[212,219]@{options}@) .[219,220] (identifier[220,223]@{bar}@))
+    (identifier[224,230]@{double}@) \n[230,231])
+   (property
+    name: (property_name (identifier[239,246]@{options}@) .[246,247] (identifier[247,256]@{LineStyle}@))
+    (dimensions ([257,258] (number[258,259]@{1}@) ,[259,260] (number[260,261]@{1}@) )[261,262])
+    (identifier[263,269]@{string}@)
+    (default_value =[270,271]
+     (string "[272,273] (string_content[273,274]@{-}@) "[274,275]))
+    \n[275,276])
+   (property
+    name: (property_name (identifier[284,291]@{options}@) .[291,292] (identifier[292,301]@{LineWidth}@))
+    (dimensions ([302,303] (number[303,304]@{1}@) ,[304,305] (number[305,306]@{1}@) )[306,307])
+    (validation_functions {[308,309] (identifier[309,322]@{mustBeNumeric}@) }[322,323])
+    (default_value =[324,325] (number[326,327]@{1}@))
+    \n[327,328])
+   end[332,335] \n[335,336])
+  end[336,339])
+ \n[339,340])

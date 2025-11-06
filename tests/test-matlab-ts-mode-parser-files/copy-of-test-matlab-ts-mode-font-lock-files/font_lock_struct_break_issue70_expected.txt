@@ -1,0 +1,22 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[90,104]@{AllowableMenus}@) =[105,106]
+  right: 
+   (function_call name: (identifier[107,113]@{struct}@) ([113,114] (line_continuation[114,118]@{...\n}@)
+    (arguments
+     argument: (string '[122,123] (string_content[123,127]@{edit}@) '[127,128])
+     ,[128,129]
+     (string '[130,131] (string_content[131,133]@{on}@) '[133,134])
+     ,[134,135] (line_continuation[136,140]@{...\n}@)
+     (string '[144,145] (string_content[145,151]@{delete}@) '[151,152])
+     ,[152,153]
+     (string '[154,155] (string_content[155,157]@{on}@) '[157,158])
+     ,[158,159] (line_continuation[160,164]@{...\n}@)
+     (string '[168,169] (string_content[169,174]@{break}@) '[174,175])
+     ,[175,176]
+     (string '[177,178] (string_content[178,180]@{on}@) '[180,181]))
+    )[181,182]))
+ ;[182,183]
+ (field_expression object: (identifier[185,199]@{AllowableMenus}@) .[199,200]
+  field: (identifier break[200,205]))
+ \n[205,206])

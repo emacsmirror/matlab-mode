@@ -1,0 +1,16 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,89]@{% -*- matlab-ts -*-\n%\n% See https://github.com/a...}@)
+ (assignment
+  left: 
+   (multioutput_variable [[91,92]
+    (ignored_argument ~[92,93])
+    ,[93,94] (identifier[95,100]@{names}@) ][100,101])
+  =[102,103]
+  right: 
+   (function_call
+    name: (identifier enumeration[104,115])
+    ([115,116]
+    (arguments
+     argument: (string '[116,117] (string_content[117,122]@{onoff}@) '[122,123]))
+    )[123,124]))
+ \n[124,126])

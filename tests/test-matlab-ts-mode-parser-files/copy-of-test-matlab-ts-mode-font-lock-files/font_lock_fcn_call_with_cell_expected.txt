@@ -1,0 +1,21 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,134]@{% See comment in https://github.com/acristoffers/t...}@)
+ (function_call name: (identifier[136,141]@{myfcn}@) ([141,142]
+  (arguments
+   argument: 
+    (cell {[142,143]
+     (row
+      (string '[143,144] (string_content[144,147]@{str}@) '[147,148]))
+     }[148,149]))
+  )[149,150])
+ ;[150,151] \n[151,153]
+ (function_definition function[153,161] name: (identifier[162,167]@{myfcn}@)
+  (function_arguments ([167,168] arguments: (identifier[168,170]@{in}@) )[170,171])
+  \n[171,172]
+  (block
+   (function_call name: (identifier[176,180]@{disp}@) ([180,181]
+    (arguments argument: (identifier[181,183]@{in}@))
+    )[183,184])
+   \n[184,185])
+  end[185,188])
+ \n[188,190])

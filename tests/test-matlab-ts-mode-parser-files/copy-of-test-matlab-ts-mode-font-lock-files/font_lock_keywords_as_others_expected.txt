@@ -1,0 +1,168 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment
+  left: (identifier arguments[90,99])
+  =[100,101] right: (number[102,103]@{1}@))
+ (comment[104,202]@{% break = 1\n% case = 1\n% catch = 1\n% classdef =...}@) \n[202,203]
+ (assignment
+  left: (identifier enumeration[203,214])
+  =[215,216] right: (number[217,218]@{1}@))
+ \n[218,219]
+ (assignment
+  left: (identifier events[219,225])
+  =[226,227] right: (number[228,229]@{1}@))
+ (comment[230,276]@{% for = 1\n% function = 1\n% global = 1\n% if = 1}@) \n[276,277]
+ (assignment
+  left: (identifier methods[277,284])
+  =[285,286] right: (number[287,288]@{1}@))
+ (comment[289,334]@{% otherwise = 1\n% parfor = 1\n% persistent = 1}@) \n[334,335]
+ (assignment left: (identifier[335,345]@{properties}@) =[346,347] right: (number[348,349]@{1}@))
+ (comment[350,408]@{% return = 1\n% spmd = 1\n% switch = 1\n% try = 1\...}@) (comment[410,619]@{% "keywords" allowed as struct fields and +DIR nam...}@) \n[619,621]
+ (assignment
+  left: 
+   (field_expression object: (identifier[621,622]@{s}@) .[622,623]
+    field: (identifier arguments[623,632]))
+  =[633,634] right: (number[635,636]@{1}@))
+ \n[636,637]
+ (assignment
+  left: 
+   (field_expression object: (identifier[637,638]@{s}@) .[638,639]
+    field: (identifier break[639,644]))
+  =[645,646] right: (number[647,648]@{1}@))
+ \n[648,649]
+ (assignment
+  left: 
+   (field_expression object: (identifier[649,650]@{s}@) .[650,651]
+    field: (identifier case[651,655]))
+  =[656,657] right: (number[658,659]@{1}@))
+ \n[659,660]
+ (assignment
+  left: 
+   (field_expression object: (identifier[660,661]@{s}@) .[661,662]
+    field: (identifier catch[662,667]))
+  =[668,669] right: (number[670,671]@{1}@))
+ \n[671,672]
+ (assignment
+  left: 
+   (field_expression object: (identifier[672,673]@{s}@) .[673,674]
+    field: (identifier classdef[674,682]))
+  =[683,684] right: (number[685,686]@{1}@))
+ \n[686,687]
+ (assignment
+  left: 
+   (field_expression object: (identifier[687,688]@{s}@) .[688,689]
+    field: (identifier continue[689,697]))
+  =[698,699] right: (number[700,701]@{1}@))
+ \n[701,702]
+ (assignment
+  left: 
+   (field_expression object: (identifier[702,703]@{s}@) .[703,704]
+    field: (identifier else[704,708]))
+  =[709,710] right: (number[711,712]@{1}@))
+ \n[712,713]
+ (assignment
+  left: 
+   (field_expression object: (identifier[713,714]@{s}@) .[714,715]
+    field: (identifier elseif[715,721]))
+  =[722,723] right: (number[724,725]@{1}@))
+ \n[725,726]
+ (assignment
+  left: 
+   (field_expression object: (identifier[726,727]@{s}@) .[727,728]
+    field: (identifier end[728,731]))
+  =[732,733] right: (number[734,735]@{1}@))
+ \n[735,736]
+ (assignment
+  left: 
+   (field_expression object: (identifier[736,737]@{s}@) .[737,738]
+    field: (identifier enumeration[738,749]))
+  =[750,751] right: (number[752,753]@{1}@))
+ \n[753,754]
+ (assignment
+  left: 
+   (field_expression object: (identifier[754,755]@{s}@) .[755,756]
+    field: (identifier events[756,762]))
+  =[763,764] right: (number[765,766]@{1}@))
+ \n[766,767]
+ (assignment
+  left: 
+   (field_expression object: (identifier[767,768]@{s}@) .[768,769]
+    field: (identifier for[769,772]))
+  =[773,774] right: (number[775,776]@{1}@))
+ \n[776,777]
+ (assignment
+  left: 
+   (field_expression object: (identifier[777,778]@{s}@) .[778,779]
+    field: (identifier function[779,787]))
+  =[788,789] right: (number[790,791]@{1}@))
+ \n[791,792]
+ (assignment
+  left: 
+   (field_expression object: (identifier[792,793]@{s}@) .[793,794]
+    field: (identifier global[794,800]))
+  =[801,802] right: (number[803,804]@{1}@))
+ \n[804,805]
+ (assignment
+  left: 
+   (field_expression object: (identifier[805,806]@{s}@) .[806,807]
+    field: (identifier if[807,809]))
+  =[810,811] right: (number[812,813]@{1}@))
+ \n[813,814]
+ (assignment
+  left: 
+   (field_expression object: (identifier[814,815]@{s}@) .[815,816]
+    field: (identifier methods[816,823]))
+  =[824,825] right: (number[826,827]@{1}@))
+ \n[827,828]
+ (assignment
+  left: 
+   (field_expression object: (identifier[828,829]@{s}@) .[829,830]
+    field: (identifier otherwise[830,839]))
+  =[840,841] right: (number[842,843]@{1}@))
+ \n[843,844]
+ (assignment
+  left: 
+   (field_expression object: (identifier[844,845]@{s}@) .[845,846]
+    field: (identifier parfor[846,852]))
+  =[853,854] right: (number[855,856]@{1}@))
+ \n[856,857]
+ (assignment
+  left: 
+   (field_expression object: (identifier[857,858]@{s}@) .[858,859]
+    field: (identifier persistent[859,869]))
+  =[870,871] right: (number[872,873]@{1}@))
+ \n[873,874]
+ (assignment
+  left: (field_expression object: (identifier[874,875]@{s}@) .[875,876] field: (identifier[876,886]@{properties}@))
+  =[887,888] right: (number[889,890]@{1}@))
+ \n[890,891]
+ (assignment
+  left: 
+   (field_expression object: (identifier[891,892]@{s}@) .[892,893]
+    field: (identifier return[893,899]))
+  =[900,901] right: (number[902,903]@{1}@))
+ \n[903,904]
+ (assignment
+  left: 
+   (field_expression object: (identifier[904,905]@{s}@) .[905,906]
+    field: (identifier spmd[906,910]))
+  =[911,912] right: (number[913,914]@{1}@))
+ \n[914,915]
+ (assignment
+  left: 
+   (field_expression object: (identifier[915,916]@{s}@) .[916,917]
+    field: (identifier switch[917,923]))
+  =[924,925] right: (number[926,927]@{1}@))
+ \n[927,928]
+ (assignment
+  left: 
+   (field_expression object: (identifier[928,929]@{s}@) .[929,930]
+    field: (identifier try[930,933]))
+  =[934,935] right: (number[936,937]@{1}@))
+ \n[937,938]
+ (assignment
+  left: 
+   (field_expression object: (identifier[938,939]@{s}@) .[939,940]
+    field: (identifier while[940,945]))
+  =[946,947] right: (number[948,949]@{1}@))
+ \n[949,952])

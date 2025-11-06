@@ -1,0 +1,16 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (function_definition function[92,100] name: (identifier[101,128]@{font_lock_empty_endless_fun}@) \n[128,129]
+  (block
+   (command (command_name[129,133]@{foo1}@))
+   ;[133,134]
+   (command (command_name[135,139]@{foo2}@))
+   ;[139,140] \n[140,142]))
+ (function_definition function[142,150] name: (identifier[151,155]@{foo1}@) (comment[156,168]@{% empty foo1}@) \n[168,170])
+ (function_definition function[170,178] name: (identifier[179,183]@{foo2}@) \n[183,184]
+  (block
+   (function_call name: (identifier[184,188]@{disp}@) ([188,189]
+    (arguments
+     argument: (string '[189,190] (string_content[190,197]@{in foo2}@) '[197,198]))
+    )[198,199])
+   \n[199,200])))

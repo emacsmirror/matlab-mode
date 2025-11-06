@@ -51,11 +51,9 @@ after validating it, rename it to
 
   (let* ((matlab-ts-mode-electric-ends nil)
          (test-name "test-matlab-ts-mode-indent-xr")
-         (m-files (t-utils-get-files
-                   test-name
-                   (rx ".m" eos)
-                   nil
-                   test-matlab-ts-mode-indent-xr--file)))
+         (m-files (t-utils-get-files test-name
+                                     :base-regexp (rx ".m" eos)
+                                     :file-to-use test-matlab-ts-mode-indent-xr--file)))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-xr test-name m-files)))
 

@@ -1,0 +1,32 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] name: (identifier[30,43]@{indent_switch}@)
+  (function_arguments ([43,44] arguments: (identifier[44,46]@{in}@) )[46,47])
+  \n[47,50]
+  (block
+   (switch_statement switch[54,60] condition: (identifier[61,63]@{in}@) \n[63,66]
+    (case_clause case[72,76] condition: (number[77,79]@{10}@) \n[79,81]
+     (block
+      (function_call name: (identifier[89,93]@{disp}@) ([93,94]
+       (arguments
+        argument: (string '[94,95] (string_content[95,98]@{one}@) '[98,99]))
+       )[99,100])
+      \n[100,103]
+      (function_call name: (identifier[111,115]@{disp}@) ([115,116]
+       (arguments
+        argument: (string '[116,117] (string_content[117,120]@{two}@) '[120,121]))
+       )[121,122])
+      ;[122,123]
+      (assignment left: (identifier[134,135]@{a}@) =[136,137] right: (number[138,139]@{1}@))
+      \n[139,141]))
+    (otherwise_clause otherwise[147,156]
+     (block
+      (function_call name: (identifier[166,170]@{disp}@) ([170,171]
+       (arguments
+        argument: (string '[171,172] (string_content[172,175]@{foo}@) '[175,176]))
+       )[176,177])
+      \n[177,180]))
+    end[184,187])
+   \n[187,189])
+  end[189,192])
+ \n[192,193])

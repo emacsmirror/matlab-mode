@@ -1,0 +1,94 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29]
+  (function_output
+   (multioutput_variable [[30,31] (identifier[31,33]@{a1}@) ,[33,34] (identifier[35,37]@{a2}@) ,[37,38] (identifier[39,41]@{a3}@) ,[41,42] (identifier[43,45]@{a4}@) ,[45,46] (identifier[47,62]@{long_variable_a}@) ][62,63])
+   =[64,65])
+  name: (identifier[66,77]@{indent_cell}@) \n[77,78]
+  (block
+   (assignment left: (identifier[82,84]@{a1}@) =[85,86]
+    right: 
+     (cell {[87,88] (line_continuation[89,93]@{...\n}@)
+      (row
+       (binary_operator left: (number[99,100]@{1}@) (line_continuation[101,109]@{...\n    }@) +[109,110] (line_continuation[111,115]@{...\n}@) right: (number[122,123]@{2}@)))
+      }[126,127]))
+   ;[127,128]
+   (assignment left: (identifier[134,136]@{a2}@) =[137,138]
+    right: 
+     (cell {[139,140]
+      (row (number[144,145]@{1}@) (line_continuation[146,157]@{...\n       }@) ,[157,157] (number[157,158]@{2}@) (line_continuation[159,175]@{...\n            }@) ,[175,175] (number[175,176]@{3}@))
+      }[185,186]))
+   ;[186,187]
+   (assignment left: (identifier[191,193]@{a3}@) =[194,195]
+    right: 
+     (cell {[196,197] (line_continuation[198,202]@{...\n}@)
+      (row (number[210,211]@{2}@) ,[211,212]
+       (cell {[214,215]
+        (row (number[216,217]@{3}@))
+        (row (number[228,229]@{4}@))
+        (row
+         (binary_operator left: (number[244,245]@{5}@) +[246,247]
+          right: 
+           (parenthesis ([248,249] (line_continuation[250,254]@{...\n}@)
+            (binary_operator left: (number[276,277]@{2}@) +[278,279] right: (number[280,281]@{0}@))
+            (line_continuation[282,286]@{...\n}@) )[302,303])))
+        }[315,316]))
+      }[320,321]))
+   ;[321,322]
+   (assignment left: (identifier[329,331]@{a4}@) =[332,333]
+    right: 
+     (cell {[334,335] (line_continuation[336,340]@{...\n}@)
+      (row (number[347,348]@{1}@))
+      ;[348,349] (line_continuation[350,354]@{...\n}@)
+      (row (number[359,360]@{2}@))
+      (line_continuation[361,373]@{...\n        }@) }[373,374]))
+   ;[374,375]
+   (assignment left: (identifier[381,396]@{long_variable_a}@) =[397,398] (line_continuation[399,403]@{...\n}@)
+    right: 
+     (cell {[411,412] \n[412,413]
+      (row (number[423,424]@{2}@) ,[424,425] (number[426,429]@{123}@) ,[429,430] (number[431,434]@{456}@))
+      (row (number[445,446]@{3}@) ,[446,447] (number[450,451]@{2}@) ,[455,455] (number[455,456]@{7}@))
+      }[465,466]))
+   ;[466,467]
+   (assignment left: (identifier[473,475]@{c1}@) =[476,477]
+    right: 
+     (cell {[478,479]
+      (row
+       (function_call name: (identifier[479,483]@{char}@) ([483,484]
+        (arguments
+         argument: 
+          (matrix [[484,485]
+           (row (number[485,491]@{0xD800}@) ,[492,492] (number[492,498]@{0xDC32}@) ,[499,499] (number[499,505]@{0xD800}@) ,[506,506] (number[506,512]@{0xDC00}@) ,[513,513] (number[513,519]@{0xD800}@) ,[520,520] (number[520,526]@{0xDC1C}@))
+           ][526,527]))
+        )[527,528]))
+      ;[528,529]
+      (row
+       (function_call name: (identifier[540,544]@{char}@) ([544,545]
+        (arguments
+         argument: 
+          (matrix [[545,546]
+           (row (number[546,552]@{0xD800}@) ,[553,553] (number[553,559]@{0xDF3E}@) ,[560,560] (number[560,566]@{0xD800}@) ,[567,567] (number[567,573]@{0xDF48}@))
+           ][573,574]))
+        )[574,575]))
+      ;[575,576]
+      (row
+       (function_call name: (identifier[587,591]@{char}@) ([591,592]
+        (arguments
+         argument: 
+          (matrix [[592,593]
+           (row (number[593,599]@{0xD802}@) ,[600,600] (number[600,606]@{0xDC11}@) ,[607,607] (number[607,613]@{0xD802}@) ,[614,614] (number[614,620]@{0xDC2C}@))
+           ][620,621]))
+        )[621,622]))
+      ;[622,623]
+      (row
+       (function_call name: (identifier[634,638]@{char}@) ([638,639]
+        (arguments
+         argument: 
+          (matrix [[639,640]
+           (row (number[640,646]@{0xD83D}@) ,[647,647] (number[647,653]@{0xDE08}@) ,[654,654] (number[654,660]@{0xD83D}@) ,[661,661] (number[661,667]@{0xDE31}@) ,[668,668] (number[668,674]@{0xD83D}@) ,[675,675] (number[675,681]@{0xDE49}@))
+           ][681,682]))
+        )[682,683]))
+      }[683,684]))
+   ;[684,685] \n[685,686])
+  end[686,689])
+ \n[689,690])

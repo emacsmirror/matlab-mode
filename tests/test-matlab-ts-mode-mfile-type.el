@@ -53,11 +53,9 @@ after validating it, rename it to
   ./test-matlab-ts-mode-mfile-type-files/NAME_expected.org"
 
   (let* ((test-name "test-matlab-ts-mode-mfile-type")
-         (m-files (t-utils-get-files
-                   test-name
-                   (rx ".m" eos)
-                   nil
-                   test-matlab-ts-mode-mfile-type--file)))
+         (m-files (t-utils-get-files test-name
+                                     :base-regexp (rx ".m" eos)
+                                     :file-to-use test-matlab-ts-mode-mfile-type--file)))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-xr test-name m-files)))
 

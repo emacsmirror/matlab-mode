@@ -1,0 +1,46 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,84]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
+ (function_call name: (identifier[86,93]@{someFcn}@) ([93,94]
+  (arguments
+   argument: 
+    (postfix_operator
+     operand: 
+      (parenthesis ([94,95]
+       (range (number[95,96]@{1}@) :[96,97] (number[97,99]@{10}@))
+       )[99,100])
+     '[100,101]))
+  )[101,102])
+ \n[102,103]
+ (function_call name: (identifier[103,110]@{someFcn}@) ([110,111]
+  (arguments
+   argument: 
+    (postfix_operator
+     operand: 
+      (parenthesis ([111,112]
+       (range (number[112,113]@{1}@) :[113,114] (number[114,116]@{10}@))
+       )[116,117])
+     .'[117,119]))
+  )[119,120])
+ \n[120,122]
+ (assignment left: (identifier[122,123]@{n}@) =[124,125] right: (number[126,127]@{5}@))
+ ;[127,128]
+ (assignment left: (identifier[129,134]@{coeff}@) =[135,136]
+  right: 
+   (function_call name: (identifier[137,141]@{char}@) ([141,142]
+    (arguments
+     argument: 
+      (binary_operator
+       left: 
+        (postfix_operator
+         operand: 
+          (parenthesis ([142,143]
+           (range (number[143,144]@{0}@) :[144,145]
+            (binary_operator
+             left: (binary_operator left: (number[145,146]@{2}@) *[146,147] right: (identifier[147,148]@{n}@))
+             -[148,149] right: (number[149,150]@{1}@)))
+           )[150,151])
+         '[151,152])
+       +[153,154]
+       right: (string '[155,156] (string_content[156,157]@{a}@) '[157,158])))
+    )[158,159]))
+ \n[159,160])

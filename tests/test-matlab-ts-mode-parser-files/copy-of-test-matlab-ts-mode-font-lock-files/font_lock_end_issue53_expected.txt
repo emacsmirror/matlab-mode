@@ -1,0 +1,147 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[90,91]@{v}@) =[93,94]
+  right: (range (number[95,96]@{1}@) :[96,97] (number[97,99]@{10}@)))
+ \n[99,100]
+ (assignment left: (identifier[100,102]@{g1}@) =[103,104]
+  right: 
+   (function_call name: (identifier[105,106]@{v}@) ([106,107]
+    (arguments
+     argument: 
+      (range (number[107,108]@{2}@) :[108,109]
+       (end_keyword end[109,112])))
+    )[112,113]))
+ \n[113,114]
+ (assignment left: (identifier[114,116]@{g2}@) =[117,118]
+  right: 
+   (function_call name: (identifier[119,120]@{v}@) ([120,121]
+    (arguments
+     argument: 
+      (range
+       (end_keyword end[121,124])
+       :[124,125]
+       (end_keyword end[125,128])))
+    )[128,129]))
+ \n[129,130]
+ (assignment left: (identifier[130,132]@{g3}@) =[133,134]
+  right: 
+   (function_call name: (identifier[135,136]@{v}@) ([136,137]
+    (arguments
+     argument: 
+      (binary_operator
+       left: (end_keyword end[137,140])
+       -[140,141] right: (number[141,142]@{2}@)))
+    )[142,143]))
+ \n[143,144]
+ (assignment left: (identifier[144,146]@{g4}@) =[147,148]
+  right: 
+   (function_call name: (identifier[149,150]@{v}@) ([150,151]
+    (arguments
+     argument: 
+      (binary_operator
+       left: 
+        (binary_operator
+         left: (end_keyword end[151,154])
+         +[154,155] right: (number[155,156]@{2}@))
+       -[156,157] right: (number[157,158]@{3}@)))
+    )[158,159]))
+ \n[159,161]
+ (assignment left: (identifier[161,162]@{a}@) =[163,164]
+  right: (range (number[165,166]@{1}@) :[166,167] (number[167,169]@{10}@)))
+ \n[169,171]
+ (assignment left: (identifier[171,172]@{b}@) =[173,174]
+  right: 
+   (function_call name: (identifier[175,176]@{a}@) ([176,177]
+    (arguments
+     argument: (end_keyword end[177,180]))
+    )[180,181]))
+ \n[181,182]
+ (assignment left: (identifier[182,183]@{c}@) =[184,185]
+  right: 
+   (function_call name: (identifier[186,187]@{a}@) ([187,188]
+    (arguments
+     argument: (end_keyword end[188,191])
+     ,[191,192]
+     (spread_operator :[193,194]))
+    )[194,195]))
+ \n[195,196]
+ (assignment left: (identifier[196,197]@{d}@) =[198,199]
+  right: 
+   (function_call name: (identifier[200,201]@{a}@) ([201,202]
+    (arguments
+     argument: (end_keyword end[202,205])
+     ,[205,206]
+     (end_keyword end[207,210]))
+    )[210,211]))
+ \n[211,213]
+ (assignment left: (identifier[213,214]@{x}@) =[215,216]
+  right: 
+   (matrix [[217,218]
+    (row (number[218,219]@{1}@) ,[219,220] (number[221,222]@{2}@))
+    (row (number[228,229]@{3}@) ,[229,230] (number[231,232]@{4}@))
+    ][232,233]))
+ ;[233,234]
+ (assignment left: (identifier[235,236]@{y}@) =[237,238]
+  right: 
+   (matrix [[239,240]
+    (row (number[240,241]@{5}@) ,[241,242] (number[243,244]@{6}@))
+    (row (number[250,251]@{7}@) ,[251,252] (number[253,254]@{8}@))
+    ][254,255]))
+ ;[255,256]
+ (assignment left: (identifier[257,258]@{z}@) =[259,260]
+  right: 
+   (matrix [[261,262]
+    (row (number[262,263]@{9}@) ,[263,264] (number[265,267]@{10}@))
+    (row (number[273,275]@{11}@) ,[275,276] (number[277,279]@{12}@))
+    ][279,280]))
+ ;[280,281]
+ (assignment left: (identifier[283,286]@{xyz}@) =[287,288]
+  right: 
+   (function_call name: (identifier[289,292]@{cat}@) ([292,293]
+    (arguments argument: (number[293,294]@{3}@) ,[294,295] (identifier[296,297]@{x}@) ,[297,298] (identifier[299,300]@{y}@) ,[300,301] (identifier[302,303]@{z}@))
+    )[303,304]))
+ \n[304,306]
+ (assignment left: (identifier[306,308]@{x1}@) =[309,310]
+  right: 
+   (function_call name: (identifier[311,314]@{xyz}@) ([314,315]
+    (arguments
+     argument: (end_keyword end[315,318])
+     ,[318,319]
+     (spread_operator :[320,321])
+     ,[321,322]
+     (spread_operator :[323,324]))
+    )[324,325]))
+ \n[325,326]
+ (assignment left: (identifier[326,328]@{x2}@) =[329,330]
+  right: 
+   (function_call name: (identifier[331,334]@{xyz}@) ([334,335]
+    (arguments
+     argument: (end_keyword end[335,338])
+     ,[338,339]
+     (end_keyword end[340,343])
+     ,[343,344]
+     (spread_operator :[345,346]))
+    )[346,347]))
+ \n[347,348]
+ (assignment left: (identifier[348,350]@{x3}@) =[351,352]
+  right: 
+   (function_call name: (identifier[353,356]@{xyz}@) ([356,357]
+    (arguments
+     argument: (spread_operator :[357,358])
+     ,[358,359]
+     (spread_operator :[360,361])
+     ,[361,362]
+     (end_keyword end[363,366]))
+    )[366,367]))
+ \n[367,368]
+ (assignment left: (identifier[368,370]@{x4}@) =[371,372]
+  right: 
+   (function_call name: (identifier[373,376]@{xyz}@) ([376,377]
+    (arguments
+     argument: (end_keyword end[377,380])
+     ,[380,381]
+     (end_keyword end[382,385])
+     ,[385,386]
+     (end_keyword end[387,390]))
+    )[390,391]))
+ \n[391,392])

@@ -1,0 +1,8 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,103]@{% Case1: (t-utils-xr "C-n" "C-m" (t-utils-xr-print...}@)
+ (ERROR if[105,107] (identifier[108,109]@{a}@)
+  (function_call name: (identifier[114,118]@{disp}@) ([118,119]
+   (arguments
+    argument: (string '[119,120] (string_content[120,123]@{foo}@) '[123,124]))
+   )[124,125])
+  \n[125,126]))

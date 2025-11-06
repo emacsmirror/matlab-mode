@@ -1,0 +1,219 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,123]@{% t-utils-test-indent: no-line-by-line-indent - na...}@)
+ (function_definition function[125,133]
+  (function_output (identifier[134,143]@{something}@) =[144,145])
+  name: (identifier[146,161]@{indent_fcn_cont}@) (comment[167,223]@{% Matched rule: ((parent-is "\\`arguments\\'") par...}@) \n[223,224]
+  (block
+   (assignment
+    left: (field_expression object: (identifier[228,237]@{something}@) .[237,238] field: (identifier[238,242]@{foo1}@))
+    =[243,244]
+    right: 
+     (function_call name: (identifier[245,252]@{someFcn}@) ([252,253]
+      (arguments argument: (number[253,254]@{1}@) ,[254,255] (line_continuation[256,260]@{...\n}@) (number[289,290]@{2}@))
+      )[290,291]))
+   ;[291,292]
+   (assignment
+    left: (field_expression object: (identifier[298,307]@{something}@) .[307,308] field: (identifier[308,312]@{foo3}@))
+    =[313,314] (line_continuation[315,319]@{...\n}@)
+    right: 
+     (function_call name: (identifier[327,335]@{someFcn2}@) ([335,336]
+      (arguments argument: (number[336,337]@{1}@) ,[337,338] (line_continuation[339,343]@{...\n}@) (number[360,361]@{2}@))
+      )[361,362]))
+   ;[362,363]
+   (assignment
+    left: (field_expression object: (identifier[369,378]@{something}@) .[378,379] field: (identifier[379,383]@{foo4}@))
+    =[384,385] (line_continuation[386,390]@{...\n}@)
+    right: 
+     (function_call name: (identifier[398,406]@{someFcn2}@) ([406,407] (line_continuation[408,412]@{...\n}@)
+      (arguments argument: (number[424,425]@{1}@) ,[425,426] (line_continuation[427,431]@{...\n}@) (number[443,444]@{2}@))
+      )[444,445]))
+   ;[445,446]
+   (assignment
+    left: (field_expression object: (identifier[452,461]@{something}@) .[461,462] field: (identifier[462,466]@{foo2}@))
+    =[467,468]
+    right: 
+     (function_call name: (identifier[469,476]@{someFcn}@) ([476,477] (line_continuation[477,481]@{...\n}@)
+      (arguments argument: (number[489,490]@{1}@) ,[490,491] (line_continuation[492,496]@{...\n}@) (number[504,505]@{2}@))
+      )[505,506]))
+   ;[506,507]
+   (assignment
+    left: (field_expression object: (identifier[513,522]@{something}@) .[522,523] field: (identifier[523,527]@{foo2}@))
+    =[528,529]
+    right: 
+     (binary_operator left: (number[530,531]@{1}@) +[532,533]
+      right: 
+       (function_call name: (identifier[534,541]@{someFcn}@) ([541,542]
+        (arguments argument: (number[542,543]@{1}@) ,[543,544] (line_continuation[545,549]@{...\n}@) (number[582,583]@{2}@))
+        )[583,584])))
+   ;[584,585]
+   (assignment
+    left: (field_expression object: (identifier[591,600]@{something}@) .[600,601] field: (identifier[601,605]@{foo2}@))
+    =[606,607]
+    right: 
+     (binary_operator left: (number[608,609]@{1}@) +[610,611]
+      right: 
+       (function_call name: (identifier[612,619]@{someFcn}@) ([619,620] (line_continuation[620,624]@{...\n}@)
+        (arguments argument: (number[653,654]@{1}@) ,[654,655] (line_continuation[656,660]@{...\n}@) (number[689,690]@{2}@))
+        )[690,691])))
+   ;[691,692]
+   (assignment
+    left: (field_expression object: (identifier[698,707]@{something}@) .[707,708] field: (identifier[708,712]@{foo3}@))
+    =[713,714]
+    right: 
+     (field_expression object: (identifier[715,725]@{namespace1}@) .[725,726] field: (identifier[726,736]@{namespace2}@) .[736,737] (identifier[737,743]@{widget}@) .[743,744]
+      (function_call name: (identifier[744,756]@{someFunction}@) ([756,757] (line_continuation[758,762]@{...\n}@)
+       (arguments
+        argument: (field_expression object: (identifier[770,775]@{other}@) .[775,776] field: (identifier[776,781]@{thing}@)))
+       )[781,782])))
+   ;[782,783]
+   (assignment
+    left: (field_expression object: (identifier[789,798]@{something}@) .[798,799] field: (identifier[799,803]@{foo3}@))
+    =[804,805]
+    right: 
+     (binary_operator left: (number[806,807]@{1}@) +[808,809]
+      right: 
+       (field_expression object: (identifier[810,820]@{namespace1}@) .[820,821] field: (identifier[821,831]@{namespace2}@) .[831,832] (identifier[832,838]@{widget}@) .[838,839]
+        (function_call name: (identifier[839,851]@{someFunction}@) ([851,852] (line_continuation[853,857]@{...\n}@)
+         (arguments
+          argument: (field_expression object: (identifier[886,891]@{other}@) .[891,892] field: (identifier[892,897]@{thing}@)))
+         )[897,898]))))
+   ;[898,899]
+   (assignment
+    left: (field_expression object: (identifier[905,914]@{something}@) .[914,915] field: (identifier[915,919]@{foo4}@))
+    =[920,921] (line_continuation[922,926]@{...\n}@)
+    right: 
+     (binary_operator left: (number[934,935]@{1}@) +[936,937] (line_continuation[938,942]@{...\n}@)
+      right: 
+       (field_expression object: (identifier[950,960]@{namespace1}@) .[960,961] field: (identifier[961,971]@{namespace2}@) .[971,972] (identifier[972,978]@{widget}@) .[978,979]
+        (function_call name: (identifier[979,992]@{someFunction2}@) ([992,993] (line_continuation[994,998]@{...\n}@)
+         (arguments
+          argument: 
+           (binary_operator
+            left: (field_expression object: (identifier[1010,1015]@{other}@) .[1015,1016] field: (identifier[1016,1021]@{thing}@))
+            +[1022,1023] (line_continuation[1024,1028]@{...\n}@) right: (identifier[1040,1044]@{bar2}@)))
+         )[1044,1045]))))
+   ;[1045,1046]
+   (assignment
+    left: (field_expression object: (identifier[1052,1061]@{something}@) .[1061,1062] field: (identifier[1062,1066]@{foo4}@))
+    =[1067,1068] (line_continuation[1070,1074]@{...\n}@)
+    right: 
+     (binary_operator left: (number[1082,1083]@{1}@) +[1084,1085] (line_continuation[1086,1090]@{...\n}@)
+      right: 
+       (field_expression object: (identifier[1098,1108]@{namespace1}@) .[1108,1109] field: (identifier[1109,1119]@{namespace2}@) .[1119,1120] (identifier[1120,1126]@{widget}@) .[1126,1127]
+        (function_call name: (identifier[1127,1140]@{someFunction2}@) ([1140,1141] (line_continuation[1142,1146]@{...\n}@)
+         (arguments
+          argument: 
+           (binary_operator
+            left: (field_expression object: (identifier[1158,1163]@{other}@) .[1163,1164] field: (identifier[1164,1169]@{thing}@))
+            +[1170,1171] (line_continuation[1172,1176]@{...\n}@) right: (identifier[1188,1192]@{bar2}@)))
+         )[1192,1193]))))
+   ;[1193,1194]
+   (assignment
+    left: (field_expression object: (identifier[1212,1221]@{something}@) .[1221,1222] field: (identifier[1222,1226]@{foo2}@))
+    =[1227,1228]
+    right: 
+     (binary_operator
+      left: 
+       (function_call name: (identifier[1229,1236]@{someFcn}@) ([1236,1237]
+        (arguments argument: (number[1237,1238]@{1}@))
+        )[1238,1239])
+      +[1240,1241] (line_continuation[1242,1246]@{...\n}@)
+      right: 
+       (binary_operator left: (number[1267,1269]@{10}@) *[1270,1271]
+        right: 
+         (parenthesis ([1272,1273]
+          (binary_operator left: (number[1273,1274]@{2}@) +[1275,1276] (line_continuation[1277,1281]@{...\n}@) right: (number[1308,1309]@{5}@))
+          )[1309,1310]))))
+   ;[1310,1311]
+   (assignment
+    left: (field_expression object: (identifier[1317,1326]@{something}@) .[1326,1327] field: (identifier[1327,1331]@{foo2}@))
+    =[1332,1333]
+    right: 
+     (binary_operator
+      left: 
+       (function_call name: (identifier[1334,1341]@{someFcn}@) ([1341,1342] (line_continuation[1342,1346]@{...\n}@)
+        (arguments argument: (number[1371,1372]@{1}@) ,[1372,1373] (number[1374,1375]@{2}@) ,[1375,1376] (line_continuation[1377,1381]@{...\n}@) (number[1406,1407]@{3}@))
+        )[1407,1408])
+      +[1409,1410] (line_continuation[1411,1415]@{...\n}@)
+      right: 
+       (binary_operator left: (number[1436,1438]@{10}@) *[1439,1440]
+        right: 
+         (parenthesis ([1441,1442]
+          (binary_operator left: (number[1442,1443]@{2}@) +[1444,1445] (line_continuation[1446,1450]@{...\n}@) right: (number[1477,1478]@{5}@))
+          )[1478,1479]))))
+   ;[1479,1480]
+   (assignment
+    left: (field_expression object: (identifier[1486,1495]@{something}@) .[1495,1496] field: (identifier[1496,1500]@{foo2}@))
+    =[1501,1502] (line_continuation[1503,1507]@{...\n}@)
+    right: 
+     (binary_operator
+      left: 
+       (function_call name: (identifier[1515,1522]@{someFcn}@) ([1522,1523] (line_continuation[1523,1527]@{...\n}@)
+        (arguments argument: (number[1539,1540]@{1}@))
+        )[1540,1541])
+      +[1542,1543] (line_continuation[1544,1548]@{...\n}@)
+      right: 
+       (binary_operator left: (number[1556,1558]@{10}@) *[1559,1560]
+        right: 
+         (parenthesis ([1561,1562]
+          (binary_operator left: (number[1562,1563]@{2}@) +[1564,1565] (line_continuation[1566,1570]@{...\n}@) right: (number[1584,1585]@{5}@))
+          )[1585,1586]))))
+   ;[1586,1587]
+   (assignment
+    left: (field_expression object: (identifier[1593,1602]@{something}@) .[1602,1603] field: (identifier[1603,1607]@{foo4}@))
+    =[1608,1609]
+    right: 
+     (function_call name: (identifier[1610,1616]@{string}@) ([1616,1617]
+      (arguments
+       argument: 
+        (function_call name: (identifier[1617,1624]@{message}@) ([1624,1625] (line_continuation[1626,1630]@{...\n}@)
+         (arguments
+          argument: (string "[1662,1663] (string_content[1663,1730]@{foo0123457890:foo0123457890:foo0123457890foo012345...}@) "[1730,1731]))
+         )[1731,1732]))
+      )[1732,1733]))
+   ;[1733,1734]
+   (assignment
+    left: (field_expression object: (identifier[1739,1748]@{something}@) .[1748,1749] field: (identifier[1749,1753]@{foo4}@))
+    =[1754,1755]
+    right: 
+     (function_call name: (identifier[1756,1763]@{message}@) ([1763,1764] (line_continuation[1765,1769]@{...\n}@)
+      (arguments
+       argument: (string "[1777,1778] (string_content[1778,1845]@{foo0123457890:foo0123457890:foo0123457890foo012345...}@) "[1845,1846]))
+      )[1846,1847]))
+   ;[1847,1848]
+   (assignment
+    left: (field_expression object: (identifier[1854,1863]@{something}@) .[1863,1864] field: (identifier[1864,1868]@{foo4}@))
+    =[1869,1870]
+    right: 
+     (binary_operator
+      left: (string "[1871,1872] (string_content[1872,1875]@{foo}@) "[1875,1876])
+      +[1877,1878]
+      right: 
+       (function_call name: (identifier[1879,1885]@{string}@) ([1885,1886]
+        (arguments
+         argument: 
+          (function_call name: (identifier[1886,1893]@{message}@) ([1893,1894] (line_continuation[1895,1899]@{...\n}@)
+           (arguments
+            argument: (string "[1939,1940] (string_content[1940,2007]@{foo0123457890:foo0123457890:foo0123457890foo012345...}@) "[2007,2008]))
+           )[2008,2009]))
+        )[2009,2010])))
+   ;[2010,2011]
+   (assignment
+    left: (field_expression object: (identifier[2017,2026]@{something}@) .[2026,2027] field: (identifier[2027,2031]@{foo4}@))
+    =[2032,2033]
+    right: 
+     (binary_operator
+      left: (string "[2034,2035] (string_content[2035,2038]@{foo}@) "[2038,2039])
+      +[2040,2041] (line_continuation[2042,2046]@{...\n}@)
+      right: 
+       (function_call name: (identifier[2067,2073]@{string}@) ([2073,2074]
+        (arguments
+         argument: 
+          (function_call name: (identifier[2074,2081]@{message}@) ([2081,2082] (line_continuation[2083,2087]@{...\n}@)
+           (arguments
+            argument: (string "[2119,2120] (string_content[2120,2187]@{foo0123457890:foo0123457890:foo0123457890foo012345...}@) "[2187,2188]))
+           )[2188,2189]))
+        )[2189,2190])))
+   ;[2190,2191] \n[2191,2193])
+  end[2193,2196])
+ \n[2196,2197])

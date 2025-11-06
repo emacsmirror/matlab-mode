@@ -1,12 +1,12 @@
-C ccc cccccc ccc
+c ccc ccccccccc ccc
 
-C cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-C cccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c cccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-dd d dsssssdd
+vv o bSsssSDb
 
-dd d ddsssssddddd dsssssdddddd
+vv o bbSsssSDbDDD bSsssSDbDDDb
 
-dd d dddd
+vv o bnDb
 
-dd d ddddddddd dddddddddd
+vv o bnDnDnDDD nDnDnDDDDb

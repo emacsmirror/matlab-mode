@@ -31,7 +31,7 @@
 
 - Invoking      : "M-e" = forward-sentence
   Start point   :  323
-  Moved to point: 1578
+  Moved to point: 1577
   : 89:7:     end
   :              ^
   No buffer modifications

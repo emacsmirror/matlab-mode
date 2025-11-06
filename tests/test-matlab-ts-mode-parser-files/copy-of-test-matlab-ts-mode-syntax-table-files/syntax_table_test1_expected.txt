@@ -1,0 +1,35 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition function[21,29] name: (identifier[30,48]@{syntax_table_test1}@) (comment[49,63]@{% help comment}@) (comment[69,83]@{% code comment}@) \n[83,84]
+  (block
+   (assignment left: (identifier[88,89]@{x}@) =[90,91]
+    right: (string "[92,93] (string_content[93,112]@{double quote string}@) "[112,113]))
+   ;[113,114]
+   (assignment left: (identifier[119,120]@{y}@) =[121,122]
+    right: (string '[123,124] (string_content[124,143]@{double quote string}@) '[143,144]))
+   ;[144,145]
+   (assignment left: (identifier[150,151]@{x}@) =[152,153]
+    right: 
+     (matrix [[154,155] \n[155,156]
+      (row (number[166,167]@{1}@) ,[168,168] (number[168,169]@{2}@))
+      ;[169,170] (line_continuation[171,175]@{...\n}@)
+      (row (number[185,186]@{3}@) ,[187,187] (number[187,188]@{4}@))
+      ;[188,189] (line_continuation[190,202]@{... comment\n}@) ][210,211]))
+   ;[211,212]
+   (assignment left: (identifier[217,218]@{x}@) =[219,220]
+    right: (postfix_operator operand: (identifier[221,222]@{x}@) '[222,223]))
+   ;[223,224]
+   (assignment left: (identifier[229,230]@{x}@) =[231,232]
+    right: 
+     (postfix_operator
+      operand: (postfix_operator operand: (identifier[233,234]@{x}@) '[234,235])
+      '[235,236]))
+   ;[236,237]
+   (assignment left: (identifier[242,243]@{y}@) =[244,245]
+    right: 
+     (function_call name: (identifier[246,247]@{x}@) ([247,248]
+      (arguments argument: (number[248,249]@{2}@) ,[249,250] (number[251,252]@{2}@))
+      )[252,253]))
+   ;[253,254] \n[254,255])
+  end[255,258])
+ \n[258,259])

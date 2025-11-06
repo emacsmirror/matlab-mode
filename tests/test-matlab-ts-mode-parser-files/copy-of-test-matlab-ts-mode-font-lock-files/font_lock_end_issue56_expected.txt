@@ -1,0 +1,52 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (assignment left: (identifier[92,93]@{v}@) =[94,95]
+  right: (range (number[96,97]@{1}@) :[97,98] (number[98,100]@{10}@)))
+ \n[100,101]
+ (assignment left: (identifier[101,102]@{w}@) =[103,104]
+  right: 
+   (function_call name: (identifier[105,106]@{v}@) ([106,107]
+    (arguments
+     argument: 
+      (range (number[107,108]@{2}@) :[108,109]
+       (parenthesis ([109,110]
+        (binary_operator
+         left: (end_keyword end[110,113])
+         -[113,114] right: (number[114,115]@{3}@))
+        )[115,116])))
+    )[116,117]))
+ \n[117,118]
+ (assignment left: (identifier[118,119]@{x}@) =[120,121]
+  right: 
+   (function_call name: (identifier[122,123]@{v}@) ([123,124]
+    (arguments
+     argument: 
+      (range (number[124,125]@{2}@) :[125,126]
+       (binary_operator
+        left: 
+         (function_call name: (identifier[126,129]@{abs}@) ([129,130]
+          (arguments
+           argument: 
+            (binary_operator
+             left: 
+              (parenthesis ([130,131]
+               (binary_operator
+                left: (end_keyword end[131,134])
+                -[134,135] right: (number[135,136]@{3}@))
+               )[136,137])
+             *[137,138] right: (number[138,139]@{2}@)))
+          )[139,140])
+        /[140,141] right: (number[141,142]@{2}@))))
+    )[142,143]))
+ \n[143,145]
+ (assignment left: (identifier[145,146]@{z}@) =[147,148]
+  right: 
+   (function_call name: (identifier[149,150]@{v}@) ([150,151]
+    (arguments
+     argument: 
+      (matrix [[151,152]
+       (row (number[152,153]@{2}@) ,[154,154]
+        (end_keyword end[154,157]))
+       ][157,158]))
+    )[158,159]))
+ ;[159,160] \n[160,161])
