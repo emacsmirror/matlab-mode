@@ -1374,13 +1374,20 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
       (set-buffer-file-coding-system 'utf-8-unix)
       (funcall lang-file-mode)
 
-      ;; Insert lines one a time and indent via newline (C-m)
+      ;; tree-sitter requires a terminating newline to get parse tree right
+      (insert "\n")
+      (goto-char (point-min))
 
+      ;; Insert lines one a time and indent via newline (C-m)
       (dolist (line lines)
         (setq line (string-trim line))
         (when (not (string= line ""))
           (insert line))
         (call-interactively #'newline))
+
+      ;; Remove the newline we inserted at start
+      (goto-char (point-max))
+      (delete-char -1)
 
       (let ((typing-got (buffer-substring (point-min) (point-max)))
             error-msg)
