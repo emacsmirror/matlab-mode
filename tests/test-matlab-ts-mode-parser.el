@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(require 'cl-seq)
+
 (require 't-utils)
 (require 'matlab-ts-mode)
 
@@ -61,5 +63,83 @@ after validating it, rename it to
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-parser test-name m-files)))
 
+(defun test-matlab-ts-mode-parser--use-file (m-file)
+  "Should we be using M-FILE not in as a test point?
+M-FILE is not in test-matlab-ts-mode-parser-files"
+  (and (string-match-p "^\\./test-matlab-ts-mode-" m-file)
+       (not (string-match-p "^\\./test-matlab-ts-mode-parser-files" m-file))))
+
+(defvar test-matlab-ts-mode-parser--file-ht nil)
+
+(defun test-matlab-ts-mode-parser--update-file (m-file)
+  "Do we need to copy M-FILE into ./test-matlab-mode-parser-files/?"
+  (let ((test-m-file (replace-regexp-in-string "^\\./[^/]+/"
+                                               "./test-matlab-ts-mode-parser-files/parser--"
+                                               m-file))
+        update)
+
+    (let ((other-m-file (gethash test-m-file test-matlab-ts-mode-parser--file-ht)))
+      (when other-m-file
+        (error "Files \"%s\" and \"%s\" map to the same file \"%s\""
+               other-m-file
+               m-file
+               test-m-file))
+      (puthash test-m-file m-file test-matlab-ts-mode-parser--file-ht))
+
+    (if (file-exists-p test-m-file)
+        (let ((m-file-contents (with-temp-buffer
+                                 (insert-file-contents-literally m-file)
+                                 (buffer-string)))
+              (test-m-file-contents (with-temp-buffer
+                                      (insert-file-contents-literally test-m-file)
+                                      (buffer-string))))
+          (setq update (not (string= m-file-contents test-m-file-contents))))
+      (setq update t))
+
+    (list update m-file test-m-file)))
+
+;; TODO update the files and add ert test to validate (test-matlab-ts-mode-parser--all-files)
+;; returns ""
+
+(defun test-matlab-ts-mode-parser--all-files (&optional update-if-needed)
+  "Verify we use ./test-matlab-ts-mode-*/*.m as baselines.
+We use all ./test-matlab-ts-mode-*/*.m files as test points.
+
+If UPDATE-IF-NEEDED is t, update the file by copying it, else return a
+string which is empty if no-updates needed, otherwise the string tells
+you that updates are needed."
+
+  (setq test-matlab-ts-mode-parser--file-ht (make-hash-table :test #'equal))
+
+  (let* ((all-m-files (cl-delete-if (lambda (m-file)
+                                      (let ((use (test-matlab-ts-mode-parser--use-file m-file)))
+                                        (not use)))
+                                    (directory-files-recursively "." (rx ".m" eos))))
+         (updates (mapcar #'test-matlab-ts-mode-parser--update-file all-m-files))
+         (n-updates 0))
+
+    (dolist (tuple updates)
+      (let ((update (nth 0 tuple))
+            (m-file (nth 1 tuple))
+            (test-m-file (nth 2 tuple)))
+        (when update
+          (setq n-updates (1+ n-updates))
+          (when update-if-needed
+            (let ((dir (file-name-directory test-m-file)))
+              (when (not (file-directory-p dir))
+                (make-directory dir t)))
+            (copy-file m-file test-m-file t)))))
+
+    (if update-if-needed
+        n-updates ;; return number of updated files
+      (if (= n-updates 0)
+          ""
+        (format (concat "%d ./test-matlab-ts-mode-parser-files/*.m require updating, run\n"
+                        "  M-: (test-matlab-ts-mode-parser--all-files t)\n"
+                        "to update them")
+                n-updates)))))
+
 (provide 'test-matlab-ts-mode-parser)
 ;;; test-matlab-ts-mode-parser.el ends here
+
+;; LocalWords:  utils defun eos treesit gethash puthash setq mapcar dolist
