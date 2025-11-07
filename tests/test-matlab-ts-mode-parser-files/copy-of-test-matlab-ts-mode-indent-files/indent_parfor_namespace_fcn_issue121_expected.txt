@@ -1,0 +1,25 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[92,93]@{y}@) =[94,95]
+  right: 
+   (function_call name: (identifier[96,100]@{ones}@) ([100,101]
+    (arguments argument: (number[101,102]@{1}@) ,[102,103] (number[103,106]@{100}@))
+    )[106,107]))
+ ;[107,108] \n[108,109]
+ (for_statement parfor[109,115] ([116,117]
+  (iterator (identifier[117,118]@{i}@) =[119,120]
+   (range (number[121,122]@{1}@) :[122,123] (number[123,126]@{100}@)))
+  ,[126,127]
+  (parfor_options
+   (field_expression object: (identifier[128,135]@{myutils}@) .[135,136] field: (identifier[136,146]@{maxWorkers}@)))
+  )[146,147]
+  (block
+   (assignment
+    left: 
+     (function_call name: (identifier[152,153]@{y}@) ([153,154]
+      (arguments argument: (identifier[154,155]@{i}@))
+      )[155,156])
+    =[157,158] right: (identifier[159,160]@{i}@))
+   ;[160,161] \n[161,162])
+  end[162,165])
+ \n[165,166])

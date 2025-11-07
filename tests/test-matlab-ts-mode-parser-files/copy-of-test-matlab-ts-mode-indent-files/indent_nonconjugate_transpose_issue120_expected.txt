@@ -1,0 +1,32 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[91,92]@{a}@) =[93,94]
+  right: 
+   (matrix [[95,96]
+    (row (number[96,97]@{1}@) ,[98,98] (number[98,99]@{2}@))
+    ;[99,100]
+    (row (number[101,102]@{3}@) ,[103,103] (number[103,104]@{4}@))
+    ][104,105]))
+ ;[105,106]
+ (assignment left: (identifier[107,108]@{b}@) =[109,110] right: (identifier[111,112]@{a}@))
+ ;[112,113]
+ (assignment left: (identifier[115,117]@{m1}@) =[118,119]
+  right: 
+   (matrix [[120,121]
+    (row
+     (postfix_operator operand: (identifier[121,122]@{a}@) .'[122,124]))
+    ;[124,125]
+    (row
+     (postfix_operator operand: (identifier[126,127]@{b}@) .'[127,129]))
+    ][129,130]))
+ ;[130,131]
+ (assignment left: (identifier[133,135]@{c1}@) =[136,137]
+  right: 
+   (cell {[138,139]
+    (row
+     (postfix_operator operand: (identifier[139,140]@{a}@) .'[140,142]))
+    ;[142,143]
+    (row
+     (postfix_operator operand: (identifier[144,145]@{b}@) .'[145,147]))
+    }[147,148]))
+ ;[148,149] \n[149,150])
