@@ -68,6 +68,74 @@ for fIdx = 1:length(filesToCheck)
         if regexp(desc, \"^Class name .* and file name do not agree\", 'once')
             continue
         end
+
+        % --- Following ignored errors are real, but not for matlab tree-sitter ---
+
+        % Ignore: This condition has no effect because all blocks in this if statement are identical
+        if regexp(desc, \"^This condition has no effect\", 'once')
+            continue
+        end
+
+        % Ignore: Using 'isempty' on a logical expression creates incorrect results
+        if regexp(desc, \"^Using 'isempty' on a logical expression creates incorrect\", 'once')
+            continue
+        end
+
+        % Ignore: Invalid MATLAB file name. MATLAB file names must start with a letter, .....
+        if regexp(desc, \"^Invalid MATLAB file name. MATLAB file names must start with \", 'once')
+            continue
+        end
+
+        % Ignore: TRY/CATCH is unsupported for code generation.
+        if regexp(desc, \"^TRY/CATCH is unsupported for code generation\", 'once')
+            continue
+        end
+
+        % Ignore: 'printopt' has been removed. There is no simple replacement for this.
+        if regexp(desc, \"^'.+' has been removed\", 'once')
+            continue
+        end
+
+        % Ignore: The variable 'hObj' is an uplevel variable
+        if regexp(desc, \"^The variable '.+' is an uplevel variable\", 'once')
+            continue
+        end
+
+        % Ignore: To pass MException properties to the warning function, ....
+        if regexp(desc, \"^To pass MException properties to the warning function\", 'once')
+            continue
+        end
+
+        % Ignore: 'JavaFrame' was undocumented and has been removed.
+        if regexp(desc, \"^'.+' was undocumented and has been removed\", 'once')
+            continue
+        end
+
+        % Ignore: A class definition cannot be inside a private directory.
+        if regexp(desc, \"^A class definition cannot be inside a private directory\", 'once')
+            continue
+        end
+
+        % Ignore: The first input argument to 'assert' must be a condition
+        if regexp(desc, \"^The first input argument to 'assert' must be a condition\", 'once')
+            continue
+        end
+
+        % Ignore: The method set.InitialValue does not refer to a valid property name
+        if regexp(desc, \"^The method .+ does not refer to a valid property name\", 'once')
+            continue
+        end
+
+        % Ignore: Code generation does not support 'str2num'. Use 'str2double' instead.
+        if regexp(desc, \"^Code generation does not support\", 'once')
+            continue
+        end
+
+        % Ignore: Code generation requires a variable to be assigned before subscripting it.
+        if regexp(desc, \"^Code generation requires a variable to be assigned \", 'once')
+            continue
+        end
+
         errorIdx = issueIdx;
         break
     end
@@ -135,7 +203,7 @@ DIRECTORY defaults to the current directory.
 This validates that if MATLAB tree-sitter parse has ERROR nodes that the
 MATLAB codeIssues command,
 https://www.mathworks.com/help/matlab/ref/codeissues.html says the file
-has syntax issues (issue servity of error).  Likewise if MATLAB
+has syntax issues (issue severity of error).  Likewise if MATLAB
 tree-sitter parse says no syntax errors this test confirms that the
 MATLAB codeIssues command reports the same.
 
@@ -170,3 +238,6 @@ See ./sweep-test-matlab-ts-grammar.sh"
 
 (provide 'sweep-test-matlab-ts-grammar)
 ;;; sweep-test-matlab-ts-grammar.el ends here
+
+;; LocalWords:  utils defun tmp nondirectory dolist codeanalysis uplevel eobp puthash gethash
+;; LocalWords:  treesit eos
