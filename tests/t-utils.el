@@ -2878,6 +2878,9 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
    ;; the '#' character can appear in node text
    (list "^\\(#.+\\)$"
          '(1 'font-lock-comment-face))
+   ;; ERROR nodes
+   (list "(\\(ERROR\\)\\>"
+         '(1 'error))
    ;; (NODE_TYPE[NODE_START,NODE_END)@{NODE_TEXT}@
    (list (concat "\\((\\)"                      ;; 1 (
                  "\\([a-zA-Z][^[ \t\n\r]+\\)"   ;; 2 NODE_TYPE
@@ -2914,8 +2917,7 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
          '(2 'font-lock-keyword-face))
    ;; ) closing end of node
    (list "\\()\\)"
-         '(1 'shadow))
-   )
+         '(1 'shadow)))
   "Keywords to fontify in `t-utils-ts-parse-tree-mode'.")
 
 (defvar-local t-utils-ts-parse-tree--code-buf nil)
