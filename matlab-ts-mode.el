@@ -258,7 +258,7 @@ content can crash Emacs via the matlab tree-sitter parser."
       (goto-char bad-char-point)
       (user-error
        "Not entering matlab-ts-mode due to non-printable utf8 character \"%c\" at point %d"
-       (char-before) bad-char-point ))))
+       (char-before) bad-char-point))))
 
 ;;; Syntax table
 
@@ -3560,6 +3560,28 @@ THERE-END MISMATCH) or nil."
                                            unread-command-events))
         ))))
 
+(defun matlab-ts-mode--add-final-newline (&optional restore-readonly)
+  "Add a final newline to non-empty buffer to make tree-sitter happy.
+If a final new-line is missing, matlab tree-sitter can generate a parse
+error because it looks for the newline to finish statements.
+
+If optional RESTORE-READONLY is non-nil, then if the buffer is read-only
+upon calling this function, it will be restored back to read-only if a
+final newline was inserted."
+  (save-excursion
+    (goto-char (point-max))
+    (when (and (< (point-min) (point-max))
+               (not (= (char-before) ?\n)))
+      (let ((is-read-only buffer-read-only))
+        (when is-read-only
+          (read-only-mode 0))
+        (insert "\n")
+        (when (and restore-readonly
+                   is-read-only)
+          (set-buffer-modified-p nil))
+        (when is-read-only
+          (read-only-mode 1))))))
+
 (defun matlab-ts-mode--post-insert-callback ()
   "Callback attached to `post-self-insert-hook'.
 
@@ -3575,11 +3597,7 @@ This callback also implements `matlab-ts-mode-electric-ends'."
   (when (eq major-mode 'matlab-ts-mode)
     (let ((ret-typed (eq last-command-event ?\n)))
 
-      ;; Add final newline to the buffer?
-      (save-excursion
-        (goto-char (point-max))
-        (when (not (= (char-before) ?\n))
-          (insert "\n")))
+      (matlab-ts-mode--add-final-newline)
 
       ;; Add "end" (for `matlab-ts-mode-electric-ends')
       (when (and ret-typed
@@ -4062,6 +4080,9 @@ so configuration variables of that mode, do not affect this mode.
   (matlab-ts-mode--check-file-encoding)
 
   (when (treesit-ready-p 'matlab)
+
+    (matlab-ts-mode--add-final-newline 'restore-readonly)
+
     (treesit-parser-create 'matlab)
 
     ;; Syntax table - think of this as a "language character descriptor". It tells us what

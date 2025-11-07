@@ -1,0 +1,11 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (if_statement if[21,23] condition: (identifier[24,25]@{a}@)
+  (block
+   (function_call name: (identifier[30,34]@{disp}@) ([34,35]
+    (arguments
+     argument: (string '[35,36] (string_content[36,37]@{b}@) '[37,38]))
+    )[38,39])
+   \n[39,40])
+  end[40,43])
+ \n[43,44])
