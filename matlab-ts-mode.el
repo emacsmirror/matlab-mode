@@ -3277,8 +3277,14 @@ single quote string."
        ;; Case: string delimiter
        ;;    double up if starting a new string => return nil
        ;; For:     s = '
-       ;; we have: (source_file
-       ;;           (ERROR (identifier) = '))
+       ;; we have:         (source_file
+       ;;                   (ERROR (identifier) = (ERROR)))
+       ((string= "ERROR" type-back1)
+        nil)
+
+       ;; For:             s = '
+       ;; We've also seen: (source_file
+       ;;                   (ERROR (identifier) = '))
        ((string= "'" type-back1)
         (not (or (equal (treesit-node-type (treesit-node-prev-sibling node-back1)) "ERROR")
                  (equal (treesit-node-type (treesit-node-parent node-back1)) "ERROR"))))
