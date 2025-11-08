@@ -63,9 +63,11 @@ To understand the format of NAME_expected.txt files, see
   ;; Validate following file does not have a final newline. matlab tree-sitter requires a final
   ;; newline for a valid parse because it uses newlines to identify the end of statements.
   (with-temp-buffer
-    (insert-file-contents-literally "test-matlab-ts-mode-parser-files/parser_no_final_newline.m")
-    (goto-char (point-max))
-    (should (equal (= (char-before) ?\n) nil)))
+    (let* ((me (symbol-file 'test-matlab-ts-mode-parser))
+           (file (replace-regexp-in-string "\\.el$" "-files/parser_no_final_newline.m" me)))
+      (insert-file-contents-literally file)
+      (goto-char (point-max))
+      (should (equal (= (char-before) ?\n) nil))))
 
   (let* ((test-name "test-matlab-ts-mode-parser")
          (m-files (t-utils-get-files test-name
