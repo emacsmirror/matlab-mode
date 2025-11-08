@@ -1008,8 +1008,6 @@ To debug a specific movement test file
              (error "Failure in %s at point %d: %s" lang-file (point) (error-message-string err))
              ))
 
-          (kill-buffer)
-
           (when (string= got "")
             (error "No (t-utils-xr COMMANDS) found in %s" lang-file))
 
@@ -1114,7 +1112,6 @@ containing the LANGUAGE tree-sitter parse errors.
                               (funcall action-fun)))
                  (got-file (concat expected-file "~")))
 
-            (kill-buffer)
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
                               lang-file got got-file expected expected-file)))
@@ -1274,8 +1271,6 @@ To debug a specific font-lock test file
                   (setq got (concat got "\n"))
                   (forward-char))))
 
-            (kill-buffer)
-
             (let ((error-msg
                    (t-utils--baseline-check
                     test-name start-time
@@ -1350,7 +1345,6 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
       (let ((typing-got (buffer-substring (point-min) (point-max)))
             error-msg)
         (set-buffer-modified-p nil)
-        (kill-buffer)
         (when (not (string= typing-got expected))
           (let ((coding-system-for-write 'raw-text-unix)
                 (typing-got-file (replace-regexp-in-string "\\.\\([^.]+\\)\\'"
@@ -1399,7 +1393,6 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
       (let ((typing-got (buffer-substring (point-min) (point-max)))
             error-msg)
         (set-buffer-modified-p nil)
-        (kill-buffer)
         (when (not (string= typing-got expected))
           (let ((coding-system-for-write 'raw-text-unix)
                 (typing-got-file (replace-regexp-in-string "\\.\\([^.]+\\)\\'"
@@ -1677,7 +1670,6 @@ To debug a specific indent test file
                       (not (string-match-p "t-utils-test-indent:[ \t]*no-line-by-line-indent" got)))
 
                 (set-buffer-modified-p nil)
-                (kill-buffer)
 
                 (let ((indent-error-msg (t-utils--baseline-check
                                          (concat test-name " <indent-region>") start-time
@@ -2053,8 +2045,6 @@ Where ./tests/test-LANGUAGE-ts-mode-syntax-table.el contains:
 
               (forward-char))
 
-            (kill-buffer)
-
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
                               lang-file got got-file expected expected-file)))
@@ -2152,8 +2142,6 @@ Where ./tests/test-LANGUAGE-ts-mode-treesit-defun-name.el contains:
                                     node-type node-start node-end
                                     (if defun-name defun-name "nil")))))
                nil))
-
-            (kill-buffer)
 
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
@@ -2268,7 +2256,6 @@ Where ./tests/test-LANGUAGE-ts-mode-imenu.el contains:
                  (got (t-utils--get-imenu-str index))
                  (got-file (concat expected-file "~")))
 
-            (kill-buffer)
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
                               lang-file got got-file expected expected-file)))
@@ -2365,7 +2352,6 @@ Where ./tests/test-LANGUAGE-ts-mode-outline.el contains:
                       (forward-line))
                   (goto-char (point-max)))))
 
-            (kill-buffer)
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
                               lang-file got got-file expected expected-file)))
@@ -2464,8 +2450,6 @@ To debug a specific file-encoding test file
                (setq got (concat "Major mode errored with message\n" (error-message-string err)))))
 
             (setq got (concat got "\n\n" "Entered major-mode: " (symbol-name major-mode) "\n"))
-
-            (kill-buffer)
 
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
