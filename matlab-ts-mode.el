@@ -2714,6 +2714,15 @@ Example:
       ,#'matlab-ts-mode--i-prior-line-anchor
       0)
 
+     ;; I-Rule: indent blank line when adding args to fcn call
+     ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_blank_line_in_fcn_call.m
+     ((and no-node
+           (parent-is ,(rx bos "function_call" eos)))
+      (lambda (_node parent _bol &rest _)
+        (let ((fcn-name (treesit-node-child-by-field-name parent "name")))
+          (treesit-node-start (treesit-node-next-sibling fcn-name))))
+      1)
+
      ;; I-Rule: Assert if no rule matched and asserts are enabled.
      ,matlab-ts-mode--indent-assert-rule
      ))
