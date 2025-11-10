@@ -3797,6 +3797,12 @@ provided."
 Optional NO-POP-TO-BUFFER, if non-nil will not run `pop-to-buffer'.
 The errors are displayed in a \"*parse errors in BUFFER-NAME*\" buffer
 and this buffer is returned."
+
+  ;; Note, matlab tree-sitter can detect errors that it seems MATLAB cannot. For example, the
+  ;; codeIssues() command in MATLAB R2026a doesn't detect that
+  ;;   1 + @foo
+  ;; is a syntax error (you cannot add a number to a function handle).
+
   (interactive)
 
   (when (not (eq major-mode 'matlab-ts-mode))
