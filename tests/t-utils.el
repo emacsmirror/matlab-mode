@@ -2671,7 +2671,8 @@ When this function is called, point should be at the position where the
 node should start.  When this function returns, it leaves point at the
 end of the last line of NODE.
 
-Similar `treesit--explorer-draw-node' but designed for test baselines."
+Similar `treesit--explorer-draw-node' but contains the start/end points of
+nodes along with the text of the nodes.  Regions are clickable."
 
   ;; Replacing (field-name (when named ...) with (field-name (treesit-node-field-name node)) will
   ;; return incorrect results with Emacs 30 on Debian 12 because Debian 12 is using a buggy version
@@ -2839,22 +2840,19 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
       (insert "\n")
       (buffer-string))))
 
-;;xxx
-;; (defvar t-utils--ts-parse-tree-mode-syntax-table
-;;   (let ((table (make-syntax-table)))
-;;     (modify-syntax-entry ?\# "<" table)
-;;     (modify-syntax-entry ?\n ">" table)
-;;     (modify-syntax-entry ?'  "_" table)
-;;     (modify-syntax-entry ?\" "_" table)
-;;     table)
-;;   "Syntax table for `t-utils-ts-parse-tree-mode'.")
-
 (defface t-utils-ts-parse-tree-code-face
   '((t
      :inherit default
      :box t
      :bold t))
-  "The face used for code.")
+  "Face used for code in `t-utils-parse-tree-mode'.")
+
+(defface t-utils-ts-parse-tree-number-face
+  '((t
+     :inherit font-lock-constant-face
+     :underline t))
+  "Face used for number regions [START,END] in t-utils-parse-tree-mode'.")
+
 
 (defvar t-utils--ts-parse-tree-font-lock-keywords
   (list
@@ -2878,7 +2876,7 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
                  "\\(}@\\)")                    ;; 6 }@
          '(1 'shadow)
          '(2 'font-lock-function-name-face)
-         '(3 'font-lock-constant-face)
+         '(3 't-utils-ts-parse-tree-number-face)
          '(4 'shadow)
          '(5 't-utils-ts-parse-tree-code-face)
          '(6 'shadow))
@@ -2893,7 +2891,7 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
                  "[0-9]+"            ;;   END
                  "\\]\\)")           ;;   ]
          '(1 't-utils-ts-parse-tree-code-face)
-         '(2 ''font-lock-constant-face))
+         '(2 't-utils-ts-parse-tree-number-face))
    ;; (NODE
    (list (concat "\\((\\)"              ;; 1 (
                  "\\([^ \t\n\r]+\\)")   ;; 2 NODE
@@ -2904,26 +2902,56 @@ Similar `treesit--explorer-draw-node' but designed for test baselines."
          '(1 'shadow)))
   "Keywords to fontify in `t-utils-ts-parse-tree-mode'.")
 
-(defvar-local t-utils-ts-parse-tree--code-buf nil)
+;; t-utils-ts-parse-tree--buf-info: (list code-buf code-buf-name md5-hash)
+(defvar-local t-utils-ts-parse-tree--buf-info nil)
+
+(defvar-local t-utils-ts-parse-tree--code-buf-overlay nil)
 
 (defun t-utils-ts-parse-tree-update ()
   "Update the parse tree shown by `t-utils-view-parse-tree'."
   (interactive)
-  (unless t-utils-ts-parse-tree--code-buf
-    (error "No previously parsed buffer"))
-  (when (not (buffer-live-p t-utils-ts-parse-tree--code-buf))
-    (error "Previously parsed buffer was killed"))
-  (with-current-buffer t-utils-ts-parse-tree--code-buf
-    (t-utils-view-parse-tree 'no-pop-to-buffer)))
+  (let ((code-buf      (nth 0 t-utils-ts-parse-tree--buf-info))
+        (code-buf-name (nth 1 t-utils-ts-parse-tree--buf-info)))
+    (unless code-buf
+      (user-error "No previously parsed buffer"))
+    (when (not (buffer-live-p code-buf))
+      (user-error "Buffer %S was killed" code-buf-name))
+    (with-current-buffer code-buf
+      (t-utils-view-parse-tree 'no-pop-to-buffer))))
 
 (defvar-keymap t-utils-ts-parse-tree-mode-map
   "g" #'t-utils-ts-parse-tree-update)
 
 (define-derived-mode t-utils-ts-parse-tree-mode fundamental-mode "ts-parse-tree" ()
   "Major mode for treesit parse trees created by `t-utils--get-parse-tree'."
-;;xxx  (set-syntax-table t-utils--ts-parse-tree-mode-syntax-table)
   (setq-local font-lock-defaults '((t-utils--ts-parse-tree-font-lock-keywords) nil nil nil))
   (read-only-mode 1))
+
+(defun t-utils-ts-parse-tree--highlight (code-buf-pt-start code-buf-pt-end)
+  "Highlight code buf from CODE-BUF-PT-START to CODE-BUF-PT-END."
+  (let ((view-buf         (current-buffer))
+        (code-buf         (nth 0 t-utils-ts-parse-tree--buf-info))
+        (code-buf-name    (nth 1 t-utils-ts-parse-tree--buf-info))
+        (md5-hash         (nth 2 t-utils-ts-parse-tree--buf-info)))
+
+    (when (not (buffer-live-p code-buf))
+      (user-error "Buffer %s was killed" code-buf-name))
+
+    (when (not (equal md5-hash (secure-hash 'md5 code-buf)))
+      (user-error "Buffer, %s, has been modified (type \"g\" to refresh)" code-buf-name))
+
+    (switch-to-buffer-other-window code-buf)
+
+    (when t-utils-ts-parse-tree--code-buf-overlay
+      (delete-overlay t-utils-ts-parse-tree--code-buf-overlay))
+
+    (setq-local t-utils-ts-parse-tree--code-buf-overlay
+                (make-overlay code-buf-pt-start code-buf-pt-end nil t nil))
+
+    (goto-char code-buf-pt-start)
+    (overlay-put t-utils-ts-parse-tree--code-buf-overlay 'face 'highlight)
+
+    (switch-to-buffer-other-window view-buf)))
 
 (defun t-utils-view-parse-tree (&optional no-pop-to-buffer)
   "View the tree-sitter parse tree for the current buffer.
@@ -2963,6 +2991,7 @@ places a box around the text if that font is available."
 
   (interactive)
   (let* ((code-buf (current-buffer))
+         (code-buf-name (buffer-name))
          (parse-tree (t-utils--get-parse-tree))
          (view-buf-name (concat "*" (buffer-name) "-parse-tree*"))
          (view-buf (get-buffer-create view-buf-name)))
@@ -2972,9 +3001,27 @@ places a box around the text if that font is available."
       (buffer-disable-undo)
       (erase-buffer)
       (insert parse-tree)
+
+      (goto-char (point-min))
+      (while (re-search-forward "[^ \t\n\r]+\\[\\(\\([0-9]+\\),\\([0-9]+\\)\\)\\]" nil t)
+        (let ((pt-start (match-beginning 1))
+              (pt-end (match-end 1))
+              (code-buf-pt-start (string-to-number (match-string 2)))
+              (code-buf-pt-end (string-to-number (match-string 3))))
+          (make-button pt-start
+                       pt-end
+                       'face 't-utils-ts-parse-tree-number-face
+                       'action
+                       (lambda (button)
+                         (ignore button)
+                         (t-utils-ts-parse-tree--highlight code-buf-pt-start code-buf-pt-end)))))
+
       (goto-char (point-min))
       (t-utils-ts-parse-tree-mode)
-      (setq-local t-utils-ts-parse-tree--code-buf code-buf))
+
+      (let ((md5-hash (secure-hash 'md5 code-buf)))
+        ;; use fast md5 which is good enough to tell if code-buf has changed
+        (setq-local t-utils-ts-parse-tree--buf-info (list code-buf code-buf-name md5-hash))))
     (when (not no-pop-to-buffer)
       (pop-to-buffer view-buf 'other-window))
     view-buf))
@@ -3104,6 +3151,6 @@ To debug a specific -parser test file
 
 ;; LocalWords:  lang defun alist eos treesit lf setq truename dolist nondirectory bos buf funcall nt
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
-;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash
+;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash md
 ;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's darwin libtree
 ;; LocalWords:  defface fontify keymap
