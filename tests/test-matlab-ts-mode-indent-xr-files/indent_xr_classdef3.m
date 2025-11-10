@@ -5,6 +5,9 @@
   (t-utils-xr
   (re-search-forward "^%}") "C-n"                  "C-m"
 
+  "C-m"
+  (forward-line -1)
+
   (insert "% comment1")                            "C-m"
   (insert "classdef indent_xr_classdef3 < handle") "C-m"
   "C-m"
