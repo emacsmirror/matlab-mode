@@ -1,0 +1,31 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment left: (identifier[91,92]@{v}@) =[93,94]
+  right: 
+   (cell {[95,96] (line_continuation[97,101]@{...\n}@)
+    (row
+     (lambda @[107,108] ([108,109]
+      (arguments (identifier[109,110]@{p}@))
+      )[110,111]
+      expression: 
+       (function_call name: (identifier[112,114]@{f1}@) ([114,115]
+        (arguments argument: (identifier[115,116]@{p}@))
+        )[116,117]))
+     ,[117,118] (line_continuation[119,123]@{...\n}@)
+     (lambda @[129,130] ([130,131]
+      (arguments (identifier[131,132]@{p}@))
+      )[132,133]
+      expression: 
+       (function_call name: (identifier[134,136]@{f2}@) ([136,137]
+        (arguments argument: (identifier[137,138]@{p}@))
+        )[138,139]))
+     (line_continuation[140,150]@{...\n      }@) ,[150,150]
+     (lambda @[150,151] ([151,152]
+      (arguments (identifier[152,153]@{p}@))
+      )[153,154]
+      expression: 
+       (function_call name: (identifier[155,157]@{f3}@) ([157,158]
+        (arguments argument: (identifier[158,159]@{p}@))
+        )[159,160])))
+    (line_continuation[161,169]@{...\n    }@) }[169,170]))
+ \n[170,171])

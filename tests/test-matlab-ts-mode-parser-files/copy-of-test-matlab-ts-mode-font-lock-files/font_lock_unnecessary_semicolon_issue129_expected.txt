@@ -1,0 +1,17 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (function_definition function[93,101] name: (identifier[102,142]@{font_lock_unnecessary_semicolon_issue129}@) \n[142,143] ;[147,148] (comment[153,161]@{%comment}@)
+  (block
+   (command (command_name[166,187]@{unnecessary_semicolon}@))
+   \n[187,188])
+  end[188,191])
+ \n[191,193]
+ (function_definition function[193,201] name: (identifier[202,223]@{unnecessary_semicolon}@) \n[223,224] ;[224,225] (comment[226,243]@{%#ok undocumented}@)
+  (block
+   (function_call name: (identifier[248,252]@{disp}@) ([252,253]
+    (arguments
+     argument: (string '[253,254] (string_content[254,258]@{here}@) '[258,259]))
+    )[259,260])
+   \n[260,261])
+  end[261,264])
+ \n[264,266] \n[267,268])
