@@ -1,6 +1,6 @@
 # File: matlab-ts-bin/20251110-9d16fcf/README.org
 
-This corresponds to commit [[https://github.com/acristoffers/tree-sitter-matlab/commit/9d16fcf766d11a92c2d6ca6b622b893c3abee8cf][9d16fcf]] on the abi/14 branch of 
+This corresponds to commit [[https://github.com/acristoffers/tree-sitter-matlab/tree/9d16fcf766d11a92c2d6ca6b622b893c3abee8cf][9d16fcf]] on the abi/14 branch of 
 https://github.com/acristoffers/tree-sitter-matlab
 
 
