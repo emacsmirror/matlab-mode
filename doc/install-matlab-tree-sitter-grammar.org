@@ -162,6 +162,15 @@ tree-sitter ABI is 15. There are different methods for installing this.
        : Enter the C++ compiler to use (default: auto-detect):
        : Install to (default: ~/.emacs.d/tree-sitter):
 
+       Alternatively, you can manually build it. For example, on Linux
+
+       #+begin_src bash
+       cd tree-sitter-matlab/src
+       cc -fPIC -O -c -I. parser.c
+       cc -fPIC -O -c -I. scanner.c
+       cc -fPIC -shared parser.o scanner.o -o ~/.emacs.d/tree-sitter/libtree-sitter-matlab.so
+       #+end_src
+
      - _Windows_
 
        Follow the same Windows build step as in Method 2.
