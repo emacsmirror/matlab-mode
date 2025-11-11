@@ -1,0 +1,15 @@
+# matlab-ts-bin/README.org
+
+Builds of https://github.com/acristoffers/tree-sitter-matlab
+
+We use the following subdirectory naming convention:
+
+: ./YYYYMMDD-SHA1/ARCH/
+
+where =YYYYMMDD= corresponds to the year, month, day of the
+https://github.com/acristoffers/tree-sitter-matlab commit =SHA1= and
+ARCH is from the MATLAB command, =computer('arch')=.
+
+We are using this convention instead of the tree-sitter-matlab release number
+to make things more flexible.  This convention lets us deploy based on commits
+rather than release numbers.
