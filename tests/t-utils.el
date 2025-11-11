@@ -2842,6 +2842,14 @@ nodes along with the text of the nodes.  Regions are clickable."
       (insert "\n")
       (buffer-string))))
 
+(defvar t-utils--ts-parse-tree-mode-syntax-table
+  (let ((table (make-syntax-table)))
+    ;; Treat strings as regular text
+    (modify-syntax-entry ?'  "_" table)
+    (modify-syntax-entry ?\" "_" table)
+    table)
+  "Syntax table for `t-utils-ts-parse-tree-mode'.")
+
 (defface t-utils-ts-parse-tree-code-face
   '((t
      :inherit default
@@ -2854,7 +2862,6 @@ nodes along with the text of the nodes.  Regions are clickable."
      :inherit font-lock-constant-face
      :underline t))
   "Face used for [START,END] or <START,END> points in t-utils-parse-tree-mode'.")
-
 
 (defvar t-utils--ts-parse-tree-font-lock-keywords
   (list
@@ -2928,6 +2935,7 @@ nodes along with the text of the nodes.  Regions are clickable."
 
 (define-derived-mode t-utils-ts-parse-tree-mode fundamental-mode "ts-parse-tree" ()
   "Major mode for treesit parse trees created by `t-utils--get-parse-tree'."
+  (set-syntax-table t-utils--ts-parse-tree-mode-syntax-table)
   (setq-local font-lock-defaults '((t-utils--ts-parse-tree-font-lock-keywords) nil nil nil))
   (read-only-mode 1))
 
