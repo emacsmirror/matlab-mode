@@ -1,21 +1,21 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment left: (identifier[22,24]@{c1}@) (line_continuation[25,29]@{...\n}@) =[33,34] (line_continuation[35,39]@{...\n}@)
+(source_file<1,162> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,161> left: (identifier[22,24]@{c1}@) (line_continuation[25,29]@{...\n}@) =[33,34] (line_continuation[35,39]@{...\n}@)
   right: 
-   (cell {[43,44] (line_continuation[45,49]@{...\n}@)
-    (row
-     (string '[55,56] (string_content[56,59]@{foo}@) '[59,60])
+   (cell<43,161> {[43,44] (line_continuation[45,49]@{...\n}@)
+    (row<55,150>
+     (string<55,60> '[55,56] (string_content[56,59]@{foo}@) '[59,60])
      ,[60,61] (line_continuation[62,66]@{...\n}@)
-     (string '[72,73] (string_content[73,76]@{bar}@) '[76,77])
+     (string<72,77> '[72,73] (string_content[73,76]@{bar}@) '[76,77])
      (line_continuation[78,88]@{...\n      }@) ,[88,88]
-     (cell {[88,89] (line_continuation[90,94]@{...\n}@)
-      (row
-       (string '[102,103] (string_content[103,104]@{a}@) '[104,105]))
+     (cell<88,135> {[88,89] (line_continuation[90,94]@{...\n}@)
+      (row<102,105>
+       (string<102,105> '[102,103] (string_content[103,104]@{a}@) '[104,105]))
       ;[105,106] (line_continuation[107,111]@{...\n}@)
-      (row
-       (string '[119,120] (string_content[120,121]@{b}@) '[121,122]))
+      (row<119,122>
+       (string<119,122> '[119,120] (string_content[120,121]@{b}@) '[121,122]))
       (line_continuation[124,134]@{...\n      }@) }[134,135])
      (line_continuation[138,148]@{...\n      }@) ,[148,148]
-     (string '[148,149] '[149,150]))
+     (string<148,150> '[148,149] '[149,150]))
     (line_continuation[152,160]@{...\n    }@) }[160,161]))
  \n[161,162])

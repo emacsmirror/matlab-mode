@@ -1,81 +1,81 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,196]@{% Filling code with ellipsis and strings causes pr...}@)
- (function_definition function[198,206]
-  (function_output
-   (multioutput_variable [[207,208] (identifier[208,209]@{a}@) ,[209,210] (identifier[211,212]@{b}@) ,[212,213] (identifier[214,216]@{f2}@) ,[216,217] (identifier[218,220]@{f3}@) ,[220,221] (identifier[222,224]@{f4}@) ][224,225])
+(source_file<1,1309> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,196]@{% Filling code with ellipsis and strings causes pr...}@)
+ (function_definition<198,483> function[198,206]
+  (function_output<207,227>
+   (multioutput_variable<207,225> [[207,208] (identifier[208,209]@{a}@) ,[209,210] (identifier[211,212]@{b}@) ,[212,213] (identifier[214,216]@{f2}@) ,[216,217] (identifier[218,220]@{f3}@) ,[220,221] (identifier[222,224]@{f4}@) ][224,225])
    =[226,227])
   name: (identifier[228,263]@{fill_paragraph_strings_and_ellipsis}@)
-  (function_arguments ([263,264] arguments: (identifier[264,265]@{c}@) )[265,266])
+  (function_arguments<263,266> ([263,264] arguments: (identifier[264,265]@{c}@) )[265,266])
   (comment[272,308]@{% c1: (t-utils-xr "C-n" "C-a" "M-q")}@) \n[308,309]
-  (block
-   (assignment left: (identifier[313,314]@{a}@) =[315,316]
-    right: (binary_operator left: (identifier[317,318]@{c}@) +[319,320] (line_continuation[321,325]@{...\n}@) right: (number[341,342]@{2}@)))
+  (block<313,480>
+   (assignment<313,342> left: (identifier[313,314]@{a}@) =[315,316]
+    right: (binary_operator<317,342> left: (identifier[317,318]@{c}@) +[319,320] (line_continuation[321,325]@{...\n}@) right: (number[341,342]@{2}@)))
    ;[342,343] (comment[349,385]@{% c2: (t-utils-xr "C-n" "C-a" "M-q")}@)
-   (assignment left: (identifier[390,391]@{a}@) =[392,393]
-    right: (binary_operator left: (identifier[394,395]@{a}@) +[397,398] right: (number[399,400]@{3}@)))
+   (assignment<390,400> left: (identifier[390,391]@{a}@) =[392,393]
+    right: (binary_operator<394,400> left: (identifier[394,395]@{a}@) +[397,398] right: (number[399,400]@{3}@)))
    ;[400,401] (comment[402,418]@{% foo bar    goo}@)
-   (assignment left: (identifier[424,425]@{b}@) =[426,427] right: (identifier[428,432]@{foo1}@))
+   (assignment<424,432> left: (identifier[424,425]@{b}@) =[426,427] right: (identifier[428,432]@{foo1}@))
    ;[432,433]
-   (assignment left: (identifier[439,441]@{f2}@) =[442,443] right: (identifier[444,448]@{foo2}@))
+   (assignment<439,448> left: (identifier[439,441]@{f2}@) =[442,443] right: (identifier[444,448]@{foo2}@))
    ;[448,449]
-   (assignment left: (identifier[454,456]@{f3}@) =[457,458] right: (identifier[459,463]@{foo3}@))
+   (assignment<454,463> left: (identifier[454,456]@{f3}@) =[457,458] right: (identifier[459,463]@{foo3}@))
    ;[463,464]
-   (assignment left: (identifier[469,471]@{f4}@) =[472,473] right: (identifier[474,478]@{foo4}@))
+   (assignment<469,478> left: (identifier[469,471]@{f4}@) =[472,473] right: (identifier[474,478]@{foo4}@))
    ;[478,479] \n[479,480])
   end[480,483])
  \n[483,485]
- (function_definition function[485,493]
-  (function_output (identifier[494,495]@{b}@) =[496,497])
+ (function_definition<485,787> function[485,493]
+  (function_output<494,497> (identifier[494,495]@{b}@) =[496,497])
   name: (identifier[498,502]@{foo1}@) (comment[508,568]@{% c3: (t-utils-xr (re-search-forward "a long strin...}@) \n[568,569]
-  (block
-   (assignment left: (identifier[580,581]@{b}@) =[582,583]
-    right: (string "[584,585] (string_content[585,781]@{a long string a long string a long string a long s...}@) "[781,782]))
+  (block<580,784>
+   (assignment<580,782> left: (identifier[580,581]@{b}@) =[582,583]
+    right: (string<584,782> "[584,585] (string_content[585,781]@{a long string a long string a long string a long s...}@) "[781,782]))
    ;[782,783] \n[783,784])
   end[784,787])
  \n[787,789]
- (function_definition function[789,797]
-  (function_output (identifier[798,804]@{foobar}@) =[805,806])
+ (function_definition<789,932> function[789,797]
+  (function_output<798,806> (identifier[798,804]@{foobar}@) =[805,806])
   name: (identifier[807,811]@{foo2}@) (comment[817,853]@{% c4: (t-utils-xr "C-n" "C-a" "M-q")}@) \n[853,854]
-  (block
-   (assignment left: (identifier[858,864]@{foobar}@) =[865,866]
+  (block<858,929>
+   (assignment<858,927> left: (identifier[858,864]@{foobar}@) =[865,866]
     right: 
-     (function_call name: (identifier[867,873]@{struct}@) ([873,874] (line_continuation[874,878]@{...\n}@)
-      (arguments
-       argument: (string '[886,887] (string_content[887,893]@{field1}@) '[893,894])
+     (function_call<867,927> name: (identifier[867,873]@{struct}@) ([873,874] (line_continuation[874,878]@{...\n}@)
+      (arguments<886,926>
+       argument: (string<886,894> '[886,887] (string_content[887,893]@{field1}@) '[893,894])
        ,[894,895] (number[896,897]@{1}@) ,[897,898] (line_continuation[899,903]@{...\n}@)
-       (string '[915,916] (string_content[916,922]@{field1}@) '[922,923])
+       (string<915,923> '[915,916] (string_content[916,922]@{field1}@) '[922,923])
        ,[923,924] (number[925,926]@{2}@))
       )[926,927]))
    ;[927,928] \n[928,929])
   end[929,932])
  \n[932,934]
- (function_definition function[934,942]
-  (function_output (identifier[943,949]@{foobar}@) =[950,951])
+ (function_definition<934,1083> function[934,942]
+  (function_output<943,951> (identifier[943,949]@{foobar}@) =[950,951])
   name: (identifier[952,956]@{foo3}@) (comment[962,1004]@{% c5: (t-utils-xr "C-n" "C-n" "C-a" "M-q")}@) \n[1004,1005]
-  (block
-   (assignment left: (identifier[1009,1015]@{foobar}@) =[1016,1017]
+  (block<1009,1080>
+   (assignment<1009,1078> left: (identifier[1009,1015]@{foobar}@) =[1016,1017]
     right: 
-     (function_call name: (identifier[1018,1024]@{struct}@) ([1024,1025] (line_continuation[1025,1029]@{...\n}@)
-      (arguments
-       argument: (string '[1037,1038] (string_content[1038,1044]@{field1}@) '[1044,1045])
+     (function_call<1018,1078> name: (identifier[1018,1024]@{struct}@) ([1024,1025] (line_continuation[1025,1029]@{...\n}@)
+      (arguments<1037,1077>
+       argument: (string<1037,1045> '[1037,1038] (string_content[1038,1044]@{field1}@) '[1044,1045])
        ,[1045,1046] (number[1047,1048]@{1}@) ,[1048,1049] (line_continuation[1050,1054]@{...\n}@)
-       (string '[1066,1067] (string_content[1067,1073]@{field1}@) '[1073,1074])
+       (string<1066,1074> '[1066,1067] (string_content[1067,1073]@{field1}@) '[1073,1074])
        ,[1074,1075] (number[1076,1077]@{2}@))
       )[1077,1078]))
    ;[1078,1079] \n[1079,1080])
   end[1080,1083])
  \n[1083,1085]
- (function_definition function[1085,1093]
-  (function_output (identifier[1094,1100]@{foobar}@) =[1101,1102])
+ (function_definition<1085,1240> function[1085,1093]
+  (function_output<1094,1102> (identifier[1094,1100]@{foobar}@) =[1101,1102])
   name: (identifier[1103,1107]@{foo4}@) (comment[1113,1161]@{% c6: (t-utils-xr "C-n" "C-n" "C-n" "C-a" "M-q")}@) \n[1161,1162]
-  (block
-   (assignment left: (identifier[1166,1172]@{foobar}@) =[1173,1174]
+  (block<1166,1237>
+   (assignment<1166,1235> left: (identifier[1166,1172]@{foobar}@) =[1173,1174]
     right: 
-     (function_call name: (identifier[1175,1181]@{struct}@) ([1181,1182] (line_continuation[1182,1186]@{...\n}@)
-      (arguments
-       argument: (string '[1194,1195] (string_content[1195,1201]@{field1}@) '[1201,1202])
+     (function_call<1175,1235> name: (identifier[1175,1181]@{struct}@) ([1181,1182] (line_continuation[1182,1186]@{...\n}@)
+      (arguments<1194,1234>
+       argument: (string<1194,1202> '[1194,1195] (string_content[1195,1201]@{field1}@) '[1201,1202])
        ,[1202,1203] (number[1204,1205]@{1}@) ,[1205,1206] (line_continuation[1207,1211]@{...\n}@)
-       (string '[1223,1224] (string_content[1224,1230]@{field1}@) '[1230,1231])
+       (string<1223,1231> '[1223,1224] (string_content[1224,1230]@{field1}@) '[1230,1231])
        ,[1231,1232] (number[1233,1234]@{2}@))
       )[1234,1235]))
    ;[1235,1236] \n[1236,1237])

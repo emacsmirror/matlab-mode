@@ -1,9 +1,9 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,140]@{% -*- matlab-ts -*-\n% Test forward/backward page ...}@) (comment[142,294]@{% Do similar using the underlying functions:\n% Ca...}@) (comment[296,308]@{%% Section 1}@)
- (assignment left: (identifier[310,311]@{x}@) =[312,313] right: (number[314,315]@{1}@))
+(source_file<1,349> (comment[1,140]@{% -*- matlab-ts -*-\n% Test forward/backward page ...}@) (comment[142,294]@{% Do similar using the underlying functions:\n% Ca...}@) (comment[296,308]@{%% Section 1}@)
+ (assignment<310,315> left: (identifier[310,311]@{x}@) =[312,313] right: (number[314,315]@{1}@))
  ;[315,316]
- (assignment left: (identifier[317,318]@{y}@) =[319,320] right: (number[321,322]@{2}@))
+ (assignment<317,322> left: (identifier[317,318]@{y}@) =[319,320] right: (number[321,322]@{2}@))
  ;[322,323] (comment[325,337]@{%% Section 2}@)
- (assignment left: (identifier[339,340]@{z}@) =[341,342]
-  right: (binary_operator left: (identifier[343,344]@{x}@) +[344,345] right: (identifier[345,346]@{y}@)))
+ (assignment<339,346> left: (identifier[339,340]@{z}@) =[341,342]
+  right: (binary_operator<343,346> left: (identifier[343,344]@{x}@) +[344,345] right: (identifier[345,346]@{y}@)))
  ;[346,347] \n[347,349])

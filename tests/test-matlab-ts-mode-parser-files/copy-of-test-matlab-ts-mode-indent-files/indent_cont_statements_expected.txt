@@ -1,58 +1,58 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[21,29]
-  (function_output (identifier[30,33]@{out}@) =[34,35])
+(source_file<1,473> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<21,472> function[21,29]
+  (function_output<30,35> (identifier[30,33]@{out}@) =[34,35])
   name: (identifier[36,58]@{indent_cont_statements}@) \n[58,60]
-  (block
-   (assignment left: (identifier[64,65]@{a}@) =[66,67] (line_continuation[68,72]@{...\n}@) right: (number[80,81]@{1}@))
+  (block<64,469>
+   (assignment<64,81> left: (identifier[64,65]@{a}@) =[66,67] (line_continuation[68,72]@{...\n}@) right: (number[80,81]@{1}@))
    ;[81,82]
-   (assignment left: (identifier[88,89]@{b}@) =[90,91] (line_continuation[96,100]@{...\n}@)
+   (assignment<88,141> left: (identifier[88,89]@{b}@) =[90,91] (line_continuation[96,100]@{...\n}@)
     right: 
-     (binary_operator
-      left: (binary_operator left: (number[108,109]@{1}@) +[110,111] (line_continuation[112,116]@{...\n}@) right: (number[124,125]@{2}@))
+     (binary_operator<108,141>
+      left: (binary_operator<108,125> left: (number[108,109]@{1}@) +[110,111] (line_continuation[112,116]@{...\n}@) right: (number[124,125]@{2}@))
       +[126,127] (line_continuation[128,132]@{...\n}@) right: (number[140,141]@{2}@)))
    ;[141,142]
-   (assignment left: (identifier[148,149]@{c}@) =[150,151]
-    right: (binary_operator left: (number[152,153]@{2}@) *[154,155] (line_continuation[156,160]@{...\n}@) right: (number[168,169]@{1}@)))
+   (assignment<148,169> left: (identifier[148,149]@{c}@) =[150,151]
+    right: (binary_operator<152,169> left: (number[152,153]@{2}@) *[154,155] (line_continuation[156,160]@{...\n}@) right: (number[168,169]@{1}@)))
    ;[169,170]
-   (assignment left: (identifier[176,177]@{d}@) =[178,179]
+   (assignment<176,207> left: (identifier[176,177]@{d}@) =[178,179]
     right: 
-     (parenthesis ([180,181] (line_continuation[188,192]@{...\n}@)
-      (binary_operator left: (number[201,202]@{1}@) +[203,204] right: (number[205,206]@{2}@))
+     (parenthesis<180,207> ([180,181] (line_continuation[188,192]@{...\n}@)
+      (binary_operator<201,206> left: (number[201,202]@{1}@) +[203,204] right: (number[205,206]@{2}@))
       )[206,207]))
    ;[207,208]
-   (assignment left: (identifier[214,215]@{e}@) =[216,217]
-    right: (parenthesis ([218,219] (line_continuation[221,225]@{...\n}@) (number[234,235]@{1}@) (line_continuation[236,240]@{...\n}@) )[248,249]))
+   (assignment<214,249> left: (identifier[214,215]@{e}@) =[216,217]
+    right: (parenthesis<218,249> ([218,219] (line_continuation[221,225]@{...\n}@) (number[234,235]@{1}@) (line_continuation[236,240]@{...\n}@) )[248,249]))
    ;[249,250]
-   (assignment left: (identifier[260,261]@{f}@) =[262,263]
+   (assignment<260,404> left: (identifier[260,261]@{f}@) =[262,263]
     right: 
-     (binary_operator left: (number[264,265]@{2}@) *[266,267] (line_continuation[269,273]@{...\n}@)
+     (binary_operator<264,404> left: (number[264,265]@{2}@) *[266,267] (line_continuation[269,273]@{...\n}@)
       right: 
-       (parenthesis ([281,282] (line_continuation[286,290]@{...\n}@)
-        (binary_operator
-         left: (binary_operator left: (number[299,300]@{3}@) +[301,302] (line_continuation[303,307]@{...\n}@) right: (number[316,317]@{4}@))
+       (parenthesis<281,404> ([281,282] (line_continuation[286,290]@{...\n}@)
+        (binary_operator<299,387>
+         left: (binary_operator<299,317> left: (number[299,300]@{3}@) +[301,302] (line_continuation[303,307]@{...\n}@) right: (number[316,317]@{4}@))
          +[318,319]
          right: 
-          (parenthesis ([320,321] (line_continuation[325,329]@{...\n}@)
-           (binary_operator left: (number[343,344]@{5}@) *[345,346] (line_continuation[347,351]@{...\n}@) right: (number[365,366]@{6}@))
+          (parenthesis<320,387> ([320,321] (line_continuation[325,329]@{...\n}@)
+           (binary_operator<343,366> left: (number[343,344]@{5}@) *[345,346] (line_continuation[347,351]@{...\n}@) right: (number[365,366]@{6}@))
            (line_continuation[369,373]@{...\n}@) )[386,387]))
         (line_continuation[391,395]@{...\n}@) )[403,404])))
    ;[404,405] (line_continuation[406,410]@{...\n}@)
-   (assignment left: (identifier[419,420]@{g}@) =[421,422]
-    right: (binary_operator left: (number[423,424]@{1}@) +[425,426] right: (number[427,428]@{2}@)))
+   (assignment<419,428> left: (identifier[419,420]@{g}@) =[421,422]
+    right: (binary_operator<423,428> left: (number[423,424]@{1}@) +[425,426] right: (number[427,428]@{2}@)))
    ;[428,429]
-   (assignment left: (identifier[435,438]@{out}@) =[439,440]
+   (assignment<435,466> left: (identifier[435,438]@{out}@) =[439,440]
     right: 
-     (binary_operator
+     (binary_operator<441,466>
       left: 
-       (binary_operator
+       (binary_operator<441,462>
         left: 
-         (binary_operator
+         (binary_operator<441,458>
           left: 
-           (binary_operator
+           (binary_operator<441,454>
             left: 
-             (binary_operator
-              left: (binary_operator left: (identifier[441,442]@{a}@) +[443,444] right: (identifier[445,446]@{b}@))
+             (binary_operator<441,450>
+              left: (binary_operator<441,446> left: (identifier[441,442]@{a}@) +[443,444] right: (identifier[445,446]@{b}@))
               +[447,448] right: (identifier[449,450]@{c}@))
             +[451,452] right: (identifier[453,454]@{d}@))
           +[455,456] right: (identifier[457,458]@{e}@))

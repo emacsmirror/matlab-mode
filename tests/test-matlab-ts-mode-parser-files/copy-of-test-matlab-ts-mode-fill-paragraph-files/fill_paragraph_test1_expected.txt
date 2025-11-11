@@ -1,12 +1,12 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[21,29]
-  (function_output (identifier[30,31]@{b}@) =[32,33])
+(source_file<1,362> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<21,361> function[21,29]
+  (function_output<30,33> (identifier[30,31]@{b}@) =[32,33])
   name: (identifier[34,54]@{fill_paragraph_test1}@)
-  (function_arguments ([54,55] arguments: (identifier[55,56]@{a}@) )[56,57])
+  (function_arguments<54,57> ([54,55] arguments: (identifier[55,56]@{a}@) )[56,57])
   (comment[63,345]@{% Setup test to use a small fill column\n    % Cas...}@) \n[345,347]
-  (block
-   (assignment left: (identifier[351,352]@{b}@) =[353,354] right: (number[355,356]@{1}@))
+  (block<351,358>
+   (assignment<351,356> left: (identifier[351,352]@{b}@) =[353,354] right: (number[355,356]@{1}@))
    ;[356,357] \n[357,358])
   end[358,361])
  \n[361,362])

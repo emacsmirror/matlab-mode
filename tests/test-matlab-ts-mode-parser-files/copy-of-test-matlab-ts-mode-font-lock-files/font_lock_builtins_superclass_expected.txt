@@ -1,7 +1,7 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[21,29] name: (identifier[30,59]@{font_lock_builtins_superclass}@)
-  (superclasses <[60,61]
-   (property_name (identifier[62,68]@{matlab}@) .[68,69] (identifier[69,74]@{mixin}@) .[74,75] (identifier[75,91]@{SetGetExactNames}@)))
+(source_file<1,96> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<21,95> classdef[21,29] name: (identifier[30,59]@{font_lock_builtins_superclass}@)
+  (superclasses<60,91> <[60,61]
+   (property_name<62,91> (identifier[62,68]@{matlab}@) .[68,69] (identifier[69,74]@{mixin}@) .[74,75] (identifier[75,91]@{SetGetExactNames}@)))
   \n[91,92] end[92,95])
  \n[95,96])

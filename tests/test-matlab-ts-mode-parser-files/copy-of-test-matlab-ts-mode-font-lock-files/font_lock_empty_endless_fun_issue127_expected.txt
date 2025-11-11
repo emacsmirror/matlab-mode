@@ -1,4 +1,4 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@)
- (function_definition function[92,100] name: (identifier[101,137]@{font_lock_empty_endless_fun_issue127}@) (comment[138,149]@{% empty fcn}@) \n[149,151])
- (function_definition function[151,159] name: (identifier[160,164]@{fcn2}@) (comment[165,177]@{% empty fcn2}@) \n[177,178]))
+(source_file<1,178> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (function_definition<92,151> function[92,100] name: (identifier[101,137]@{font_lock_empty_endless_fun_issue127}@) (comment[138,149]@{% empty fcn}@) \n[149,151])
+ (function_definition<151,178> function[151,159] name: (identifier[160,164]@{fcn2}@) (comment[165,177]@{% empty fcn2}@) \n[177,178]))

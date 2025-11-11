@@ -1,7 +1,7 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (ERROR (identifier[21,26]@{Error}@) :[26,27] (identifier[28,32]@{File}@) :[32,33] (identifier[34,38]@{Line}@) :[38,39]
-  (field_expression object: (identifier[40,41]@{C}@) .[41,42]
-   (ERROR (ERROR[43,44]@{W}@))
+(source_file<1,53> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (ERROR<21,51> (identifier[21,26]@{Error}@) :[26,27] (identifier[28,32]@{File}@) :[32,33] (identifier[34,38]@{Line}@) :[38,39]
+  (field_expression<40,50> object: (identifier[40,41]@{C}@) .[41,42]
+   (ERROR<43,44> (ERROR[43,44]@{W}@))
    field: (identifier[44,50]@{arning}@))
   :[50,51]))

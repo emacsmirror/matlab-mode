@@ -1,14 +1,14 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
- (assignment left: (identifier[87,90]@{foo}@) =[91,92] right: (number[93,94]@{1}@))
+(source_file<1,144> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
+ (assignment<87,94> left: (identifier[87,90]@{foo}@) =[91,92] right: (number[93,94]@{1}@))
  ;[94,95]
- (assignment left: (identifier[96,97]@{E}@) =[98,99] right: (number[100,101]@{2}@))
+ (assignment<96,101> left: (identifier[96,97]@{E}@) =[98,99] right: (number[100,101]@{2}@))
  ;[101,102] \n[102,104]
- (if_statement if[104,106] condition: (identifier[107,110]@{foo}@)
-  (block
-   (assignment left: (identifier[115,116]@{A}@) =[117,118] right: (identifier[119,120]@{E}@))
+ (if_statement<104,125> if[104,106] condition: (identifier[107,110]@{foo}@)
+  (block<115,122>
+   (assignment<115,120> left: (identifier[115,116]@{A}@) =[117,118] right: (identifier[119,120]@{E}@))
    ;[120,121] \n[121,122])
   end[122,125])
  (line_continuation[126,138]@{... comment\n}@) \n[138,139]
- (assignment left: (identifier[139,140]@{B}@) =[140,141] right: (number[141,142]@{1}@))
+ (assignment<139,142> left: (identifier[139,140]@{B}@) =[140,141] right: (number[141,142]@{1}@))
  ;[142,143] \n[143,144])

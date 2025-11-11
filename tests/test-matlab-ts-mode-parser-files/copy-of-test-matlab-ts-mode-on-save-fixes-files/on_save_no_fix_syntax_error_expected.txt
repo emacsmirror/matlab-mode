@@ -1,7 +1,7 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,104]@{% We shouldn't try to change the name of variable ...}@) (comment[106,216]@{% Case1: (t-utils-xr (rename-buffer "tmp__on_save_...}@)
- (ERROR function[218,226])
+(source_file<1,277> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,104]@{% We shouldn't try to change the name of variable ...}@) (comment[106,216]@{% Case1: (t-utils-xr (rename-buffer "tmp__on_save_...}@)
+ (ERROR<218,226> function[218,226])
  (line_continuation[227,231]@{...\n}@)
- (ERROR [[235,236] (line_continuation[240,244]@{...\n}@)
-  (row (identifier[249,252]@{in1}@) ,[252,253]))
+ (ERROR<235,253> [[235,236] (line_continuation[240,244]@{...\n}@)
+  (row<249,253> (identifier[249,252]@{in1}@) ,[252,253]))
  (line_continuation[255,277]@{... comment about in1\n}@))

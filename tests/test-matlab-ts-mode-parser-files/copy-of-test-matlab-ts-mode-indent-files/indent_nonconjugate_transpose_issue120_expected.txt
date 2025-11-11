@@ -1,32 +1,32 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
- (assignment left: (identifier[91,92]@{a}@) =[93,94]
+(source_file<1,150> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<91,105> left: (identifier[91,92]@{a}@) =[93,94]
   right: 
-   (matrix [[95,96]
-    (row (number[96,97]@{1}@) ,[98,98] (number[98,99]@{2}@))
+   (matrix<95,105> [[95,96]
+    (row<96,99> (number[96,97]@{1}@) ,[98,98] (number[98,99]@{2}@))
     ;[99,100]
-    (row (number[101,102]@{3}@) ,[103,103] (number[103,104]@{4}@))
+    (row<101,104> (number[101,102]@{3}@) ,[103,103] (number[103,104]@{4}@))
     ][104,105]))
  ;[105,106]
- (assignment left: (identifier[107,108]@{b}@) =[109,110] right: (identifier[111,112]@{a}@))
+ (assignment<107,112> left: (identifier[107,108]@{b}@) =[109,110] right: (identifier[111,112]@{a}@))
  ;[112,113]
- (assignment left: (identifier[115,117]@{m1}@) =[118,119]
+ (assignment<115,130> left: (identifier[115,117]@{m1}@) =[118,119]
   right: 
-   (matrix [[120,121]
-    (row
-     (postfix_operator operand: (identifier[121,122]@{a}@) .'[122,124]))
+   (matrix<120,130> [[120,121]
+    (row<121,124>
+     (postfix_operator<121,124> operand: (identifier[121,122]@{a}@) .'[122,124]))
     ;[124,125]
-    (row
-     (postfix_operator operand: (identifier[126,127]@{b}@) .'[127,129]))
+    (row<126,129>
+     (postfix_operator<126,129> operand: (identifier[126,127]@{b}@) .'[127,129]))
     ][129,130]))
  ;[130,131]
- (assignment left: (identifier[133,135]@{c1}@) =[136,137]
+ (assignment<133,148> left: (identifier[133,135]@{c1}@) =[136,137]
   right: 
-   (cell {[138,139]
-    (row
-     (postfix_operator operand: (identifier[139,140]@{a}@) .'[140,142]))
+   (cell<138,148> {[138,139]
+    (row<139,142>
+     (postfix_operator<139,142> operand: (identifier[139,140]@{a}@) .'[140,142]))
     ;[142,143]
-    (row
-     (postfix_operator operand: (identifier[144,145]@{b}@) .'[145,147]))
+    (row<144,147>
+     (postfix_operator<144,147> operand: (identifier[144,145]@{b}@) .'[145,147]))
     }[147,148]))
  ;[148,149] \n[149,150])

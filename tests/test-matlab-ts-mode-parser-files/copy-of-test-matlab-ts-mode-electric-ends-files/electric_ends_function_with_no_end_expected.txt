@@ -1,11 +1,11 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[22,30] name: (identifier[31,65]@{electric_ends_function_with_no_end}@) \n[65,66]
-  (block
-   (function_call name: (identifier[66,70]@{disp}@) ([70,71]
-    (arguments
-     argument: (string '[71,72] (string_content[72,109]@{in electric_ends_function_with_no_end}@) '[109,110]))
+(source_file<1,254> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<22,254> function[22,30] name: (identifier[31,65]@{electric_ends_function_with_no_end}@) \n[65,66]
+  (block<66,254>
+   (function_call<66,111> name: (identifier[66,70]@{disp}@) ([70,71]
+    (arguments<71,110>
+     argument: (string<71,110> '[71,72] (string_content[72,109]@{in electric_ends_function_with_no_end}@) '[109,110]))
     )[110,111])
    \n[111,112]
-   (function_call name: (identifier[112,116]@{foo1}@) ([116,117] )[117,118])
+   (function_call<112,118> name: (identifier[112,116]@{foo1}@) ([116,117] )[117,118])
    ;[118,119] (comment[121,253]@{% Case1: (t-utils-xr "C-n" (insert "function foo1"...}@) \n[253,254])))

@@ -1,10 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[21,29]
-  (function_output (identifier[30,31]@{a}@) =[31,32])
+(source_file<1,124> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<21,123> function[21,29]
+  (function_output<30,32> (identifier[30,31]@{a}@) =[31,32])
   name: (identifier[32,48]@{indent_fcn_basic}@) (comment[49,62]@{% doc comment}@) (comment[68,86]@{% comment before a}@) \n[86,87]
-  (block
-   (assignment left: (identifier[91,92]@{a}@) =[93,94] right: (number[95,96]@{1}@))
+  (block<91,120>
+   (assignment<91,96> left: (identifier[91,92]@{a}@) =[93,94] right: (number[95,96]@{1}@))
    ;[96,97] (comment[102,119]@{% comment after a}@) \n[119,120])
   end[120,123])
  \n[123,124])

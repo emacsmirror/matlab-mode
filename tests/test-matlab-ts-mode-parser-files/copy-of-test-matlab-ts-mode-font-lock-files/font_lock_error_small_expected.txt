@@ -1,11 +1,11 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[21,29] name: (identifier[30,41]@{test_errors}@) \n[41,42]
-  (block
-   (assignment left: (identifier[46,47]@{a}@) =[48,49] right: (number[50,51]@{1}@))
+(source_file<1,70> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<21,69> function[21,29] name: (identifier[30,41]@{test_errors}@) \n[41,42]
+  (block<46,66>
+   (assignment<46,51> left: (identifier[46,47]@{a}@) =[48,49] right: (number[50,51]@{1}@))
    ;[51,52]
-   (binary_operator left: (identifier[57,58]@{b}@)
-    (ERROR =[59,60] *[60,61])
+   (binary_operator<57,64> left: (identifier[57,58]@{b}@)
+    (ERROR<59,61> =[59,60] *[60,61])
     *[61,62] right: (number[63,64]@{2}@))
    ;[64,65] \n[65,66])
   end[66,69])

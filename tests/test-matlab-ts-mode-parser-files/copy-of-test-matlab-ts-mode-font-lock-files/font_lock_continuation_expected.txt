@@ -1,4 +1,4 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment left: (identifier[22,23]@{a}@) =[24,25] (line_continuation[26,30]@{...\n}@) (line_continuation[34,65]@{... text here is a comment too\n}@) right: (number[69,70]@{1}@))
+(source_file<1,73> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,70> left: (identifier[22,23]@{a}@) =[24,25] (line_continuation[26,30]@{...\n}@) (line_continuation[34,65]@{... text here is a comment too\n}@) right: (number[69,70]@{1}@))
  ;[70,71] \n[72,73])

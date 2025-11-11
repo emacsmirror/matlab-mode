@@ -1,17 +1,17 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[21,29] name: (identifier[30,52]@{show_paren_enumeration}@)
-  (superclasses <[53,54]
-   (property_name (identifier[55,61]@{uint32}@)))
+(source_file<1,351> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<21,350> classdef[21,29] name: (identifier[30,52]@{show_paren_enumeration}@)
+  (superclasses<53,61> <[53,54]
+   (property_name<55,61> (identifier[55,61]@{uint32}@)))
   (comment[67,152]@{% Case1: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[152,153]
-  (enumeration enumeration[157,168] \n[168,169]
-   (enum (identifier[177,182]@{North}@) ([183,184] (number[184,185]@{0}@) )[185,186])
+  (enumeration<157,346> enumeration[157,168] \n[168,169]
+   (enum<177,186> (identifier[177,182]@{North}@) ([183,184] (number[184,185]@{0}@) )[185,186])
    \n[186,187]
-   (enum (identifier[195,199]@{East}@) ([201,202] (number[202,204]@{90}@) )[204,205])
+   (enum<195,205> (identifier[195,199]@{East}@) ([201,202] (number[202,204]@{90}@) )[204,205])
    \n[205,206]
-   (enum (identifier[214,219]@{South}@) ([220,221] (number[221,224]@{180}@) )[224,225])
+   (enum<214,225> (identifier[214,219]@{South}@) ([220,221] (number[221,224]@{180}@) )[224,225])
    \n[225,226]
-   (enum (identifier[234,238]@{West}@) ([240,241] (number[241,244]@{270}@) )[244,245])
+   (enum<234,245> (identifier[234,238]@{West}@) ([240,241] (number[241,244]@{270}@) )[244,245])
    (comment[254,339]@{% Case2: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[339,340] end[343,346])
   end[347,350])
  \n[350,351])

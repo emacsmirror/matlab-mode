@@ -1,17 +1,17 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[22,30] name: (identifier[31,39]@{dVCEnum2}@)
-  (superclasses <[40,41]
-   (property_name (identifier[42,50]@{Simulink}@) .[50,51] (identifier[51,62]@{IntEnumType}@)))
+(source_file<1,216> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<22,215> classdef[22,30] name: (identifier[31,39]@{dVCEnum2}@)
+  (superclasses<40,62> <[40,41]
+   (property_name<42,62> (identifier[42,50]@{Simulink}@) .[50,51] (identifier[51,62]@{IntEnumType}@)))
   (comment[63,68]@{% doc}@) \n[68,70]
-  (enumeration enumeration[74,85] \n[85,86]
-   (enum (identifier[94,112]@{mChoiceArchSubsys1}@) ([112,113] (number[113,114]@{0}@) )[114,115])
+  (enumeration<74,175> enumeration[74,85] \n[85,86]
+   (enum<94,115> (identifier[94,112]@{mChoiceArchSubsys1}@) ([112,113] (number[113,114]@{0}@) )[114,115])
    \n[115,116]
-   (enum (identifier[124,137]@{mChoiceSLMdl1}@) ([137,138] (number[138,139]@{1}@) )[139,140])
+   (enum<124,140> (identifier[124,137]@{mChoiceSLMdl1}@) ([137,138] (number[138,139]@{1}@) )[139,140])
    \n[140,141]
-   (enum (identifier[149,164]@{mChoiceArchMdl1}@) ([164,165] (number[165,166]@{2}@) )[166,167])
+   (enum<149,167> (identifier[149,164]@{mChoiceArchMdl1}@) ([164,165] (number[165,166]@{2}@) )[166,167])
    \n[167,168] end[172,175])
   (comment[181,202]@{% Cause a parse error}@)
-  (ERROR /[208,209] *[209,210])
+  (ERROR<207,210> /[208,209] *[209,210])
   end[212,215])
  \n[215,216])

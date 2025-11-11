@@ -1,20 +1,20 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
- (class_definition classdef[90,98] name: (identifier[99,153]@{font_lock_classdef_subclass_super_in_namespace_iss...}@)
-  (superclasses <[154,155]
-   (property_name (identifier[156,163]@{myUtils}@) .[163,164] (identifier[164,169]@{super}@)))
+(source_file<1,299> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (class_definition<90,298> classdef[90,98] name: (identifier[99,153]@{font_lock_classdef_subclass_super_in_namespace_iss...}@)
+  (superclasses<154,169> <[154,155]
+   (property_name<156,169> (identifier[156,163]@{myUtils}@) .[163,164] (identifier[164,169]@{super}@)))
   \n[169,170]
-  (methods methods[174,181] \n[181,182]
-   (function_definition function[190,198]
-    (function_output (identifier[199,202]@{obj}@) =[202,203])
+  (methods<174,294> methods[174,181] \n[181,182]
+   (function_definition<190,286> function[190,198]
+    (function_output<199,203> (identifier[199,202]@{obj}@) =[202,203])
     name: (identifier[203,211]@{SubClass}@) \n[211,212]
-    (block
-     (function_call name: (identifier[224,227]@{obj}@) @[227,228]
-      (superclass (identifier[228,235]@{myUtils}@) .[235,236] (identifier[236,241]@{super}@)))
+    (block<224,275>
+     (function_call<224,241> name: (identifier[224,227]@{obj}@) @[227,228]
+      (superclass<228,241> (identifier[228,235]@{myUtils}@) .[235,236] (identifier[236,241]@{super}@)))
      ;[241,242]
-     (function_call name: (identifier[255,259]@{disp}@) ([259,260]
-      (arguments
-       argument: (string '[260,261] (string_content[261,272]@{in SubClass}@) '[272,273]))
+     (function_call<255,274> name: (identifier[255,259]@{disp}@) ([259,260]
+      (arguments<260,273>
+       argument: (string<260,273> '[260,261] (string_content[261,272]@{in SubClass}@) '[272,273]))
       )[273,274])
      \n[274,275])
     end[283,286])

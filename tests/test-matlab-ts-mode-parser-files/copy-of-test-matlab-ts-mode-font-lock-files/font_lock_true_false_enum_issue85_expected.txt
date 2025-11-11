@@ -1,10 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
- (class_definition classdef[89,97] name: (identifier[98,131]@{font_lock_true_false_enum_issue85}@) \n[131,132]
-  (enumeration enumeration[136,147] \n[147,148]
-   (enum (identifier[156,161]@{false}@))
+(source_file<1,189> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (class_definition<89,188> classdef[89,97] name: (identifier[98,131]@{font_lock_true_false_enum_issue85}@) \n[131,132]
+  (enumeration<136,184> enumeration[136,147] \n[147,148]
+   (enum<156,161> (identifier[156,161]@{false}@))
    ;[161,162] \n[162,163]
-   (enum (identifier[171,175]@{true}@))
+   (enum<171,175> (identifier[171,175]@{true}@))
    ;[175,176] \n[176,177] end[181,184])
   end[185,188])
  \n[188,189])

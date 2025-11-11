@@ -2782,7 +2782,9 @@ nodes along with the text of the nodes.  Regions are clickable."
         (progn
           (insert "(")
           (insert type)
-          (when (not (treesit-node-child node 0)) ;; leaf node?
+          (if (treesit-node-child node 0) ;; non-leaf node
+              (insert (format "<%d,%d>" (treesit-node-start node) (treesit-node-end node)))
+            ;; else leaf node
             (let ((node-text (substring-no-properties (treesit-node-text node))))
               (dolist (pair (list '("\t" . "\\\\t")
                                   '("\r" . "\\\\r")
@@ -2847,11 +2849,11 @@ nodes along with the text of the nodes.  Regions are clickable."
      :bold t))
   "Face used for code in `t-utils-parse-tree-mode'.")
 
-(defface t-utils-ts-parse-tree-number-face
+(defface t-utils-ts-parse-tree-points-face
   '((t
      :inherit font-lock-constant-face
      :underline t))
-  "Face used for number regions [START,END] in t-utils-parse-tree-mode'.")
+  "Face used for [START,END] or <START,END> points in t-utils-parse-tree-mode'.")
 
 
 (defvar t-utils--ts-parse-tree-font-lock-keywords
@@ -2876,14 +2878,14 @@ nodes along with the text of the nodes.  Regions are clickable."
                  "\\(}@\\)")                    ;; 6 }@
          '(1 'shadow)
          '(2 'font-lock-function-name-face)
-         '(3 't-utils-ts-parse-tree-number-face)
+         '(3 't-utils-ts-parse-tree-points-face)
          '(4 'shadow)
          '(5 't-utils-ts-parse-tree-code-face)
          '(6 'shadow))
    ;; FIELD:
    (list "\\([a-zA-Z]+:\\)"
          '(1 'font-lock-property-name-face))
-   ;; CODE[START,END)
+   ;; CODE[START,END]
    (list (concat "\\([^ \t\n\r]+\\)" ;; 1 CODE
                  "\\(\\["            ;; 2 [
                  "[0-9]+"            ;;   START
@@ -2891,12 +2893,14 @@ nodes along with the text of the nodes.  Regions are clickable."
                  "[0-9]+"            ;;   END
                  "\\]\\)")           ;;   ]
          '(1 't-utils-ts-parse-tree-code-face)
-         '(2 't-utils-ts-parse-tree-number-face))
-   ;; (NODE
-   (list (concat "\\((\\)"              ;; 1 (
-                 "\\([^ \t\n\r]+\\)")   ;; 2 NODE
+         '(2 't-utils-ts-parse-tree-points-face))
+   ;; (NON_LEAF_NODE<START,END>
+   (list (concat "\\((\\)"                ;; 1 (
+                 "\\([^ \t\n\r]+\\)"      ;; 2 NON_LEAF_NODE
+                 "\\(<[0-9]+,[0-9]+>\\)") ;; 3 <START,END>
          '(1 'shadow)
-         '(2 'font-lock-keyword-face))
+         '(2 'font-lock-keyword-face)
+         '(3 't-utils-ts-parse-tree-points-face))
    ;; ) closing end of node
    (list "\\()\\)"
          '(1 'shadow)))
@@ -2965,25 +2969,37 @@ The tree contains named and anonymous nodes.  Consider:
  b = 2;
  c = a + b;
 
-The parse tree is:
+The parse tree using matlab tree-sitter is below.  Other languages will
+be similar.
 
- (source_file
-  (assignment left: (identifier[1,2]@{a}@) =[3,4] right: (number[5,6]@{1}@))
+ (source_file<1,28>
+  (assignment<1,6>
+   left: (identifier[1,2]@{a}@)
+   =[3,4]
+   right: (number[5,6]@{1}@))
   ;[6,7]
-  (assignment left: (identifier[8,9]@{b}@) =[10,11] right: (number[12,13]@{2}@))
+  (assignment<8,13>
+   left: (identifier[8,9]@{b}@) =[10,11]
+   right: (number[12,13]@{2}@))
   ;[13,14]
-  (binary_operator left: (identifier[16,17]@{a}@) +[18,19] right:
-                                                       (identifier[20,21]@{b}@))
-  ;[21,22] \n[22,24])
+  (assignment<15,24> left: (identifier[15,16]@{c}@) =[17,18]
+   right: (binary_operator<19,24>
+           left: (identifier[19,20]@{a}@) +[21,22]
+           right: (identifier[23,24]@{b}@)))
+  ;[24,25] \\n[25,28])
 
-Named nodes    : source_file  assignment  identifier  number  binary_operator
-Anonymous nodes: =  +
+Leaf named nodes:
+  \"identifier\" \"number\"
+Leaf anonymous nodes (node has same name as code text)
+  \"=\" \"+\" \"\\n\"
+Non-leaf nodes are
+  \"source_file\" \"assignment\" \"binary_operator\"
 
-Notice that near each node we have a range of form [START,END] where the
-node text starts at START point and ends one before END point.  The
-length of text for the node is END-START.  For named nodes, the first
-`t-utils--parse-tree-max-text-chars-to-show' characters of the node text
-is shown in @{NODE_TEXT}@.
+Notice that near each node we have a range of form <START,END> or
+[START,END] where the node text starts at START point and ends one
+before END point.  The length of text for the node is END-START.  For
+named nodes, the first `t-utils--parse-tree-max-text-chars-to-show'
+characters of the node text is shown in @{NODE_TEXT}@.
 
 The program code node text is shown using
 `t-utils-ts-parse-tree-code-face', which by default uses a font that
@@ -3003,7 +3019,8 @@ places a box around the text if that font is available."
       (insert parse-tree)
 
       (goto-char (point-min))
-      (while (re-search-forward "[^ \t\n\r]+\\[\\(\\([0-9]+\\),\\([0-9]+\\)\\)\\]" nil t)
+      (while (re-search-forward
+              "[^ \t\n\r]+\\(?:\\[\\|<\\)\\(\\([0-9]+\\),\\([0-9]+\\)\\)\\(?:\\]\\|>\\)" nil t)
         (let ((pt-start (match-beginning 1))
               (pt-end (match-end 1))
               (code-buf-pt-start (string-to-number (match-string 2)))

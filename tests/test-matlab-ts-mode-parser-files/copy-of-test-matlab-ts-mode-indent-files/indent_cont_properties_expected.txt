@@ -1,52 +1,52 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[22,30] name: (identifier[31,53]@{indent_cont_properties}@) \n[53,55]
-  (properties properties[59,69] \n[69,70]
-   (property name: (identifier[78,80]@{p1}@)
-    (default_value =[81,82]
-     (cell {[83,84] \n[84,85]
-      (row (number[100,101]@{1}@) ,[102,102] (number[102,103]@{2}@))
+(source_file<1,687> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<22,686> classdef[22,30] name: (identifier[31,53]@{indent_cont_properties}@) \n[53,55]
+  (properties<59,146> properties[59,69] \n[69,70]
+   (property<78,139> name: (identifier[78,80]@{p1}@)
+    (default_value<81,138> =[81,82]
+     (cell<83,138> {[83,84] \n[84,85]
+      (row<100,103> (number[100,101]@{1}@) ,[102,102] (number[102,103]@{2}@))
       ;[103,104]
-      (row (number[120,121]@{3}@) ,[122,122] (number[122,123]@{4}@))
+      (row<120,123> (number[120,121]@{3}@) ,[122,122] (number[122,123]@{4}@))
       }[137,138]))
     \n[138,139])
    end[143,146])
-  (methods methods[152,159] \n[159,160]
-   (function_definition function[168,176] name: (identifier[177,179]@{f1}@)
-    (function_arguments ([179,180] arguments: (identifier[180,183]@{obj}@) ,[183,184] (identifier[185,186]@{a}@) )[186,187])
+  (methods<152,682> methods[152,159] \n[159,160]
+   (function_definition<168,399> function[168,176] name: (identifier[177,179]@{f1}@)
+    (function_arguments<179,187> ([179,180] arguments: (identifier[180,183]@{obj}@) ,[183,184] (identifier[185,186]@{a}@) )[186,187])
     \n[187,188]
-    (arguments_statement arguments[200,209] \n[209,210]
-     (property name: (identifier[226,229]@{obj}@) (comment[233,244]@{%#ok<INUSA>}@) \n[244,245])
-     (property name: (identifier[261,262]@{a}@) (line_continuation[263,267]@{...\n}@)
-      (validation_functions {[287,288] (line_continuation[289,293]@{...\n}@) (identifier[315,325]@{mustBeReal}@) (line_continuation[326,330]@{...\n}@) }[350,351])
+    (arguments_statement<200,367> arguments[200,209] \n[209,210]
+     (property<226,245> name: (identifier[226,229]@{obj}@) (comment[233,244]@{%#ok<INUSA>}@) \n[244,245])
+     (property<261,352> name: (identifier[261,262]@{a}@) (line_continuation[263,267]@{...\n}@)
+      (validation_functions<287,351> {[287,288] (line_continuation[289,293]@{...\n}@) (identifier[315,325]@{mustBeReal}@) (line_continuation[326,330]@{...\n}@) }[350,351])
       \n[351,352])
      end[364,367])
-    (block
-     (function_call name: (identifier[380,384]@{disp}@) ([384,385]
-      (arguments argument: (identifier[385,386]@{a}@))
+    (block<380,388>
+     (function_call<380,387> name: (identifier[380,384]@{disp}@) ([384,385]
+      (arguments<385,386> argument: (identifier[385,386]@{a}@))
       )[386,387])
      \n[387,388])
     end[396,399])
    \n[399,401]
-   (function_definition function[409,417] name: (identifier[418,420]@{f2}@)
-    (function_arguments ([420,421] arguments: (identifier[421,423]@{p1}@) ,[423,424] (identifier[425,427]@{p2}@) )[427,428])
+   (function_definition<409,674> function[409,417] name: (identifier[418,420]@{f2}@)
+    (function_arguments<420,428> ([420,421] arguments: (identifier[421,423]@{p1}@) ,[423,424] (identifier[425,427]@{p2}@) )[427,428])
     \n[428,429]
-    (arguments_statement arguments[441,450] \n[450,451]
-     (property name: (identifier[467,469]@{p1}@) (identifier[470,476]@{string}@)
-      (validation_functions {[477,478] (identifier[478,497]@{mustBeScalarOrEmpty}@) }[497,498])
+    (arguments_statement<441,620> arguments[441,450] \n[450,451]
+     (property<467,499> name: (identifier[467,469]@{p1}@) (identifier[470,476]@{string}@)
+      (validation_functions<477,498> {[477,478] (identifier[478,497]@{mustBeScalarOrEmpty}@) }[497,498])
       \n[498,499])
-     (property name: (identifier[515,517]@{p2}@) (identifier[518,524]@{double}@)
-      (validation_functions {[525,526] (line_continuation[526,530]@{...\n}@) (identifier[558,568]@{mustBeReal}@) (line_continuation[569,573]@{...\n}@) }[599,600])
-      (default_value =[601,602] (number[603,604]@{0}@))
+     (property<515,605> name: (identifier[515,517]@{p2}@) (identifier[518,524]@{double}@)
+      (validation_functions<525,600> {[525,526] (line_continuation[526,530]@{...\n}@) (identifier[558,568]@{mustBeReal}@) (line_continuation[569,573]@{...\n}@) }[599,600])
+      (default_value<601,604> =[601,602] (number[603,604]@{0}@))
       \n[604,605])
      end[617,620])
-    (block
-     (function_call name: (identifier[633,637]@{disp}@) ([637,638]
-      (arguments argument: (identifier[638,640]@{p1}@))
+    (block<633,663>
+     (function_call<633,641> name: (identifier[633,637]@{disp}@) ([637,638]
+      (arguments<638,640> argument: (identifier[638,640]@{p1}@))
       )[640,641])
      \n[641,642]
-     (function_call name: (identifier[654,658]@{disp}@) ([658,659]
-      (arguments argument: (identifier[659,661]@{p2}@))
+     (function_call<654,662> name: (identifier[654,658]@{disp}@) ([658,659]
+      (arguments<659,661> argument: (identifier[659,661]@{p2}@))
       )[661,662])
      \n[662,663])
     end[671,674])

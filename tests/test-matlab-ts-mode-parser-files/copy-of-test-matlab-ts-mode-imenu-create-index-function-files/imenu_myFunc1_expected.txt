@@ -1,58 +1,58 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[21,29] name: (identifier[30,43]@{imenu_myFunc1}@) \n[43,44]
-  (block
-   (assignment left: (identifier[48,49]@{a}@) =[50,51]
+(source_file<1,254> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<21,103> function[21,29] name: (identifier[30,43]@{imenu_myFunc1}@) \n[43,44]
+  (block<48,100>
+   (assignment<48,62> left: (identifier[48,49]@{a}@) =[50,51]
     right: 
-     (function_call name: (identifier[52,59]@{myFunc2}@) ([59,60]
-      (arguments argument: (number[60,61]@{2}@))
+     (function_call<52,62> name: (identifier[52,59]@{myFunc2}@) ([59,60]
+      (arguments<60,61> argument: (number[60,61]@{2}@))
       )[61,62]))
    ;[62,63]
-   (assignment left: (identifier[68,69]@{b}@) =[70,71]
+   (assignment<68,82> left: (identifier[68,69]@{b}@) =[70,71]
     right: 
-     (function_call name: (identifier[72,79]@{myFunc3}@) ([79,80]
-      (arguments argument: (identifier[80,81]@{a}@))
+     (function_call<72,82> name: (identifier[72,79]@{myFunc3}@) ([79,80]
+      (arguments<80,81> argument: (identifier[80,81]@{a}@))
       )[81,82]))
    ;[82,83]
-   (function_call name: (identifier[88,95]@{myFunc4}@) ([95,96]
-    (arguments argument: (identifier[96,97]@{b}@))
+   (function_call<88,98> name: (identifier[88,95]@{myFunc4}@) ([95,96]
+    (arguments<96,97> argument: (identifier[96,97]@{b}@))
     )[97,98])
    ;[98,99] \n[99,100])
   end[100,103])
  \n[103,105]
- (function_definition function[105,113]
-  (function_output (identifier[114,117]@{out}@) =[118,119])
+ (function_definition<105,153> function[105,113]
+  (function_output<114,119> (identifier[114,117]@{out}@) =[118,119])
   name: (identifier[120,127]@{myFunc2}@)
-  (function_arguments ([127,128] arguments: (identifier[128,130]@{in}@) )[130,131])
+  (function_arguments<127,131> ([127,128] arguments: (identifier[128,130]@{in}@) )[130,131])
   \n[131,132]
-  (block
-   (assignment left: (identifier[136,139]@{out}@) =[140,141]
-    right: (binary_operator left: (identifier[142,144]@{in}@) *[145,146] right: (number[147,148]@{2}@)))
+  (block<136,150>
+   (assignment<136,148> left: (identifier[136,139]@{out}@) =[140,141]
+    right: (binary_operator<142,148> left: (identifier[142,144]@{in}@) *[145,146] right: (number[147,148]@{2}@)))
    ;[148,149] \n[149,150])
   end[150,153])
  \n[153,155]
- (function_definition function[155,163]
-  (function_output
-   (multioutput_variable [[164,165] (identifier[165,168]@{out}@) ][168,169])
+ (function_definition<155,205> function[155,163]
+  (function_output<164,171>
+   (multioutput_variable<164,169> [[164,165] (identifier[165,168]@{out}@) ][168,169])
    =[170,171])
   name: (identifier[172,179]@{myFunc3}@)
-  (function_arguments ([179,180] arguments: (identifier[180,182]@{in}@) )[182,183])
+  (function_arguments<179,183> ([179,180] arguments: (identifier[180,182]@{in}@) )[182,183])
   \n[183,184]
-  (block
-   (assignment left: (identifier[188,191]@{out}@) =[192,193]
-    right: (binary_operator left: (identifier[194,196]@{in}@) *[197,198] right: (number[199,200]@{3}@)))
+  (block<188,202>
+   (assignment<188,200> left: (identifier[188,191]@{out}@) =[192,193]
+    right: (binary_operator<194,200> left: (identifier[194,196]@{in}@) *[197,198] right: (number[199,200]@{3}@)))
    ;[200,201] \n[201,202])
   end[202,205])
  \n[205,207]
- (function_definition function[207,215] name: (identifier[216,223]@{myFunc4}@)
-  (function_arguments ([223,224] arguments: (identifier[224,226]@{in}@) )[226,227])
+ (function_definition<207,253> function[207,215] name: (identifier[216,223]@{myFunc4}@)
+  (function_arguments<223,227> ([223,224] arguments: (identifier[224,226]@{in}@) )[226,227])
   \n[227,228]
-  (block
-   (function_call name: (identifier[232,236]@{disp}@) ([236,237]
-    (arguments
+  (block<232,250>
+   (function_call<232,249> name: (identifier[232,236]@{disp}@) ([236,237]
+    (arguments<237,248>
      argument: 
-      (function_call name: (identifier[237,244]@{num2str}@) ([244,245]
-       (arguments argument: (identifier[245,247]@{in}@))
+      (function_call<237,248> name: (identifier[237,244]@{num2str}@) ([244,245]
+       (arguments<245,247> argument: (identifier[245,247]@{in}@))
        )[247,248]))
     )[248,249])
    \n[249,250])

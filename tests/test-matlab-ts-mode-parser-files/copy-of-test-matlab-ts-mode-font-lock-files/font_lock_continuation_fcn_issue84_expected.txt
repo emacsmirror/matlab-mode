@@ -1,15 +1,15 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
- (function_call name: (identifier[91,96]@{myFcn}@) (line_continuation[96,100]@{...\n}@) ([104,105]
-  (arguments argument: (number[105,106]@{1}@))
+(source_file<1,143> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (function_call<91,107> name: (identifier[91,96]@{myFcn}@) (line_continuation[96,100]@{...\n}@) ([104,105]
+  (arguments<105,106> argument: (number[105,106]@{1}@))
   )[106,107])
  \n[107,109]
- (function_definition function[109,117] name: (identifier[118,123]@{myFcn}@)
-  (function_arguments ([123,124] arguments: (identifier[124,125]@{a}@) )[125,126])
+ (function_definition<109,142> function[109,117] name: (identifier[118,123]@{myFcn}@)
+  (function_arguments<123,126> ([123,124] arguments: (identifier[124,125]@{a}@) )[125,126])
   \n[126,127]
-  (block
-   (function_call name: (identifier[131,135]@{disp}@) ([135,136]
-    (arguments argument: (identifier[136,137]@{a}@))
+  (block<131,139>
+   (function_call<131,138> name: (identifier[131,135]@{disp}@) ([135,136]
+    (arguments<136,137> argument: (identifier[136,137]@{a}@))
     )[137,138])
    \n[138,139])
   end[139,142])

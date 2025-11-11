@@ -1,29 +1,29 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment left: (identifier[21,22]@{a}@) =[23,24]
+(source_file<1,979> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<21,35> left: (identifier[21,22]@{a}@) =[23,24]
   right: 
-   (matrix [[25,26]
-    (row (number[26,27]@{1}@) ,[28,28] (number[28,29]@{2}@))
+   (matrix<25,35> [[25,26]
+    (row<26,29> (number[26,27]@{1}@) ,[28,28] (number[28,29]@{2}@))
     ;[29,30]
-    (row (number[31,32]@{3}@) ,[33,33] (number[33,34]@{4}@))
+    (row<31,34> (number[31,32]@{3}@) ,[33,33] (number[33,34]@{4}@))
     ][34,35]))
  ;[35,36] (comment[38,147]@{% Case1: (t-utils-xr "C-a" "C-n" (re-search-forwar...}@)
- (postfix_operator operand: (identifier[148,149]@{a}@) '[149,150])
+ (postfix_operator<148,150> operand: (identifier[148,149]@{a}@) '[149,150])
  ;[150,151] (comment[153,262]@{% Case2: (t-utils-xr "C-a" "C-n" (re-search-forwar...}@)
- (postfix_operator operand: (identifier[263,264]@{a}@) .'[264,266])
+ (postfix_operator<263,266> operand: (identifier[263,264]@{a}@) .'[264,266])
  ;[266,267] (comment[269,372]@{% Case3: (t-utils-xr (re-search-forward "<") "C-b"...}@)
- (assignment left: (identifier[373,375]@{s1}@) =[376,377]
-  right: (string '[378,379] (string_content[379,391]@{<foo '' bar>}@) '[391,392]))
+ (assignment<373,392> left: (identifier[373,375]@{s1}@) =[376,377]
+  right: (string<378,392> '[378,379] (string_content[379,391]@{<foo '' bar>}@) '[391,392]))
  ;[392,393] (comment[395,486]@{% Case4: (t-utils-xr (re-search-forward ">") (prin...}@)
- (assignment left: (identifier[487,489]@{s2}@) =[490,491]
-  right: (string '[492,493] (string_content[493,505]@{<foo '' bar>}@) '[505,506]))
+ (assignment<487,506> left: (identifier[487,489]@{s2}@) =[490,491]
+  right: (string<492,506> '[492,493] (string_content[493,505]@{<foo '' bar>}@) '[505,506]))
  ;[506,507] (comment[509,612]@{% Case5: (t-utils-xr (re-search-forward "<") "C-b"...}@)
- (assignment left: (identifier[613,615]@{s3}@) =[616,617]
-  right: (string "[618,619] (string_content[619,630]@{<foo ' bar>}@) "[630,631]))
+ (assignment<613,631> left: (identifier[613,615]@{s3}@) =[616,617]
+  right: (string<618,631> "[618,619] (string_content[619,630]@{<foo ' bar>}@) "[630,631]))
  ;[631,632] (comment[634,725]@{% Case6: (t-utils-xr (re-search-forward ">") (prin...}@)
- (assignment left: (identifier[726,728]@{s4}@) =[729,730]
-  right: (string "[731,732] (string_content[732,743]@{<foo ' bar>}@) "[743,744]))
+ (assignment<726,744> left: (identifier[726,728]@{s4}@) =[729,730]
+  right: (string<731,744> "[731,732] (string_content[732,743]@{<foo ' bar>}@) "[743,744]))
  ;[744,745] (comment[747,925]@{% Case7: (t-utils-xr (re-search-forward "-end-quot...}@)
- (assignment left: (identifier[926,928]@{s5}@) =[929,930]
-  right: (string "[931,932] (string_content[932,947]@{<asdf-end-quote}@) "[947,948]))
+ (assignment<926,948> left: (identifier[926,928]@{s5}@) =[929,930]
+  right: (string<931,948> "[931,932] (string_content[932,947]@{<asdf-end-quote}@) "[947,948]))
  (comment[950,978]@{% comment with a (") for s5.}@) \n[978,979])

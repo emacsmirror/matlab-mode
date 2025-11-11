@@ -1,60 +1,60 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
- (assignment left: (identifier[90,93]@{idx}@) =[94,95]
-  right: (range (number[96,97]@{1}@) :[97,98] (number[98,101]@{100}@)))
+(source_file<1,213> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<90,101> left: (identifier[90,93]@{idx}@) =[94,95]
+  right: (range<96,101> (number[96,97]@{1}@) :[97,98] (number[98,101]@{100}@)))
  ;[101,102]
- (assignment left: (identifier[103,104]@{a}@) =[107,108] right: (number[109,111]@{10}@))
+ (assignment<103,111> left: (identifier[103,104]@{a}@) =[107,108] right: (number[109,111]@{10}@))
  ;[111,112]
- (assignment left: (identifier[113,114]@{b}@) =[117,118] right: (number[119,120]@{2}@))
+ (assignment<113,120> left: (identifier[113,114]@{b}@) =[117,118] right: (number[119,120]@{2}@))
  ;[120,121]
- (assignment left: (identifier[122,123]@{c}@) =[126,127] right: (number[128,129]@{3}@))
+ (assignment<122,129> left: (identifier[122,123]@{c}@) =[126,127] right: (number[128,129]@{3}@))
  ;[129,130]
- (assignment left: (identifier[132,133]@{d}@) =[134,135]
+ (assignment<132,158> left: (identifier[132,133]@{d}@) =[134,135]
   right: 
-   (function_call name: (identifier[136,139]@{idx}@) ([139,140]
-    (arguments
+   (function_call<136,158> name: (identifier[136,139]@{idx}@) ([139,140]
+    (arguments<140,157>
      argument: 
-      (range (number[140,141]@{1}@) :[141,142]
-       (binary_operator left: (identifier[142,143]@{a}@) -[143,144]
+      (range<140,157> (number[140,141]@{1}@) :[141,142]
+       (binary_operator<142,157> left: (identifier[142,143]@{a}@) -[143,144]
         right: 
-         (parenthesis ([144,145]
-          (binary_operator
+         (parenthesis<144,157> ([144,145]
+          (binary_operator<145,156>
            left: 
-            (parenthesis ([145,146]
-             (binary_operator left: (number[146,147]@{1}@) +[147,148]
+            (parenthesis<145,154> ([145,146]
+             (binary_operator<146,153> left: (number[146,147]@{1}@) +[147,148]
               right: 
-               (parenthesis ([148,149]
-                (comparison_operator (identifier[149,150]@{b}@) >[150,151] (number[151,152]@{1}@))
+               (parenthesis<148,153> ([148,149]
+                (comparison_operator<149,152> (identifier[149,150]@{b}@) >[150,151] (number[151,152]@{1}@))
                 )[152,153]))
              )[153,154])
            *[154,155] right: (identifier[155,156]@{c}@))
           )[156,157]))))
     )[157,158]))
  \n[158,160]
- (assignment left: (identifier[160,168]@{aaStrong}@) =[169,170]
+ (assignment<160,210> left: (identifier[160,168]@{aaStrong}@) =[169,170]
   right: 
-   (function_call name: (identifier[171,173]@{aa}@) ([173,174]
-    (arguments
+   (function_call<171,210> name: (identifier[171,173]@{aa}@) ([173,174]
+    (arguments<174,209>
      argument: 
-      (range
-       (binary_operator
+      (range<174,209>
+       (binary_operator<174,205>
         left: 
-         (binary_operator left: (identifier[174,182]@{totCoeff}@) -[182,183]
+         (binary_operator<174,203> left: (identifier[174,182]@{totCoeff}@) -[182,183]
           right: 
-           (parenthesis ([183,184]
-            (binary_operator
+           (parenthesis<183,203> ([183,184]
+            (binary_operator<184,202>
              left: 
-              (parenthesis ([184,185]
-               (binary_operator left: (number[185,186]@{1}@) +[186,187]
+              (parenthesis<184,199> ([184,185]
+               (binary_operator<185,198> left: (number[185,186]@{1}@) +[186,187]
                 right: 
-                 (parenthesis ([187,188]
-                  (comparison_operator (identifier[188,195]@{nLayers}@) >[195,196] (number[196,197]@{1}@))
+                 (parenthesis<187,198> ([187,188]
+                  (comparison_operator<188,197> (identifier[188,195]@{nLayers}@) >[195,196] (number[196,197]@{1}@))
                   )[197,198]))
                )[198,199])
              *[199,200] right: (identifier[200,202]@{K0}@))
             )[202,203]))
         +[203,204] right: (number[204,205]@{1}@))
        :[205,206]
-       (end_keyword end[206,209])))
+       (end_keyword<206,209> end[206,209])))
     )[209,210]))
  ;[210,211] \n[211,213])

@@ -1,48 +1,48 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[21,29] name: (identifier[30,53]@{font_lock_MySubSubClass}@)
-  (superclasses <[54,55]
-   (property_name (identifier[56,68]@{ParentClass1}@))
+(source_file<1,609> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<21,608> classdef[21,29] name: (identifier[30,53]@{font_lock_MySubSubClass}@)
+  (superclasses<54,83> <[54,55]
+   (property_name<56,68> (identifier[56,68]@{ParentClass1}@))
    &[69,70]
-   (property_name (identifier[71,83]@{ParentClass2}@)))
+   (property_name<71,83> (identifier[71,83]@{ParentClass2}@)))
   (comment[84,98]@{% help comment}@) \n[98,99]
-  (properties properties[103,113] \n[113,114]
-   (property name: (identifier[122,132]@{MyProperty}@) (identifier[133,139]@{double}@)
-    (default_value =[140,141] (number[142,143]@{0}@))
+  (properties<103,191> properties[103,113] \n[113,114]
+   (property<122,184> name: (identifier[122,132]@{MyProperty}@) (identifier[133,139]@{double}@)
+    (default_value<140,143> =[140,141] (number[142,143]@{0}@))
     ;[143,144] (comment[145,183]@{% Public property with a default value}@) \n[183,184])
    end[188,191])
-  (methods methods[197,204] \n[204,205]
-   (function_definition function[213,221]
-    (function_output (identifier[222,225]@{obj}@) =[226,227])
+  (methods<197,604> methods[197,204] \n[204,205]
+   (function_definition<213,337> function[213,221]
+    (function_output<222,227> (identifier[222,225]@{obj}@) =[226,227])
     name: (identifier[228,235]@{MyClass}@)
-    (function_arguments ([235,236] arguments: (identifier[236,248]@{initialValue}@) )[248,249])
+    (function_arguments<235,249> ([235,236] arguments: (identifier[236,248]@{initialValue}@) )[248,249])
     (comment[262,282]@{% Constructor method}@) \n[282,283]
-    (block
-     (assignment
-      left: (field_expression object: (identifier[295,298]@{obj}@) .[298,299] field: (identifier[299,309]@{MyProperty}@))
+    (block<295,326>
+     (assignment<295,324>
+      left: (field_expression<295,309> object: (identifier[295,298]@{obj}@) .[298,299] field: (identifier[299,309]@{MyProperty}@))
       =[310,311] right: (identifier[312,324]@{initialValue}@))
      ;[324,325] \n[325,326])
     end[334,337])
    \n[337,339]
-   (function_definition function[347,355]
-    (function_output (identifier[356,364]@{newValue}@) =[365,366])
+   (function_definition<347,464> function[347,355]
+    (function_output<356,366> (identifier[356,364]@{newValue}@) =[365,366])
     name: (identifier[367,380]@{getMyProperty}@)
-    (function_arguments ([380,381] arguments: (identifier[381,384]@{obj}@) )[384,385])
+    (function_arguments<380,385> ([380,381] arguments: (identifier[381,384]@{obj}@) )[384,385])
     (comment[398,413]@{% Getter method}@) \n[413,414]
-    (block
-     (assignment left: (identifier[426,434]@{newValue}@) =[435,436]
-      right: (field_expression object: (identifier[437,440]@{obj}@) .[440,441] field: (identifier[441,451]@{MyProperty}@)))
+    (block<426,453>
+     (assignment<426,451> left: (identifier[426,434]@{newValue}@) =[435,436]
+      right: (field_expression<437,451> object: (identifier[437,440]@{obj}@) .[440,441] field: (identifier[441,451]@{MyProperty}@)))
      ;[451,452] \n[452,453])
     end[461,464])
    \n[464,466]
-   (function_definition function[474,482]
-    (function_output (identifier[483,486]@{obj}@) =[487,488])
+   (function_definition<474,596> function[474,482]
+    (function_output<483,488> (identifier[483,486]@{obj}@) =[487,488])
     name: (identifier[489,502]@{setMyProperty}@)
-    (function_arguments ([502,503] arguments: (identifier[503,506]@{obj}@) ,[506,507] (identifier[508,516]@{newValue}@) )[516,517])
+    (function_arguments<502,517> ([502,503] arguments: (identifier[503,506]@{obj}@) ,[506,507] (identifier[508,516]@{newValue}@) )[516,517])
     (comment[530,545]@{% Setter method}@) \n[545,546]
-    (block
-     (assignment
-      left: (field_expression object: (identifier[558,561]@{obj}@) .[561,562] field: (identifier[562,572]@{MyProperty}@))
+    (block<558,585>
+     (assignment<558,583>
+      left: (field_expression<558,572> object: (identifier[558,561]@{obj}@) .[561,562] field: (identifier[562,572]@{MyProperty}@))
       =[573,574] right: (identifier[575,583]@{newValue}@))
      ;[583,584] \n[584,585])
     end[593,596])

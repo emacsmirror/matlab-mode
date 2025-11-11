@@ -1,11 +1,11 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[23,90]@{% See https://github.com/acristoffers/tree-sitter-...}@)
- (assignment left: (identifier[93,99]@{iTypes}@) =[99,100]
+(source_file<1,126> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[23,90]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<93,125> left: (identifier[93,99]@{iTypes}@) =[99,100]
   right: 
-   (matrix [[100,101]
-    (row
-     (metaclass_operator ?[101,102] (identifier[102,106]@{int8}@))
+   (matrix<100,125> [[100,101]
+    (row<101,124>
+     (metaclass_operator<101,106> ?[101,102] (identifier[102,106]@{int8}@))
      (line_continuation[106,118]@{...\n        }@) ,[118,118]
-     (metaclass_operator ?[118,119] (identifier[119,124]@{int16}@)))
+     (metaclass_operator<118,124> ?[118,119] (identifier[119,124]@{int16}@)))
     ][124,125]))
  \n[125,126])

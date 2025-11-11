@@ -1,15 +1,15 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment
-  left: (field_expression object: (identifier[22,25]@{foo}@) .[25,26] field: (identifier[26,29]@{bar}@))
+(source_file<1,66> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,33>
+  left: (field_expression<22,29> object: (identifier[22,25]@{foo}@) .[25,26] field: (identifier[26,29]@{bar}@))
   =[30,31] right: (number[32,33]@{1}@))
  ;[33,34]
- (assignment left: (identifier[36,37]@{a}@) =[38,39]
+ (assignment<36,51> left: (identifier[36,37]@{a}@) =[38,39]
   right: 
-   (function_call name: (identifier[40,45]@{myFcn}@) ([45,46]
-    (arguments argument: (number[46,47]@{1}@) ,[47,48] (number[49,50]@{2}@))
+   (function_call<40,51> name: (identifier[40,45]@{myFcn}@) ([45,46]
+    (arguments<46,50> argument: (number[46,47]@{1}@) ,[47,48] (number[49,50]@{2}@))
     )[50,51]))
  ;[51,52]
- (assignment left: (identifier[54,55]@{x}@) =[56,57]
-  right: (range (number[58,59]@{1}@) :[59,60] (number[60,62]@{10}@)))
+ (assignment<54,62> left: (identifier[54,55]@{x}@) =[56,57]
+  right: (range<58,62> (number[58,59]@{1}@) :[59,60] (number[60,62]@{10}@)))
  ;[62,63] \n[63,66])

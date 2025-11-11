@@ -1,35 +1,35 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) (comment[91,152]@{% There is whitespace after both "someCmd  " state...}@)
- (switch_statement switch[154,160] condition: (identifier[161,164]@{in1}@) \n[164,165]
-  (otherwise_clause otherwise[167,176] \n[176,177]
-   (block
-    (if_statement if[181,183]
-     condition: (comparison_operator (identifier[184,187]@{in1}@) >[188,189] (number[190,191]@{1}@))
-     (block
-      (function_call name: (identifier[200,204]@{disp}@) ([204,205]
-       (arguments
-        argument: (string '[205,206] (string_content[206,209]@{> 1}@) '[209,210]))
+(source_file<1,333> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) (comment[91,152]@{% There is whitespace after both "someCmd  " state...}@)
+ (switch_statement<154,251> switch[154,160] condition: (identifier[161,164]@{in1}@) \n[164,165]
+  (otherwise_clause<167,248> otherwise[167,176] \n[176,177]
+   (block<181,248>
+    (if_statement<181,247> if[181,183]
+     condition: (comparison_operator<184,191> (identifier[184,187]@{in1}@) >[188,189] (number[190,191]@{1}@))
+     (block<200,213>
+      (function_call<200,211> name: (identifier[200,204]@{disp}@) ([204,205]
+       (arguments<205,210>
+        argument: (string<205,210> '[205,206] (string_content[206,209]@{> 1}@) '[209,210]))
        )[210,211])
       ;[211,212] \n[212,213])
-     (else_clause else[217,221]
-      (block
-       (command (command_name[230,237]@{someCmd}@))
+     (else_clause<217,240> else[217,221]
+      (block<230,240>
+       (command<230,237> (command_name[230,237]@{someCmd}@))
        \n[239,240]))
      end[244,247])
     \n[247,248]))
   end[248,251])
  \n[251,254]
- (switch_statement switch[254,260] condition: (identifier[261,262]@{a}@) \n[262,263]
-  (otherwise_clause otherwise[265,274]
-   (block
-    (command (command_name[279,286]@{someCmd}@))
+ (switch_statement<254,332> switch[254,260] condition: (identifier[261,262]@{a}@) \n[262,263]
+  (otherwise_clause<265,329> otherwise[265,274]
+   (block<279,329>
+    (command<279,286> (command_name[279,286]@{someCmd}@))
     \n[288,289]
-    (if_statement if[293,295]
-     condition: (comparison_operator (identifier[296,297]@{a}@) >[298,299] (number[300,301]@{1}@))
-     (block
-      (function_call name: (identifier[310,314]@{disp}@) ([314,315]
-       (arguments
-        argument: (string '[315,316] (string_content[316,318]@{>1}@) '[318,319]))
+    (if_statement<293,328> if[293,295]
+     condition: (comparison_operator<296,301> (identifier[296,297]@{a}@) >[298,299] (number[300,301]@{1}@))
+     (block<310,321>
+      (function_call<310,320> name: (identifier[310,314]@{disp}@) ([314,315]
+       (arguments<315,319>
+        argument: (string<315,319> '[315,316] (string_content[316,318]@{>1}@) '[318,319]))
        )[319,320])
       \n[320,321])
      end[325,328])

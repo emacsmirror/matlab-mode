@@ -1,23 +1,23 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See; https://github.com/acristoffers/tree-sitter...}@)
- (assignment left: (identifier[91,92]@{y}@) =[93,94] right: (number[95,96]@{7}@))
+(source_file<1,145> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See; https://github.com/acristoffers/tree-sitter...}@)
+ (assignment<91,96> left: (identifier[91,92]@{y}@) =[93,94] right: (number[95,96]@{7}@))
  ;[96,97]
- (assignment left: (identifier[98,100]@{fh}@) =[101,102]
+ (assignment<98,113> left: (identifier[98,100]@{fh}@) =[101,102]
   right: 
-   (lambda @[103,104] ([104,105]
-    (arguments (identifier[105,106]@{x}@))
+   (lambda<103,113> @[103,104] ([104,105]
+    (arguments<105,106> (identifier[105,106]@{x}@))
     )[106,107]
     expression: 
-     (binary_operator
-      left: (binary_operator left: (identifier[107,108]@{x}@) .^[108,110] right: (number[110,111]@{2}@))
+     (binary_operator<107,113>
+      left: (binary_operator<107,111> left: (identifier[107,108]@{x}@) .^[108,110] right: (number[110,111]@{2}@))
       +[111,112] right: (identifier[112,113]@{y}@))))
  ;[113,114]
- (assignment left: (identifier[115,116]@{s}@) =[117,118]
+ (assignment<115,132> left: (identifier[115,116]@{s}@) =[117,118]
   right: 
-   (function_call name: (identifier[119,128]@{functions}@) ([128,129]
-    (arguments argument: (identifier[129,131]@{fh}@))
+   (function_call<119,132> name: (identifier[119,128]@{functions}@) ([128,129]
+    (arguments<129,131> argument: (identifier[129,131]@{fh}@))
     )[131,132]))
  \n[132,133]
- (field_expression object: (identifier[133,134]@{s}@) .[134,135]
-  field: (identifier function[135,143]))
+ (field_expression<133,143> object: (identifier[133,134]@{s}@) .[134,135]
+  field: (identifier<135,143> function[135,143]))
  \n[143,145])

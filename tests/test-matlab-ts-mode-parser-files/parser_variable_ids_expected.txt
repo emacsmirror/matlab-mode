@@ -1,22 +1,22 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[22,30]
-  (function_output (identifier[31,35]@{out1}@) =[36,37])
+(source_file<1,128> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<22,126> function[22,30]
+  (function_output<31,37> (identifier[31,35]@{out1}@) =[36,37])
   name: (identifier[38,57]@{parser_variable_ids}@)
-  (function_arguments ([57,58] arguments: (identifier[58,61]@{in1}@) )[61,62])
+  (function_arguments<57,62> ([57,58] arguments: (identifier[58,61]@{in1}@) )[61,62])
   \n[63,64]
-  (block
-   (assignment left: (identifier[68,72]@{out1}@) =[73,74]
+  (block<68,123>
+   (assignment<68,93> left: (identifier[68,72]@{out1}@) =[73,74]
     right: 
-     (binary_operator
-      left: (binary_operator left: (identifier[75,78]@{in1}@) *[79,80] right: (number[81,82]@{2}@))
+     (binary_operator<75,93>
+      left: (binary_operator<75,82> left: (identifier[75,78]@{in1}@) *[79,80] right: (number[81,82]@{2}@))
       +[83,84]
-      right: (field_expression object: (identifier[85,88]@{foo}@) .[88,89] field: (identifier[89,93]@{out1}@))))
+      right: (field_expression<85,93> object: (identifier[85,88]@{foo}@) .[88,89] field: (identifier[89,93]@{out1}@))))
    ;[93,94]
-   (assignment left: (identifier[99,103]@{out1}@) =[104,105]
+   (assignment<99,121> left: (identifier[99,103]@{out1}@) =[104,105]
     right: 
-     (binary_operator left: (identifier[106,110]@{out1}@) +[111,112]
-      right: (binary_operator left: (number[113,114]@{2}@) *[115,116] right: (identifier[117,121]@{out1}@))))
+     (binary_operator<106,121> left: (identifier[106,110]@{out1}@) +[111,112]
+      right: (binary_operator<113,121> left: (number[113,114]@{2}@) *[115,116] right: (identifier[117,121]@{out1}@))))
    ;[121,122] \n[122,123])
   end[123,126])
  \n[126,128])

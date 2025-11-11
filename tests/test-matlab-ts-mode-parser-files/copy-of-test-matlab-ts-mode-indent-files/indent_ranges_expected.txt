@@ -1,47 +1,47 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment left: (identifier[22,30]@{myMatrix}@) =[31,32]
+(source_file<1,233> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,84> left: (identifier[22,30]@{myMatrix}@) =[31,32]
   right: 
-   (matrix [[33,34] \n[35,36]
-    (row (number[49,50]@{1}@) ,[51,51] (number[51,52]@{2}@))
+   (matrix<33,84> [[33,34] \n[35,36]
+    (row<49,52> (number[49,50]@{1}@) ,[51,51] (number[51,52]@{2}@))
     ;[52,53]
-    (row (number[67,68]@{3}@) ,[69,69] (number[69,70]@{4}@))
+    (row<67,70> (number[67,68]@{3}@) ,[69,69] (number[69,70]@{4}@))
     ;[70,71] ][83,84]))
  ;[84,85]
- (function_call name: (identifier[87,91]@{disp}@) ([91,92]
-  (arguments
+ (function_call<87,128> name: (identifier[87,91]@{disp}@) ([91,92]
+  (arguments<92,127>
    argument: 
-    (function_call name: (identifier[92,100]@{myMatrix}@) ([100,101]
-     (arguments
+    (function_call<92,127> name: (identifier[92,100]@{myMatrix}@) ([100,101]
+     (arguments<101,126>
       argument: 
-       (range (number[101,102]@{1}@) :[102,103] (line_continuation[105,109]@{...\n}@)
-        (end_keyword end[123,126])))
+       (range<101,126> (number[101,102]@{1}@) :[102,103] (line_continuation[105,109]@{...\n}@)
+        (end_keyword<123,126> end[123,126])))
      )[126,127]))
   )[127,128])
  ;[128,129]
- (function_call name: (identifier[132,136]@{disp}@) ([136,137]
-  (arguments
+ (function_call<132,180> name: (identifier[132,136]@{disp}@) ([136,137]
+  (arguments<137,179>
    argument: 
-    (function_call name: (identifier[137,145]@{myMatrix}@) ([145,146]
-     (arguments
+    (function_call<137,179> name: (identifier[137,145]@{myMatrix}@) ([145,146]
+     (arguments<146,178>
       argument: 
-       (range (number[146,147]@{1}@) :[147,148]
-        (parenthesis ([149,150]
-         (binary_operator left: (number[150,151]@{1}@) +[152,153] (line_continuation[154,158]@{...\n}@) right: (number[176,177]@{2}@))
+       (range<146,178> (number[146,147]@{1}@) :[147,148]
+        (parenthesis<149,178> ([149,150]
+         (binary_operator<150,177> left: (number[150,151]@{1}@) +[152,153] (line_continuation[154,158]@{...\n}@) right: (number[176,177]@{2}@))
          )[177,178])))
      )[178,179]))
   )[179,180])
  ;[180,181]
- (function_call name: (identifier[183,187]@{disp}@) ([187,188]
-  (arguments
+ (function_call<183,231> name: (identifier[183,187]@{disp}@) ([187,188]
+  (arguments<188,230>
    argument: 
-    (function_call name: (identifier[188,196]@{myMatrix}@) ([196,197]
-     (arguments
+    (function_call<188,230> name: (identifier[188,196]@{myMatrix}@) ([196,197]
+     (arguments<197,229>
       argument: 
-       (range (number[197,198]@{1}@) :[198,199]
-        (matrix [[200,201]
-         (row
-          (binary_operator left: (number[201,202]@{1}@) +[203,204] (line_continuation[205,209]@{...\n}@) right: (number[227,228]@{2}@)))
+       (range<197,229> (number[197,198]@{1}@) :[198,199]
+        (matrix<200,229> [[200,201]
+         (row<201,228>
+          (binary_operator<201,228> left: (number[201,202]@{1}@) +[203,204] (line_continuation[205,209]@{...\n}@) right: (number[227,228]@{2}@)))
          ][228,229])))
      )[229,230]))
   )[230,231])

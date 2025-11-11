@@ -1,37 +1,37 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[21,29] name: (identifier[30,57]@{font_lock_dot_question_mark}@)
-  (function_arguments ([57,58] arguments: (identifier[58,59]@{x}@) ,[59,60] (identifier[60,61]@{y}@) ,[61,62] (identifier[62,70]@{propArgs}@) )[70,71])
+(source_file<1,272> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<21,271> function[21,29] name: (identifier[30,57]@{font_lock_dot_question_mark}@)
+  (function_arguments<57,71> ([57,58] arguments: (identifier[58,59]@{x}@) ,[59,60] (identifier[60,61]@{y}@) ,[61,62] (identifier[62,70]@{propArgs}@) )[70,71])
   \n[71,72]
-  (arguments_statement arguments[76,85] \n[85,86]
-   (property name: (identifier[94,95]@{x}@)
-    (dimensions ([96,97]
-     (spread_operator :[97,98])
+  (arguments_statement<76,193> arguments[76,85] \n[85,86]
+   (property<94,109> name: (identifier[94,95]@{x}@)
+    (dimensions<96,101> ([96,97]
+     (spread_operator<97,98> :[97,98])
      ,[98,99]
-     (spread_operator :[99,100])
+     (spread_operator<99,100> :[99,100])
      )[100,101])
     (identifier[102,108]@{double}@) \n[108,109])
-   (property name: (identifier[117,118]@{y}@)
-    (dimensions ([119,120]
-     (spread_operator :[120,121])
+   (property<117,132> name: (identifier[117,118]@{y}@)
+    (dimensions<119,124> ([119,120]
+     (spread_operator<120,121> :[120,121])
      ,[121,122]
-     (spread_operator :[122,123])
+     (spread_operator<122,123> :[122,123])
      )[123,124])
     (identifier[125,131]@{double}@) \n[131,132])
-   (class_property (identifier[140,148]@{propArgs}@) .?[148,150] (identifier[150,156]@{matlab}@) .[156,157] (identifier[157,165]@{graphics}@) .[165,166] (identifier[166,171]@{chart}@) .[171,172] (identifier[172,181]@{primitive}@) .[181,182] (identifier[182,185]@{Bar}@))
+   (class_property<140,185> (identifier[140,148]@{propArgs}@) .?[148,150] (identifier[150,156]@{matlab}@) .[156,157] (identifier[157,165]@{graphics}@) .[165,166] (identifier[166,171]@{chart}@) .[171,172] (identifier[172,181]@{primitive}@) .[181,182] (identifier[182,185]@{Bar}@))
    \n[185,186] end[190,193])
-  (block
-   (assignment left: (identifier[198,210]@{propertyCell}@) =[211,212]
+  (block<198,268>
+   (assignment<198,237> left: (identifier[198,210]@{propertyCell}@) =[211,212]
     right: 
-     (function_call name: (identifier[213,227]@{namedargs2cell}@) ([227,228]
-      (arguments argument: (identifier[228,236]@{propArgs}@))
+     (function_call<213,237> name: (identifier[213,227]@{namedargs2cell}@) ([227,228]
+      (arguments<228,236> argument: (identifier[228,236]@{propArgs}@))
       )[236,237]))
    ;[237,238]
-   (function_call name: (identifier[243,246]@{bar}@) ([246,247]
-    (arguments argument: (identifier[247,248]@{x}@) ,[248,249] (identifier[249,250]@{y}@) ,[250,251]
-     (function_call name: (identifier[251,263]@{propertyCell}@) {[263,264]
-      (arguments
-       argument: (spread_operator :[264,265]))
+   (function_call<243,267> name: (identifier[243,246]@{bar}@) ([246,247]
+    (arguments<247,266> argument: (identifier[247,248]@{x}@) ,[248,249] (identifier[249,250]@{y}@) ,[250,251]
+     (function_call<251,266> name: (identifier[251,263]@{propertyCell}@) {[263,264]
+      (arguments<264,265>
+       argument: (spread_operator<264,265> :[264,265]))
       }[265,266]))
     )[266,267])
    \n[267,268])

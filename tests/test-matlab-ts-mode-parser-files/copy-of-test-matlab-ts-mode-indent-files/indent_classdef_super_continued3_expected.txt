@@ -1,21 +1,21 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[22,30] name: (identifier[31,63]@{indent_classdef_super_continued3}@) (line_continuation[64,68]@{...\n}@)
-  (superclasses <[72,73]
-   (property_name (identifier[74,84]@{otherThing}@))
+(source_file<1,203> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<22,202> classdef[22,30] name: (identifier[31,63]@{indent_classdef_super_continued3}@) (line_continuation[64,68]@{...\n}@)
+  (superclasses<72,123> <[72,73]
+   (property_name<74,84> (identifier[74,84]@{otherThing}@))
    (line_continuation[85,89]@{...\n}@) &[93,94]
-   (property_name (identifier[95,106]@{otherThing2}@))
+   (property_name<95,106> (identifier[95,106]@{otherThing2}@))
    (line_continuation[107,111]@{...\n}@) &[115,116]
-   (property_name (identifier[117,123]@{handle}@)))
+   (property_name<117,123> (identifier[117,123]@{handle}@)))
   \n[123,125]
-  (properties properties[129,139]
-   (attributes ([140,141]
-    (attribute (identifier[141,150]@{Dependent}@))
+  (properties<129,198> properties[129,139]
+   (attributes<140,172> ([140,141]
+    (attribute<141,150> (identifier[141,150]@{Dependent}@))
     ,[150,151]
-    (attribute (identifier[152,161]@{SetAccess}@) =[162,163] (identifier[164,171]@{private}@))
+    (attribute<152,171> (identifier[152,161]@{SetAccess}@) =[162,163] (identifier[164,171]@{private}@))
     )[171,172])
    \n[172,173]
-   (property name: (identifier[181,190]@{TopicName}@) \n[190,191])
+   (property<181,191> name: (identifier[181,190]@{TopicName}@) \n[190,191])
    end[195,198])
   end[199,202])
  \n[202,203])

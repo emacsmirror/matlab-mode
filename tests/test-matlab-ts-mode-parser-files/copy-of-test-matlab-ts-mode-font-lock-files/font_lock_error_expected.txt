@@ -1,45 +1,45 @@
 # -*- t-utils-ts-parse-tree -*-
-(ERROR (comment[1,20]@{% -*- matlab-ts -*-}@) function[21,29] (identifier[30,45]@{font_lock_error}@)
- (function_arguments ([45,46] arguments: (identifier[46,49]@{foo}@) )[49,50])
+(ERROR<1,391> (comment[1,20]@{% -*- matlab-ts -*-}@) function[21,29] (identifier[30,45]@{font_lock_error}@)
+ (function_arguments<45,50> ([45,46] arguments: (identifier[46,49]@{foo}@) )[49,50])
  \n[50,51]
- (assignment left: (identifier[55,58]@{out}@) =[59,60]
+ (assignment<55,77> left: (identifier[55,58]@{out}@) =[59,60]
   right: 
-   (matrix [[61,62]
-    (row
-     (string '[62,63] (string_content[63,66]@{''(}@) '[66,67])
+   (matrix<61,77> [[61,62]
+    (row<62,76>
+     (string<62,67> '[62,63] (string_content[63,66]@{''(}@) '[66,67])
      ,[67,68] (identifier[69,76]@{newline}@))
     ][76,77]))
  ;[77,78] \n[78,80] for[84,87]
- (iterator (identifier[88,89]@{x}@) =[90,91]
-  (range (number[92,93]@{1}@) :[93,94]
-   (function_call name: (identifier[94,100]@{length}@) ([100,101]
-    (arguments argument: (identifier[101,104]@{foo}@))
+ (iterator<88,105> (identifier[88,89]@{x}@) =[90,91]
+  (range<92,105> (number[92,93]@{1}@) :[93,94]
+   (function_call<94,105> name: (identifier[94,100]@{length}@) ([100,101]
+    (arguments<101,104> argument: (identifier[101,104]@{foo}@))
     )[104,105])))
- (assignment left: (identifier[114,115]@{c}@) =[116,117]
+ (assignment<114,124> left: (identifier[114,115]@{c}@) =[116,117]
   right: 
-   (function_call name: (identifier[118,121]@{foo}@) ([121,122]
-    (arguments argument: (identifier[122,123]@{x}@))
+   (function_call<118,124> name: (identifier[118,121]@{foo}@) ([121,122]
+    (arguments<122,123> argument: (identifier[122,123]@{x}@))
     )[123,124]))
  ;[124,125] \n[125,126] if[134,136]
- (function_call name: (identifier[137,143]@{regexp}@) ([143,144]
-  (arguments argument: (identifier[144,145]@{c}@) ,[145,146]
-   (string '[147,148] (string_content[148,166]@{\(variable|slxFile}@) (string_content[166,169]@{\)"}@) (string_content[169,171]@{\)}@) '[171,172])
+ (function_call<137,181> name: (identifier[137,143]@{regexp}@) ([143,144]
+  (arguments<144,180> argument: (identifier[144,145]@{c}@) ,[145,146]
+   (string<147,172> '[147,148] (string_content[148,166]@{\(variable|slxFile}@) (string_content[166,169]@{\)"}@) (string_content[169,171]@{\)}@) '[171,172])
    ,[172,173]
-   (string '[174,175] (string_content[175,179]@{once}@) '[179,180]))
+   (string<174,180> '[174,175] (string_content[175,179]@{once}@) '[179,180]))
   )[180,181])
  \n[181,182] else[190,194]
- (assignment left: (identifier[207,208]@{m}@) =[209,210]
+ (assignment<207,289> left: (identifier[207,208]@{m}@) =[209,210]
   right: 
-   (function_call name: (identifier[211,217]@{regexp}@) ([217,218]
-    (arguments argument: (identifier[218,219]@{c}@) ,[219,220]
-     (string '[221,222] (string_content[222,225]@{^[ }@) (escape_sequence[225,227]@{\t}@) (string_content[227,229]@{]*}@) (string_content[229,242]@{\(("[^"]+")[ }@) (escape_sequence[242,244]@{\t}@) (string_content[244,246]@{]+}@) (string_content[246,250]@{\.[ }@) (escape_sequence[250,252]@{\t}@) (string_content[252,257]@{]+".*}@) (string_content[257,274]@{\(mFile|pFile|mex}@) (string_content[274,277]@{\)"}@) (string_content[277,279]@{\)}@) '[279,280])
+   (function_call<211,289> name: (identifier[211,217]@{regexp}@) ([217,218]
+    (arguments<218,288> argument: (identifier[218,219]@{c}@) ,[219,220]
+     (string<221,280> '[221,222] (string_content[222,225]@{^[ }@) (escape_sequence[225,227]@{\t}@) (string_content[227,229]@{]*}@) (string_content[229,242]@{\(("[^"]+")[ }@) (escape_sequence[242,244]@{\t}@) (string_content[244,246]@{]+}@) (string_content[246,250]@{\.[ }@) (escape_sequence[250,252]@{\t}@) (string_content[252,257]@{]+".*}@) (string_content[257,274]@{\(mFile|pFile|mex}@) (string_content[274,277]@{\)"}@) (string_content[277,279]@{\)}@) '[279,280])
      ,[280,281] (identifier[282,288]@{tokens}@))
     )[288,289]))
  \n[289,290] if[302,304]
- (not_operator ~[305,306]
-  (function_call name: (identifier[306,313]@{isempty}@) ([313,314]
-   (arguments argument: (identifier[314,315]@{m}@))
+ (not_operator<305,316> ~[305,306]
+  (function_call<306,316> name: (identifier[306,313]@{isempty}@) ([313,314]
+   (arguments<314,315> argument: (identifier[314,315]@{m}@))
    )[315,316]))
  (identifier[333,336]@{out}@) =[337,338] [[339,340] (identifier[340,343]@{out}@) ,[343,344] (line_continuation[345,349]@{...\n}@)
- (end_keyword end[361,364])
+ (end_keyword<361,364> end[361,364])
  end[373,376] end[381,384] end[385,388])

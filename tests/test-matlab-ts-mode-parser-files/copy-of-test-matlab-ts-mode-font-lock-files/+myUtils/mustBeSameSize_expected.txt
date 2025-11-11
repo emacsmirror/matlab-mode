@@ -1,27 +1,27 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[22,30] name: (identifier[31,45]@{mustBeSameSize}@)
-  (function_arguments ([45,46] arguments: (identifier[46,49]@{in1}@) ,[49,50] (identifier[51,54]@{in2}@) ,[54,55] (identifier[56,63]@{in1Name}@) ,[63,64] (identifier[65,72]@{in2Name}@) )[72,73])
+(source_file<1,188> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<22,187> function[22,30] name: (identifier[31,45]@{mustBeSameSize}@)
+  (function_arguments<45,73> ([45,46] arguments: (identifier[46,49]@{in1}@) ,[49,50] (identifier[51,54]@{in2}@) ,[54,55] (identifier[56,63]@{in1Name}@) ,[63,64] (identifier[65,72]@{in2Name}@) )[72,73])
   \n[73,74]
-  (block
-   (if_statement if[78,80]
+  (block<78,184>
+   (if_statement<78,183> if[78,80]
     condition: 
-     (not_operator ~[81,82]
-      (function_call name: (identifier[82,89]@{isequal}@) ([89,90]
-       (arguments
+     (not_operator<81,111> ~[81,82]
+      (function_call<82,111> name: (identifier[82,89]@{isequal}@) ([89,90]
+       (arguments<90,110>
         argument: 
-         (function_call name: (identifier[90,94]@{size}@) ([94,95]
-          (arguments argument: (identifier[95,98]@{in1}@))
+         (function_call<90,99> name: (identifier[90,94]@{size}@) ([94,95]
+          (arguments<95,98> argument: (identifier[95,98]@{in1}@))
           )[98,99])
         ,[99,100]
-        (function_call name: (identifier[101,105]@{size}@) ([105,106]
-         (arguments argument: (identifier[106,109]@{in2}@))
+        (function_call<101,110> name: (identifier[101,105]@{size}@) ([105,106]
+         (arguments<106,109> argument: (identifier[106,109]@{in2}@))
          )[109,110]))
        )[110,111]))
-    (block
-     (function_call name: (identifier[120,125]@{error}@) ([125,126]
-      (arguments
-       argument: (string "[126,127] (formatting_sequence[127,129]@{%s}@) (string_content[129,134]@{ and }@) (formatting_sequence[134,136]@{%s}@) (string_content[136,154]@{ must be same size}@) "[154,155])
+    (block<120,176>
+     (function_call<120,174> name: (identifier[120,125]@{error}@) ([125,126]
+      (arguments<126,173>
+       argument: (string<126,155> "[126,127] (formatting_sequence[127,129]@{%s}@) (string_content[129,134]@{ and }@) (formatting_sequence[134,136]@{%s}@) (string_content[136,154]@{ must be same size}@) "[154,155])
        ,[155,156] (identifier[157,164]@{in1Name}@) ,[164,165] (identifier[166,173]@{in2Name}@))
       )[173,174])
      ;[174,175] \n[175,176])

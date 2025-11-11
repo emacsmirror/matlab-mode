@@ -1,52 +1,52 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[21,29] name: (identifier[30,41]@{outline_foo}@) \n[41,42]
-  (methods methods[46,53] \n[53,54]
-   (function_definition function[62,70] name: (identifier[71,74]@{one}@)
-    (function_arguments ([74,75] arguments: (identifier[75,76]@{a}@) )[76,77])
+(source_file<1,436> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<21,435> classdef[21,29] name: (identifier[30,41]@{outline_foo}@) \n[41,42]
+  (methods<46,431> methods[46,53] \n[53,54]
+   (function_definition<62,295> function[62,70] name: (identifier[71,74]@{one}@)
+    (function_arguments<74,77> ([74,75] arguments: (identifier[75,76]@{a}@) )[76,77])
     (comment[86,89]@{% c}@) (comment[103,115]@{%% heading 1}@) \n[115,116]
-    (block
-     (assignment left: (identifier[128,129]@{x}@) =[130,131]
+    (block<128,284>
+     (assignment<128,148> left: (identifier[128,129]@{x}@) =[130,131]
       right: 
-       (cell {[132,133]
-        (row
-         (string '[133,134] (string_content[134,135]@{a}@) '[135,136])
+       (cell<132,148> {[132,133]
+        (row<133,147>
+         (string<133,136> '[133,134] (string_content[134,135]@{a}@) '[135,136])
          ,[136,137]
-         (string '[138,139] (string_content[139,142]@{c()}@) '[142,143])
+         (string<138,143> '[138,139] (string_content[139,142]@{c()}@) '[142,143])
          ,[144,144]
-         (string '[144,145] (string_content[145,146]@{b}@) '[146,147]))
+         (string<144,147> '[144,145] (string_content[145,146]@{b}@) '[146,147]))
         }[147,148]))
      ;[148,149] (comment[163,175]@{%% heading 2}@) \n[175,176]
-     (if_statement if[188,190] condition: (identifier[191,192]@{a}@)
-      (block
-       (function_call name: (identifier[209,213]@{disp}@) ([213,214]
-        (arguments
-         argument: (string '[214,215] (string_content[215,218]@{foo}@) '[218,219]))
+     (if_statement<188,283> if[188,190] condition: (identifier[191,192]@{a}@)
+      (block<209,222>
+       (function_call<209,220> name: (identifier[209,213]@{disp}@) ([213,214]
+        (arguments<214,219>
+         argument: (string<214,219> '[214,215] (string_content[215,218]@{foo}@) '[218,219]))
         )[219,220])
        ;[220,221] \n[221,222])
-      (else_clause else[234,238]
-       (block
-        (function_call name: (identifier[255,259]@{disp}@) ([259,260]
-         (arguments
-          argument: (string '[260,261] (string_content[261,264]@{bar}@) '[264,265]))
+      (else_clause<234,268> else[234,238]
+       (block<255,268>
+        (function_call<255,266> name: (identifier[255,259]@{disp}@) ([259,260]
+         (arguments<260,265>
+          argument: (string<260,265> '[260,261] (string_content[261,264]@{bar}@) '[264,265]))
          )[265,266])
         ;[266,267] \n[267,268]))
       end[280,283])
      \n[283,284])
     end[292,295])
    \n[295,297]
-   (function_definition function[305,313] name: (identifier[314,317]@{two}@) \n[317,318]
-    (block
-     (function_call name: (identifier[330,334]@{disp}@) ([334,335]
-      (arguments
-       argument: (string '[335,336] (string_content[336,339]@{one}@) '[339,340]))
+   (function_definition<305,423> function[305,313] name: (identifier[314,317]@{two}@) \n[317,318]
+    (block<330,412>
+     (function_call<330,341> name: (identifier[330,334]@{disp}@) ([334,335]
+      (arguments<335,340>
+       argument: (string<335,340> '[335,336] (string_content[336,339]@{one}@) '[339,340]))
       )[340,341])
      \n[341,343]
-     (function_definition function[355,363] name: (identifier[364,367]@{goo}@) \n[367,368]
-      (block
-       (function_call name: (identifier[384,388]@{disp}@) ([388,389]
-        (arguments
-         argument: (string '[389,390] (string_content[390,393]@{goo}@) '[393,394]))
+     (function_definition<355,411> function[355,363] name: (identifier[364,367]@{goo}@) \n[367,368]
+      (block<384,396>
+       (function_call<384,395> name: (identifier[384,388]@{disp}@) ([388,389]
+        (arguments<389,394>
+         argument: (string<389,394> '[389,390] (string_content[390,393]@{goo}@) '[393,394]))
         )[394,395])
        \n[395,396])
       end[408,411])

@@ -1,24 +1,24 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,97]@{% Structure, bar and disp are valid fields and sho...}@)
- (assignment
-  left: (field_expression object: (identifier[98,101]@{foo}@) .[101,102] field: (identifier[102,105]@{bar}@) .[105,106] (identifier[106,110]@{disp}@) .[110,111] (identifier[111,114]@{goo}@))
+(source_file<1,575> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,97]@{% Structure, bar and disp are valid fields and sho...}@)
+ (assignment<98,118>
+  left: (field_expression<98,114> object: (identifier[98,101]@{foo}@) .[101,102] field: (identifier[102,105]@{bar}@) .[105,106] (identifier[106,110]@{disp}@) .[110,111] (identifier[111,114]@{goo}@))
   =[115,116] right: (number[117,118]@{1}@))
  ;[118,119] (comment[121,167]@{%  Case: "Simulink.MDLInfo.FileName" 'property}@)
- (assignment left: (identifier[168,169]@{x}@) =[170,171]
-  right: (field_expression object: (identifier[172,180]@{Simulink}@) .[180,181] field: (identifier[181,188]@{MDLInfo}@) .[188,189] (identifier[189,197]@{FileName}@)))
+ (assignment<168,197> left: (identifier[168,169]@{x}@) =[170,171]
+  right: (field_expression<172,197> object: (identifier[172,180]@{Simulink}@) .[180,181] field: (identifier[181,188]@{MDLInfo}@) .[188,189] (identifier[189,197]@{FileName}@)))
  ;[197,198] (comment[200,261]@{%  Case: "Simulink.CMI.CompiledSimType.ModelApi" '...}@)
- (assignment left: (identifier[262,263]@{y}@) =[264,265]
-  right: (field_expression object: (identifier[266,274]@{Simulink}@) .[274,275] field: (identifier[275,278]@{CMI}@) .[278,279] (identifier[279,294]@{CompiledSimType}@) .[294,295] (identifier[295,303]@{ModelApi}@)))
+ (assignment<262,303> left: (identifier[262,263]@{y}@) =[264,265]
+  right: (field_expression<266,303> object: (identifier[266,274]@{Simulink}@) .[274,275] field: (identifier[275,278]@{CMI}@) .[278,279] (identifier[279,294]@{CompiledSimType}@) .[294,295] (identifier[295,303]@{ModelApi}@)))
  ;[303,304] (comment[306,363]@{% genapp is a function in the simulink.compiler na...}@)
- (field_expression object: (identifier[364,372]@{simulink}@) .[372,373] field: (identifier[373,381]@{compiler}@) .[381,382]
-  (function_call name: (identifier[382,388]@{genapp}@) ([388,389]
-   (arguments
-    argument: (string '[389,390] (string_content[390,399]@{modelName}@) '[399,400])
+ (field_expression<364,406> object: (identifier[364,372]@{simulink}@) .[372,373] field: (identifier[373,381]@{compiler}@) .[381,382]
+  (function_call<382,406> name: (identifier[382,388]@{genapp}@) ([388,389]
+   (arguments<389,405>
+    argument: (string<389,400> '[389,390] (string_content[390,399]@{modelName}@) '[399,400])
     ,[400,401] (identifier[402,405]@{foo}@))
    )[405,406]))
  (comment[408,461]@{% test with no args (though this will error when r...}@) \n[461,462]
- (field_expression object: (identifier[462,470]@{simulink}@) .[470,471] field: (identifier[471,479]@{compiler}@) .[479,480]
-  (function_call name: (identifier[480,486]@{genapp}@) ([486,487] )[487,488]))
+ (field_expression<462,488> object: (identifier[462,470]@{simulink}@) .[470,471] field: (identifier[471,479]@{compiler}@) .[479,480]
+  (function_call<480,488> name: (identifier[480,486]@{genapp}@) ([486,487] )[487,488]))
  (comment[490,549]@{% test again with no args (though this will error ...}@) \n[549,550]
- (field_expression object: (identifier[550,558]@{simulink}@) .[558,559] field: (identifier[559,567]@{compiler}@) .[567,568] (identifier[568,574]@{genapp}@))
+ (field_expression<550,574> object: (identifier[550,558]@{simulink}@) .[558,559] field: (identifier[559,567]@{compiler}@) .[567,568] (identifier[568,574]@{genapp}@))
  \n[574,575])

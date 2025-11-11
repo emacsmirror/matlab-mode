@@ -1,23 +1,23 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,123]@{% Case1: (t-utils-xr (rename-buffer "tmp__on_save_...}@) (comment[125,190]@{% Calling foo makes this a script and which uses l...}@)
- (command (command_name[191,194]@{foo}@))
+(source_file<1,272> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,123]@{% Case1: (t-utils-xr (rename-buffer "tmp__on_save_...}@) (comment[125,190]@{% Calling foo makes this a script and which uses l...}@)
+ (command<191,194> (command_name[191,194]@{foo}@))
  \n[194,196]
- (function_definition function[196,204] name: (identifier[205,208]@{foo}@) \n[208,209]
-  (block
-   (function_call name: (identifier[213,217]@{disp}@) ([217,218]
-    (arguments
-     argument: (string '[218,219] (string_content[219,222]@{foo}@) '[222,223]))
+ (function_definition<196,237> function[196,204] name: (identifier[205,208]@{foo}@) \n[208,209]
+  (block<213,234>
+   (function_call<213,224> name: (identifier[213,217]@{disp}@) ([217,218]
+    (arguments<218,223>
+     argument: (string<218,223> '[218,219] (string_content[219,222]@{foo}@) '[222,223]))
     )[223,224])
    \n[224,225]
-   (command (command_name[229,232]@{bar}@))
+   (command<229,232> (command_name[229,232]@{bar}@))
    ;[232,233] \n[233,234])
   end[234,237])
  \n[237,239]
- (function_definition function[239,247] name: (identifier[248,251]@{bar}@) \n[251,252]
-  (block
-   (function_call name: (identifier[256,260]@{disp}@) ([260,261]
-    (arguments
-     argument: (string '[261,262] (string_content[262,265]@{bar}@) '[265,266]))
+ (function_definition<239,271> function[239,247] name: (identifier[248,251]@{bar}@) \n[251,252]
+  (block<256,268>
+   (function_call<256,267> name: (identifier[256,260]@{disp}@) ([260,261]
+    (arguments<261,266>
+     argument: (string<261,266> '[261,262] (string_content[262,265]@{bar}@) '[265,266]))
     )[266,267])
    \n[267,268])
   end[268,271])

@@ -1,11 +1,11 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_call name: (identifier[22,27]@{myfcn}@) ([27,28]
-  (arguments
+(source_file<1,38> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_call<22,36> name: (identifier[22,27]@{myfcn}@) ([27,28]
+  (arguments<28,35>
    argument: 
-    (cell {[28,29]
-     (row
-      (string '[29,30] (string_content[30,33]@{str}@) '[33,34]))
+    (cell<28,35> {[28,29]
+     (row<29,34>
+      (string<29,34> '[29,30] (string_content[30,33]@{str}@) '[33,34]))
      }[34,35]))
   )[35,36])
  ;[36,37] \n[37,38])

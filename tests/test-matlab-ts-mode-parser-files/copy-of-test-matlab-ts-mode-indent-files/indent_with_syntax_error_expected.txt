@@ -1,10 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,54]@{% -*- matlab-ts -*-\n% function args have syntax e...}@)
- (function_definition function[55,63]
-  (function_output (identifier[64,67]@{foo}@) =[67,68])
+(source_file<1,170> (comment[1,54]@{% -*- matlab-ts -*-\n% function args have syntax e...}@)
+ (function_definition<55,169> function[55,63]
+  (function_output<64,68> (identifier[64,67]@{foo}@) =[67,68])
   name: (identifier[68,92]@{indent_with_syntax_error}@)
-  (ERROR ([92,93] (identifier[93,97]@{bar1}@) ,[97,98] (line_continuation[99,124]@{... % a comment for bar1\n}@) (comment[124,138]@{% help comment}@)
-   (ERROR (ERROR[143,145]@{fo}@))
+  (ERROR<92,164> ([92,93] (identifier[93,97]@{bar1}@) ,[97,98] (line_continuation[99,124]@{... % a comment for bar1\n}@) (comment[124,138]@{% help comment}@)
+   (ERROR<143,145> (ERROR[143,145]@{fo}@))
    (identifier[145,146]@{o}@) =[147,148] ,[149,149] +[154,155] ,[156,156] *[161,162] ,[163,163])
   ;[164,165] \n[165,166] end[166,169])
  \n[169,170])

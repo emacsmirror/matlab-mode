@@ -1,38 +1,38 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[22,30]
-  (function_output (identifier[31,32]@{d}@) =[32,33])
+(source_file<1,629> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<22,601> function[22,30]
+  (function_output<31,33> (identifier[31,32]@{d}@) =[32,33])
   name: (identifier[33,63]@{indent_namespace_fcn_continued}@)
-  (function_arguments ([63,64] arguments: (identifier[64,65]@{a}@) ,[65,66] (identifier[67,68]@{b}@) )[68,69])
+  (function_arguments<63,69> ([63,64] arguments: (identifier[64,65]@{a}@) ,[65,66] (identifier[67,68]@{b}@) )[68,69])
   \n[69,71]
-  (block
-   (try_statement try[75,78]
-    (block
-     (assignment left: (identifier[87,88]@{d}@) =[89,90]
+  (block<75,598>
+   (try_statement<75,145> try[75,78]
+    (block<87,98>
+     (assignment<87,96> left: (identifier[87,88]@{d}@) =[89,90]
       right: 
-       (matrix [[91,92]
-        (row (identifier[92,93]@{a}@))
+       (matrix<91,96> [[91,92]
+        (row<92,93> (identifier[92,93]@{a}@))
         ;[93,94]
-        (row (identifier[94,95]@{b}@))
+        (row<94,95> (identifier[94,95]@{b}@))
         ][95,96]))
      ;[96,97] \n[97,98])
-    (catch_clause catch[102,107]
-     (block
-      (function_call name: (identifier[116,120]@{disp}@) ([120,121]
-       (arguments
-        argument: (string '[121,122] (string_content[122,134]@{[a;b] failed}@) '[134,135]))
+    (catch_clause<102,138> catch[102,107]
+     (block<116,138>
+      (function_call<116,136> name: (identifier[116,120]@{disp}@) ([120,121]
+       (arguments<121,135>
+        argument: (string<121,135> '[121,122] (string_content[122,134]@{[a;b] failed}@) '[134,135]))
        )[135,136])
       ;[136,137] \n[137,138]))
     end[142,145])
    (comment[151,236]@{% Function arguments are aligned when the first ar...}@) \n[236,237]
-   (field_expression object: (identifier[241,255]@{someNamespace1}@) .[255,256] field: (identifier[256,269]@{subNamespace2}@) .[269,270]
-    (function_call name: (identifier[270,280]@{myFunction}@) ([280,281]
-     (arguments argument: (identifier[281,282]@{a}@) ,[282,283] (line_continuation[284,309]@{... % comment for param1\n}@) (identifier[347,348]@{b}@))
+   (field_expression<241,349> object: (identifier[241,255]@{someNamespace1}@) .[255,256] field: (identifier[256,269]@{subNamespace2}@) .[269,270]
+    (function_call<270,349> name: (identifier[270,280]@{myFunction}@) ([280,281]
+     (arguments<281,348> argument: (identifier[281,282]@{a}@) ,[282,283] (line_continuation[284,309]@{... % comment for param1\n}@) (identifier[347,348]@{b}@))
      )[348,349]))
    ;[349,350] (comment[354,374]@{% comment for param2}@) (comment[381,471]@{% Function arguments are indented and aligned when...}@)
-   (field_expression object: (identifier[476,490]@{someNamespace1}@) .[490,491] field: (identifier[491,504]@{subNamespace2}@) .[504,505]
-    (function_call name: (identifier[505,515]@{myFunction}@) ([515,516] (line_continuation[517,521]@{...\n}@)
-     (arguments argument: (identifier[530,531]@{a}@) ,[531,532] (line_continuation[533,558]@{... % comment for param1\n}@) (identifier[569,570]@{b}@))
+   (field_expression<476,571> object: (identifier[476,490]@{someNamespace1}@) .[490,491] field: (identifier[491,504]@{subNamespace2}@) .[504,505]
+    (function_call<505,571> name: (identifier[505,515]@{myFunction}@) ([515,516] (line_continuation[517,521]@{...\n}@)
+     (arguments<530,570> argument: (identifier[530,531]@{a}@) ,[531,532] (line_continuation[533,558]@{... % comment for param1\n}@) (identifier[569,570]@{b}@))
      )[570,571]))
    ;[571,572] (comment[576,596]@{% comment for param2}@) \n[596,598])
   end[598,601])

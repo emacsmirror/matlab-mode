@@ -1,57 +1,57 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@) (comment[87,167]@{% Below the "catch ME  " should have trailing whit...}@)
- (class_definition classdef[169,177] name: (identifier[178,228]@{indent_try_catch_with_trailing_whitespace_issue123}@) \n[228,229]
-  (properties properties[233,243] \n[243,244]
-   (property name: (identifier[252,253]@{m}@) \n[253,254])
+(source_file<1,653> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@) (comment[87,167]@{% Below the "catch ME  " should have trailing whit...}@)
+ (class_definition<169,652> classdef[169,177] name: (identifier[178,228]@{indent_try_catch_with_trailing_whitespace_issue123}@) \n[228,229]
+  (properties<233,261> properties[233,243] \n[243,244]
+   (property<252,254> name: (identifier[252,253]@{m}@) \n[253,254])
    end[258,261])
-  (methods methods[267,274] \n[274,275]
-   (function_definition function[283,291]
-    (function_output (identifier[292,295]@{obj}@) =[296,297])
+  (methods<267,648> methods[267,274] \n[274,275]
+   (function_definition<283,316> function[283,291]
+    (function_output<292,297> (identifier[292,295]@{obj}@) =[296,297])
     name: (identifier[298,301]@{foo}@)
-    (function_arguments ([301,302] arguments: (identifier[302,303]@{m}@) )[303,304])
+    (function_arguments<301,304> ([301,302] arguments: (identifier[302,303]@{m}@) )[303,304])
     \n[304,305] end[313,316])
    \n[316,317] \n[325,326]
-   (function_definition function[334,342]
-    (function_output (identifier[343,346]@{rtn}@) =[347,348])
+   (function_definition<334,639> function[334,342]
+    (function_output<343,348> (identifier[343,346]@{rtn}@) =[347,348])
     name: (identifier[349,353]@{fcn1}@)
-    (function_arguments ([353,354] arguments: (identifier[354,357]@{obj}@) ,[357,358] (identifier[359,362]@{val}@) )[362,363])
+    (function_arguments<353,363> ([353,354] arguments: (identifier[354,357]@{obj}@) ,[357,358] (identifier[359,362]@{val}@) )[362,363])
     \n[363,364]
-    (block
-     (try_statement try[376,379]
-      (block
-       (assignment left: (identifier[396,399]@{rtn}@) =[400,401]
+    (block<376,628>
+     (try_statement<376,627> try[376,379]
+      (block<396,423>
+       (assignment<396,421> left: (identifier[396,399]@{rtn}@) =[400,401]
         right: 
-         (binary_operator
-          left: (field_expression object: (identifier[402,405]@{obj}@) .[405,406] field: (identifier[406,407]@{m}@))
+         (binary_operator<402,421>
+          left: (field_expression<402,407> object: (identifier[402,405]@{obj}@) .[405,406] field: (identifier[406,407]@{m}@))
           *[408,409]
           right: 
-           (matrix [[410,411]
-            (row (number[411,412]@{1}@) ,[412,413] (number[414,415]@{2}@))
+           (matrix<410,421> [[410,411]
+            (row<411,415> (number[411,412]@{1}@) ,[412,413] (number[414,415]@{2}@))
             ;[415,416]
-            (row (number[417,418]@{3}@) ,[419,419] (number[419,420]@{4}@))
+            (row<417,420> (number[417,418]@{3}@) ,[419,419] (number[419,420]@{4}@))
             ][420,421])))
        ;[421,422] \n[422,423])
-      (catch_clause catch[435,440] (identifier[441,443]@{ME}@) \n[445,446]
-       (block
-        (if_statement if[462,464]
-         condition: (comparison_operator (identifier[465,468]@{val}@) ==[469,471] (number[472,473]@{1}@))
-         (block
-          (function_call name: (identifier[494,498]@{disp}@) ([498,499]
-           (arguments
-            argument: (string '[499,500] (string_content[500,505]@{here1}@) '[505,506]))
+      (catch_clause<435,612> catch[435,440] (identifier[441,443]@{ME}@) \n[445,446]
+       (block<462,612>
+        (if_statement<462,584> if[462,464]
+         condition: (comparison_operator<465,473> (identifier[465,468]@{val}@) ==[469,471] (number[472,473]@{1}@))
+         (block<494,509>
+          (function_call<494,507> name: (identifier[494,498]@{disp}@) ([498,499]
+           (arguments<499,506>
+            argument: (string<499,506> '[499,500] (string_content[500,505]@{here1}@) '[505,506]))
            )[506,507])
           ;[507,508] \n[508,509])
-         (else_clause else[525,529]
-          (block
-           (function_call name: (identifier[550,554]@{disp}@) ([554,555]
-            (arguments
-             argument: (string '[555,556] (string_content[556,561]@{here2}@) '[561,562]))
+         (else_clause<525,565> else[525,529]
+          (block<550,565>
+           (function_call<550,563> name: (identifier[550,554]@{disp}@) ([554,555]
+            (arguments<555,562>
+             argument: (string<555,562> '[555,556] (string_content[556,561]@{here2}@) '[561,562]))
             )[562,563])
            ;[563,564] \n[564,565]))
          end[581,584])
         \n[585,586]
-        (assignment left: (identifier[602,605]@{rtn}@) =[606,607]
-         right: (matrix [[608,609] ][609,610]))
+        (assignment<602,610> left: (identifier[602,605]@{rtn}@) =[606,607]
+         right: (matrix<608,610> [[608,609] ][609,610]))
         ;[610,611] \n[611,612]))
       end[624,627])
      \n[627,628])

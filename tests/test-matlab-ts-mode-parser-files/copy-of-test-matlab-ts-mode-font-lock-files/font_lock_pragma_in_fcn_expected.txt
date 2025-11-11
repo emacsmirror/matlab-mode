@@ -1,85 +1,85 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
- (function_definition function[27,35]
-  (function_output
-   (multioutput_variable [[36,37] (identifier[37,41]@{out1}@) ,[41,42] (identifier[43,47]@{out2}@) ,[47,48] (identifier[49,53]@{out3}@) ][53,54])
+(source_file<1,457> (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
+ (function_definition<27,360> function[27,35]
+  (function_output<36,56>
+   (multioutput_variable<36,54> [[36,37] (identifier[37,41]@{out1}@) ,[41,42] (identifier[43,47]@{out2}@) ,[47,48] (identifier[49,53]@{out3}@) ][53,54])
    =[55,56])
   name: (identifier[57,63]@{my_fcn}@)
-  (function_arguments ([63,64] arguments: (identifier[64,67]@{in1}@) ,[67,68] (identifier[69,72]@{in2}@) ,[72,73] (identifier[74,77]@{in3}@) )[77,78])
+  (function_arguments<63,78> ([63,64] arguments: (identifier[64,67]@{in1}@) ,[67,68] (identifier[69,72]@{in2}@) ,[72,73] (identifier[74,77]@{in3}@) )[77,78])
   (comment[79,115]@{% help comment\n% help comment line 2}@) (comment[121,135]@{% code comment}@) \n[135,136]
-  (block
-   (if_statement if[140,142]
+  (block<140,357>
+   (if_statement<140,250> if[140,142]
     condition: 
-     (comparison_operator (identifier[143,146]@{in1}@) >[147,148]
-      (function_call name: (identifier[149,155]@{double}@) ([155,156]
-       (arguments argument: (number[156,157]@{5}@))
+     (comparison_operator<143,158> (identifier[143,146]@{in1}@) >[147,148]
+      (function_call<149,158> name: (identifier[149,155]@{double}@) ([155,156]
+       (arguments<156,157> argument: (number[156,157]@{5}@))
        )[157,158]))
     (comment[159,172]@{%#some-pragma}@)
-    (block
-     (assignment left: (identifier[180,184]@{out1}@) =[185,186]
+    (block<180,207>
+     (assignment<180,205> left: (identifier[180,184]@{out1}@) =[185,186]
       right: 
-       (binary_operator
+       (binary_operator<187,205>
         left: 
-         (function_call name: (identifier[187,190]@{sin}@) ([190,191]
-          (arguments argument: (number[191,193]@{10}@))
+         (function_call<187,194> name: (identifier[187,190]@{sin}@) ([190,191]
+          (arguments<191,193> argument: (number[191,193]@{10}@))
           )[193,194])
         +[195,196]
         right: 
-         (binary_operator left: (identifier[197,199]@{in}@) *[200,201]
+         (binary_operator<197,205> left: (identifier[197,199]@{in}@) *[200,201]
           right: 
-           (matrix [[202,203]
-            (row (number[203,204]@{2}@))
+           (matrix<202,205> [[202,203]
+            (row<203,204> (number[203,204]@{2}@))
             ][204,205]))))
      ;[205,206] \n[206,207])
-    (else_clause else[211,215]
-     (block
-      (assignment left: (identifier[223,227]@{out1}@) =[228,229]
+    (else_clause<211,243> else[211,215]
+     (block<223,243>
+      (assignment<223,241> left: (identifier[223,227]@{out1}@) =[228,229]
        right: 
-        (binary_operator
-         left: (binary_operator left: (identifier[230,233]@{in1}@) *[234,235] right: (number[236,237]@{3}@))
+        (binary_operator<230,241>
+         left: (binary_operator<230,237> left: (identifier[230,233]@{in1}@) *[234,235] right: (number[236,237]@{3}@))
          +[238,239] right: (number[240,241]@{2}@)))
       ;[241,242] \n[242,243]))
     end[247,250])
    \n[250,252]
-   (assignment left: (identifier[256,260]@{qStr}@) =[261,262]
-    right: (string "[263,264] (string_content[264,281]@{asdf asdf' asdf '}@) "[281,282]))
+   (assignment<256,282> left: (identifier[256,260]@{qStr}@) =[261,262]
+    right: (string<263,282> "[263,264] (string_content[264,281]@{asdf asdf' asdf '}@) "[281,282]))
    ;[282,283]
-   (assignment left: (identifier[288,292]@{out2}@) =[293,294]
+   (assignment<288,305> left: (identifier[288,292]@{out2}@) =[293,294]
     right: 
-     (function_call name: (identifier[295,299]@{foo2}@) ([299,300]
-      (arguments argument: (identifier[300,304]@{qStr}@))
+     (function_call<295,305> name: (identifier[295,299]@{foo2}@) ([299,300]
+      (arguments<300,304> argument: (identifier[300,304]@{qStr}@))
       )[304,305]))
    ;[305,306]
-   (assignment left: (identifier[312,316]@{sStr}@) =[317,318]
-    right: (string '[319,320] (string_content[320,331]@{asdf''asdf"}@) '[331,332]))
+   (assignment<312,332> left: (identifier[312,316]@{sStr}@) =[317,318]
+    right: (string<319,332> '[319,320] (string_content[320,331]@{asdf''asdf"}@) '[331,332]))
    ;[332,333]
-   (assignment left: (identifier[338,342]@{out3}@) =[343,344]
+   (assignment<338,355> left: (identifier[338,342]@{out3}@) =[343,344]
     right: 
-     (function_call name: (identifier[345,349]@{foo3}@) ([349,350]
-      (arguments argument: (identifier[350,354]@{sStr}@))
+     (function_call<345,355> name: (identifier[345,349]@{foo3}@) ([349,350]
+      (arguments<350,354> argument: (identifier[350,354]@{sStr}@))
       )[354,355]))
    ;[355,356] \n[356,357])
   end[357,360])
  \n[360,362]
- (function_definition function[362,370]
-  (function_output (identifier[371,375]@{out1}@) =[376,377])
+ (function_definition<362,407> function[362,370]
+  (function_output<371,377> (identifier[371,375]@{out1}@) =[376,377])
   name: (identifier[378,382]@{foo2}@)
-  (function_arguments ([382,383] arguments: (identifier[383,386]@{in1}@) )[386,387])
+  (function_arguments<382,387> ([382,383] arguments: (identifier[383,386]@{in1}@) )[386,387])
   \n[387,388]
-  (block
-   (assignment left: (identifier[392,396]@{out1}@) =[397,398] right: (identifier[399,402]@{in1}@))
+  (block<392,404>
+   (assignment<392,402> left: (identifier[392,396]@{out1}@) =[397,398] right: (identifier[399,402]@{in1}@))
    ;[402,403] \n[403,404])
   end[404,407])
  \n[407,409]
- (function_definition function[409,417]
-  (function_output
-   (multioutput_variable [[418,419] (identifier[419,423]@{out1}@) ][423,424])
+ (function_definition<409,456> function[409,417]
+  (function_output<418,426>
+   (multioutput_variable<418,424> [[418,419] (identifier[419,423]@{out1}@) ][423,424])
    =[425,426])
   name: (identifier[427,431]@{foo3}@)
-  (function_arguments ([431,432] arguments: (identifier[432,435]@{in1}@) )[435,436])
+  (function_arguments<431,436> ([431,432] arguments: (identifier[432,435]@{in1}@) )[435,436])
   \n[436,437]
-  (block
-   (assignment left: (identifier[441,445]@{out1}@) =[446,447] right: (identifier[448,451]@{in1}@))
+  (block<441,453>
+   (assignment<441,451> left: (identifier[441,445]@{out1}@) =[446,447] right: (identifier[448,451]@{in1}@))
    ;[451,452] \n[452,453])
   end[453,456])
  \n[456,457])

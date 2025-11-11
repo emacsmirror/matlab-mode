@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment left: (identifier[22,23]@{a}@) =[24,25]
-  right: (binary_operator left: (number[26,27]@{1}@) +[28,29] right: (number[30,31]@{2}@)))
+(source_file<1,33> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,31> left: (identifier[22,23]@{a}@) =[24,25]
+  right: (binary_operator<26,31> left: (number[26,27]@{1}@) +[28,29] right: (number[30,31]@{2}@)))
  ;[31,32] \n[32,33])

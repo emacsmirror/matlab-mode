@@ -1,17 +1,17 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment left: (identifier[22,24]@{c1}@) =[25,26]
+(source_file<1,74> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,50> left: (identifier[22,24]@{c1}@) =[25,26]
   right: 
-   (cell {[27,28]
-    (row
-     (string '[28,29] (string_content[29,32]@{one}@) '[32,33])
+   (cell<27,50> {[27,28]
+    (row<28,49>
+     (string<28,33> '[28,29] (string_content[29,32]@{one}@) '[32,33])
      (line_continuation[34,43]@{...\n     }@) ,[43,44]
-     (string '[44,45] (string_content[45,48]@{two}@) '[48,49]))
+     (string<44,49> '[44,45] (string_content[45,48]@{two}@) '[48,49]))
     }[49,50]))
  \n[50,52]
- (assignment left: (identifier[52,54]@{m1}@) =[55,56]
+ (assignment<52,73> left: (identifier[52,54]@{m1}@) =[55,56]
   right: 
-   (matrix [[57,58]
-    (row (number[58,59]@{1}@) (line_continuation[60,70]@{...\n      }@) ,[70,71] (number[71,72]@{2}@))
+   (matrix<57,73> [[57,58]
+    (row<58,72> (number[58,59]@{1}@) (line_continuation[60,70]@{...\n      }@) ,[70,71] (number[71,72]@{2}@))
     ][72,73]))
  \n[73,74])

@@ -1,10 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment left: (identifier[22,23]@{a}@) =[24,25] right: (identifier[26,30]@{true}@))
+(source_file<1,65> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,30> left: (identifier[22,23]@{a}@) =[24,25] right: (identifier[26,30]@{true}@))
  ;[30,31]
- (assignment left: (identifier[32,33]@{b}@) =[34,35] right: (identifier[36,41]@{false}@))
+ (assignment<32,41> left: (identifier[32,33]@{b}@) =[34,35] right: (identifier[36,41]@{false}@))
  ;[41,42] \n[42,44]
- (if_statement if[44,46]
-  condition: (boolean_operator left: (identifier[47,51]@{true}@) ||[52,54] right: (identifier[55,60]@{false}@))
+ (if_statement<44,64> if[44,46]
+  condition: (boolean_operator<47,60> left: (identifier[47,51]@{true}@) ||[52,54] right: (identifier[55,60]@{false}@))
   \n[60,61] end[61,64])
  \n[64,65])

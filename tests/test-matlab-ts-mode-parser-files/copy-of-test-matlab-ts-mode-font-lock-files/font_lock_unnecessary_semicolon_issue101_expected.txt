@@ -1,14 +1,14 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% see https://github.com/acristoffers/tree-sitter-...}@)
- (function_definition function[91,99] name: (identifier[100,140]@{font_lock_unnecessary_semicolon_issue101}@)
-  (function_arguments ([140,141] arguments: (identifier[141,144]@{in1}@) )[144,145])
+(source_file<1,195> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (function_definition<91,194> function[91,99] name: (identifier[100,140]@{font_lock_unnecessary_semicolon_issue101}@)
+  (function_arguments<140,145> ([140,141] arguments: (identifier[141,144]@{in1}@) )[144,145])
   \n[145,146] ;[150,151] \n[151,152]
-  (block
-   (if_statement if[156,158] condition: (identifier[159,162]@{in1}@)
-    (block
-     (function_call name: (identifier[171,175]@{disp}@) ([175,176]
-      (arguments
-       argument: (string '[176,177] (string_content[177,180]@{in1}@) '[180,181]))
+  (block<156,191>
+   (if_statement<156,190> if[156,158] condition: (identifier[159,162]@{in1}@)
+    (block<171,183>
+     (function_call<171,182> name: (identifier[171,175]@{disp}@) ([175,176]
+      (arguments<176,181>
+       argument: (string<176,181> '[176,177] (string_content[177,180]@{in1}@) '[180,181]))
       )[181,182])
      \n[182,183])
     end[187,190])

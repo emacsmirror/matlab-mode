@@ -1,14 +1,14 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,84]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
- (assignment left: (identifier[86,89]@{foo}@) =[90,91]
-  right: (range (number[92,93]@{1}@) :[93,94] (number[94,95]@{2}@)))
+(source_file<1,143> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,84]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
+ (assignment<86,95> left: (identifier[86,89]@{foo}@) =[90,91]
+  right: (range<92,95> (number[92,93]@{1}@) :[93,94] (number[94,95]@{2}@)))
  ;[95,96]
- (assignment left: (identifier[97,100]@{bar}@) =[101,102]
+ (assignment<97,142> left: (identifier[97,100]@{bar}@) =[101,102]
   right: 
-   (matrix [[103,104] \n[104,105]
-    (row
-     (function_call name: (identifier[113,116]@{foo}@) ([116,117]
-      (arguments argument: (number[117,118]@{1}@))
+   (matrix<103,142> [[103,104] \n[104,105]
+    (row<113,134>
+     (function_call<113,119> name: (identifier[113,116]@{foo}@) ([116,117]
+      (arguments<117,118> argument: (number[117,118]@{1}@))
       )[118,119])
      ,[119,120] (line_continuation[121,125]@{...\n}@) (number[133,134]@{2}@))
     ][141,142]))

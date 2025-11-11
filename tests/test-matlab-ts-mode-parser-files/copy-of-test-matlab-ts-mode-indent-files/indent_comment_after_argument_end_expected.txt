@@ -1,15 +1,15 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[22,30] name: (identifier[31,64]@{indent_comment_after_argument_end}@)
-  (function_arguments ([64,65] arguments: (identifier[65,68]@{in1}@) )[68,69])
+(source_file<1,167> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<22,166> function[22,30] name: (identifier[31,64]@{indent_comment_after_argument_end}@)
+  (function_arguments<64,69> ([64,65] arguments: (identifier[65,68]@{in1}@) )[68,69])
   \n[69,70]
-  (arguments_statement arguments[74,83] \n[83,84]
-   (property name: (identifier[92,95]@{in1}@) (identifier[96,102]@{double}@) ;[102,103] \n[103,104])
+  (arguments_statement<74,111> arguments[74,83] \n[83,84]
+   (property<92,104> name: (identifier[92,95]@{in1}@) (identifier[96,102]@{double}@) ;[102,103] \n[103,104])
    end[108,111])
   (comment[117,146]@{% comment after arguments end}@)
-  (block
-   (function_call name: (identifier[152,156]@{disp}@) ([156,157]
-    (arguments argument: (identifier[157,160]@{in1}@))
+  (block<152,163>
+   (function_call<152,161> name: (identifier[152,156]@{disp}@) ([156,157]
+    (arguments<157,160> argument: (identifier[157,160]@{in1}@))
     )[160,161])
    ;[161,162] \n[162,163])
   end[163,166])

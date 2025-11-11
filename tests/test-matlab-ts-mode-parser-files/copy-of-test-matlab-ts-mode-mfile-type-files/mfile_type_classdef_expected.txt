@@ -1,9 +1,9 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,106]@{% Case1: (t-utils-xr (print (format "mfile-type: %...}@)
- (class_definition classdef[108,116] name: (identifier[117,136]@{mfile_type_classdef}@) \n[136,137]
-  (properties properties[141,151] \n[151,152]
-   (property name: (identifier[160,162]@{p1}@) \n[162,163])
-   (property name: (identifier[171,173]@{p2}@) \n[173,174])
+(source_file<1,186> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,106]@{% Case1: (t-utils-xr (print (format "mfile-type: %...}@)
+ (class_definition<108,185> classdef[108,116] name: (identifier[117,136]@{mfile_type_classdef}@) \n[136,137]
+  (properties<141,181> properties[141,151] \n[151,152]
+   (property<160,163> name: (identifier[160,162]@{p1}@) \n[162,163])
+   (property<171,174> name: (identifier[171,173]@{p2}@) \n[173,174])
    end[178,181])
   end[182,185])
  \n[185,186])

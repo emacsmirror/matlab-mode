@@ -1,11 +1,11 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,87]@{% Case1: (t-utils-xr (re-search-forward "first") "...}@)
- (assignment left: (identifier[88,89]@{a}@) =[90,91]
-  right: (string "[92,93] (string_content[93,106]@{first string }@) (formatting_sequence[106,108]@{%d}@) (string_content[108,109]@{ }@) (escape_sequence[109,111]@{\t}@) (string_content[111,114]@{ ''}@) "[114,115]))
+(source_file<1,311> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,87]@{% Case1: (t-utils-xr (re-search-forward "first") "...}@)
+ (assignment<88,115> left: (identifier[88,89]@{a}@) =[90,91]
+  right: (string<92,115> "[92,93] (string_content[93,106]@{first string }@) (formatting_sequence[106,108]@{%d}@) (string_content[108,109]@{ }@) (escape_sequence[109,111]@{\t}@) (string_content[111,114]@{ ''}@) "[114,115]))
  (comment[117,183]@{% Case2: (t-utils-xr (re-search-forward "second") ...}@) \n[183,184]
- (assignment left: (identifier[184,185]@{b}@) =[186,187]
-  right: (string '[188,189] (string_content[189,202]@{second asdf" }@) (formatting_sequence[202,204]@{%d}@) (string_content[204,205]@{ }@) (escape_sequence[205,207]@{\t}@) (string_content[207,208]@{ }@) (escape_sequence[208,210]@{\n}@) '[210,211]))
+ (assignment<184,211> left: (identifier[184,185]@{b}@) =[186,187]
+  right: (string<188,211> '[188,189] (string_content[189,202]@{second asdf" }@) (formatting_sequence[202,204]@{%d}@) (string_content[204,205]@{ }@) (escape_sequence[205,207]@{\t}@) (string_content[207,208]@{ }@) (escape_sequence[208,210]@{\n}@) '[210,211]))
  ;[211,212] (comment[214,282]@{% Case3: (t-utils-xr (re-search-forward "%d") "C-b...}@)
- (assignment left: (identifier[283,284]@{c}@) =[285,286]
-  right: (string '[287,288] (string_content[288,300]@{third asdf" }@) (formatting_sequence[300,302]@{%d}@) (string_content[302,303]@{ }@) (escape_sequence[303,305]@{\t}@) (string_content[305,306]@{ }@) (escape_sequence[306,308]@{\n}@) '[308,309]))
+ (assignment<283,309> left: (identifier[283,284]@{c}@) =[285,286]
+  right: (string<287,309> '[287,288] (string_content[288,300]@{third asdf" }@) (formatting_sequence[300,302]@{%d}@) (string_content[302,303]@{ }@) (escape_sequence[303,305]@{\t}@) (string_content[305,306]@{ }@) (escape_sequence[306,308]@{\n}@) '[308,309]))
  ;[309,310] \n[310,311])

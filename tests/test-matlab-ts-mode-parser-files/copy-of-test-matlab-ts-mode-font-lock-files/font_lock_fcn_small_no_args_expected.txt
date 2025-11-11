@@ -1,10 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
- (function_definition function[27,35] name: (identifier[36,63]@{font_lock_fcn_small_no_args}@) (comment[64,78]@{% help comment}@) (comment[84,98]@{% code comment}@) \n[98,99]
-  (block
-   (function_call name: (identifier[103,107]@{disp}@) ([107,108]
-    (arguments
-     argument: (string '[108,109] (string_content[109,116]@{no args}@) '[116,117]))
+(source_file<1,124> (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
+ (function_definition<27,123> function[27,35] name: (identifier[36,63]@{font_lock_fcn_small_no_args}@) (comment[64,78]@{% help comment}@) (comment[84,98]@{% code comment}@) \n[98,99]
+  (block<103,120>
+   (function_call<103,118> name: (identifier[103,107]@{disp}@) ([107,108]
+    (arguments<108,117>
+     argument: (string<108,117> '[108,109] (string_content[109,116]@{no args}@) '[116,117]))
     )[117,118])
    ;[118,119] \n[119,120])
   end[120,123])

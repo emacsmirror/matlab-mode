@@ -1,16 +1,16 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,135]@{% See https://github.com/acristoffers/tree-sitter-...}@)
- (function_definition function[137,145]
-  (function_output (identifier[146,152]@{result}@) =[153,154])
+(source_file<1,229> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,135]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (function_definition<137,229> function[137,145]
+  (function_output<146,154> (identifier[146,152]@{result}@) =[153,154])
   name: (identifier[155,182]@{font_lock_error_issue51_end}@)
-  (function_arguments ([182,183] arguments: (identifier[183,184]@{a}@) ,[184,185] (identifier[186,187]@{b}@) )[187,188])
+  (function_arguments<182,188> ([182,183] arguments: (identifier[183,184]@{a}@) ,[184,185] (identifier[186,187]@{b}@) )[187,188])
   \n[188,189]
-  (ERROR (identifier[193,199]@{result}@) =[200,201]
-   (binary_operator left: (number[202,203]@{1}@) +[204,205]
+  (ERROR<193,228> (identifier[193,199]@{result}@) =[200,201]
+   (binary_operator<202,217> left: (number[202,203]@{1}@) +[204,205]
     right: 
-     (function_call name: (identifier[206,211]@{myfcn}@) ([211,212]
-      (arguments argument: (identifier[212,213]@{a}@) ,[213,214] (identifier[215,216]@{b}@))
+     (function_call<206,217> name: (identifier[206,211]@{myfcn}@) ([211,212]
+      (arguments<212,216> argument: (identifier[212,213]@{a}@) ,[213,214] (identifier[215,216]@{b}@))
       )[216,217]))
    +[218,219] (line_continuation[220,224]@{...\n}@)
-   (end_keyword end[225,228]))
+   (end_keyword<225,228> end[225,228]))
   \n[228,229]))

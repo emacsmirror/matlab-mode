@@ -1,31 +1,31 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
- (assignment left: (identifier[90,94]@{Name}@) =[95,96]
+(source_file<1,162> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<90,110> left: (identifier[90,94]@{Name}@) =[95,96]
   right: 
-   (matrix [[97,98]
-    (row
-     (string "[98,99] (string_content[99,102]@{foo}@) "[102,103]))
+   (matrix<97,110> [[97,98]
+    (row<98,103>
+     (string<98,103> "[98,99] (string_content[99,102]@{foo}@) "[102,103]))
     ;[103,104]
-    (row
-     (string "[104,105] (string_content[105,108]@{bar}@) "[108,109]))
+    (row<104,109>
+     (string<104,109> "[104,105] (string_content[105,108]@{bar}@) "[108,109]))
     ][109,110]))
  ;[110,111]
- (assignment left: (identifier[112,115]@{Age}@) =[116,117]
+ (assignment<112,125> left: (identifier[112,115]@{Age}@) =[116,117]
   right: 
-   (matrix [[118,119]
-    (row (number[119,121]@{38}@))
+   (matrix<118,125> [[118,119]
+    (row<119,121> (number[119,121]@{38}@))
     ;[121,122]
-    (row (number[122,124]@{43}@))
+    (row<122,124> (number[122,124]@{43}@))
     ][124,125]))
  ;[125,126]
- (assignment left: (identifier[127,130]@{tbl}@) =[131,132]
+ (assignment<127,149> left: (identifier[127,130]@{tbl}@) =[131,132]
   right: 
-   (function_call name: (identifier[133,138]@{table}@) ([138,139]
-    (arguments argument: (identifier[139,143]@{Name}@) ,[143,144] (identifier[145,148]@{Age}@))
+   (function_call<133,149> name: (identifier[133,138]@{table}@) ([138,139]
+    (arguments<139,148> argument: (identifier[139,143]@{Name}@) ,[143,144] (identifier[145,148]@{Age}@))
     )[148,149]))
  ;[149,150]
- (assignment left: (identifier[151,152]@{x}@) =[152,153]
+ (assignment<151,160> left: (identifier[151,152]@{x}@) =[152,153]
   right: 
-   (field_expression object: (identifier[153,156]@{tbl}@) .[156,157]
-    field: (indirect_access ([157,158] (number[158,159]@{1}@) )[159,160])))
+   (field_expression<153,160> object: (identifier[153,156]@{tbl}@) .[156,157]
+    field: (indirect_access<157,160> ([157,158] (number[158,159]@{1}@) )[159,160])))
  \n[160,162])

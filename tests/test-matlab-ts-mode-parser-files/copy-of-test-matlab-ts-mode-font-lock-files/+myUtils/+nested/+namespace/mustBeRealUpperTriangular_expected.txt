@@ -1,33 +1,33 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[22,30] name: (identifier[31,56]@{mustBeRealUpperTriangular}@)
-  (function_arguments ([56,57] arguments: (identifier[57,58]@{a}@) )[58,59])
+(source_file<1,281> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<22,280> function[22,30] name: (identifier[31,56]@{mustBeRealUpperTriangular}@)
+  (function_arguments<56,59> ([56,57] arguments: (identifier[57,58]@{a}@) )[58,59])
   \n[59,60]
-  (block
-   (if_statement if[64,66]
+  (block<64,277>
+   (if_statement<64,276> if[64,66]
     condition: 
-     (not_operator ~[67,68]
-      (parenthesis ([68,69]
-       (boolean_operator
+     (not_operator<67,92> ~[67,68]
+      (parenthesis<68,92> ([68,69]
+       (boolean_operator<69,91>
         left: 
-         (function_call name: (identifier[69,75]@{istriu}@) ([75,76]
-          (arguments argument: (identifier[76,77]@{a}@))
+         (function_call<69,78> name: (identifier[69,75]@{istriu}@) ([75,76]
+          (arguments<76,77> argument: (identifier[76,77]@{a}@))
           )[77,78])
         &&[79,81]
         right: 
-         (function_call name: (identifier[82,88]@{isreal}@) ([88,89]
-          (arguments argument: (identifier[89,90]@{a}@))
+         (function_call<82,91> name: (identifier[82,88]@{isreal}@) ([88,89]
+          (arguments<89,90> argument: (identifier[89,90]@{a}@))
           )[90,91]))
        )[91,92]))
-    (block
-     (assignment left: (identifier[101,108]@{eidType}@) =[109,110]
-      right: (string '[111,112] (string_content[112,160]@{mustBeRealUpperTriangular:notRealUpperTriangular}@) '[160,161]))
+    (block<101,269>
+     (assignment<101,161> left: (identifier[101,108]@{eidType}@) =[109,110]
+      right: (string<111,161> '[111,112] (string_content[112,160]@{mustBeRealUpperTriangular:notRealUpperTriangular}@) '[160,161]))
      ;[161,162]
-     (assignment left: (identifier[171,178]@{msgType}@) =[179,180]
-      right: (string '[181,182] (string_content[182,235]@{Input must be a real-valued, upper triangular matr...}@) '[235,236]))
+     (assignment<171,236> left: (identifier[171,178]@{msgType}@) =[179,180]
+      right: (string<181,236> '[181,182] (string_content[182,235]@{Input must be a real-valued, upper triangular matr...}@) '[235,236]))
      ;[236,237]
-     (function_call name: (identifier[246,251]@{error}@) ([251,252]
-      (arguments argument: (identifier[252,259]@{eidType}@) ,[259,260] (identifier[260,267]@{msgType}@))
+     (function_call<246,268> name: (identifier[246,251]@{error}@) ([251,252]
+      (arguments<252,267> argument: (identifier[252,259]@{eidType}@) ,[259,260] (identifier[260,267]@{msgType}@))
       )[267,268])
      \n[268,269])
     end[273,276])

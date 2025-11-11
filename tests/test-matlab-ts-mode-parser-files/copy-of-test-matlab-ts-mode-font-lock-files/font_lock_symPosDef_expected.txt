@@ -1,52 +1,52 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[21,29] name: (identifier[30,49]@{font_lock_symPosDef}@) \n[49,50]
-  (properties properties[54,64] \n[64,65]
-   (property name: (identifier[73,84]@{inputMatrix}@)
-    (default_value =[85,86]
-     (matrix [[87,88]
-      (row (number[88,89]@{1}@) ,[90,90] (number[90,91]@{0}@))
+(source_file<1,460> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<21,459> classdef[21,29] name: (identifier[30,49]@{font_lock_symPosDef}@) \n[49,50]
+  (properties<54,105> properties[54,64] \n[64,65]
+   (property<73,98> name: (identifier[73,84]@{inputMatrix}@)
+    (default_value<85,97> =[85,86]
+     (matrix<87,97> [[87,88]
+      (row<88,91> (number[88,89]@{1}@) ,[90,90] (number[90,91]@{0}@))
       ;[91,92]
-      (row (number[93,94]@{0}@) ,[95,95] (number[95,96]@{1}@))
+      (row<93,96> (number[93,94]@{0}@) ,[95,95] (number[95,96]@{1}@))
       ][96,97]))
     \n[97,98])
    end[102,105])
-  (methods methods[115,122] \n[122,123]
-   (function_definition function[131,139]
-    (function_output (identifier[140,143]@{obj}@) =[144,145])
+  (methods<115,455> methods[115,122] \n[122,123]
+   (function_definition<131,359> function[131,139]
+    (function_output<140,145> (identifier[140,143]@{obj}@) =[144,145])
     set.[146,150] name: (identifier[150,161]@{inputMatrix}@)
-    (function_arguments ([161,162] arguments: (identifier[162,165]@{obj}@) ,[165,166] (identifier[167,170]@{val}@) )[170,171])
+    (function_arguments<161,171> ([161,162] arguments: (identifier[162,165]@{obj}@) ,[165,166] (identifier[167,170]@{val}@) )[170,171])
     \n[171,172]
-    (block
-     (try_statement try[184,187]
-      (block
-       (function_call name: (identifier[188,192]@{chol}@) ([192,193]
-        (arguments argument: (identifier[193,196]@{val}@))
+    (block<184,348>
+     (try_statement<184,347> try[184,187]
+      (block<188,237>
+       (function_call<188,197> name: (identifier[188,192]@{chol}@) ([192,193]
+        (arguments<193,196> argument: (identifier[193,196]@{val}@))
         )[196,197])
        \n[197,198]
-       (assignment
-        left: (field_expression object: (identifier[214,217]@{obj}@) .[217,218] field: (identifier[218,229]@{inputMatrix}@))
+       (assignment<214,235>
+        left: (field_expression<214,229> object: (identifier[214,217]@{obj}@) .[217,218] field: (identifier[218,229]@{inputMatrix}@))
         =[230,231] right: (identifier[232,235]@{val}@))
        ;[235,236] \n[236,237])
-      (catch_clause catch[249,254] (identifier[255,257]@{ME}@) \n[257,258]
-       (block
-        (function_call name: (identifier[274,279]@{error}@) ([279,280]
-         (arguments
-          argument: (string "[280,281] (string_content[281,329]@{inputMatrix must be symmetric positive definite.}@) "[329,330]))
+      (catch_clause<249,332> catch[249,254] (identifier[255,257]@{ME}@) \n[257,258]
+       (block<274,332>
+        (function_call<274,331> name: (identifier[274,279]@{error}@) ([279,280]
+         (arguments<280,330>
+          argument: (string<280,330> "[280,281] (string_content[281,329]@{inputMatrix must be symmetric positive definite.}@) "[329,330]))
          )[330,331])
         \n[331,332]))
       end[344,347])
      \n[347,348])
     end[356,359])
    \n[359,361]
-   (function_definition function[369,377]
-    (function_output (identifier[378,379]@{m}@) =[380,381])
+   (function_definition<369,447> function[369,377]
+    (function_output<378,381> (identifier[378,379]@{m}@) =[380,381])
     get.[382,386] name: (identifier[386,397]@{inputMatrix}@)
-    (function_arguments ([397,398] arguments: (identifier[398,401]@{obj}@) )[401,402])
+    (function_arguments<397,402> ([397,398] arguments: (identifier[398,401]@{obj}@) )[401,402])
     \n[402,403]
-    (block
-     (assignment left: (identifier[415,416]@{m}@) =[417,418]
-      right: (field_expression object: (identifier[419,422]@{obj}@) .[422,423] field: (identifier[423,434]@{inputMatrix}@)))
+    (block<415,436>
+     (assignment<415,434> left: (identifier[415,416]@{m}@) =[417,418]
+      right: (field_expression<419,434> object: (identifier[419,422]@{obj}@) .[422,423] field: (identifier[423,434]@{inputMatrix}@)))
      ;[434,435] \n[435,436])
     end[444,447])
    \n[447,448] end[452,455])

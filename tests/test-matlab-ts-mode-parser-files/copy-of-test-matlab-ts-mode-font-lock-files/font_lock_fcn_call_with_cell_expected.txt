@@ -1,20 +1,20 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,134]@{% See comment in https://github.com/acristoffers/t...}@)
- (function_call name: (identifier[136,141]@{myfcn}@) ([141,142]
-  (arguments
+(source_file<1,190> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,134]@{% See comment in https://github.com/acristoffers/t...}@)
+ (function_call<136,150> name: (identifier[136,141]@{myfcn}@) ([141,142]
+  (arguments<142,149>
    argument: 
-    (cell {[142,143]
-     (row
-      (string '[143,144] (string_content[144,147]@{str}@) '[147,148]))
+    (cell<142,149> {[142,143]
+     (row<143,148>
+      (string<143,148> '[143,144] (string_content[144,147]@{str}@) '[147,148]))
      }[148,149]))
   )[149,150])
  ;[150,151] \n[151,153]
- (function_definition function[153,161] name: (identifier[162,167]@{myfcn}@)
-  (function_arguments ([167,168] arguments: (identifier[168,170]@{in}@) )[170,171])
+ (function_definition<153,188> function[153,161] name: (identifier[162,167]@{myfcn}@)
+  (function_arguments<167,171> ([167,168] arguments: (identifier[168,170]@{in}@) )[170,171])
   \n[171,172]
-  (block
-   (function_call name: (identifier[176,180]@{disp}@) ([180,181]
-    (arguments argument: (identifier[181,183]@{in}@))
+  (block<176,185>
+   (function_call<176,184> name: (identifier[176,180]@{disp}@) ([180,181]
+    (arguments<181,183> argument: (identifier[181,183]@{in}@))
     )[183,184])
    \n[184,185])
   end[185,188])

@@ -1,16 +1,16 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
- (function_definition function[27,35]
-  (function_output
-   (multioutput_variable [[36,37] (line_continuation[38,42]@{...\n}@) (identifier[49,53]@{out1}@) (line_continuation[54,77]@{... % comment for out1\n}@) (identifier[84,88]@{out2}@) (line_continuation[89,112]@{... % comment for out2\n}@) ][121,122])
+(source_file<1,320> (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
+ (function_definition<27,319> function[27,35]
+  (function_output<36,124>
+   (multioutput_variable<36,122> [[36,37] (line_continuation[38,42]@{...\n}@) (identifier[49,53]@{out1}@) (line_continuation[54,77]@{... % comment for out1\n}@) (identifier[84,88]@{out2}@) (line_continuation[89,112]@{... % comment for out2\n}@) ][121,122])
    =[123,124])
   (line_continuation[125,129]@{...\n}@) name: (identifier[133,167]@{font_lock_continuation_multiArgFcn}@)
-  (function_arguments ([167,168] arguments: (identifier[168,171]@{in1}@) ,[171,172] (line_continuation[173,195]@{... % comment for in1\n}@) (identifier[231,234]@{in2}@) (line_continuation[236,258]@{... % comment for in2\n}@) )[282,283])
+  (function_arguments<167,283> ([167,168] arguments: (identifier[168,171]@{in1}@) ,[171,172] (line_continuation[173,195]@{... % comment for in1\n}@) (identifier[231,234]@{in2}@) (line_continuation[236,258]@{... % comment for in2\n}@) )[282,283])
   \n[283,284]
-  (block
-   (assignment left: (identifier[288,292]@{out1}@) =[293,294] right: (identifier[295,298]@{in1}@))
+  (block<288,316>
+   (assignment<288,298> left: (identifier[288,292]@{out1}@) =[293,294] right: (identifier[295,298]@{in1}@))
    ;[298,299]
-   (assignment left: (identifier[304,308]@{out2}@) =[309,310] right: (identifier[311,314]@{in2}@))
+   (assignment<304,314> left: (identifier[304,308]@{out2}@) =[309,310] right: (identifier[311,314]@{in2}@))
    ;[314,315] \n[315,316])
   end[316,319])
  \n[319,320])

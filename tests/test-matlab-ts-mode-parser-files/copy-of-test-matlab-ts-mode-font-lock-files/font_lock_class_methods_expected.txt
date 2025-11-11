@@ -1,26 +1,26 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[21,29] name: (identifier[30,53]@{font_lock_class_methods}@) \n[53,54]
-  (methods methods[57,64]
-   (attributes ([65,66]
-    (attribute (identifier[66,72]@{Access}@) =[73,74] (identifier[75,84]@{protected}@))
+(source_file<1,240> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<21,239> classdef[21,29] name: (identifier[30,53]@{font_lock_class_methods}@) \n[53,54]
+  (methods<57,145> methods[57,64]
+   (attributes<65,85> ([65,66]
+    (attribute<66,84> (identifier[66,72]@{Access}@) =[73,74] (identifier[75,84]@{protected}@))
     )[84,85])
    \n[85,86]
-   (function_definition function[92,100]
-    (function_output (identifier[101,104]@{out}@) =[105,106])
+   (function_definition<92,138> function[92,100]
+    (function_output<101,106> (identifier[101,104]@{out}@) =[105,106])
     name: (identifier[107,114]@{method1}@)
-    (function_arguments ([114,115] arguments: (identifier[115,118]@{obj}@) ,[118,119] (identifier[119,127]@{inputArg}@) )[127,128])
+    (function_arguments<114,128> ([114,115] arguments: (identifier[115,118]@{obj}@) ,[118,119] (identifier[119,127]@{inputArg}@) )[127,128])
     \n[128,129] end[135,138])
    \n[138,139] end[142,145])
-  (methods methods[149,156]
-   (attributes ([157,158]
-    (attribute (identifier[158,164]@{Access}@) =[165,166] (identifier[167,174]@{private}@))
+  (methods<149,235> methods[149,156]
+   (attributes<157,175> ([157,158]
+    (attribute<158,174> (identifier[158,164]@{Access}@) =[165,166] (identifier[167,174]@{private}@))
     )[174,175])
    \n[175,176]
-   (function_definition function[182,190]
-    (function_output (identifier[191,194]@{out}@) =[195,196])
+   (function_definition<182,228> function[182,190]
+    (function_output<191,196> (identifier[191,194]@{out}@) =[195,196])
     name: (identifier[197,204]@{method2}@)
-    (function_arguments ([204,205] arguments: (identifier[205,208]@{obj}@) ,[208,209] (identifier[209,217]@{inputArg}@) )[217,218])
+    (function_arguments<204,218> ([204,205] arguments: (identifier[205,208]@{obj}@) ,[208,209] (identifier[209,217]@{inputArg}@) )[217,218])
     \n[218,219] end[225,228])
    \n[228,229] end[232,235])
   end[236,239])

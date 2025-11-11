@@ -1,69 +1,69 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% see https://github.com/acristoffers/tree-sitter-...}@)
- (assignment
+(source_file<1,344> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<91,134>
   left: 
-   (field_expression object: (identifier[91,92]@{s}@) .[92,93]
-    field: (identifier function[93,101]))
+   (field_expression<91,101> object: (identifier[91,92]@{s}@) .[92,93]
+    field: (identifier<93,101> function[93,101]))
   =[102,103]
   right: 
-   (cell {[104,105]
-    (row (number[105,106]@{1}@) ,[106,107] (number[108,109]@{2}@))
+   (cell<104,134> {[104,105]
+    (row<105,109> (number[105,106]@{1}@) ,[106,107] (number[108,109]@{2}@))
     ;[109,110] (line_continuation[111,115]@{...\n}@)
-    (row (number[129,130]@{3}@) ,[130,131] (number[132,133]@{4}@))
+    (row<129,133> (number[129,130]@{3}@) ,[130,131] (number[132,133]@{4}@))
     }[133,134]))
  ;[134,135]
- (assignment left: (identifier[137,138]@{a}@) =[139,140]
+ (assignment<137,158> left: (identifier[137,138]@{a}@) =[139,140]
   right: 
-   (matrix [[141,142]
-    (row
-     (field_expression object: (identifier[142,143]@{s}@) .[143,144]
+   (matrix<141,158> [[141,142]
+    (row<142,157>
+     (field_expression<142,157> object: (identifier[142,143]@{s}@) .[143,144]
       field: 
-       (function_call
-        name: (identifier function[144,152])
+       (function_call<144,157>
+        name: (identifier<144,152> function[144,152])
         {[152,153]
-        (arguments
-         argument: (spread_operator :[153,154])
+        (arguments<153,156>
+         argument: (spread_operator<153,154> :[153,154])
          ,[154,155] (number[155,156]@{2}@))
         }[156,157])))
     ][157,158]))
  \n[158,160]
- (field_expression object: (identifier[160,161]@{s}@) .[161,162]
+ (field_expression<160,175> object: (identifier[160,161]@{s}@) .[161,162]
   field: 
-   (function_call
-    name: (identifier function[162,170])
+   (function_call<162,175>
+    name: (identifier<162,170> function[162,170])
     {[170,171]
-    (arguments
-     argument: (spread_operator :[171,172])
+    (arguments<171,174>
+     argument: (spread_operator<171,172> :[171,172])
      ,[172,173] (number[173,174]@{2}@))
     }[174,175]))
  \n[175,177]
- (assignment left: (identifier[177,178]@{c}@) =[179,180]
+ (assignment<177,196> left: (identifier[177,178]@{c}@) =[179,180]
   right: 
-   (field_expression object: (identifier[181,182]@{s}@) .[182,183]
+   (field_expression<181,196> object: (identifier[181,182]@{s}@) .[182,183]
     field: 
-     (function_call
-      name: (identifier function[183,191])
+     (function_call<183,196>
+      name: (identifier<183,191> function[183,191])
       {[191,192]
-      (arguments argument: (number[192,193]@{1}@) ,[193,194] (number[194,195]@{2}@))
+      (arguments<192,195> argument: (number[192,193]@{1}@) ,[193,194] (number[194,195]@{2}@))
       }[195,196])))
  ;[196,197]
- (assignment left: (identifier[199,200]@{d}@) =[201,202]
+ (assignment<199,220> left: (identifier[199,200]@{d}@) =[201,202]
   right: 
-   (matrix [[203,204]
-    (row
-     (field_expression object: (identifier[204,205]@{s}@) .[205,206]
+   (matrix<203,220> [[203,204]
+    (row<204,219>
+     (field_expression<204,219> object: (identifier[204,205]@{s}@) .[205,206]
       field: 
-       (function_call
-        name: (identifier function[206,214])
+       (function_call<206,219>
+        name: (identifier<206,214> function[206,214])
         {[214,215]
-        (arguments argument: (number[215,216]@{1}@) ,[216,217] (number[217,218]@{2}@))
+        (arguments<215,218> argument: (number[215,216]@{1}@) ,[216,217] (number[217,218]@{2}@))
         }[218,219])))
     ][219,220]))
  ;[220,221] (comment[223,300]@{% ./+namespace1/+namespace2/foo.m\n%   function a ...}@)
- (assignment left: (identifier[302,303]@{e}@) =[304,305]
+ (assignment<302,342> left: (identifier[302,303]@{e}@) =[304,305]
   right: 
-   (matrix [[306,307]
-    (row
-     (field_expression object: (identifier[307,317]@{namespace1}@) .[317,318] field: (identifier[318,328]@{namespace2}@) (line_continuation[328,337]@{...\n     }@) .[337,338] (identifier[338,341]@{foo}@)))
+   (matrix<306,342> [[306,307]
+    (row<307,341>
+     (field_expression<307,341> object: (identifier[307,317]@{namespace1}@) .[317,318] field: (identifier[318,328]@{namespace2}@) (line_continuation[328,337]@{...\n     }@) .[337,338] (identifier[338,341]@{foo}@)))
     ][341,342]))
  \n[342,344])

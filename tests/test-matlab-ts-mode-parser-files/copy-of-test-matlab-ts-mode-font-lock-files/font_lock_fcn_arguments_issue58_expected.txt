@@ -1,56 +1,56 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,199]@{% Take from myBar in\n% https://www.mathworks.com/...}@)
- (function_definition function[201,209] name: (identifier[210,241]@{font_lock_fcn_arguments_issue58}@)
-  (function_arguments ([241,242] arguments: (identifier[242,243]@{x}@) ,[243,244] (identifier[244,245]@{y}@) ,[245,246] (identifier[246,254]@{propArgs}@) )[254,255])
+(source_file<1,542> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,199]@{% Take from myBar in\n% https://www.mathworks.com/...}@)
+ (function_definition<201,541> function[201,209] name: (identifier[210,241]@{font_lock_fcn_arguments_issue58}@)
+  (function_arguments<241,255> ([241,242] arguments: (identifier[242,243]@{x}@) ,[243,244] (identifier[244,245]@{y}@) ,[245,246] (identifier[246,254]@{propArgs}@) )[254,255])
   \n[255,256]
-  (arguments_statement arguments[260,269] \n[269,270]
-   (property name: (identifier[278,279]@{x}@)
-    (dimensions ([280,281]
-     (spread_operator :[281,282])
+  (arguments_statement<260,463> arguments[260,269] \n[269,270]
+   (property<278,293> name: (identifier[278,279]@{x}@)
+    (dimensions<280,285> ([280,281]
+     (spread_operator<281,282> :[281,282])
      ,[282,283]
-     (spread_operator :[283,284])
+     (spread_operator<283,284> :[283,284])
      )[284,285])
     (identifier[286,292]@{double}@) \n[292,293])
-   (property name: (identifier[301,302]@{y}@)
-    (dimensions ([303,304]
-     (spread_operator :[304,305])
+   (property<301,316> name: (identifier[301,302]@{y}@)
+    (dimensions<303,308> ([303,304]
+     (spread_operator<304,305> :[304,305])
      ,[305,306]
-     (spread_operator :[306,307])
+     (spread_operator<306,307> :[306,307])
      )[307,308])
     (identifier[309,315]@{double}@) \n[315,316])
-   (class_property (identifier[324,332]@{propArgs}@) .?[332,334] (identifier[334,340]@{matlab}@) .[340,341] (identifier[341,349]@{graphics}@) .[349,350] (identifier[350,355]@{chart}@) .[355,356] (identifier[356,365]@{primitive}@) .[365,366] (identifier[366,369]@{Bar}@))
+   (class_property<324,369> (identifier[324,332]@{propArgs}@) .?[332,334] (identifier[334,340]@{matlab}@) .[340,341] (identifier[341,349]@{graphics}@) .[349,350] (identifier[350,355]@{chart}@) .[355,356] (identifier[356,365]@{primitive}@) .[365,366] (identifier[366,369]@{Bar}@))
    \n[369,370]
-   (property
-    name: (property_name (identifier[378,386]@{propArgs}@) .[386,387] (identifier[387,396]@{FaceColor}@))
-    (validation_functions {[397,398]
-     (function_call name: (identifier[398,410]@{mustBeMember}@) ([410,411]
-      (arguments
-       argument: (field_expression object: (identifier[411,419]@{propArgs}@) .[419,420] field: (identifier[420,429]@{FaceColor}@))
+   (property<378,456>
+    name: (property_name<378,396> (identifier[378,386]@{propArgs}@) .[386,387] (identifier[387,396]@{FaceColor}@))
+    (validation_functions<397,446> {[397,398]
+     (function_call<398,445> name: (identifier[398,410]@{mustBeMember}@) ([410,411]
+      (arguments<411,444>
+       argument: (field_expression<411,429> object: (identifier[411,419]@{propArgs}@) .[419,420] field: (identifier[420,429]@{FaceColor}@))
        ,[429,430]
-       (cell {[430,431]
-        (row
-         (string '[431,432] (string_content[432,435]@{red}@) '[435,436])
+       (cell<430,444> {[430,431]
+        (row<431,443>
+         (string<431,436> '[431,432] (string_content[432,435]@{red}@) '[435,436])
          ,[436,437]
-         (string '[437,438] (string_content[438,442]@{blue}@) '[442,443]))
+         (string<437,443> '[437,438] (string_content[438,442]@{blue}@) '[442,443]))
         }[443,444]))
       )[444,445])
      }[445,446])
-    (default_value =[447,448]
-     (string "[449,450] (string_content[450,454]@{blue}@) "[454,455]))
+    (default_value<447,455> =[447,448]
+     (string<449,455> "[449,450] (string_content[450,454]@{blue}@) "[454,455]))
     \n[455,456])
    end[460,463])
-  (block
-   (assignment left: (identifier[468,480]@{propertyCell}@) =[481,482]
+  (block<468,538>
+   (assignment<468,507> left: (identifier[468,480]@{propertyCell}@) =[481,482]
     right: 
-     (function_call name: (identifier[483,497]@{namedargs2cell}@) ([497,498]
-      (arguments argument: (identifier[498,506]@{propArgs}@))
+     (function_call<483,507> name: (identifier[483,497]@{namedargs2cell}@) ([497,498]
+      (arguments<498,506> argument: (identifier[498,506]@{propArgs}@))
       )[506,507]))
    ;[507,508]
-   (function_call name: (identifier[513,516]@{bar}@) ([516,517]
-    (arguments argument: (identifier[517,518]@{x}@) ,[518,519] (identifier[519,520]@{y}@) ,[520,521]
-     (function_call name: (identifier[521,533]@{propertyCell}@) {[533,534]
-      (arguments
-       argument: (spread_operator :[534,535]))
+   (function_call<513,537> name: (identifier[513,516]@{bar}@) ([516,517]
+    (arguments<517,536> argument: (identifier[517,518]@{x}@) ,[518,519] (identifier[519,520]@{y}@) ,[520,521]
+     (function_call<521,536> name: (identifier[521,533]@{propertyCell}@) {[533,534]
+      (arguments<534,535>
+       argument: (spread_operator<534,535> :[534,535]))
       }[535,536]))
     )[536,537])
    \n[537,538])

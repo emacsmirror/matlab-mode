@@ -1,17 +1,17 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[21,29] name: (identifier[30,41]@{indent_enum}@)
-  (superclasses <[42,43]
-   (property_name (identifier[44,50]@{uint32}@)))
+(source_file<1,173> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<21,172> classdef[21,29] name: (identifier[30,41]@{indent_enum}@)
+  (superclasses<42,50> <[42,43]
+   (property_name<44,50> (identifier[44,50]@{uint32}@)))
   (comment[51,56]@{% foo}@) (comment[62,67]@{% foo}@) \n[67,68]
-  (enumeration enumeration[72,83] \n[83,84]
-   (enum (identifier[92,97]@{North}@) ([98,99] (number[99,100]@{0}@) )[100,101])
+  (enumeration<72,168> enumeration[72,83] \n[83,84]
+   (enum<92,101> (identifier[92,97]@{North}@) ([98,99] (number[99,100]@{0}@) )[100,101])
    \n[101,102]
-   (enum (identifier[110,114]@{East}@) ([116,117] (number[117,119]@{90}@) )[119,120])
+   (enum<110,120> (identifier[110,114]@{East}@) ([116,117] (number[117,119]@{90}@) )[119,120])
    \n[120,121]
-   (enum (identifier[129,134]@{South}@) ([135,136] (number[136,139]@{180}@) )[139,140])
+   (enum<129,140> (identifier[129,134]@{South}@) ([135,136] (number[136,139]@{180}@) )[139,140])
    \n[140,141]
-   (enum (identifier[149,153]@{West}@) ([155,156] (number[156,159]@{270}@) )[159,160])
+   (enum<149,160> (identifier[149,153]@{West}@) ([155,156] (number[156,159]@{270}@) )[159,160])
    \n[160,161] end[165,168])
   end[169,172])
  \n[172,173])

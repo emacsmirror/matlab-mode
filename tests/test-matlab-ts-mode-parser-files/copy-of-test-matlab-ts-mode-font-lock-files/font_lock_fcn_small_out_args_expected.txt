@@ -1,12 +1,12 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
- (function_definition function[27,35]
-  (function_output (identifier[36,39]@{out}@) =[40,41])
+(source_file<1,125> (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
+ (function_definition<27,124> function[27,35]
+  (function_output<36,41> (identifier[36,39]@{out}@) =[40,41])
   name: (identifier[42,70]@{font_lock_fcn_small_out_args}@)
-  (function_arguments ([70,71] )[71,72])
+  (function_arguments<70,72> ([70,71] )[71,72])
   (comment[73,87]@{% help comment}@) (comment[93,107]@{% code comment}@) \n[107,108]
-  (block
-   (assignment left: (identifier[112,115]@{out}@) =[116,117] right: (number[118,119]@{1}@))
+  (block<112,121>
+   (assignment<112,119> left: (identifier[112,115]@{out}@) =[116,117] right: (number[118,119]@{1}@))
    ;[119,120] \n[120,121])
   end[121,124])
  \n[124,125])

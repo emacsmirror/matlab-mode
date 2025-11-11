@@ -1,160 +1,160 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (class_definition classdef[21,29] name: (identifier[30,45]@{indent_keywords}@)
-  (superclasses <[46,47]
-   (property_name (identifier[48,54]@{handle}@)))
+(source_file<1,1596> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (class_definition<21,1595> classdef[21,29] name: (identifier[30,45]@{indent_keywords}@)
+  (superclasses<46,54> <[46,47]
+   (property_name<48,54> (identifier[48,54]@{handle}@)))
   \n[54,55]
-  (properties properties[59,69] (comment[78,92]@{% comment here}@) \n[92,93]
-   (property name: (identifier[101,103]@{p1}@)
-    (default_value =[104,105] (number[106,107]@{0}@))
+  (properties<59,215> properties[59,69] (comment[78,92]@{% comment here}@) \n[92,93]
+   (property<101,108> name: (identifier[101,103]@{p1}@)
+    (default_value<104,107> =[104,105] (number[106,107]@{0}@))
     \n[107,108])
-   (property name: (identifier[116,118]@{p2}@)
-    (default_value =[119,120] (line_continuation[121,125]@{...\n}@) (number[137,138]@{0}@))
+   (property<116,208> name: (identifier[116,118]@{p2}@)
+    (default_value<119,138> =[119,120] (line_continuation[121,125]@{...\n}@) (number[137,138]@{0}@))
     (comment[156,170]@{% comment here}@) (comment[180,207]@{%\{\n          foo\n        %\}}@) \n[207,208])
    end[212,215])
-  (methods methods[220,227] \n[227,228]
-   (function_definition function[236,244] name: (identifier[245,252]@{method1}@)
-    (function_arguments ([252,253] arguments: (identifier[253,255]@{in}@) )[255,256])
+  (methods<220,1463> methods[220,227] \n[227,228]
+   (function_definition<236,1223> function[236,244] name: (identifier[245,252]@{method1}@)
+    (function_arguments<252,256> ([252,253] arguments: (identifier[253,255]@{in}@) )[255,256])
     \n[256,257] \n[269,270]
-    (arguments_statement arguments[282,291] \n[291,292]
-     (property name: (identifier[308,310]@{in}@)
-      (dimensions ([311,312] (number[312,313]@{1}@) ,[313,314] (number[314,315]@{1}@) )[315,316])
+    (arguments_statement<282,341> arguments[282,291] \n[291,292]
+     (property<308,324> name: (identifier[308,310]@{in}@)
+      (dimensions<311,316> ([311,312] (number[312,313]@{1}@) ,[313,314] (number[314,315]@{1}@) )[315,316])
       (identifier[317,323]@{double}@) \n[323,324])
      end[336,339] \n[340,341])
     \n[349,350]
-    (block
-     (global_operator global[362,368] (identifier[369,374]@{gVar1}@) (identifier[375,380]@{gVar2}@))
+    (block<362,1212>
+     (global_operator<362,380> global[362,368] (identifier[369,374]@{gVar1}@) (identifier[375,380]@{gVar2}@))
      \n[380,381]
-     (global_operator global[393,399] (identifier[400,405]@{pVar1}@) (identifier[406,411]@{pVar2}@))
+     (global_operator<393,411> global[393,399] (identifier[400,405]@{pVar1}@) (identifier[406,411]@{pVar2}@))
      \n[411,412] \n[424,425]
-     (try_statement try[437,440] \n[440,442] \n[458,459]
-      (block
-       (switch_statement switch[475,481] condition: (identifier[482,484]@{in}@) \n[484,485]
-        (case_clause case[503,507] condition: (number[508,510]@{10}@) \n[510,511]
-         (block
-          (function_call name: (identifier[531,535]@{disp}@) ([535,536]
-           (arguments
-            argument: (string '[536,537] (string_content[537,539]@{10}@) '[539,540]))
+     (try_statement<437,760> try[437,440] \n[440,442] \n[458,459]
+      (block<475,696>
+       (switch_statement<475,695> switch[475,481] condition: (identifier[482,484]@{in}@) \n[484,485]
+        (case_clause<503,577> case[503,507] condition: (number[508,510]@{10}@) \n[510,511]
+         (block<531,577>
+          (function_call<531,541> name: (identifier[531,535]@{disp}@) ([535,536]
+           (arguments<536,540>
+            argument: (string<536,540> '[536,537] (string_content[537,539]@{10}@) '[539,540]))
            )[540,541])
           ;[541,542]
-          (function_call name: (identifier[565,569]@{disp}@) ([569,570]
-           (arguments
-            argument: (string '[570,571] (string_content[571,573]@{11}@) '[573,574]))
+          (function_call<565,575> name: (identifier[565,569]@{disp}@) ([569,570]
+           (arguments<570,574>
+            argument: (string<570,574> '[570,571] (string_content[571,573]@{11}@) '[573,574]))
            )[574,575])
           ;[575,576] \n[576,577]))
-        (otherwise_clause otherwise[595,604]
-         (block
-          (function_call name: (identifier[646,650]@{disp}@) ([650,651]
-           (arguments
-            argument: (string '[651,652] (string_content[652,655]@{~10}@) '[655,656]))
+        (otherwise_clause<595,676> otherwise[595,604]
+         (block<646,676>
+          (function_call<646,657> name: (identifier[646,650]@{disp}@) ([650,651]
+           (arguments<651,656>
+            argument: (string<651,656> '[651,652] (string_content[652,655]@{~10}@) '[655,656]))
            )[656,657])
           ;[657,658] \n[658,659] \n[675,676]))
         end[692,695])
        \n[695,696])
-      (catch_clause catch[708,713] (identifier[714,716]@{me}@) \n[716,717]
-       (block
-        (function_call name: (identifier[733,740]@{rethrow}@) ([740,741]
-         (arguments argument: (identifier[741,743]@{me}@))
+      (catch_clause<708,745> catch[708,713] (identifier[714,716]@{me}@) \n[716,717]
+       (block<733,745>
+        (function_call<733,744> name: (identifier[733,740]@{rethrow}@) ([740,741]
+         (arguments<741,743> argument: (identifier[741,743]@{me}@))
          )[743,744])
         \n[744,745]))
       end[757,760])
      \n[760,761]
-     (assignment left: (identifier[786,787]@{j}@) =[788,789] right: (number[790,791]@{0}@))
+     (assignment<786,791> left: (identifier[786,787]@{j}@) =[788,789] right: (number[790,791]@{0}@))
      ;[791,792] \n[792,793]
-     (for_statement for[805,808]
-      (iterator (identifier[809,810]@{n}@) =[811,812]
-       (range (number[813,814]@{1}@) :[814,815] (identifier[815,817]@{in}@)))
+     (for_statement<805,1112> for[805,808]
+      (iterator<809,817> (identifier[809,810]@{n}@) =[811,812]
+       (range<813,817> (number[813,814]@{1}@) :[814,815] (identifier[815,817]@{in}@)))
       \n[817,818]
-      (block
-       (if_statement if[834,836]
+      (block<834,1097>
+       (if_statement<834,1036> if[834,836]
         condition: 
-         (function_call name: (identifier[837,840]@{mod}@) ([840,841]
-          (arguments argument: (identifier[841,842]@{n}@) ,[842,843] (number[844,845]@{5}@))
+         (function_call<837,846> name: (identifier[837,840]@{mod}@) ([840,841]
+          (arguments<841,845> argument: (identifier[841,842]@{n}@) ,[842,843] (number[844,845]@{5}@))
           )[845,846])
-        (block
-         (assignment left: (identifier[867,868]@{x}@) =[869,870] right: (number[871,872]@{1}@))
+        (block<867,903>
+         (assignment<867,872> left: (identifier[867,868]@{x}@) =[869,870] right: (number[871,872]@{1}@))
          ;[872,873] \n[873,874]
-         (continue_statement continue[894,902])
+         (continue_statement<894,902> continue[894,902])
          \n[902,903])
-        (elseif_clause elseif[919,925]
+        (elseif_clause<919,965> elseif[919,925]
          condition: 
-          (function_call name: (identifier[926,929]@{mod}@) ([929,930]
-           (arguments argument: (identifier[930,931]@{n}@) ,[931,932] (number[933,934]@{7}@))
+          (function_call<926,935> name: (identifier[926,929]@{mod}@) ([929,930]
+           (arguments<930,934> argument: (identifier[930,931]@{n}@) ,[931,932] (number[933,934]@{7}@))
            )[934,935])
          \n[935,936]
-         (block
-          (continue_statement continue[956,964])
+         (block<956,965>
+          (continue_statement<956,964> continue[956,964])
           \n[964,965]))
-        (else_clause else[981,985]
-         (block
-          (assignment left: (identifier[1006,1007]@{j}@) =[1008,1009]
-           right: (binary_operator left: (identifier[1010,1011]@{j}@) +[1012,1013] right: (number[1014,1015]@{1}@)))
+        (else_clause<981,1017> else[981,985]
+         (block<1006,1017>
+          (assignment<1006,1015> left: (identifier[1006,1007]@{j}@) =[1008,1009]
+           right: (binary_operator<1010,1015> left: (identifier[1010,1011]@{j}@) +[1012,1013] right: (number[1014,1015]@{1}@)))
           ;[1015,1016] \n[1016,1017]))
         end[1033,1036])
        \n[1036,1037]
-       (function_call name: (identifier[1053,1057]@{disp}@) ([1057,1058]
-        (arguments
+       (function_call<1053,1096> name: (identifier[1053,1057]@{disp}@) ([1057,1058]
+        (arguments<1058,1095>
          argument: 
-          (matrix [[1058,1059]
-           (row
-            (string '[1059,1060] (string_content[1060,1082]@{Divisible by 5 or 7 : }@) '[1082,1083])
+          (matrix<1058,1095> [[1058,1059]
+           (row<1059,1094>
+            (string<1059,1083> '[1059,1060] (string_content[1060,1082]@{Divisible by 5 or 7 : }@) '[1082,1083])
             ,[1084,1084]
-            (function_call name: (identifier[1084,1091]@{num2str}@) ([1091,1092]
-             (arguments argument: (identifier[1092,1093]@{n}@))
+            (function_call<1084,1094> name: (identifier[1084,1091]@{num2str}@) ([1091,1092]
+             (arguments<1092,1093> argument: (identifier[1092,1093]@{n}@))
              )[1093,1094]))
            ][1094,1095]))
         )[1095,1096])
        \n[1096,1097])
       end[1109,1112])
      \n[1112,1113]
-     (assignment left: (identifier[1138,1139]@{x}@) =[1140,1141] right: (number[1142,1143]@{0}@))
+     (assignment<1138,1143> left: (identifier[1138,1139]@{x}@) =[1140,1141] right: (number[1142,1143]@{0}@))
      \n[1143,1144]
-     (while_statement while[1156,1161]
-      condition: (comparison_operator (identifier[1162,1163]@{x}@) <[1164,1165] (number[1166,1168]@{10}@))
-      (block
-       (assignment left: (identifier[1185,1186]@{x}@) =[1187,1188]
-        right: (binary_operator left: (identifier[1189,1190]@{x}@) +[1191,1192] right: (number[1193,1194]@{1}@)))
+     (while_statement<1156,1211> while[1156,1161]
+      condition: (comparison_operator<1162,1168> (identifier[1162,1163]@{x}@) <[1164,1165] (number[1166,1168]@{10}@))
+      (block<1185,1196>
+       (assignment<1185,1194> left: (identifier[1185,1186]@{x}@) =[1187,1188]
+        right: (binary_operator<1189,1194> left: (identifier[1189,1190]@{x}@) +[1191,1192] right: (number[1193,1194]@{1}@)))
        ;[1194,1195] \n[1195,1196])
       end[1208,1211])
      \n[1211,1212])
     end[1220,1223])
    \n[1223,1225]
-   (function_definition function[1233,1241] name: (identifier[1242,1249]@{method2}@)
-    (function_arguments ([1249,1250] )[1250,1251])
+   (function_definition<1233,1455> function[1233,1241] name: (identifier[1242,1249]@{method2}@)
+    (function_arguments<1249,1251> ([1249,1250] )[1250,1251])
     \n[1251,1252]
-    (block
-     (assignment left: (identifier[1264,1265]@{n}@) =[1266,1267] right: (number[1268,1271]@{200}@))
+    (block<1264,1444>
+     (assignment<1264,1271> left: (identifier[1264,1265]@{n}@) =[1266,1267] right: (number[1268,1271]@{200}@))
      ;[1271,1272]
-     (assignment left: (identifier[1285,1286]@{A}@) =[1287,1288] right: (number[1289,1292]@{500}@))
+     (assignment<1285,1292> left: (identifier[1285,1286]@{A}@) =[1287,1288] right: (number[1289,1292]@{500}@))
      ;[1292,1293]
-     (assignment left: (identifier[1306,1307]@{a}@) =[1308,1309]
+     (assignment<1306,1320> left: (identifier[1306,1307]@{a}@) =[1308,1309]
       right: 
-       (function_call name: (identifier[1310,1315]@{zeros}@) ([1315,1316]
-        (arguments argument: (number[1316,1317]@{1}@) ,[1317,1318] (identifier[1318,1319]@{n}@))
+       (function_call<1310,1320> name: (identifier[1310,1315]@{zeros}@) ([1315,1316]
+        (arguments<1316,1319> argument: (number[1316,1317]@{1}@) ,[1317,1318] (identifier[1318,1319]@{n}@))
         )[1319,1320]))
      ;[1320,1321] \n[1321,1322]
-     (for_statement parfor[1334,1340]
-      (iterator (identifier[1341,1342]@{i}@) =[1343,1344]
-       (range (number[1345,1346]@{1}@) :[1346,1347] (identifier[1347,1348]@{n}@)))
-      (block
-       (assignment
+     (for_statement<1334,1411> parfor[1334,1340]
+      (iterator<1341,1348> (identifier[1341,1342]@{i}@) =[1343,1344]
+       (range<1345,1348> (number[1345,1346]@{1}@) :[1346,1347] (identifier[1347,1348]@{n}@)))
+      (block<1365,1396>
+       (assignment<1365,1394>
         left: 
-         (function_call name: (identifier[1365,1366]@{a}@) ([1366,1367]
-          (arguments argument: (identifier[1367,1368]@{i}@))
+         (function_call<1365,1369> name: (identifier[1365,1366]@{a}@) ([1366,1367]
+          (arguments<1367,1368> argument: (identifier[1367,1368]@{i}@))
           )[1368,1369])
         =[1370,1371]
         right: 
-         (function_call name: (identifier[1372,1375]@{max}@) ([1375,1376]
-          (arguments
+         (function_call<1372,1394> name: (identifier[1372,1375]@{max}@) ([1375,1376]
+          (arguments<1376,1393>
            argument: 
-            (function_call name: (identifier[1376,1379]@{abs}@) ([1379,1380]
-             (arguments
+            (function_call<1376,1393> name: (identifier[1376,1379]@{abs}@) ([1379,1380]
+             (arguments<1380,1392>
               argument: 
-               (function_call name: (identifier[1380,1383]@{eig}@) ([1383,1384]
-                (arguments
+               (function_call<1380,1392> name: (identifier[1380,1383]@{eig}@) ([1383,1384]
+                (arguments<1384,1391>
                  argument: 
-                  (function_call name: (identifier[1384,1388]@{rand}@) ([1388,1389]
-                   (arguments argument: (identifier[1389,1390]@{A}@))
+                  (function_call<1384,1391> name: (identifier[1384,1388]@{rand}@) ([1388,1389]
+                   (arguments<1389,1390> argument: (identifier[1389,1390]@{A}@))
                    )[1390,1391]))
                 )[1391,1392]))
              )[1392,1393]))
@@ -162,15 +162,15 @@
        ;[1394,1395] \n[1395,1396])
       end[1408,1411])
      \n[1411,1412] \n[1424,1425]
-     (return_statement return[1437,1443])
+     (return_statement<1437,1443> return[1437,1443])
      \n[1443,1444])
     end[1452,1455])
    \n[1455,1456] end[1460,1463])
-  (events events[1469,1475] \n[1475,1476] (identifier[1484,1486]@{e1}@) \n[1486,1487] (identifier[1495,1497]@{e2}@) (comment[1506,1515]@{% comment}@) \n[1515,1516] end[1520,1523])
-  (enumeration enumeration[1529,1540] \n[1540,1541]
-   (enum (identifier[1549,1552]@{one}@))
+  (events<1469,1523> events[1469,1475] \n[1475,1476] (identifier[1484,1486]@{e1}@) \n[1486,1487] (identifier[1495,1497]@{e2}@) (comment[1506,1515]@{% comment}@) \n[1515,1516] end[1520,1523])
+  (enumeration<1529,1590> enumeration[1529,1540] \n[1540,1541]
+   (enum<1549,1552> (identifier[1549,1552]@{one}@))
    \n[1552,1553]
-   (enum (identifier[1561,1564]@{two}@))
+   (enum<1561,1564> (identifier[1561,1564]@{two}@))
    (comment[1573,1582]@{% comment}@) \n[1582,1583] end[1587,1590])
   end[1592,1595])
  \n[1595,1596])

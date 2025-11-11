@@ -1,53 +1,53 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,98]@{% t-utils-test-indent: no-line-by-line-indent - fu...}@)
- (class_definition classdef[100,108] name: (identifier[109,140]@{indent_namespace_class_issue114}@) (comment[141,473]@{% Test namespace class for MATLAB parser\n% This c...}@) \n[473,474]
-  (properties properties[483,493] \n[493,494]
-   (property name: (identifier[502,507]@{Value}@) (identifier[508,514]@{double}@)
-    (default_value =[515,516] (number[517,518]@{0}@))
+(source_file<1,1196> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,98]@{% t-utils-test-indent: no-line-by-line-indent - fu...}@)
+ (class_definition<100,1195> classdef[100,108] name: (identifier[109,140]@{indent_namespace_class_issue114}@) (comment[141,473]@{% Test namespace class for MATLAB parser\n% This c...}@) \n[473,474]
+  (properties<483,553> properties[483,493] \n[493,494]
+   (property<502,546> name: (identifier[502,507]@{Value}@) (identifier[508,514]@{double}@)
+    (default_value<515,518> =[515,516] (number[517,518]@{0}@))
     (comment[527,545]@{% The stored value}@) \n[545,546])
    end[550,553])
-  (methods methods[559,566] \n[566,567]
-   (function_definition function[575,583]
-    (function_output (identifier[584,587]@{obj}@) =[588,589])
+  (methods<559,1191> methods[559,566] \n[566,567]
+   (function_definition<575,886> function[575,583]
+    (function_output<584,589> (identifier[584,587]@{obj}@) =[588,589])
     name: (identifier[590,604]@{NamespaceClass}@)
-    (function_arguments ([604,605] arguments: (identifier[605,615]@{init_value}@) )[615,616])
+    (function_arguments<604,616> ([604,605] arguments: (identifier[605,615]@{init_value}@) )[615,616])
     (comment[625,697]@{% NamespaceClass constructor\n        % Initialize...}@) \n[697,699]
-    (arguments_statement arguments[711,720] \n[720,721]
-     (property name: (identifier[737,747]@{init_value}@)
-      (dimensions ([748,749] (number[749,750]@{1}@) ,[750,751] (number[751,752]@{1}@) )[752,753])
+    (arguments_statement<711,837> arguments[711,720] \n[720,721]
+     (property<737,822> name: (identifier[737,747]@{init_value}@)
+      (dimensions<748,753> ([748,749] (number[749,750]@{1}@) ,[750,751] (number[751,752]@{1}@) )[752,753])
       (identifier[754,760]@{double}@)
-      (validation_functions {[761,762] (identifier[762,775]@{mustBeNumeric}@) }[775,776])
-      (default_value =[777,778] (number[779,780]@{0}@))
+      (validation_functions<761,776> {[761,762] (identifier[762,775]@{mustBeNumeric}@) }[775,776])
+      (default_value<777,780> =[777,778] (number[779,780]@{0}@))
       (comment[797,821]@{% Initial value to store}@) \n[821,822])
      end[834,837])
-    (block
-     (assignment
-      left: (field_expression object: (identifier[851,854]@{obj}@) .[854,855] field: (identifier[855,860]@{Value}@))
+    (block<851,875>
+     (assignment<851,873>
+      left: (field_expression<851,860> object: (identifier[851,854]@{obj}@) .[854,855] field: (identifier[855,860]@{Value}@))
       =[861,862] right: (identifier[863,873]@{init_value}@))
      ;[873,874] \n[874,875])
     end[883,886])
    \n[886,888]
-   (function_definition function[896,904]
-    (function_output (identifier[905,908]@{obj}@) =[909,910])
+   (function_definition<896,1183> function[896,904]
+    (function_output<905,910> (identifier[905,908]@{obj}@) =[909,910])
     name: (identifier[911,920]@{increment}@)
-    (function_arguments ([920,921] arguments: (identifier[921,924]@{obj}@) ,[924,925] (identifier[926,932]@{amount}@) )[932,933])
+    (function_arguments<920,933> ([920,921] arguments: (identifier[921,924]@{obj}@) ,[924,925] (identifier[926,932]@{amount}@) )[932,933])
     (comment[942,970]@{% Increment the stored value}@) \n[970,972]
-    (arguments_statement arguments[984,993] \n[993,994]
-     (property name: (identifier[1010,1013]@{obj}@) \n[1013,1014])
-     (property name: (identifier[1030,1036]@{amount}@)
-      (dimensions ([1037,1038] (number[1038,1039]@{1}@) ,[1039,1040] (number[1040,1041]@{1}@) )[1041,1042])
+    (arguments_statement<984,1126> arguments[984,993] \n[993,994]
+     (property<1010,1014> name: (identifier[1010,1013]@{obj}@) \n[1013,1014])
+     (property<1030,1111> name: (identifier[1030,1036]@{amount}@)
+      (dimensions<1037,1042> ([1037,1038] (number[1038,1039]@{1}@) ,[1039,1040] (number[1040,1041]@{1}@) )[1041,1042])
       (identifier[1043,1049]@{double}@)
-      (validation_functions {[1050,1051] (identifier[1051,1064]@{mustBeNumeric}@) }[1064,1065])
-      (default_value =[1066,1067] (number[1068,1069]@{1}@))
+      (validation_functions<1050,1065> {[1050,1051] (identifier[1051,1064]@{mustBeNumeric}@) }[1064,1065])
+      (default_value<1066,1069> =[1066,1067] (number[1068,1069]@{1}@))
       (comment[1086,1110]@{% Amount to increment by}@) \n[1110,1111])
      end[1123,1126])
-    (block
-     (assignment
-      left: (field_expression object: (identifier[1140,1143]@{obj}@) .[1143,1144] field: (identifier[1144,1149]@{Value}@))
+    (block<1140,1172>
+     (assignment<1140,1170>
+      left: (field_expression<1140,1149> object: (identifier[1140,1143]@{obj}@) .[1143,1144] field: (identifier[1144,1149]@{Value}@))
       =[1150,1151]
       right: 
-       (binary_operator
-        left: (field_expression object: (identifier[1152,1155]@{obj}@) .[1155,1156] field: (identifier[1156,1161]@{Value}@))
+       (binary_operator<1152,1170>
+        left: (field_expression<1152,1161> object: (identifier[1152,1155]@{obj}@) .[1155,1156] field: (identifier[1156,1161]@{Value}@))
         +[1162,1163] right: (identifier[1164,1170]@{amount}@)))
      ;[1170,1171] \n[1171,1172])
     end[1180,1183])

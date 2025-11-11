@@ -1,6 +1,6 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
- (assignment left: (identifier[91,92]@{a}@) =[93,94] right: (number[95,101]@{0X0005}@))
+(source_file<1,114> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<91,101> left: (identifier[91,92]@{a}@) =[93,94] right: (number[95,101]@{0X0005}@))
  \n[101,102]
- (assignment left: (identifier[102,103]@{b}@) =[104,105] right: (number[106,112]@{0B0101}@))
+ (assignment<102,112> left: (identifier[102,103]@{b}@) =[104,105] right: (number[106,112]@{0B0101}@))
  \n[112,114])

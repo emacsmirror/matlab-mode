@@ -1,19 +1,19 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@)
- (function_definition function[21,29]
-  (function_output (identifier[30,31]@{b}@) =[32,33])
+(source_file<1,433> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<21,432> function[21,29]
+  (function_output<30,33> (identifier[30,31]@{b}@) =[32,33])
   name: (identifier[34,48]@{comments_basic}@)
-  (function_arguments ([48,49] arguments: (identifier[49,50]@{a}@) )[50,51])
+  (function_arguments<48,51> ([48,49] arguments: (identifier[49,50]@{a}@) )[50,51])
   (comment[57,207]@{% Test M-; to comment then uncomment following two...}@) \n[207,208]
-  (block
-   (assignment left: (identifier[212,213]@{b}@) =[214,215]
-    right: (binary_operator left: (identifier[216,217]@{a}@) *[218,219] right: (number[220,221]@{2}@)))
+  (block<212,429>
+   (assignment<212,221> left: (identifier[212,213]@{b}@) =[214,215]
+    right: (binary_operator<216,221> left: (identifier[216,217]@{a}@) *[218,219] right: (number[220,221]@{2}@)))
    ;[221,222]
-   (assignment left: (identifier[227,228]@{b}@) =[229,230]
-    right: (binary_operator left: (identifier[231,232]@{b}@) *[233,234] right: (number[235,236]@{3}@)))
+   (assignment<227,236> left: (identifier[227,228]@{b}@) =[229,230]
+    right: (binary_operator<231,236> left: (identifier[231,232]@{b}@) *[233,234] right: (number[235,236]@{3}@)))
    ;[236,237] (comment[243,413]@{% Test M-; to add comment to end of statement, the...}@)
-   (assignment left: (identifier[418,419]@{b}@) =[420,421]
-    right: (binary_operator left: (identifier[422,423]@{b}@) *[424,425] right: (number[426,427]@{4}@)))
+   (assignment<418,427> left: (identifier[418,419]@{b}@) =[420,421]
+    right: (binary_operator<422,427> left: (identifier[422,423]@{b}@) *[424,425] right: (number[426,427]@{4}@)))
    ;[427,428] \n[428,429])
   end[429,432])
  \n[432,433])

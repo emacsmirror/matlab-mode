@@ -1,37 +1,37 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,193]@{% t-utils-test-indent: no-line-by-line-indent - ne...}@)
- (class_definition classdef[195,203] name: (identifier[204,231]@{indent_class_prop_continued}@) \n[231,232]
-  (properties properties[236,246] \n[246,247]
-   (property name: (identifier[255,270]@{ListArrayHeight}@)
-    (default_value =[271,272]
-     (function_call name: (identifier[273,279]@{struct}@) ([279,280] (line_continuation[281,285]@{...\n}@)
-      (arguments
-       argument: (string '[297,298] (string_content[298,303]@{Short}@) '[303,304])
+(source_file<1,540> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,193]@{% t-utils-test-indent: no-line-by-line-indent - ne...}@)
+ (class_definition<195,539> classdef[195,203] name: (identifier[204,231]@{indent_class_prop_continued}@) \n[231,232]
+  (properties<236,535> properties[236,246] \n[246,247]
+   (property<255,396> name: (identifier[255,270]@{ListArrayHeight}@)
+    (default_value<271,393> =[271,272]
+     (function_call<273,393> name: (identifier[273,279]@{struct}@) ([279,280] (line_continuation[281,285]@{...\n}@)
+      (arguments<297,375>
+       argument: (string<297,304> '[297,298] (string_content[298,303]@{Short}@) '[303,304])
        ,[304,305]
-       (cell {[307,308]
-        (row (number[308,309]@{1}@))
+       (cell<307,310> {[307,308]
+        (row<308,309> (number[308,309]@{1}@))
         }[309,310])
        ,[310,311] (line_continuation[312,316]@{...\n}@)
-       (string '[328,329] (string_content[329,335]@{Medium}@) '[335,336])
+       (string<328,336> '[328,329] (string_content[329,335]@{Medium}@) '[335,336])
        ,[336,337]
-       (cell {[338,339]
-        (row (number[339,341]@{50}@))
+       (cell<338,342> {[338,339]
+        (row<339,341> (number[339,341]@{50}@))
         }[341,342])
        ,[342,343] (line_continuation[344,348]@{...\n}@)
-       (string '[360,361] (string_content[361,365]@{Long}@) '[365,366])
+       (string<360,366> '[360,361] (string_content[361,365]@{Long}@) '[365,366])
        ,[366,367]
-       (cell {[370,371]
-        (row (number[371,374]@{100}@))
+       (cell<370,375> {[370,371]
+        (row<371,374> (number[371,374]@{100}@))
         }[374,375]))
       (line_continuation[376,380]@{...\n}@) )[392,393]))
     ;[393,394] \n[394,396])
-   (property name: (identifier[404,407]@{tbl}@)
-    (default_value =[408,409]
-     (function_call name: (identifier[410,416]@{struct}@) ([416,417] (line_continuation[417,421]@{...\n}@) (line_continuation[433,451]@{... name    value\n}@)
-      (arguments
-       argument: (string '[463,464] (string_content[464,467]@{foo}@) '[467,468])
+   (property<404,528> name: (identifier[404,407]@{tbl}@)
+    (default_value<408,526> =[408,409]
+     (function_call<410,526> name: (identifier[410,416]@{struct}@) ([416,417] (line_continuation[417,421]@{...\n}@) (line_continuation[433,451]@{... name    value\n}@)
+      (arguments<463,507>
+       argument: (string<463,468> '[463,464] (string_content[464,467]@{foo}@) '[467,468])
        ,[468,469] (number[475,476]@{1}@) ,[476,477] (line_continuation[478,482]@{...\n}@)
-       (string '[494,495] (string_content[495,498]@{bar}@) '[498,499])
+       (string<494,499> '[494,495] (string_content[495,498]@{bar}@) '[498,499])
        ,[499,500] (number[506,507]@{1}@))
       (line_continuation[509,513]@{...\n}@) )[525,526]))
     ;[526,527] \n[527,528])

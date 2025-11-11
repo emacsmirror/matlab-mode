@@ -1,15 +1,15 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[23,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
- (if_statement if[92,94] condition: (identifier[95,96]@{a}@) \n[96,97]
-  (block
-   (try_statement try[101,104]
-    (block
-     (command (command_name[113,125]@{fuzzyWatchOn}@))
+(source_file<1,213> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[23,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (if_statement<92,212> if[92,94] condition: (identifier[95,96]@{a}@) \n[96,97]
+  (block<101,209>
+   (try_statement<101,146> try[101,104]
+    (block<113,126>
+     (command<113,125> (command_name[113,125]@{fuzzyWatchOn}@))
      \n[125,126])
-    (catch_clause catch[130,135] (identifier[136,138]@{me}@) \n[138,139])
+    (catch_clause<130,139> catch[130,135] (identifier[136,138]@{me}@) \n[138,139])
     end[143,146])
    (comment[151,187]@{% trailing space after fuzzyWatchOff}@) \n[187,188]
-   (command (command_name[192,205]@{fuzzyWatchOff}@))
+   (command<192,205> (command_name[192,205]@{fuzzyWatchOff}@))
    \n[208,209])
   end[209,212])
  \n[212,213])
