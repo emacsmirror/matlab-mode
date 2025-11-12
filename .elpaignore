@@ -2,26 +2,16 @@
 # Emacs Multi-file Packages
 # https://www.gnu.org/software/emacs/manual/html_node/elisp/Multi_002dfile-Packages.html
 
-*.ac
-*.hgignore
-*.hgtags
-*.in
-*.m4
-*.spec
-
 .dir-locals.el
 .elpaignore
+.gitignore
+.hgignore
+.hgtags
 
-CONTRIBUTING.org
-ChangeLog.old1
-ChangeLog.old2
-DEBUGGING.org
 Makefile
 SECURITY.md
 contributing
 doc
 examples
-maintenance
-matlab-maint.el
 matlab-ts-bin
 tests
