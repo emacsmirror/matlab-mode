@@ -3,10 +3,13 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
-* Release 7.3.0 Nov 3, 2025
+* Release 7.3.0 Nov 12, 2025
 
-1. Updated matlab-ts-mode to work with tree-sitter-matlab commit. This fixes all known parse issues
-   in matlab-ts-mode.
+1. Updated matlab-ts-mode to work with tree-sitter-matlab commit 9d16fcf. This fixes many known
+   issues in matlab-ts-mode.
+
+2. Simplified the install of the matlab tree-sitter grammar shared libraries. To enable *matlab-ts-mode*
+   you install =matlab-mode= and then =M-x matlab-ts-grammar-install=.
 
 * Release 7.2.1 Oct 30, 2025
 
