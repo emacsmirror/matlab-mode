@@ -3,22 +3,25 @@
 # https://www.gnu.org/software/emacs/manual/html_node/elisp/Multi_002dfile-Packages.html
 
 *.ac
-*.in
-*.m4
 *.hgignore
 *.hgtags
+*.in
+*.m4
 *.spec
-.elpaignore
+
 .dir-locals.el
+.elpaignore
+
+CONTRIBUTING.org
 ChangeLog.old1
 ChangeLog.old2
-CONTRIBUTING.org
 DEBUGGING.org
-SECURITY.md
 Makefile
-examples
-matlab-maint.el
-tests
-doc
+SECURITY.md
 contributing
+doc
+examples
 maintenance
+matlab-maint.el
+matlab-ts-bin
+tests
