@@ -31,10 +31,28 @@
 
 #+title: How to install the MATLAB tree-sitter grammar
 #+author: John Ciolfi
-#+date: [2025-09-04]
+#+date: [2025-11-13]
 
 The MATLAB tree-sitter grammar requires Emacs 30 or later. This is typically installed in
 =~/.emacs.d/tree-sitter/libtree-sitter-matlab.so= (=.dll= on Windows, =.dylib= on Mac).
+
+* Install the Emacs-MATLAB-Mode pre-built matlab tree-sitter grammar
+
+After installing matlab-mode,
+
+ : M-x matlab-ts-grammar-install
+
+This will download the pre-build matlab tree-sitter grammar from
+https://github.com/mathworks/Emacs-MATLAB-Mode/matlab-ts-bin and save to the tree-sitter
+subdirectory of `user-emacs-directory'. For example,
+=~/.emacs.d/tree-sitter/libtree-sitter-matlab.so= (=.dylib= on Mac, =.dll= on Windows). You can
+visit https://github.com/mathworks/Emacs-MATLAB-Mode/matlab-ts-bin to see what source was used to
+produce these binaries.
+
+In addition, =M-x matlab-ts-grammar-install= will save the customizations required for
+=matlab-ts-mode= which leverages the matlab tree-sitter grammar.
+
+* Alternative: Manual Installation
 
 Below we use the location =~/emacs-projects=. You can change this to another location if desired.
 
@@ -43,27 +61,13 @@ As described below, installation consists of two steps
 1. Install the MATLAB tree-sitter grammar
 2. Setup Emacs to use the tree-sitter grammar
 
-* Install MATLAB tree-sitter grammar for Emacs 30
-
 For Emacs 30, you need to build the MATLAB tree-sitter grammar for ABI 14 because Emacs 30 uses
 version 14 of the tree-sitter application binary interface and as of Sep-2025, the latest
 tree-sitter ABI is 15. There are different methods for installing this.
 
-** Method 1 - Install the Emacs-MATLAB-Mode pre-built matlab tree-sitter grammar
+** Install MATLAB tree-sitter grammar for Emacs 30
 
-After installing the =matlab-mode= package,
-
-: M-x matlab-ts-grammar-install
-
-This will download the pre-build matlab tree-sitter grammar from
-https://github.com/mathworks/Emacs-MATLAB-Mode/matlab-ts-bin and save to the
-tree-sitter subdirectory of `user-emacs-directory'. For example,
-=~/.emacs.d/tree-sitter/libtree-sitter-matlab.so= (=.dylib= on Mac, =.dll= on Windows).
-
-Visit https://github.com/mathworks/Emacs-MATLAB-Mode/matlab-ts-bin to see what source was
-used to produce these binaries.
-
-** Method 2 - Install from abi/14 branch
+*** Method 1 - Install from abi/14 branch
 
 Oct-29-2025 matlab-ts-mode is known to work with matlab tree-sitter v1.2.3 branch [[https://github.com/acristoffers/tree-sitter-matlab/tree/abi/14][abi/14]] at [[https://github.com/acristoffers/tree-sitter-matlab/tree/9a4e65df4bb08e2b019ca2ef16b2d8f3d95ce978][9a4e65d]].
 
@@ -120,7 +124,7 @@ Oct-29-2025 matlab-ts-mode is known to work with matlab tree-sitter v1.2.3 branc
        cl /LD /I src\tree_sitter src\parser.c src\scanner.c /link /out:%HOME%\.emacs.d\tree-sitter\libtree-sitter-matlab.dll
      #+end_src
 
-** Method 3 - Generate the grammar for ABI 14 and install
+*** Method 2 - Generate the grammar for ABI 14 and install
 
 1. Install C/C++ compiler if not installed. See Method 2 for tips on installing the C/C++ compiler.
 
@@ -187,25 +191,30 @@ Oct-29-2025 matlab-ts-mode is known to work with matlab tree-sitter v1.2.3 branc
 
    - _Windows_
 
-     Follow the same Windows build step as in Method 2.
+     Follow the same Windows build step as in Method 1.
 
-* Setup Emacs to use the MATLAB tree-sitter grammar
+** Setup Emacs to use the MATLAB tree-sitter grammar
 
 Tell Emacs to use *matlab-ts-mode* for MATLAB files by adding the following to your
 =user-init-file= which is typically =~/.emacs=, or add it to your =site-run-file=
 
-#+begin_src emacs-lisp
-  (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
-#+end_src
+1. Map =matlab-mode= to =matlab-ts-mode=
 
-Tell =org-mode= that =#+begin_src matlab ... #end_src= blocks should use *matlab-ts-mode*:
+   : M-x customize-variable RET major-mode-remap-alist RET
 
- : M-x customize-variable RET org-src-lang-modes RET
+   and INS (insert):
 
-and map matlab to matlab-ts:
+   : Key: matlab-mode
+   :    Value: matlab-ts-mode
 
- : Language name: matlab
- : Major mode: matlab-ts
+2. Tell =org-mode= that =#+begin_src matlab ... #end_src= blocks should use *matlab-ts-mode*
+
+   : M-x customize-variable RET org-src-lang-modes RET
+
+   and map matlab to matlab-ts:
+
+    : Language name: matlab
+    : Major mode: matlab-ts
 
 # LocalWords:  showall usepackage parskip tocloft cftsecnumwidth cftsubsecindent cftsubsecnumwidth
 # LocalWords:  libtree dylib workarea ABI langs abi MSys sudo treesit nodejs npm alist lang MELPA
