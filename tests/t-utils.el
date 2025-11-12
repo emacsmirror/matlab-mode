@@ -3035,7 +3035,7 @@ places a box around the text if that font is available."
               (code-buf-pt-end (string-to-number (match-string 3))))
           (make-button pt-start
                        pt-end
-                       'face 't-utils-ts-parse-tree-number-face
+                       'face 't-utils-ts-parse-tree-points-face
                        'action
                        (lambda (button)
                          (ignore button)
