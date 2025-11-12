@@ -51,7 +51,7 @@ tree-sitter ABI is 15. There are different methods for installing this.
 
 ** Method 1 - Install the Emacs-MATLAB-Mode pre-built matlab tree-sitter grammar
 
-After installing the Emacs-MATLAB-Mode package,
+After installing the =matlab-mode= package,
 
 : M-x matlab-ts-grammar-install
 
