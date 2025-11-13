@@ -2664,7 +2664,7 @@ otherwise the result is displayed on stdout."
 
 (defvar t-utils--parse-tree-max-text-chars-to-show 50)
 
-(defun t-utils--parse-tree-draw-node (node)
+(defun t-utils--parse-tree-draw-node (node narrow)
   "Draw the parse tree of NODE in the current buffer.
 
 When this function is called, point should be at the position where the
@@ -2672,7 +2672,10 @@ node should start.  When this function returns, it leaves point at the
 end of the last line of NODE.
 
 Similar `treesit--explorer-draw-node' but contains the start/end points of
-nodes along with the text of the nodes.  Regions are clickable."
+nodes along with the text of the nodes.  Regions are clickable.
+
+NARROW, if non-nil, will create a narrow tree by placing nodes
+on their own line."
 
   ;; Replacing (field-name (when named ...) with (field-name (treesit-node-field-name node)) will
   ;; return incorrect results with Emacs 30 on Debian 12 because Debian 12 is using a buggy version
@@ -2772,7 +2775,8 @@ nodes along with the text of the nodes.  Regions are clickable."
     ;; rest of the node in two lines.
     (when field-name
       (insert (concat field-name ": "))
-      (when (and children (not all-children-inline))
+      (when (and children (or narrow
+                              (not all-children-inline)))
         (insert "\n")
         (indent-to-column (1+ before-field-column))))
     (setq after-field-column (current-column))
@@ -2814,30 +2818,32 @@ nodes along with the text of the nodes.  Regions are clickable."
     ;; Draw children.
     (dolist (child children)
       ;; If a child doesn't have children, it is suitable for inline.
-      (let ((draw-inline (eq 0 (treesit-node-child-count child)))
+      (let ((draw-inline (and (not narrow)
+                              (eq 0 (treesit-node-child-count child))))
             (children-indent (1+ after-field-column)))
         (if (and draw-inline can-inline)
             ;; Draw children on the same line.
             (progn
               (insert " ")
-              (t-utils--parse-tree-draw-node child))
+              (t-utils--parse-tree-draw-node child narrow))
           ;; Draw children on the new line.
           (insert "\n")
           (indent-to-column children-indent)
-          (t-utils--parse-tree-draw-node child))
+          (t-utils--parse-tree-draw-node child narrow))
         (setq can-inline draw-inline)))
 
     ;; Done drawing children, draw the ending paren.
     (when named (insert ")"))))
 
-(defun t-utils--get-parse-tree ()
-  "Return the syntax tree for the current buffer."
+(defun t-utils--get-parse-tree (&optional narrow)
+  "Return the syntax tree for the current buffer.
+When optional NARROW is non-nil, return a narrow parse tree."
   (let ((root (or (treesit-buffer-root-node)
                   (error "No tree-sitter root node"))))
     (with-temp-buffer
       (indent-tabs-mode 0)
       (insert "# -*- t-utils-ts-parse-tree -*-\n")
-      (t-utils--parse-tree-draw-node root)
+      (t-utils--parse-tree-draw-node root narrow)
       (goto-char (point-max))
       (insert "\n")
       (buffer-string))))
@@ -2913,7 +2919,7 @@ nodes along with the text of the nodes.  Regions are clickable."
          '(1 'shadow)))
   "Keywords to fontify in `t-utils-ts-parse-tree-mode'.")
 
-;; t-utils-ts-parse-tree--buf-info: (list code-buf code-buf-name md5-hash)
+;; t-utils-ts-parse-tree--buf-info: (list code-buf code-buf-name md5-hash narrow)
 (defvar-local t-utils-ts-parse-tree--buf-info nil)
 
 (defvar-local t-utils-ts-parse-tree--code-buf-overlay nil)
@@ -2922,13 +2928,14 @@ nodes along with the text of the nodes.  Regions are clickable."
   "Update the parse tree shown by `t-utils-view-parse-tree'."
   (interactive)
   (let ((code-buf      (nth 0 t-utils-ts-parse-tree--buf-info))
-        (code-buf-name (nth 1 t-utils-ts-parse-tree--buf-info)))
+        (code-buf-name (nth 1 t-utils-ts-parse-tree--buf-info))
+        (narrow        (nth 3 t-utils-ts-parse-tree--buf-info)))
     (unless code-buf
       (user-error "No previously parsed buffer"))
     (when (not (buffer-live-p code-buf))
       (user-error "Buffer %S was killed" code-buf-name))
     (with-current-buffer code-buf
-      (t-utils-view-parse-tree 'no-pop-to-buffer))))
+      (t-utils-view-parse-tree-impl narrow 'no-pop-to-buffer))))
 
 (defvar-keymap t-utils-ts-parse-tree-mode-map
   "g" #'t-utils-ts-parse-tree-update)
@@ -2965,10 +2972,59 @@ nodes along with the text of the nodes.  Regions are clickable."
 
     (switch-to-buffer-other-window view-buf)))
 
-(defun t-utils-view-parse-tree (&optional no-pop-to-buffer)
-  "View the tree-sitter parse tree for the current buffer.
+(defun t-utils-view-parse-tree-impl (narrow &optional no-pop-to-buffer)
+  "Implementation for `t-utils-view-parse-tree'.
 
-Optional NO-POP-TO-BUFFER, if non-nil will not run `pop-to-buffer'.
+This exists to enable refresh \"g\" in the view parse tree buffer.
+
+When NARROW is non-nil, draw a narrow parse tree.  Optional
+NO-POP-TO-BUFFER if non-nil, will not pop open the parse tree buffer."
+
+  (let* ((code-buf (current-buffer))
+         (code-buf-name (buffer-name))
+         (parse-tree (t-utils--get-parse-tree narrow))
+         (view-buf-name (concat "*" (buffer-name) "-parse-tree*"))
+         (view-buf (get-buffer-create view-buf-name)))
+    (with-current-buffer view-buf
+      (let ((curr-pt (point)))
+        
+        (read-only-mode -1)
+        (auto-revert-mode 0) ;; no need to save history
+        (buffer-disable-undo)
+        (erase-buffer)
+        (insert parse-tree)
+
+        (goto-char (point-min))
+        (while (re-search-forward
+                "[^ \t\n\r]+\\(?:\\[\\|<\\)\\(\\([0-9]+\\),\\([0-9]+\\)\\)\\(?:\\]\\|>\\)" nil t)
+          (let ((pt-start (match-beginning 1))
+                (pt-end (match-end 1))
+                (code-buf-pt-start (string-to-number (match-string 2)))
+                (code-buf-pt-end (string-to-number (match-string 3))))
+            (make-button pt-start
+                         pt-end
+                         'face 't-utils-ts-parse-tree-points-face
+                         'action
+                         (lambda (button)
+                           (ignore button)
+                           (t-utils-ts-parse-tree--highlight code-buf-pt-start code-buf-pt-end)))))
+
+        (goto-char curr-pt) ;; move back (can we do better)?
+        (t-utils-ts-parse-tree-mode)
+
+        (let ((md5-hash (secure-hash 'md5 code-buf)))
+          ;; use fast md5 which is good enough to tell if code-buf has changed
+          (setq-local t-utils-ts-parse-tree--buf-info
+                      (list code-buf code-buf-name md5-hash narrow)))))
+    (when (not no-pop-to-buffer)
+      (pop-to-buffer view-buf 'other-window))
+    view-buf))
+
+(defun t-utils-view-parse-tree (arg)
+  "View the tree-sitter annotated parse tree for the current buffer.
+
+With prefix ARG, draw the annotated parse tree narrow by placing each
+node on its own line.
 
 The parse tree is a concrete syntax tree for the current buffer.
 The tree contains named and anonymous nodes.  Consider:
@@ -3013,43 +3069,8 @@ The program code node text is shown using
 `t-utils-ts-parse-tree-code-face', which by default uses a font that
 places a box around the text if that font is available."
 
-  (interactive)
-  (let* ((code-buf (current-buffer))
-         (code-buf-name (buffer-name))
-         (parse-tree (t-utils--get-parse-tree))
-         (view-buf-name (concat "*" (buffer-name) "-parse-tree*"))
-         (view-buf (get-buffer-create view-buf-name)))
-    (with-current-buffer view-buf
-      (read-only-mode -1)
-      (auto-revert-mode 0) ;; no need to save history
-      (buffer-disable-undo)
-      (erase-buffer)
-      (insert parse-tree)
-
-      (goto-char (point-min))
-      (while (re-search-forward
-              "[^ \t\n\r]+\\(?:\\[\\|<\\)\\(\\([0-9]+\\),\\([0-9]+\\)\\)\\(?:\\]\\|>\\)" nil t)
-        (let ((pt-start (match-beginning 1))
-              (pt-end (match-end 1))
-              (code-buf-pt-start (string-to-number (match-string 2)))
-              (code-buf-pt-end (string-to-number (match-string 3))))
-          (make-button pt-start
-                       pt-end
-                       'face 't-utils-ts-parse-tree-points-face
-                       'action
-                       (lambda (button)
-                         (ignore button)
-                         (t-utils-ts-parse-tree--highlight code-buf-pt-start code-buf-pt-end)))))
-
-      (goto-char (point-min))
-      (t-utils-ts-parse-tree-mode)
-
-      (let ((md5-hash (secure-hash 'md5 code-buf)))
-        ;; use fast md5 which is good enough to tell if code-buf has changed
-        (setq-local t-utils-ts-parse-tree--buf-info (list code-buf code-buf-name md5-hash))))
-    (when (not no-pop-to-buffer)
-      (pop-to-buffer view-buf 'other-window))
-    view-buf))
+  (interactive "P")
+  (t-utils-view-parse-tree-impl arg))
 
 (defun t-utils--test-parser-error-node-checker (lang-file _got _got-file _expected _expected-file)
   "Check ERROR node status for `t-utils-test-parser'.
