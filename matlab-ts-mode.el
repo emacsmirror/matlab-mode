@@ -223,6 +223,43 @@ The returned point, pt, reflects that location."
                       node-at-point)))
     (cons pt real-node)))
 
+(defun matlab-ts-mode--child-last-node (parent-node)
+  "Get the logical child last node of PARENT-NODE.
+Consider:
+
+  classdef enum1 < uint32
+      enumeration
+          A (0)
+          B  (1)
+      end
+  end
+
+with parse tree:
+
+  (source_file
+   (class_definition classdef name: (identifier)
+    (superclasses <
+     (property_name (identifier)))
+    \\n
+    (enumeration enumeration \\n
+     (enum (identifier) ( (number) ))
+     \\n
+     (enum (identifier) ( (number) ))
+     \\n end \\n)
+    end)
+   \\n)
+
+The last node of the \"(enumeration ... \\n)\" is \"\\n\" and the
+logical last node is \"end\"."
+  (let* ((children (treesit-node-children parent-node))
+         (last-idx (1- (length children)))
+         (last-node (nth last-idx children)))
+    (while (and (>= last-idx 0)
+                (string= (treesit-node-text last-node) "\n"))
+      (setq last-idx (1- last-idx))
+      (setq last-node (nth last-idx children)))
+    last-node))
+
 ;;; File encoding
 
 (defun matlab-ts-mode--check-file-encoding ()
@@ -3369,7 +3406,7 @@ THERE-END MISMATCH) or nil."
            ((string-match-p start-re node-type)
             (let* ((expected-parent-type (cdr (assoc node-type start-to-parent)))
                    (expected-end-type "end") ;; all blocks terminate with an "end" statement
-                   (end-node (car (last (treesit-node-children parent-node)))))
+                   (end-node (matlab-ts-mode--child-last-node parent-node)))
               (setq here-begin (treesit-node-start node)
                     here-end (treesit-node-end node))
               (if (and (equal (treesit-node-type parent-node) expected-parent-type)
