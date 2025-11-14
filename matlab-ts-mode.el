@@ -4150,7 +4150,7 @@ so configuration variables of that mode, do not affect this mode.
     ;; See: tests/test-matlab-ts-mode-comments.el
     (setq-local comment-start      "% ")
     (setq-local comment-end        "")
-    (setq-local comment-start-skip "%\\s-+")
+    (setq-local comment-start-skip "%\\s-*")
 
     ;; Setup `forward-page' and `backward-page' to use ^L or "%% heading" comments
     ;; See: ./tests/test-matlab-ts-mode-page.el

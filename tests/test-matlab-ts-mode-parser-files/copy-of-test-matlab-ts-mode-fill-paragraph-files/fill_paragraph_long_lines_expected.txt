@@ -1,0 +1,63 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1221> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (function_definition<22,258> function[22,30]
+  (function_output<31,34> (identifier[31,32]@{a}@) =[33,34])
+  name: (identifier[35,60]@{fill_paragraph_long_lines}@)
+  (function_arguments<60,63> ([60,61] arguments: (identifier[61,62]@{b}@) )[62,63])
+  \n[63,64]
+  (block<68,255>
+   (if_statement<68,236> if[68,70] condition: (identifier[71,72]@{b}@) (comment[81,193]@{% M-file or MEX-file are valid MATLAB Functions th...}@)
+    (block<202,207>
+     (assignment<202,205> left: (identifier[202,203]@{a}@) =[203,204] right: (number[204,205]@{1}@))
+     ;[205,206] \n[206,207])
+    (else_clause<211,229> else[211,215]
+     (block<224,229>
+      (assignment<224,227> left: (identifier[224,225]@{a}@) =[225,226] right: (number[226,227]@{2}@))
+      ;[227,228] \n[228,229]))
+    end[233,236])
+   \n[236,238]
+   (assignment<242,253> left: (identifier[242,243]@{a}@) =[244,245]
+    right: (binary_operator<246,253> left: (identifier[246,247]@{a}@) +[248,249] right: (identifier[250,253]@{foo}@)))
+   ;[253,254] \n[254,255])
+  end[255,258])
+ \n[258,261]
+ (function_definition<261,635> function[261,269]
+  (function_output<270,273> (identifier[270,271]@{f}@) =[272,273])
+  name: (identifier[274,277]@{foo}@) (comment[278,425]@{% 1. a long comment comment comment comment commen...}@) \n[425,427]
+  (block<431,632>
+   (assignment<431,436> left: (identifier[431,432]@{f}@) =[433,434] right: (number[435,436]@{1}@))
+   ;[436,437] (comment[442,589]@{% 2. a long comment comment comment comment commen...}@)
+   (assignment<594,603> left: (identifier[594,595]@{f}@) =[596,597]
+    right: (binary_operator<598,603> left: (identifier[598,599]@{f}@) +[600,601] right: (number[602,603]@{1}@)))
+   ;[603,604]
+   (assignment<610,630> left: (identifier[610,611]@{f}@) =[612,613]
+    right: 
+     (binary_operator<614,630> left: (identifier[614,615]@{f}@) +[616,617]
+      right: 
+       (function_call<618,630> name: (identifier[618,621]@{goo}@) ([621,622]
+        (arguments<622,629> argument: (number[622,623]@{1}@) ,[623,624] (number[624,625]@{2}@) ,[625,626] (number[626,627]@{3}@) ,[627,628] (number[628,629]@{4}@))
+        )[629,630])))
+   ;[630,631] \n[631,632])
+  end[632,635])
+ \n[635,637]
+ (function_definition<637,1220> function[637,645]
+  (function_output<646,649> (identifier[646,647]@{g}@) =[648,649])
+  name: (identifier[650,653]@{goo}@)
+  (function_arguments<653,673> ([653,654] arguments: (identifier[654,658]@{diff}@) ,[658,659] (identifier[660,663]@{TOL}@) ,[663,664] (identifier[665,666]@{k}@) ,[666,667] (identifier[668,672]@{nmax}@) )[672,673])
+  (comment[679,867]@{% Note following comment does not have a space aft...}@) \n[867,869]
+  (block<873,1217>
+   (while_statement<873,1216> while[873,878]
+    condition: 
+     (boolean_operator<879,902>
+      left: (comparison_operator<879,889> (identifier[879,883]@{diff}@) >[884,885] (identifier[886,889]@{TOL}@))
+      &&[890,892]
+      right: (comparison_operator<893,902> (identifier[893,894]@{k}@) <=[895,897] (identifier[898,902]@{nmax}@)))
+    (comment[903,1189]@{%a long comment comment comment comment comment co...}@)
+    (block<1198,1209>
+     (assignment<1198,1207> left: (identifier[1198,1199]@{g}@) =[1200,1201]
+      right: (binary_operator<1202,1207> left: (identifier[1202,1203]@{g}@) +[1204,1205] right: (number[1206,1207]@{1}@)))
+     ;[1207,1208] \n[1208,1209])
+    end[1213,1216])
+   \n[1216,1217])
+  end[1217,1220])
+ \n[1220,1221])
