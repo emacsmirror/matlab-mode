@@ -3,6 +3,14 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.3.1 Nov 14, 2025
+
+1. Fixed M-q (fill-paragraph) in comments when there no space after the '%' character.
+
+2. Improved t-utils-view-parse-tree
+
+3. Made matlab-ts-mode show-paren-mode robust to extra =\n= nodes
+
 * Release 7.3.0 Nov 12, 2025
 
 1. Updated matlab-ts-mode to work with tree-sitter-matlab commit 9d16fcf. This fixes many known

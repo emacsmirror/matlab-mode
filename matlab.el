@@ -1,6 +1,6 @@
 ;;; matlab.el --- major mode for MATLAB(R) dot-m files -*- lexical-binding: t -*-
 
-;; Version: 7.3.0
+;; Version: 7.3.1
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
