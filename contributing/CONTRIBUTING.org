@@ -81,12 +81,12 @@ haven't gotten to yet!
 
    Copyrights are of the form: "Copyright (C) /Year/ Free Software Foundation, Inc." or when work is
    done over multiple years, "Copyright (C) /StartYear-EndYear/ Free Software Foundation, Inc.".
-   Note we add the extra "(C)" characters becuase this is an Emacs convention. The extra characters
+   Note we add the extra "(C)" characters because this is an Emacs convention. The extra characters
    are not required and is like writing "Copyright Copyright ...". See
    https://www.copyright.gov/circs/circ03.pdf.  After the copyright, in source code files, there
    should be a license notification.
 
-   - If a copyright exists, increment the end year as needed. The start year should remian the
+   - If a copyright exists, increment the end year as needed. The start year should remain the
      unchanged.
 
    - If a copyright doesn't exist, add the copyright along with the license notice.
@@ -113,6 +113,23 @@ Versions are of the form /MAJOR.MINOR.PATCH/
 The MATLAB Emacs Package is this repository that contains matlab-ts-mode, matlab-mode, tlc-mode,
 and more.
 
+* GitHub Releases
+
+See [[https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository][GitHub Managing releases in a repository]]. Using the GitHub web interface,
+
+1. Click *Releases*
+
+2. Click *Draft a new release*
+
+3. Click *Tag: Select tag -> Create new tag* and enter /matlab-mode-MAJOR.MINOR.PATCH/, for example
+   =matlab-mode-7.3.1=. Keep "Target: default" selection.
+
+4. Add release title: /matlab-mode-MAJOR.MINOR.PATCH/
+
+5. Okay to leave the description empty because this is covered by the NEWS.org file.
+
+6. Click *Publish release*
+
 * Maintainers
 
 Maintainers (those with write access) can either use branches, forks, or commit directly
@@ -128,4 +145,4 @@ to the primary ~default~ branch.
 
 [[mailto:oub@mat.ucm.es][Uwe Brauer]] is the primary maintainer and tries to look at all significant changes. He however prefers direct commits or branches.
 
-# LocalWords:  showall md LF flycheck Sure's oub ucm Uwe Brauer
+# LocalWords:  showall md LF flycheck Sure's oub ucm Uwe Brauer mailto
