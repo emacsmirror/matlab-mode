@@ -2240,6 +2240,20 @@ Example:
   "Return the offset computed by `matlab-ts-mode--i-comment-under-fcn-matcher'."
   (cdr matlab-ts-mode--i-comment-under-fcn-pair))
 
+(defun maltab-ts-mode--i-top-level (node parent _bol &rest _)
+  "Is NODE with PARENT a top-level classdef, function, or code?"
+  (and node
+       (not (string-match-p (rx bos (or "line_continuation" "\n") eos)
+                            (treesit-node-type node)))
+       (equal (treesit-node-type parent) "source_file")))
+
+(defun matlab-ts-mode--column-0 (_node _parent bol &rest _)
+  "Return column-0 for BOL.
+Note treesit column-0 moves point, fixed in Fmacs 31."
+  (save-excursion
+    (goto-char bol)
+    (line-beginning-position)))
+
 (defvar matlab-ts-mode--i-fcn-args-next-line-pair)
 
 (defun matlab-ts-mode--i-fcn-args-next-line-matcher (_node parent _bol &rest _)
@@ -2428,16 +2442,8 @@ Example:
       ,#'matlab-ts-mode--i-comment-under-fcn-offset)
 
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
-     ((lambda (node parent _bol &rest _)
-        (and node
-             (not (string-match-p (rx bos (or "line_continuation" "\n") eos)
-                                  (treesit-node-type node)))
-             (equal (treesit-node-type parent) "source_file")))
-      ;; column-0 moves point, fixed in emacs 31
-      (lambda (_node _parent bol &rest _)
-        (save-excursion
-          (goto-char bol)
-          (line-beginning-position)))
+     (,#'maltab-ts-mode--i-top-level
+      ,#'matlab-ts-mode--column-0
       0)
 
      ;; I-Rule: within a function/classdef doc block comment "%{ ... %}"?
