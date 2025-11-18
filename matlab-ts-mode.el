@@ -2945,10 +2945,16 @@ function call."
 ;; matlab-ts-mode--thing-settings used for:
 ;;   C-M-a  - M-x beginning-of-defun
 ;;   C-M-e  - M-x end-of-defun
+;;
 ;;   C-M-b  - M-x backward-sexp
 ;;   C-M-f  - M-x forward-sexp
-;;   M-e    - M-x forward-sentence
+;;   C-M-t  - M-x transpose-sexps (transpose right sexp with left sexp)
+;;   C-M-k  - M-x kill-sexp
+;;
 ;;   M-a    - M-x backward-sentence
+;;   M-e    - M-x forward-sentence
+;;   M-k    - M-x kill-sentence (kill from point to end of sentence)
+;;
 ;;   C-M-u  - M-x backward-up-list
 ;;
 (defvar matlab-ts-mode--thing-settings
