@@ -249,9 +249,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   : 1093
-  Moved to point: 1099
-  : 39:5:      
-  :            ^
+  Moved to point: 1098
+  : 39:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -260,14 +260,14 @@
      ] = ...
      indent_xr_fun5 ...
      ( ...
-+     
++    
   #+end_src diff
 
 - Invoking      : (insert "a ... comment for a")
-  Start point   : 1099
-  Moved to point: 1118
-  : 39:24:      a ... comment for a
-  :                                ^
+  Start point   : 1098
+  Moved to point: 1117
+  : 39:23:     a ... comment for a
+  :                               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -276,31 +276,33 @@
      ] = ...
      indent_xr_fun5 ...
      ( ...
--     
-+     a ... comment for a
+-    
++    a ... comment for a
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1118
-  Moved to point: 1124
-  : 40:5:      
-  :            ^
+  Start point   : 1117
+  Moved to point: 1123
+  : 40:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -37,3 +37,4 @@
+@@ -36,4 +36,5 @@
+     ] = ...
      indent_xr_fun5 ...
      ( ...
-      a ... comment for a
-+     
+-    a ... comment for a
++     a ... comment for a
++    
   #+end_src diff
 
 - Invoking      : (insert ")")
-  Start point   : 1124
-  Moved to point: 1125
-  : 40:6:      )
-  :             ^
+  Start point   : 1123
+  Moved to point: 1124
+  : 40:5:     )
+  :            ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -309,12 +311,12 @@
      indent_xr_fun5 ...
      ( ...
       a ... comment for a
--     
-+     )
+-    
++    )
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1125
+  Start point   : 1124
   Moved to point: 1129
   : 41:4:     
   :           ^
@@ -322,12 +324,10 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -37,4 +37,5 @@
-     indent_xr_fun5 ...
+@@ -38,3 +38,4 @@
      ( ...
       a ... comment for a
--     )
-+    )
+     )
 +    
   #+end_src diff
 

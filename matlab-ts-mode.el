@@ -255,7 +255,7 @@ logical last node is \"end\"."
          (last-idx (1- (length children)))
          (last-node (nth last-idx children)))
     (while (and (>= last-idx 0)
-                (string-match-p "^\n+$" (treesit-node-text last-node)))
+                (string= (treesit-node-type last-node) "\n"))
       (setq last-idx (1- last-idx))
       (setq last-node (nth last-idx children)))
     last-node))
@@ -2430,7 +2430,8 @@ Example:
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
      ((lambda (node parent _bol &rest _)
         (and node
-             (not (string= (treesit-node-type node) "line_continuation"))
+             (not (string-match-p (rx bos (or "line_continuation" "\n") eos)
+                                  (treesit-node-type node)))
              (equal (treesit-node-type parent) "source_file")))
       ;; column-0 moves point, fixed in emacs 31
       (lambda (_node _parent bol &rest _)

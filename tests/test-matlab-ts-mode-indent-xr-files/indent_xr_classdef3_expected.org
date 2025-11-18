@@ -362,9 +362,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   : 1842
-  Moved to point: 1839
-  : 55:0: 
-  :       ^
+  Moved to point: 1843
+  : 55:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -375,30 +375,31 @@
          % comment3
 -        end
 +    end
-+
++    
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1839
-  Moved to point: 1840
-  : 56:0: 
-  :       ^
+  Start point   : 1843
+  Moved to point: 1844
+  : 56:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -53,3 +53,4 @@
+@@ -52,4 +52,5 @@
+         bar;
          % comment3
      end
- 
 +
+     
   #+end_src diff
 
 - Invoking      : (insert "% comment4")
-  Start point   : 1840
-  Moved to point: 1850
-  : 56:10: % comment4
-  :                  ^
+  Start point   : 1844
+  Moved to point: 1854
+  : 56:14:     % comment4
+  :                      ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -407,33 +408,31 @@
          % comment3
      end
  
--
-+% comment4
+-    
++    % comment4
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1850
-  Moved to point: 1855
-  : 57:0: 
-  :       ^
+  Start point   : 1854
+  Moved to point: 1859
+  : 57:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -53,4 +53,5 @@
-         % comment3
+@@ -54,3 +54,4 @@
      end
  
--% comment4
-+    % comment4
-+
+     % comment4
++    
   #+end_src diff
 
 - Invoking      : (insert "events")
-  Start point   : 1855
-  Moved to point: 1861
-  : 57:6: events
-  :             ^
+  Start point   : 1859
+  Moved to point: 1865
+  : 57:10:     events
+  :                  ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -442,12 +441,12 @@
      end
  
      % comment4
--
-+events
+-    
++    events
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1861
+  Start point   : 1865
   Moved to point: 1874
   : 58:8:         
   :               ^
@@ -455,12 +454,10 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -54,4 +54,5 @@
-     end
+@@ -55,3 +55,4 @@
  
      % comment4
--events
-+    events
+     events
 +        
   #+end_src diff
 
@@ -549,9 +546,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   : 1909
-  Moved to point: 1906
-  : 61:0: 
-  :       ^
+  Moved to point: 1910
+  : 61:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -562,30 +559,31 @@
          % comment5
 -        end
 +    end
-+
++    
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1906
-  Moved to point: 1907
-  : 62:0: 
-  :       ^
+  Start point   : 1910
+  Moved to point: 1911
+  : 62:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -59,3 +59,4 @@
+@@ -58,4 +58,5 @@
+         goo;
          % comment5
      end
- 
 +
+     
   #+end_src diff
 
 - Invoking      : (insert "% comment6")
-  Start point   : 1907
-  Moved to point: 1917
-  : 62:10: % comment6
-  :                  ^
+  Start point   : 1911
+  Moved to point: 1921
+  : 62:14:     % comment6
+  :                      ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -594,33 +592,31 @@
          % comment5
      end
  
--
-+% comment6
+-    
++    % comment6
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1917
-  Moved to point: 1922
-  : 63:0: 
-  :       ^
+  Start point   : 1921
+  Moved to point: 1926
+  : 63:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -59,4 +59,5 @@
-         % comment5
+@@ -60,3 +60,4 @@
      end
  
--% comment6
-+    % comment6
-+
+     % comment6
++    
   #+end_src diff
 
 - Invoking      : (insert "methods")
-  Start point   : 1922
-  Moved to point: 1929
-  : 63:7: methods
-  :              ^
+  Start point   : 1926
+  Moved to point: 1933
+  : 63:11:     methods
+  :                   ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -629,12 +625,12 @@
      end
  
      % comment6
--
-+methods
+-    
++    methods
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1929
+  Start point   : 1933
   Moved to point: 1942
   : 64:8:         
   :               ^
@@ -642,12 +638,10 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -60,4 +60,5 @@
-     end
+@@ -61,3 +61,4 @@
  
      % comment6
--methods
-+    methods
+     methods
 +        
   #+end_src diff
 
@@ -972,9 +966,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   : 2109
-  Moved to point: 2106
-  : 75:0: 
-  :       ^
+  Moved to point: 2110
+  : 75:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -985,14 +979,14 @@
          end
 -        end
 +    end
-+
++    
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 2106
-  Moved to point: 2109
-  : 75:3: end
-  :          ^
+  Start point   : 2110
+  Moved to point: 2113
+  : 75:7:     end
+  :              ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -1001,12 +995,12 @@
              end
          end
      end
--
-+end
+-    
++    end
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 2109
+  Start point   : 2113
   Moved to point: 2110
   : 76:0: 
   :       ^
@@ -1014,10 +1008,12 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -73,3 +73,4 @@
+@@ -72,4 +72,5 @@
+             end
          end
      end
- end
+-    end
++end
 +
   #+end_src diff
 

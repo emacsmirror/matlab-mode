@@ -2,157 +2,168 @@
 
 * Executing commands from indent_xr_next_line_matcher1.m:2:9:
 
-  Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end\n") (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
+  Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end") "C-m" (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  232
-  Moved to point:  270
+  Start point   :  277
+  Moved to point:  315
   : 3:37: classdef indent_xr_next_line_matcher1
   :                                            ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  270
+  Start point   :  315
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  270
-  Moved to point:  275
+  Start point   :  315
+  Moved to point:  320
   : 4:4:     
   :          ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,4 +1,5 @@
- % -*- matlab-ts -*-
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end\n") (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
+@@ -1,3 +1,4 @@
+ % -*- mode: matlab-ts; matlab-ts-mode-electric-ends: nil -*-
+ % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end") "C-m" (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
  classdef indent_xr_next_line_matcher1
 +    
- 
   #+end_src diff
 
 - Invoking      : (insert "properties")
-  Start point   :  275
-  Moved to point:  285
+  Start point   :  320
+  Moved to point:  330
   : 4:14:     properties
   :                     ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -1,5 +1,5 @@
- % -*- matlab-ts -*-
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end\n") (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
+@@ -1,4 +1,4 @@
+ % -*- mode: matlab-ts; matlab-ts-mode-electric-ends: nil -*-
+ % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end") "C-m" (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
  classdef indent_xr_next_line_matcher1
 -    
 +    properties
- 
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  285
-  Moved to point:  294
+  Start point   :  330
+  Moved to point:  339
   : 5:8:         
   :              ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -2,4 +2,5 @@
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end\n") (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
+@@ -2,3 +2,4 @@
+ % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end") "C-m" (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
  classdef indent_xr_next_line_matcher1
      properties
 +        
- 
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  294
-  Moved to point:  297
+  Start point   :  339
+  Moved to point:  342
   : 5:11:         end
   :                  ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -2,5 +2,5 @@
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end\n") (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
+@@ -2,4 +2,4 @@
+ % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end") "C-m" (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
  classdef indent_xr_next_line_matcher1
      properties
 -        
 +        end
- 
   #+end_src diff
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  297
-  Moved to point:  293
+  Start point   :  342
+  Moved to point:  338
   : 5:7:     end
   :             ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -2,5 +2,5 @@
- % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end\n") (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
+@@ -2,4 +2,4 @@
+ % Case1: (t-utils-xr "C-n" "C-e" "C-m" (insert "properties") "C-m" (insert "end") "C-i" "C-e" "C-m" (insert "end") "C-m" (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
  classdef indent_xr_next_line_matcher1
      properties
 -        end
 +    end
- 
   #+end_src diff
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  293
+  Start point   :  338
   No point movement
   No buffer modifications
 
 - Invoking      : "C-m" = newline
-  Start point   :  293
-  Moved to point:  294
-  : 6:0: 
-  :      ^
+  Start point   :  338
+  Moved to point:  343
+  : 6:4:     
+  :          ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -4,3 +4,4 @@
+@@ -3,3 +3,4 @@
+ classdef indent_xr_next_line_matcher1
      properties
      end
- 
-+
++    
   #+end_src diff
 
-- Invoking      : (insert "end
-")
-  Start point   :  294
-  Moved to point:  298
+- Invoking      : (insert "end")
+  Start point   :  343
+  Moved to point:  346
+  : 6:7:     end
+  :             ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -3,4 +3,4 @@
+ classdef indent_xr_next_line_matcher1
+     properties
+     end
+-    
++    end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  346
+  Moved to point:  343
   : 7:0: 
   :      ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -3,5 +3,6 @@
+@@ -3,4 +3,5 @@
  classdef indent_xr_next_line_matcher1
      properties
      end
+-    end
 +end
- 
- 
++
   #+end_src diff
 
 - Invoking      : (re-search-backward "^classdef")
-  Start point   :  298
-  Moved to point:  233
+  Start point   :  343
+  Moved to point:  278
   : 3:0: classdef indent_xr_next_line_matcher1
   :      ^
   No buffer modifications
 
 - Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
-  Start point   :  233
+  Start point   :  278
   No point movement
   standard-output:
   #+begin_example
@@ -160,7 +171,6 @@ classdef indent_xr_next_line_matcher1
     properties
     end
 end
-
 
   #+end_example
   No buffer modifications
