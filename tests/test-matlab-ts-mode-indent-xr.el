@@ -33,7 +33,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-indent-xr--file
       \"test-matlab-ts-mode-indent-xr-files/M-FILE\")"
   (let ((test-matlab-ts-mode-indent-xr--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-indent-xr")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-indent-xr$")))
 
 (ert-deftest test-matlab-ts-mode-indent-xr ()
   "Test indent using ./test-matlab-ts-mode-indent-xr-files/NAME.m.

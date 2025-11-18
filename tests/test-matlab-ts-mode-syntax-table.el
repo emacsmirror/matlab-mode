@@ -35,7 +35,7 @@
 This is provided for debugging.
   M-: (test-matlab-ts-mode-syntax-table--file \"test-matlab-ts-mode-syntax-table-files/M-FILE\")"
   (let ((test-matlab-ts-mode-syntax-table--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-syntax-table")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-syntax-table$")))
 
 (ert-deftest test-matlab-ts-mode-syntax-table ()
   "Test syntax-table using ./test-matlab-ts-mode-syntax-table-files/NAME.m.

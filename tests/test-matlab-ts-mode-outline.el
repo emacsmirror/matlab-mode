@@ -32,7 +32,7 @@
 This is provided for debugging.
   M-: (test-matlab-ts-mode-outline--file \"test-matlab-ts-mode-outline-files/M-FILE\")"
   (let ((test-matlab-ts-mode-outline--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-outline")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-outline$")))
 
 (ert-deftest test-matlab-ts-mode-outline ()
   "Test outline mode using ./test-matlab-ts-mode-outline-files/NAME.m.

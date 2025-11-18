@@ -35,7 +35,7 @@
 This is provided for debugging.
   M-: (test-matlab-ts-mode-show-paren--file \"test-matlab-ts-mode-show-paren-files/M-FILE\")"
   (let ((test-matlab-ts-mode-show-paren--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-show-paren")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-show-paren$")))
 
 (ert-deftest test-matlab-ts-mode-show-paren ()
   "Test show paren mode using ./test-matlab-ts-mode-show-paren-files/NAME.m.

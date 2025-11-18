@@ -33,7 +33,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-fill-paragraph--file
        \"test-matlab-ts-mode-fill-paragraph-files/M-FILE\")"
   (let ((test-matlab-ts-mode-fill-paragraph--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-fill-paragraph")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-fill-paragraph$")))
 
 (ert-deftest test-matlab-ts-mode-fill-paragraph ()
   "Test fill paragraph using ./test-matlab-ts-mode-fill-paragraph-files/NAME.m.
