@@ -255,7 +255,7 @@ logical last node is \"end\"."
          (last-idx (1- (length children)))
          (last-node (nth last-idx children)))
     (while (and (>= last-idx 0)
-                (string= (treesit-node-text last-node) "\n"))
+                (string-match-p "^\n+$" (treesit-node-text last-node)))
       (setq last-idx (1- last-idx))
       (setq last-node (nth last-idx children)))
     last-node))
