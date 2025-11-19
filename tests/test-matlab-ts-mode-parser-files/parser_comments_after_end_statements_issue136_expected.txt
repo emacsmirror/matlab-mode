@@ -1,0 +1,14 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,531> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) (comment[91,282]@{% The comments after the end statements should be ...}@) \n[282,284]
+ (class_definition<284,518> classdef[284,292] name: (identifier[293,338]@{parser_comments_after_end_statements_issue136}@)
+  (superclasses<339,347> <[339,340]
+   (property_name<341,347> (identifier[341,347]@{handle}@)))
+  (comment[353,363]@{% comment1}@) \n[363,364]
+  (properties<368,431> properties[368,378] \n[378,379]
+   (property<387,392> name: (identifier[387,390]@{foo}@) ;[390,391] \n[391,392])
+   (property<400,404> name: (identifier[400,403]@{bar}@) ;[403,404])
+   (comment[413,423]@{% comment2}@) \n[423,424] end[428,431])
+  (comment[437,447]@{% comment3}@) \n[447,448]
+  (events<452,498> events[452,458] \n[458,459] (identifier[467,470]@{goo}@) ;[470,471] (comment[480,490]@{% comment4}@) \n[490,491] end[495,498])
+  (comment[504,514]@{% comment5}@) \n[514,515] end[515,518])
+ (comment[520,530]@{% comment6}@) \n[530,531])
