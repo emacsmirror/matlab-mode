@@ -1,9 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,494> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+(source_file<1,494> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@) \n[89,91]
  (class_definition<91,490> classdef[91,99] name: (identifier[100,142]@{font_lock_classdef_separate_method_issue64}@) \n[142,143]
   (properties<147,176> properties[147,157] \n[157,158]
    (property<166,169> name: (identifier[166,168]@{p1}@) \n[168,169])
    end[173,176])
+  \n[176,178]
   (methods<182,485> methods[182,189] \n[189,190]
    (function_definition<198,255> function[198,206]
     (function_output<207,211> (identifier[207,210]@{obj}@) =[210,211])
@@ -22,5 +23,5 @@
     name: (identifier[464,466]@{f2}@)
     (function_arguments<466,476> ([466,467] arguments: (identifier[467,470]@{obj}@) ,[470,471] (identifier[472,475]@{in1}@) )[475,476]))
    ;[476,477] \n[477,478] end[482,485])
-  end[487,490])
+  \n[485,487] end[487,490])
  \n[490,494])

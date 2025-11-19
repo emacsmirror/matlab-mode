@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,687> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,687> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (class_definition<22,686> classdef[22,30] name: (identifier[31,53]@{indent_cont_properties}@) \n[53,55]
   (properties<59,146> properties[59,69] \n[69,70]
    (property<78,139> name: (identifier[78,80]@{p1}@)
@@ -11,6 +11,7 @@
       }[137,138]))
     \n[138,139])
    end[143,146])
+  \n[146,148]
   (methods<152,682> methods[152,159] \n[159,160]
    (function_definition<168,399> function[168,176] name: (identifier[177,179]@{f1}@)
     (function_arguments<179,187> ([179,180] arguments: (identifier[180,183]@{obj}@) ,[183,184] (identifier[185,186]@{a}@) )[186,187])
@@ -51,5 +52,5 @@
      \n[662,663])
     end[671,674])
    \n[674,675] end[679,682])
-  end[683,686])
+  \n[682,683] end[683,686])
  \n[686,687])

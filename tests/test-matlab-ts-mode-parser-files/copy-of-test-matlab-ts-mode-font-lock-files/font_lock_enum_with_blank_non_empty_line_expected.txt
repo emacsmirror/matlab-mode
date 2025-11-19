@@ -1,8 +1,8 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,325> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,155]@{% Note, there should be whitespace on line after t...}@)
+(source_file<1,325> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,155]@{% Note, there should be whitespace on line after t...}@) \n[155,156]
  (class_definition<156,324> classdef[156,164] name: (identifier[165,205]@{font_lock_enum_with_blank_non_empty_line}@) \n[205,206]
   (enumeration<210,320> enumeration[210,221] \n[221,222] \n[224,225]
    (enum<233,236> (identifier[233,236]@{red}@))
    (comment[237,312]@{% parse error when the prior line is a blank line ...}@) \n[312,313] end[317,320])
-  end[321,324])
+  \n[320,321] end[321,324])
  \n[324,325])

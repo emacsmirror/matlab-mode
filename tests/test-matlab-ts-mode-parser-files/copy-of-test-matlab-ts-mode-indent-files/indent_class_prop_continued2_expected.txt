@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,632> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,161]@{% t-utils-test-indent: no-line-by-line-indent - ty...}@)
+(source_file<1,632> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,161]@{% t-utils-test-indent: no-line-by-line-indent - ty...}@) \n[161,163]
  (class_definition<163,631> classdef[163,171] name: (identifier[172,200]@{indent_class_prop_continued2}@) \n[200,202]
   (properties<206,627> properties[206,216]
    (attributes<217,227> ([217,218]
@@ -49,5 +49,5 @@
       )[617,618]))
     ;[618,619] \n[619,620])
    end[624,627])
-  end[628,631])
+  \n[627,628] end[628,631])
  \n[631,632])

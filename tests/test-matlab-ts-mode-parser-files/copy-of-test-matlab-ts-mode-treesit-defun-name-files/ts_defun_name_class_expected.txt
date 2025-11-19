@@ -1,11 +1,12 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,298> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,298> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,297> classdef[21,29] name: (identifier[30,49]@{ts_defun_name_class}@) \n[49,50]
   (properties<54,102> properties[54,64] \n[64,65]
    (property<73,95> name: (identifier[73,78]@{Value}@)
     (validation_functions<79,94> {[79,80] (identifier[80,93]@{mustBeNumeric}@) }[93,94])
     \n[94,95])
    end[99,102])
+  \n[102,103]
   (methods<107,293> methods[107,114] \n[114,115]
    (function_definition<123,200> function[123,131]
     (function_output<132,135> (identifier[132,133]@{r}@) =[134,135])
@@ -45,5 +46,5 @@
      ;[272,273] \n[273,274])
     end[282,285])
    \n[285,286] end[290,293])
-  end[294,297])
+  \n[293,294] end[294,297])
  \n[297,298])

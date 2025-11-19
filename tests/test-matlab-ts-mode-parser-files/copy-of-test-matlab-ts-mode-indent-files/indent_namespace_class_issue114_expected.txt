@@ -1,11 +1,12 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,1196> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,98]@{% t-utils-test-indent: no-line-by-line-indent - fu...}@)
- (class_definition<100,1195> classdef[100,108] name: (identifier[109,140]@{indent_namespace_class_issue114}@) (comment[141,473]@{% Test namespace class for MATLAB parser\n% This c...}@) \n[473,474]
+(source_file<1,1196> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,98]@{% t-utils-test-indent: no-line-by-line-indent - fu...}@) \n[98,100]
+ (class_definition<100,1195> classdef[100,108] name: (identifier[109,140]@{indent_namespace_class_issue114}@) (comment[141,473]@{% Test namespace class for MATLAB parser\n% This c...}@) \n[473,474] \n[478,479]
   (properties<483,553> properties[483,493] \n[493,494]
    (property<502,546> name: (identifier[502,507]@{Value}@) (identifier[508,514]@{double}@)
     (default_value<515,518> =[515,516] (number[517,518]@{0}@))
     (comment[527,545]@{% The stored value}@) \n[545,546])
    end[550,553])
+  \n[553,555]
   (methods<559,1191> methods[559,566] \n[566,567]
    (function_definition<575,886> function[575,583]
     (function_output<584,589> (identifier[584,587]@{obj}@) =[588,589])
@@ -52,5 +53,5 @@
      ;[1170,1171] \n[1171,1172])
     end[1180,1183])
    \n[1183,1184] end[1188,1191])
-  end[1192,1195])
+  \n[1191,1192] end[1192,1195])
  \n[1195,1196])

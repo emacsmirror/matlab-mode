@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,254> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,254> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (function_definition<22,254> function[22,30] name: (identifier[31,65]@{electric_ends_function_with_no_end}@) \n[65,66]
   (block<66,254>
    (function_call<66,111> name: (identifier[66,70]@{disp}@) ([70,71]

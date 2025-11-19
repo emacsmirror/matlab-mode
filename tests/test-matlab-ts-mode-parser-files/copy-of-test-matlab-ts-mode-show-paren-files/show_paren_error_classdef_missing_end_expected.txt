@@ -1,6 +1,7 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,203> (comment[1,102]@{% -*- matlab-ts -*-\n%\n% Case1: (t-utils-xr "C-a"...}@)
- (ERROR<103,202> classdef[103,111] (identifier[112,149]@{show_paren_error_classdef_missing_end}@) \n[149,150]
+(source_file<1,203> (comment[1,102]@{% -*- matlab-ts -*-\n%\n% Case1: (t-utils-xr "C-a"...}@) \n[102,103]
+ (ERROR<103,203> classdef[103,111] (identifier[112,149]@{show_paren_error_classdef_missing_end}@) \n[149,150]
   (methods<154,202> methods[154,161] \n[161,162]
    (function_definition<170,194> function[170,178] name: (identifier[179,182]@{foo}@) \n[182,183] end[191,194])
-   \n[194,195] end[199,202])))
+   \n[194,195] end[199,202])
+  \n[202,203]))

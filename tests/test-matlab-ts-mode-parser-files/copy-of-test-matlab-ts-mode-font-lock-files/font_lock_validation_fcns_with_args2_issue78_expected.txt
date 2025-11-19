@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,636> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@) (comment[91,470]@{% >> font_lock_validation_fcns_with_args2_issue78(...}@)
+(source_file<1,636> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@) (comment[91,470]@{% >> font_lock_validation_fcns_with_args2_issue78(...}@) \n[470,472]
  (function_definition<472,635> function[472,480] name: (identifier[481,525]@{font_lock_validation_fcns_with_args2_issue78}@)
   (function_arguments<525,530> ([525,526] arguments: (identifier[526,529]@{mat}@) )[529,530])
   \n[530,531]

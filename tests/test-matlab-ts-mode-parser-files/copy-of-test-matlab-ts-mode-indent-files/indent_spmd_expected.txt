@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,411> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,411> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (spmd_statement<22,70> spmd[22,26] (comment[31,36]@{% foo}@)
   (block<41,67>
    (assignment<41,65> left: (identifier[41,42]@{q}@) =[43,44]

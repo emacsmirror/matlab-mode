@@ -1,10 +1,11 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,205> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,205> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,204> classdef[21,29] name: (identifier[30,52]@{font_lock_class_events}@)
   (superclasses<53,61> <[53,54]
    (property_name<55,61> (identifier[55,61]@{handle}@)))
   \n[61,62]
   (events<66,99> events[66,72] \n[72,73] (identifier[80,91]@{StateChange}@) \n[91,92] end[96,99])
+  \n[99,100]
   (methods<104,200> methods[104,111] \n[111,112]
    (function_definition<119,192> function[119,127] name: (identifier[128,140]@{triggerEvent}@)
     (function_arguments<140,145> ([140,141] arguments: (identifier[141,144]@{obj}@) )[144,145])
@@ -17,5 +18,5 @@
      \n[181,182])
     end[189,192])
    \n[192,193] end[197,200])
-  end[201,204])
+  \n[200,201] end[201,204])
  \n[204,205])

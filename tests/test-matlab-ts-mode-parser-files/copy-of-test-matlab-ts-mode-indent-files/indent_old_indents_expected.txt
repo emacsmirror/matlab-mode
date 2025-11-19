@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,8147> (comment[1,154]@{% -*- matlab-ts -*-\n% See ../indents.m which is u...}@)
+(source_file<1,8147> (comment[1,154]@{% -*- matlab-ts -*-\n% See ../indents.m which is u...}@) \n[154,155]
  (function_definition<155,1302> function[155,163] name: (identifier[164,182]@{indent_old_indents}@)
   (function_arguments<182,219> ([182,183] arguments: (identifier[183,184]@{a}@) ,[184,185] (identifier[185,186]@{b}@) ,[186,187] (identifier[187,192]@{stuff}@) ,[192,193] (identifier[193,205]@{cmddual1fake}@) ,[205,206] (identifier[206,218]@{cmddual2fake}@) )[218,219])
   (comment[220,259]@{% Help text\n% !!0\n% of many lines\n% !!0}@) (comment[269,325]@{% including a gap - comment for following code\n  ...}@) \n[325,326] \n[330,331]
@@ -432,10 +432,10 @@
  \n[5903,5905]
  (function_definition<5905,7121> function[5905,5913]
   (function_output<5914,5917> (identifier[5914,5915]@{B}@) =[5916,5917])
-  name: (identifier[5918,5950]@{continuations_and_block_comments}@) (comment[5951,5992]@{% !!0\n% !!0\n% !!0\n%\{\n  !!2  \{  \}\n  !!2\n%\...}@) (comment[6002,6125]@{%\{\n      blank line means this block comment is ...}@) \n[6125,6127]
-  (block<6131,7118>
-   (assignment<6131,6137> left: (identifier[6131,6135]@{arg1}@) =[6135,6136] right: (number[6136,6137]@{1}@))
-   ;[6137,6138] (comment[6148,6188]@{%\{\n    %  !!4\n      !!6\n    % !!4\n    %\}}@) (comment[6198,6286]@{% Block comment indicators MUST be on a line by th...}@)
+  name: (identifier[5918,5950]@{continuations_and_block_comments}@) (comment[5951,6002]@{% !!0\n% !!0\n% !!0\n%\{\n  !!2  \{  \}\n  !!2\n%\...}@) (comment[6002,6131]@{%\{\n      blank line means this block comment is ...}@)
+  (ERROR<6131,6137> =[6135,6136])
+  ;[6137,6138] \n[6138,6139] \n[6143,6144] (comment[6148,6198]@{%\{\n    %  !!4\n      !!6\n    % !!4\n    %\}\n  ...}@) (comment[6198,6286]@{% Block comment indicators MUST be on a line by th...}@)
+  (block<6296,7118>
    (function_call<6296,6302> name: (identifier[6296,6299]@{foo}@) ([6299,6300]
     (arguments<6300,6301> argument: (number[6300,6301]@{1}@))
     )[6301,6302])

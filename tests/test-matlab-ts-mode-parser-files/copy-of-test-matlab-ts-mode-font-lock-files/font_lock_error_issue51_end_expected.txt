@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,229> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,135]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+(source_file<1,229> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,135]@{% See https://github.com/acristoffers/tree-sitter-...}@) \n[135,137]
  (function_definition<137,229> function[137,145]
   (function_output<146,154> (identifier[146,152]@{result}@) =[153,154])
   name: (identifier[155,182]@{font_lock_error_issue51_end}@)

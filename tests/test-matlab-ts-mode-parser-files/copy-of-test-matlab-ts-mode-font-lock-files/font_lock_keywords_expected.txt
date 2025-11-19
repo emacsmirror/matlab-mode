@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,1041> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,1041> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,1040> classdef[21,29] name: (identifier[30,48]@{font_lock_keywords}@)
   (superclasses<49,57> <[49,50]
    (property_name<51,57> (identifier[51,57]@{handle}@)))
@@ -9,6 +9,7 @@
     (default_value<84,87> =[84,85] (number[86,87]@{0}@))
     \n[87,88])
    end[92,95])
+  \n[95,96]
   (methods<100,968> methods[100,107] \n[107,108]
    (function_definition<116,754> function[116,124] name: (identifier[125,132]@{method1}@)
     (function_arguments<132,136> ([132,133] arguments: (identifier[133,135]@{in}@) )[135,136])
@@ -156,11 +157,13 @@
      \n[955,956])
     end[957,960])
    \n[960,961] end[965,968])
+  \n[968,970]
   (events<974,988> events[974,980] \n[980,981] end[985,988])
+  \n[988,990]
   (enumeration<994,1035> enumeration[994,1005] \n[1005,1006]
    (enum<1013,1016> (identifier[1013,1016]@{one}@))
    \n[1016,1017]
    (enum<1024,1027> (identifier[1024,1027]@{two}@))
    \n[1027,1028] end[1032,1035])
-  end[1037,1040])
+  \n[1036,1037] end[1037,1040])
  \n[1040,1041])

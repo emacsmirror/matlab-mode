@@ -1,14 +1,15 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,1709> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,55]@{% Case1: (t-utils-xr "M-e" "M-a")}@)
+(source_file<1,1709> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,55]@{% Case1: (t-utils-xr "M-e" "M-a")}@) \n[55,56]
  (class_definition<56,1708> classdef[56,64] name: (identifier[65,79]@{thing_sentance}@) (comment[85,118]@{% Case2: (t-utils-xr "M-e" "M-e")}@) \n[118,119]
   (properties<123,323> properties[123,133] (comment[142,205]@{% Case3: (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a"...}@) \n[205,207]
    (property<215,223> name: (identifier[215,217]@{p1}@)
     (default_value<218,221> =[218,219] (number[220,221]@{0}@))
     \n[221,223])
-   (property<231,316> name: (identifier[231,233]@{p2}@)
+   (property<231,279> name: (identifier[231,233]@{p2}@)
     (default_value<234,253> =[234,235] (line_continuation[236,240]@{...\n}@) (number[252,253]@{0}@))
-    (comment[263,277]@{% comment here}@) (comment[287,314]@{%\{\n          foo\n        %\}}@) \n[314,316])
-   end[320,323])
+    (comment[263,277]@{% comment here}@) \n[277,279])
+   (comment[287,320]@{%\{\n          foo\n        %\}\n\n    }@) end[320,323])
+  \n[323,325]
   (methods<329,1577> methods[329,336] \n[336,338]
    (function_definition<346,1348> function[346,354] name: (identifier[355,362]@{method1}@)
     (function_arguments<362,372> ([362,363] arguments: (identifier[363,366]@{in1}@) ,[366,367] (identifier[368,371]@{in2}@) )[371,372])
@@ -178,11 +179,13 @@
      \n[1557,1558])
     end[1566,1569])
    \n[1569,1570] end[1574,1577])
+  \n[1577,1579]
   (events<1583,1637> events[1583,1589] \n[1589,1590] (identifier[1598,1600]@{e1}@) \n[1600,1601] (identifier[1609,1611]@{e2}@) (comment[1620,1629]@{% comment}@) \n[1629,1630] end[1634,1637])
+  \n[1637,1639]
   (enumeration<1643,1704> enumeration[1643,1654] \n[1654,1655]
    (enum<1663,1666> (identifier[1663,1666]@{one}@))
    \n[1666,1667]
    (enum<1675,1678> (identifier[1675,1678]@{two}@))
    (comment[1687,1696]@{% comment}@) \n[1696,1697] end[1701,1704])
-  end[1705,1708])
+  \n[1704,1705] end[1705,1708])
  \n[1708,1709])

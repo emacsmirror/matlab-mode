@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,340> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,340> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,339> function[21,29] name: (identifier[30,53]@{font_lock_fcn_arguments}@)
   (function_arguments<53,84> ([53,54] arguments: (identifier[54,57]@{in1}@) ,[57,58] (identifier[59,69]@{properties}@) ,[69,70] (identifier[71,74]@{foo}@) ,[74,75] (identifier[76,83]@{options}@) )[83,84])
   \n[84,85]

@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,229> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,229> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,228> classdef[21,29] name: (identifier[30,64]@{font_lock_class_MultiplePropBlocks}@) \n[64,65]
   (properties<69,172> properties[69,79]
    (attributes<80,128> ([80,81]
@@ -15,6 +15,7 @@
    (property<137,147> name: (identifier[137,146]@{Property1}@) \n[146,147])
    (property<155,165> name: (identifier[155,164]@{Property2}@) \n[164,165])
    end[169,172])
+  \n[172,173]
   (properties<177,224> properties[177,187]
    (attributes<188,198> ([188,189]
     (attribute<189,197> (identifier[189,197]@{Abstract}@))
@@ -22,5 +23,5 @@
    \n[198,199]
    (property<207,217> name: (identifier[207,216]@{Property3}@) \n[216,217])
    end[221,224])
-  end[225,228])
+  \n[224,225] end[225,228])
  \n[228,229])

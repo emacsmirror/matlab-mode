@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,473> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,473> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,472> function[21,29]
   (function_output<30,35> (identifier[30,33]@{out}@) =[34,35])
   name: (identifier[36,58]@{indent_cont_statements}@) \n[58,60]

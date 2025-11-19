@@ -1,16 +1,16 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,4407> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,101]@{% Case1: (t-utils-xr "C-a" "C-n" (prin1 (matlab-ts...}@)
+(source_file<1,4407> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,101]@{% Case1: (t-utils-xr "C-a" "C-n" (prin1 (matlab-ts...}@) \n[101,102]
  (class_definition<102,4406> classdef[102,110] name: (identifier[111,130]@{show_paren_classdef}@)
   (superclasses<131,139> <[131,132]
    (property_name<133,139> (identifier[133,139]@{handle}@)))
   (comment[145,230]@{% Case2: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[230,231]
   (properties<235,373> properties[235,245] \n[245,246]
    (property<254,259> name: (identifier[254,257]@{foo}@) ;[257,258] \n[258,259])
-   (property<267,366> name: (identifier[267,270]@{bar}@) ;[270,271] (comment[280,365]@{% Case3: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[365,366])
-   end[370,373])
-  (comment[379,464]@{% Case4: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@)
+   (property<267,271> name: (identifier[267,270]@{bar}@) ;[270,271])
+   (comment[280,365]@{% Case3: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[365,366] end[370,373])
+  (comment[379,464]@{% Case4: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[464,465]
   (events<469,590> events[469,475] \n[475,476] (identifier[484,487]@{goo}@) ;[487,488] (comment[497,582]@{% Case5: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[582,583] end[587,590])
-  (comment[596,681]@{% Case6: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@)
+  (comment[596,681]@{% Case6: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[681,682]
   (methods<686,4320> methods[686,693] (comment[703,788]@{% Case7: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[788,789]
    (function_definition<797,4221> function[797,805] name: (identifier[806,809]@{foo}@)
     (function_arguments<809,812> ([809,810] arguments: (identifier[810,811]@{a}@) )[811,812])
@@ -135,5 +135,5 @@
      (comment[4123,4209]@{% Case28: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (ma...}@) \n[4209,4210])
     end[4218,4221])
    (comment[4226,4312]@{% Case29: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (ma...}@) \n[4312,4313] end[4317,4320])
-  (comment[4322,4402]@{% Case30: (t-utils-xr "C-a" "C-n" (prin1 (matlab-t...}@) end[4403,4406])
+  (comment[4322,4402]@{% Case30: (t-utils-xr "C-a" "C-n" (prin1 (matlab-t...}@) \n[4402,4403] end[4403,4406])
  \n[4406,4407])

@@ -1,4 +1,4 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,395> (comment[1,26]@{% -*- mode: matlab-ts -*-}@) (comment[28,49]@{% Single line comment}@) (comment[51,80]@{%\{\n   multiline\n   comment\n%\}}@) (comment[82,220]@{% Note, "%\{" followed by text is a single line co...}@)
+(source_file<1,395> (comment[1,26]@{% -*- mode: matlab-ts -*-}@) (comment[28,49]@{% Single line comment}@) \n[49,51] (comment[51,82]@{%\{\n   multiline\n   comment\n%\}\n\n}@) (comment[82,220]@{% Note, "%\{" followed by text is a single line co...}@)
  (assignment<222,231> left: (identifier[222,227]@{myVar}@) =[228,229] right: (number[230,231]@{1}@))
- (comment[232,261]@{%\{single line comment %\} + 1;}@) (comment[263,300]@{% This is also a single line comment:}@) (comment[302,324]@{%\{ single line comment}@) (comment[326,394]@{% https://github.com/acristoffers/tree-sitter-matl...}@) \n[394,395])
+ (comment[232,261]@{%\{single line comment %\} + 1;}@) (comment[263,300]@{% This is also a single line comment:}@) \n[300,302] (comment[302,324]@{%\{ single line comment}@) (comment[326,395]@{% https://github.com/acristoffers/tree-sitter-matl...}@))

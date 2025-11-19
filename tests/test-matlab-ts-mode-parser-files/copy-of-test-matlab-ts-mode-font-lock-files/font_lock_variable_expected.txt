@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,1965> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,1965> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,1913> function[21,29] name: (identifier[30,48]@{font_lock_variable}@) (comment[54,283]@{% ((assignment left: (identifier) @matlab-ts-mode-...}@) \n[283,284]
   (block<288,1910>
    (assignment<288,297> left: (identifier[288,292]@{disp}@) =[293,294] right: (number[295,297]@{10}@))

@@ -31,4 +31,4 @@
     )[430,431])
    \n[431,432])
   end[432,435])
- (comment[437,511]@{% Note, the Code Analyzer suggests that a line ter...}@) (comment[513,618]@{% Information on tree-sitter handling from\n% http...}@) (comment[620,7499]@{%\{\n\nIs there a look-ahead concept in tree-sitte...}@) \n[7499,7500])
+ (comment[437,511]@{% Note, the Code Analyzer suggests that a line ter...}@) (comment[513,618]@{% Information on tree-sitter handling from\n% http...}@) \n[618,620] (comment[620,7500]@{%\{\n\nIs there a look-ahead concept in tree-sitte...}@))

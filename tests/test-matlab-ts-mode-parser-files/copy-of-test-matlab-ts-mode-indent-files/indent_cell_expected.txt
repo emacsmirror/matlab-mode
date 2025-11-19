@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,690> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,690> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,689> function[21,29]
   (function_output<30,65>
    (multioutput_variable<30,63> [[30,31] (identifier[31,33]@{a1}@) ,[33,34] (identifier[35,37]@{a2}@) ,[37,38] (identifier[39,41]@{a3}@) ,[41,42] (identifier[43,45]@{a4}@) ,[45,46] (identifier[47,62]@{long_variable_a}@) ][62,63])

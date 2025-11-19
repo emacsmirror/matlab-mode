@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,304> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+(source_file<1,304> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@) \n[90,92]
  (function_definition<92,303> function[92,100]
   (function_output<101,104> (identifier[101,102]@{y}@) =[103,104])
   name: (identifier[105,140]@{indent_multiple_arg_blocks_issue113}@)

@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,173> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,173> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,172> classdef[21,29] name: (identifier[30,41]@{indent_enum}@)
   (superclasses<42,50> <[42,43]
    (property_name<44,50> (identifier[44,50]@{uint32}@)))
@@ -13,5 +13,5 @@
    \n[140,141]
    (enum<149,160> (identifier[149,153]@{West}@) ([155,156] (number[156,159]@{270}@) )[159,160])
    \n[160,161] end[165,168])
-  end[169,172])
+  \n[168,169] end[169,172])
  \n[172,173])

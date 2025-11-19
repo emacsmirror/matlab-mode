@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,116> (comment[1,26]@{% -*- mode: matlab-ts -*-}@)
+(source_file<1,116> (comment[1,26]@{% -*- mode: matlab-ts -*-}@) \n[26,27]
  (function_definition<27,115> function[27,35] name: (identifier[36,49]@{small_in_args}@)
   (function_arguments<49,53> ([49,50] arguments: (identifier[50,52]@{in}@) )[52,53])
   (comment[54,68]@{% help comment}@) (comment[74,88]@{% code comment}@) \n[88,89]

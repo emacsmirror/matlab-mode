@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,78> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,78> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,77> function[21,29] (line_continuation[29,33]@{...\n}@) (line_continuation[41,45]@{...\n}@) name: (identifier[53,55]@{g2}@) \n[55,56]
   (block<60,74>
    (function_call<60,73> name: (identifier[60,64]@{disp}@) ([64,65]

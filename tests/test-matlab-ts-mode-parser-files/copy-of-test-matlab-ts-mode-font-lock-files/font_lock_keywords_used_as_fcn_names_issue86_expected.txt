@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,129> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+(source_file<1,129> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@) \n[88,90]
  (function_definition<90,128> function[90,98]
   (function_output<99,102> (identifier[99,100]@{a}@) =[101,102])
   name: (identifier<103,106> end[103,106])

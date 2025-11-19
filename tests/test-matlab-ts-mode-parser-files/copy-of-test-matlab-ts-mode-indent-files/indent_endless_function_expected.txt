@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,444> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,177]@{% t-utils-test-indent: no-line-by-line-indent - ca...}@)
+(source_file<1,444> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,177]@{% t-utils-test-indent: no-line-by-line-indent - ca...}@) \n[177,179]
  (function_definition<179,365> function[179,187] name: (identifier[188,211]@{indent_endless_function}@)
   (function_arguments<211,214> ([211,212] arguments: (identifier[212,213]@{a}@) )[213,214])
   (comment[215,251]@{% function without a terminating end}@) \n[251,253]

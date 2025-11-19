@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,1596> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,1596> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,1595> classdef[21,29] name: (identifier[30,45]@{indent_keywords}@)
   (superclasses<46,54> <[46,47]
    (property_name<48,54> (identifier[48,54]@{handle}@)))
@@ -8,10 +8,11 @@
    (property<101,108> name: (identifier[101,103]@{p1}@)
     (default_value<104,107> =[104,105] (number[106,107]@{0}@))
     \n[107,108])
-   (property<116,208> name: (identifier[116,118]@{p2}@)
+   (property<116,172> name: (identifier[116,118]@{p2}@)
     (default_value<119,138> =[119,120] (line_continuation[121,125]@{...\n}@) (number[137,138]@{0}@))
-    (comment[156,170]@{% comment here}@) (comment[180,207]@{%\{\n          foo\n        %\}}@) \n[207,208])
-   end[212,215])
+    (comment[156,170]@{% comment here}@) \n[170,172])
+   (comment[180,212]@{%\{\n          foo\n        %\}\n    }@) end[212,215])
+  \n[215,216]
   (methods<220,1463> methods[220,227] \n[227,228]
    (function_definition<236,1223> function[236,244] name: (identifier[245,252]@{method1}@)
     (function_arguments<252,256> ([252,253] arguments: (identifier[253,255]@{in}@) )[255,256])
@@ -166,11 +167,13 @@
      \n[1443,1444])
     end[1452,1455])
    \n[1455,1456] end[1460,1463])
+  \n[1463,1465]
   (events<1469,1523> events[1469,1475] \n[1475,1476] (identifier[1484,1486]@{e1}@) \n[1486,1487] (identifier[1495,1497]@{e2}@) (comment[1506,1515]@{% comment}@) \n[1515,1516] end[1520,1523])
+  \n[1523,1525]
   (enumeration<1529,1590> enumeration[1529,1540] \n[1540,1541]
    (enum<1549,1552> (identifier[1549,1552]@{one}@))
    \n[1552,1553]
    (enum<1561,1564> (identifier[1561,1564]@{two}@))
    (comment[1573,1582]@{% comment}@) \n[1582,1583] end[1587,1590])
-  end[1592,1595])
+  \n[1591,1592] end[1592,1595])
  \n[1595,1596])

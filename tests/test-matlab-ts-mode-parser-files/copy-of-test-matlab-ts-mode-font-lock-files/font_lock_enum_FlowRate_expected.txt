@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,234> (comment[1,87]@{% -*- matlab-ts -*-\n% See https://github.com/acri...}@)
+(source_file<1,234> (comment[1,87]@{% -*- matlab-ts -*-\n% See https://github.com/acri...}@) \n[87,88]
  (class_definition<88,233> classdef[88,96] name: (identifier[97,120]@{font_lock_enum_FlowRate}@)
   (superclasses<121,128> <[121,122]
    (property_name<123,128> (identifier[123,128]@{int32}@)))
@@ -19,5 +19,5 @@
      *[218,219] right: (number[219,221]@{10}@))
     )[221,222])
    \n[222,223] end[226,229])
-  end[230,233])
+  \n[229,230] end[230,233])
  \n[233,234])

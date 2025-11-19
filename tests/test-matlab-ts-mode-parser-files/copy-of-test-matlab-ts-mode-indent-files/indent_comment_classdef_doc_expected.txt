@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,263> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,110]@{% t-utils-test-indent: no-line-by-line-indent - do...}@)
+(source_file<1,263> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,110]@{% t-utils-test-indent: no-line-by-line-indent - do...}@) \n[110,112]
  (class_definition<112,262> classdef[112,120]
   (attributes<121,129> ([121,122]
    (attribute<122,128> (identifier[122,128]@{Hidden}@))
@@ -12,5 +12,5 @@
    \n[217,218]
    (function_definition<226,250> function[226,234] name: (identifier[235,238]@{foo}@) \n[238,239] end[247,250])
    \n[250,251] end[255,258])
-  end[259,262])
+  \n[258,259] end[259,262])
  \n[262,263])

@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,363> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,363> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,262> function[21,29]
   (function_output<30,33> (identifier[30,31]@{b}@) =[32,33])
   name: (identifier[34,51]@{ts_defun_name_fcn}@)

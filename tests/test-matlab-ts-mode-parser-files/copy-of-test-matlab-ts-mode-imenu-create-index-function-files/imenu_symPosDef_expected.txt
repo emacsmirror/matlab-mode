@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,487> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,487> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,486> classdef[21,29] name: (identifier[30,45]@{imenu_symPosDef}@) \n[45,46]
   (properties<50,101> properties[50,60] \n[60,61]
    (property<69,94> name: (identifier[69,80]@{inputMatrix}@)
@@ -11,6 +11,7 @@
       ][92,93]))
     \n[93,94])
    end[98,101])
+  \n[101,102] \n[106,107]
   (methods<111,482> methods[111,118] \n[118,119]
    (function_definition<127,149> function[127,135] name: (identifier[136,137]@{a}@) \n[137,138] end[146,149])
    \n[149,150]
@@ -52,5 +53,5 @@
      ;[461,462] \n[462,463])
     end[471,474])
    \n[474,475] end[479,482])
-  end[483,486])
+  \n[482,483] end[483,486])
  \n[486,487])

@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,460> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,460> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,459> classdef[21,29] name: (identifier[30,49]@{font_lock_symPosDef}@) \n[49,50]
   (properties<54,105> properties[54,64] \n[64,65]
    (property<73,98> name: (identifier[73,84]@{inputMatrix}@)
@@ -11,6 +11,7 @@
       ][96,97]))
     \n[97,98])
    end[102,105])
+  \n[105,106] \n[110,111]
   (methods<115,455> methods[115,122] \n[122,123]
    (function_definition<131,359> function[131,139]
     (function_output<140,145> (identifier[140,143]@{obj}@) =[144,145])
@@ -50,5 +51,5 @@
      ;[434,435] \n[435,436])
     end[444,447])
    \n[447,448] end[452,455])
-  end[456,459])
+  \n[455,456] end[456,459])
  \n[459,460])

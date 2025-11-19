@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,542> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,199]@{% Take from myBar in\n% https://www.mathworks.com/...}@)
+(source_file<1,542> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,199]@{% Take from myBar in\n% https://www.mathworks.com/...}@) \n[199,201]
  (function_definition<201,541> function[201,209] name: (identifier[210,241]@{font_lock_fcn_arguments_issue58}@)
   (function_arguments<241,255> ([241,242] arguments: (identifier[242,243]@{x}@) ,[243,244] (identifier[244,245]@{y}@) ,[245,246] (identifier[246,254]@{propArgs}@) )[254,255])
   \n[255,256]

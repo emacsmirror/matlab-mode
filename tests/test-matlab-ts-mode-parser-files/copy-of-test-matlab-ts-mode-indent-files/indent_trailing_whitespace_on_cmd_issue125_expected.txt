@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,333> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) (comment[91,152]@{% There is whitespace after both "someCmd  " state...}@)
+(source_file<1,333> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) (comment[91,152]@{% There is whitespace after both "someCmd  " state...}@) \n[152,154]
  (switch_statement<154,251> switch[154,160] condition: (identifier[161,164]@{in1}@) \n[164,165]
   (otherwise_clause<167,248> otherwise[167,176] \n[176,177]
    (block<181,248>

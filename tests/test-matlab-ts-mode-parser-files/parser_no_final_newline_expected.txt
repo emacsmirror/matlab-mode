@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,44> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,44> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (if_statement<21,43> if[21,23] condition: (identifier[24,25]@{a}@)
   (block<30,40>
    (function_call<30,39> name: (identifier[30,34]@{disp}@) ([34,35]

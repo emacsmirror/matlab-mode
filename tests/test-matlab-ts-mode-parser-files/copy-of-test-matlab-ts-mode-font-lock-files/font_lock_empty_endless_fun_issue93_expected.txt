@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,200> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+(source_file<1,200> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@) \n[89,92]
  (function_definition<92,142> function[92,100] name: (identifier[101,128]@{font_lock_empty_endless_fun}@) \n[128,129]
   (block<129,142>
    (command<129,133> (command_name[129,133]@{foo1}@))
