@@ -1,0 +1,34 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,255> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,61> left: (identifier[22,32]@{bin1_int16}@) =[33,34]
+  right: 
+   (matrix<35,61> [[35,36]
+    (row<36,60> (number[36,47]@{0b100000s16}@) ,[47,48] (number[49,60]@{0b011111s16}@))
+    ][60,61]))
+ ;[61,62]
+ (assignment<63,102> left: (identifier[63,73]@{bin2_int16}@) =[74,75]
+  right: 
+   (matrix<76,102> [[76,77]
+    (row<77,101> (number[77,88]@{0B100000S16}@) ,[88,89] (number[90,101]@{0B011111S16}@))
+    ][101,102]))
+ ;[102,103]
+ (function_call<104,135> name: (identifier[104,111]@{isequal}@) ([111,112]
+  (arguments<112,134> argument: (identifier[112,122]@{bin1_int16}@) ,[122,123] (identifier[124,134]@{bin2_int16}@))
+  )[134,135])
+ \n[135,137]
+ (assignment<137,177> left: (identifier[137,148]@{bin1_uint16}@) =[149,150]
+  right: 
+   (matrix<151,177> [[151,152]
+    (row<152,176> (number[152,163]@{0b100000u16}@) ,[163,164] (number[165,176]@{0b011111u16}@))
+    ][176,177]))
+ ;[177,178]
+ (assignment<179,219> left: (identifier[179,190]@{bin2_uint16}@) =[191,192]
+  right: 
+   (matrix<193,219> [[193,194]
+    (row<194,218> (number[194,205]@{0B100000U16}@) ,[205,206] (number[207,218]@{0B011111U16}@))
+    ][218,219]))
+ ;[219,220]
+ (function_call<221,254> name: (identifier[221,228]@{isequal}@) ([228,229]
+  (arguments<229,253> argument: (identifier[229,240]@{bin1_uint16}@) ,[240,241] (identifier[242,253]@{bin2_uint16}@))
+  )[253,254])
+ \n[254,255])
