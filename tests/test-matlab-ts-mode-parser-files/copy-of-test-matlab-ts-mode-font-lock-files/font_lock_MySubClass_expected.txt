@@ -5,10 +5,9 @@
    (property_name<53,64> (identifier[53,64]@{ParentClass}@)))
   (comment[65,79]@{% help comment}@) \n[79,80]
   (properties<84,172> properties[84,94] \n[94,95]
-   (property<103,125> name: (identifier[103,113]@{MyProperty}@) (identifier[114,120]@{double}@)
-    (default_value<121,124> =[121,122] (number[123,124]@{0}@))
-    ;[124,125])
-   (comment[126,164]@{% Public property with a default value}@) \n[164,165] end[169,172])
+   (property<103,124> name: (identifier[103,113]@{MyProperty}@) (identifier[114,120]@{double}@)
+    (default_value<121,124> =[121,122] (number[123,124]@{0}@)))
+   ;[124,125] (comment[126,164]@{% Public property with a default value}@) \n[164,165] end[169,172])
   \n[172,174]
   (methods<178,585> methods[178,185] \n[185,186]
    (function_definition<194,318> function[194,202]

@@ -8,14 +8,14 @@
   (arguments_statement<166,210> arguments[166,175]
    (attributes<176,183> ([176,177] argument: (identifier[177,182]@{Input}@) )[182,183])
    \n[183,184]
-   (property<192,203> name: (identifier[192,195]@{in1}@) (identifier[196,202]@{double}@) \n[202,203])
-   end[207,210])
+   (property<192,202> name: (identifier[192,195]@{in1}@) (identifier[196,202]@{double}@))
+   \n[202,203] end[207,210])
   (comment[216,225]@{% comment}@) \n[225,226]
   (arguments_statement<230,274> arguments[230,239]
    (attributes<240,247> ([240,241] argument: (identifier[241,246]@{Input}@) )[246,247])
    \n[247,248]
-   (property<256,267> name: (identifier[256,259]@{in2}@) (identifier[260,266]@{double}@) \n[266,267])
-   end[271,274])
+   (property<256,266> name: (identifier[256,259]@{in2}@) (identifier[260,266]@{double}@))
+   \n[266,267] end[271,274])
   (block<280,297>
    (assignment<280,295> left: (identifier[280,283]@{out}@) =[284,285]
     right: (binary_operator<286,295> left: (identifier[286,289]@{in1}@) +[290,291] right: (identifier[292,295]@{in2}@)))

@@ -1,0 +1,10 @@
+% -*- matlab-ts -*-
+
+% See https://github.com/acristoffers/tree-sitter-matlab/issues/140
+
+if a
+    disp('here')
+end
+% comment1
+%{
+%}

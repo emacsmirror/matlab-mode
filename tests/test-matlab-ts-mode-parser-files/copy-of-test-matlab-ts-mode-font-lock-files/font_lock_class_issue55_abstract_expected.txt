@@ -6,8 +6,8 @@
     (attribute<143,151> (identifier[143,151]@{Abstract}@))
     )[151,152])
    \n[152,153]
-   (property<161,164> name: (identifier[161,163]@{p1}@) \n[163,164])
-   end[168,171])
+   (property<161,163> name: (identifier[161,163]@{p1}@))
+   \n[163,164] end[168,171])
   \n[171,173]
   (methods<177,246> methods[177,184]
    (attributes<184,194> ([184,185]

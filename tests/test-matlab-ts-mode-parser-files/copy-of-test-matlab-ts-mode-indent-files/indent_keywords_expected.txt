@@ -5,23 +5,22 @@
    (property_name<48,54> (identifier[48,54]@{handle}@)))
   \n[54,55]
   (properties<59,215> properties[59,69] (comment[78,92]@{% comment here}@) \n[92,93]
-   (property<101,108> name: (identifier[101,103]@{p1}@)
-    (default_value<104,107> =[104,105] (number[106,107]@{0}@))
-    \n[107,108])
-   (property<116,172> name: (identifier[116,118]@{p2}@)
-    (default_value<119,138> =[119,120] (line_continuation[121,125]@{...\n}@) (number[137,138]@{0}@))
-    (comment[156,170]@{% comment here}@) \n[170,172])
-   (comment[180,212]@{%\{\n          foo\n        %\}\n    }@) end[212,215])
+   (property<101,107> name: (identifier[101,103]@{p1}@)
+    (default_value<104,107> =[104,105] (number[106,107]@{0}@)))
+   \n[107,108]
+   (property<116,138> name: (identifier[116,118]@{p2}@)
+    (default_value<119,138> =[119,120] (line_continuation[121,125]@{...\n}@) (number[137,138]@{0}@)))
+   (comment[156,170]@{% comment here}@) \n[170,172] (comment[180,207]@{%\{\n          foo\n        %\}}@) \n[207,208] end[212,215])
   \n[215,216]
   (methods<220,1463> methods[220,227] \n[227,228]
    (function_definition<236,1223> function[236,244] name: (identifier[245,252]@{method1}@)
     (function_arguments<252,256> ([252,253] arguments: (identifier[253,255]@{in}@) )[255,256])
     \n[256,257] \n[269,270]
     (arguments_statement<282,341> arguments[282,291] \n[291,292]
-     (property<308,324> name: (identifier[308,310]@{in}@)
+     (property<308,323> name: (identifier[308,310]@{in}@)
       (dimensions<311,316> ([311,312] (number[312,313]@{1}@) ,[313,314] (number[314,315]@{1}@) )[315,316])
-      (identifier[317,323]@{double}@) \n[323,324])
-     end[336,339] \n[340,341])
+      (identifier[317,323]@{double}@))
+     \n[323,324] end[336,339] \n[340,341])
     \n[349,350]
     (block<362,1212>
      (global_operator<362,380> global[362,368] (identifier[369,374]@{gVar1}@) (identifier[375,380]@{gVar2}@))

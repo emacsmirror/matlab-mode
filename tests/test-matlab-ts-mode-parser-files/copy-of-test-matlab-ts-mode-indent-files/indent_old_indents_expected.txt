@@ -6,18 +6,19 @@
   (arguments_statement<335,650> arguments[335,344]
    (attributes<345,356> ([345,346] argument: (identifier[346,355]@{Repeating}@) )[355,356])
    (comment[357,362]@{% !!4}@) \n[362,363]
-   (property<371,433> name: (identifier[371,372]@{a}@)
+   (property<371,394> name: (identifier[371,372]@{a}@)
     (dimensions<373,378> ([373,374] (number[374,375]@{1}@) ,[375,376] (number[376,377]@{1}@) )[377,378])
-    (validation_functions<379,394> {[379,380] (identifier[380,393]@{mustBeNumeric}@) }[393,394])
-    (comment[427,432]@{% !!8}@) \n[432,433])
-   (property<441,503> name: (identifier[441,442]@{b}@)
+    (validation_functions<379,394> {[379,380] (identifier[380,393]@{mustBeNumeric}@) }[393,394]))
+   (comment[427,432]@{% !!8}@) \n[432,433]
+   (property<441,455> name: (identifier[441,442]@{b}@)
     (dimensions<443,448> ([443,444]
      (spread_operator<444,445> :[444,445])
      ,[445,446]
      (spread_operator<446,447> :[446,447])
      )[447,448])
-    (identifier[449,455]@{double}@) (comment[497,502]@{% !!8}@) \n[502,503])
-   (property<511,573> name: (identifier[511,516]@{stuff}@)
+    (identifier[449,455]@{double}@))
+   (comment[497,502]@{% !!8}@) \n[502,503]
+   (property<511,565> name: (identifier[511,516]@{stuff}@)
     (validation_functions<517,565> {[517,518]
      (function_call<518,564> name: (identifier[518,530]@{mustBeMember}@) ([530,531]
       (arguments<531,563> argument: (identifier[531,536]@{stuff}@) ,[536,537]
@@ -30,11 +31,12 @@
          (string<554,561> '[554,555] (string_content[555,560]@{other}@) '[560,561]))
         }[562,563]))
       )[563,564])
-     }[564,565])
-    (comment[567,572]@{% !!8}@) \n[572,573])
-   (property<581,608> name: (identifier[581,593]@{cmddual1fake}@) (identifier[594,600]@{double}@) (comment[602,607]@{% !!8}@) \n[607,608])
-   (property<616,643> name: (identifier[616,628]@{cmddual2fake}@) (identifier[629,632]@{int}@) (comment[637,642]@{% !!8}@) \n[642,643])
-   end[647,650])
+     }[564,565]))
+   (comment[567,572]@{% !!8}@) \n[572,573]
+   (property<581,600> name: (identifier[581,593]@{cmddual1fake}@) (identifier[594,600]@{double}@))
+   (comment[602,607]@{% !!8}@) \n[607,608]
+   (property<616,632> name: (identifier[616,628]@{cmddual2fake}@) (identifier[629,632]@{int}@))
+   (comment[637,642]@{% !!8}@) \n[642,643] end[647,650])
   (comment[651,656]@{% !!4}@) \n[656,657] \n[661,662]
   (block<666,1299>
    (persistent_operator<666,681> persistent[666,676] (identifier[677,681]@{var1}@))
@@ -432,10 +434,10 @@
  \n[5903,5905]
  (function_definition<5905,7121> function[5905,5913]
   (function_output<5914,5917> (identifier[5914,5915]@{B}@) =[5916,5917])
-  name: (identifier[5918,5950]@{continuations_and_block_comments}@) (comment[5951,6002]@{% !!0\n% !!0\n% !!0\n%\{\n  !!2  \{  \}\n  !!2\n%\...}@) (comment[6002,6131]@{%\{\n      blank line means this block comment is ...}@)
-  (ERROR<6131,6137> =[6135,6136])
-  ;[6137,6138] \n[6138,6139] \n[6143,6144] (comment[6148,6198]@{%\{\n    %  !!4\n      !!6\n    % !!4\n    %\}\n  ...}@) (comment[6198,6286]@{% Block comment indicators MUST be on a line by th...}@)
-  (block<6296,7118>
+  name: (identifier[5918,5950]@{continuations_and_block_comments}@) (comment[5951,5992]@{% !!0\n% !!0\n% !!0\n%\{\n  !!2  \{  \}\n  !!2\n%\...}@) \n[5992,5993] \n[5997,5998] (comment[6002,6125]@{%\{\n      blank line means this block comment is ...}@)
+  (block<6131,7118>
+   (assignment<6131,6137> left: (identifier[6131,6135]@{arg1}@) =[6135,6136] right: (number[6136,6137]@{1}@))
+   ;[6137,6138] \n[6138,6139] \n[6143,6144] (comment[6148,6188]@{%\{\n    %  !!4\n      !!6\n    % !!4\n    %\}}@) (comment[6198,6286]@{% Block comment indicators MUST be on a line by th...}@)
    (function_call<6296,6302> name: (identifier[6296,6299]@{foo}@) ([6299,6300]
     (arguments<6300,6301> argument: (number[6300,6301]@{1}@))
     )[6301,6302])

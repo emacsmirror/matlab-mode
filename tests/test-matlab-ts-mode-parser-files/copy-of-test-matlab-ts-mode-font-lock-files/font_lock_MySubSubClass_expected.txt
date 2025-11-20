@@ -7,10 +7,9 @@
    (property_name<71,83> (identifier[71,83]@{ParentClass2}@)))
   (comment[84,98]@{% help comment}@) \n[98,99]
   (properties<103,191> properties[103,113] \n[113,114]
-   (property<122,144> name: (identifier[122,132]@{MyProperty}@) (identifier[133,139]@{double}@)
-    (default_value<140,143> =[140,141] (number[142,143]@{0}@))
-    ;[143,144])
-   (comment[145,183]@{% Public property with a default value}@) \n[183,184] end[188,191])
+   (property<122,143> name: (identifier[122,132]@{MyProperty}@) (identifier[133,139]@{double}@)
+    (default_value<140,143> =[140,141] (number[142,143]@{0}@)))
+   ;[143,144] (comment[145,183]@{% Public property with a default value}@) \n[183,184] end[188,191])
   \n[191,193]
   (methods<197,604> methods[197,204] \n[204,205]
    (function_definition<213,337> function[213,221]

@@ -5,20 +5,19 @@
    (property_name<51,57> (identifier[51,57]@{handle}@)))
   \n[57,58]
   (properties<62,95> properties[62,72] \n[72,73]
-   (property<81,88> name: (identifier[81,83]@{p1}@)
-    (default_value<84,87> =[84,85] (number[86,87]@{0}@))
-    \n[87,88])
-   end[92,95])
+   (property<81,87> name: (identifier[81,83]@{p1}@)
+    (default_value<84,87> =[84,85] (number[86,87]@{0}@)))
+   \n[87,88] end[92,95])
   \n[95,96]
   (methods<100,968> methods[100,107] \n[107,108]
    (function_definition<116,754> function[116,124] name: (identifier[125,132]@{method1}@)
     (function_arguments<132,136> ([132,133] arguments: (identifier[133,135]@{in}@) )[135,136])
     \n[136,137]
     (arguments_statement<142,190> arguments[142,151] \n[151,152]
-     (property<161,177> name: (identifier[161,163]@{in}@)
+     (property<161,176> name: (identifier[161,163]@{in}@)
       (dimensions<164,169> ([164,165] (number[165,166]@{1}@) ,[166,167] (number[167,168]@{1}@) )[168,169])
-      (identifier[170,176]@{double}@) \n[176,177])
-     end[183,186] \n[188,190])
+      (identifier[170,176]@{double}@))
+     \n[176,177] end[183,186] \n[188,190])
     (block<195,743>
      (global_operator<195,213> global[195,201] (identifier[202,207]@{gVar1}@) (identifier[208,213]@{gVar2}@))
      \n[213,214]

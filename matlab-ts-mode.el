@@ -1362,7 +1362,7 @@ node."
   (cdr matlab-ts-mode-i-doc-comment-matcher-pair))
 
 (defun matlab-ts-mode--i-in-block-comment-matcher (node parent bol &rest _)
-  "Is NODE, PARENT, BOL within a block \"{% ... %)\"?"
+  "Is NODE, PARENT within a block \"{% ... %)\" and BOL does not start with \"%\"?"
   (and (not node)
        (string= "comment" (treesit-node-type parent))
        (not (save-excursion (goto-char bol)
@@ -2426,6 +2426,9 @@ Example:
      ;; I-Rule: last line of code block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
 
+     ;; I-Rule: within a code block comment "%{ ... %}"?
+     (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
+
      ;; I-Rule: RET on an incomplete statement. Example:
      ;;         classdef foo
      ;;             ^                     <== TAB or RET on prior line goes here.
@@ -2453,9 +2456,6 @@ Example:
      (,#'matlab-ts-mode--i-doc-comment-matcher
       ,#'matlab-ts-mode--i-doc-comment-anchor
       ,#'matlab-ts-mode--i-doc-comment-offset)
-
-     ;; I-Rule: within a code block comment "%{ ... %}"?
-     (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
 
      ;; I-Rule: switch case and otherwise statements
      ((node-is ,(rx bos (or "case_clause" "otherwise_clause") eos))

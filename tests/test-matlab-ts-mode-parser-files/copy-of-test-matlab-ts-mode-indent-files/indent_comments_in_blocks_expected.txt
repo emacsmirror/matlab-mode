@@ -5,8 +5,8 @@
    (property_name<58,64> (identifier[58,64]@{handle}@)))
   \n[64,65]
   (properties<69,123> properties[69,79] \n[79,80]
-   (property<88,92> name: (identifier[88,91]@{bar}@) ;[91,92])
-   (comment[101,115]@{% comment here}@) \n[115,116] end[120,123])
+   (property<88,91> name: (identifier[88,91]@{bar}@))
+   ;[91,92] (comment[101,115]@{% comment here}@) \n[115,116] end[120,123])
   \n[123,124]
   (events<128,192> events[128,134] \n[134,135] (identifier[143,145]@{e1}@) (comment[154,159]@{% foo}@) \n[159,160] (identifier[168,170]@{e2}@) (comment[179,184]@{% bar}@) \n[184,185] end[189,192])
   \n[192,194]

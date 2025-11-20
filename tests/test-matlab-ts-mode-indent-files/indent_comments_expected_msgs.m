@@ -19,9 +19,9 @@ end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\
 
 function [c, d] = fcn1(a, b) %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 %{ %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
-  help comment %  <{Matched rule: (matlab-ts-mode--i-doc-block-comment-matcher parent 2)}>
+  help comment %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 
-  with blank lines %  <{Matched rule: (matlab-ts-mode--i-doc-block-comment-matcher parent 2)}>
+  with blank lines %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 
 %} %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
     c = a; %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
@@ -31,9 +31,9 @@ end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\
 
 function fcn2 %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 %{ %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
-  help comment %  <{Matched rule: (matlab-ts-mode--i-doc-block-comment-matcher parent 2)}>
+  help comment %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 
-  with blank lines %  <{Matched rule: (matlab-ts-mode--i-doc-block-comment-matcher parent 2)}>
+  with blank lines %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 
 
 %} %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>

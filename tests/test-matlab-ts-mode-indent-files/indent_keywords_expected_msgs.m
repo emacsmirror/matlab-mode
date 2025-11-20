@@ -6,7 +6,7 @@ classdef indent_keywords < handle %  <{Matched rule: (maltab-ts-mode--i-top-leve
         p2 = ... %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
             0 %  <{Matched rule: ((n-p-gp nil "\\`default_value\\'" "\\`property\\'") grand-parent 4)}>
 
-        % comment here %  <{Matched rule: ((n-p-gp nil "\\`property\\'" "\\`properties\\'") grand-parent 4)}>
+        % comment here %  <{Matched rule: ((parent-is "\\`\\(?:arguments_statement\\|e\\(?:numeration\\|vents\\)\\|f\\(?:or_statement\\|unction_definition\\)\\|if_statement\\|methods\\|properties\\|while_statement\\)\\'") parent 4)}>
 
         %{ %  <{Matched rule: ((parent-is "\\`\\(?:arguments_statement\\|e\\(?:numeration\\|vents\\)\\|f\\(?:or_statement\\|unction_definition\\)\\|if_statement\\|methods\\|properties\\|while_statement\\)\\'") parent 4)}>
           foo %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>

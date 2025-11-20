@@ -4,8 +4,8 @@
   (function_arguments<64,69> ([64,65] arguments: (identifier[65,68]@{in1}@) )[68,69])
   \n[69,70]
   (arguments_statement<74,111> arguments[74,83] \n[83,84]
-   (property<92,104> name: (identifier[92,95]@{in1}@) (identifier[96,102]@{double}@) ;[102,103] \n[103,104])
-   end[108,111])
+   (property<92,102> name: (identifier[92,95]@{in1}@) (identifier[96,102]@{double}@))
+   ;[102,103] \n[103,104] end[108,111])
   (comment[117,146]@{% comment after arguments end}@)
   (block<152,163>
    (function_call<152,161> name: (identifier[152,156]@{disp}@) ([156,157]

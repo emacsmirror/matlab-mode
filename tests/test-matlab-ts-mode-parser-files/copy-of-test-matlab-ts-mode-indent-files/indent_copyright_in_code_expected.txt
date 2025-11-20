@@ -2,7 +2,7 @@
 (source_file<1,411> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,217]@{% t-utils-test-indent: no-line-by-line-indent - mu...}@) \n[217,219]
  (function_definition<222,410> function[222,230]
   (function_output<231,234> (identifier[231,232]@{b}@) =[233,234])
-  name: (identifier[235,259]@{indent_copyright_in_code}@) \n[259,260] (comment[263,317]@{%\{\n     sadf\n   \n         asdfasd     \n     %...}@) (comment[317,332]@{% foo\n    % foo}@) (comment[357,373]@{% copyright blah}@) (comment[383,388]@{% foo}@)
+  name: (identifier[235,259]@{indent_copyright_in_code}@) \n[259,260] (comment[263,309]@{%\{\n     sadf\n   \n         asdfasd     \n     %...}@) (comment[317,332]@{% foo\n    % foo}@) (comment[357,373]@{% copyright blah}@) (comment[383,388]@{% foo}@)
   (block<399,406>
    (assignment<399,404> left: (identifier[399,400]@{b}@) =[401,402] right: (number[403,404]@{1}@))
    ;[404,405] \n[405,406])

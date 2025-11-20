@@ -270,8 +270,8 @@ function B = continuations_and_block_comments %  <{Matched rule: (maltab-ts-mode
 % !!0 %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
 % !!0 %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
 %{ %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
-  !!2  {  } %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
-  !!2 %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
+  !!2  {  } %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
+  !!2 %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 %} %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
 
     %{ %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
@@ -280,18 +280,18 @@ function B = continuations_and_block_comments %  <{Matched rule: (maltab-ts-mode
       !!6 %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
     %} %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 
-    arg1=1; %  <{Matched rule: (matlab-ts-mode--i-next-line-matcher matlab-ts-mode--i-next-line-anchor matlab-ts-mode--i-next-line-offset)}>
+    arg1=1; %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
 
-    %{ %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
+    %{ %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
     %  !!4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
       !!6 %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
     % !!4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
     %} %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 
-    % Block comment indicators MUST be on a line by themselves. %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
+    % Block comment indicators MUST be on a line by themselves. %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
     %{ Not a block comment } %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 
-    foo(1); % !!4   - don't indent this special %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
+    foo(1); % !!4   - don't indent this special %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
     %} Not an end to a block comment { %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 

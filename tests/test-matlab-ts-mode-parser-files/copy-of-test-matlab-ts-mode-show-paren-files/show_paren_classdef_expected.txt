@@ -5,9 +5,10 @@
    (property_name<133,139> (identifier[133,139]@{handle}@)))
   (comment[145,230]@{% Case2: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[230,231]
   (properties<235,373> properties[235,245] \n[245,246]
-   (property<254,259> name: (identifier[254,257]@{foo}@) ;[257,258] \n[258,259])
-   (property<267,271> name: (identifier[267,270]@{bar}@) ;[270,271])
-   (comment[280,365]@{% Case3: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[365,366] end[370,373])
+   (property<254,257> name: (identifier[254,257]@{foo}@))
+   ;[257,258] \n[258,259]
+   (property<267,270> name: (identifier[267,270]@{bar}@))
+   ;[270,271] (comment[280,365]@{% Case3: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[365,366] end[370,373])
   (comment[379,464]@{% Case4: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[464,465]
   (events<469,590> events[469,475] \n[475,476] (identifier[484,487]@{goo}@) ;[487,488] (comment[497,582]@{% Case5: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[582,583] end[587,590])
   (comment[596,681]@{% Case6: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[681,682]
@@ -16,8 +17,8 @@
     (function_arguments<809,812> ([809,810] arguments: (identifier[810,811]@{a}@) )[811,812])
     (comment[826,911]@{% Case8: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[911,912]
     (arguments_statement<924,1065> arguments[924,933] \n[933,934]
-     (property<950,1050> name: (identifier[950,951]@{a}@) (comment[964,1049]@{% Case9: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[1049,1050])
-     end[1062,1065])
+     (property<950,951> name: (identifier[950,951]@{a}@))
+     (comment[964,1049]@{% Case9: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (mat...}@) \n[1049,1050] end[1062,1065])
     (comment[1079,1165]@{% Case10: (t-utils-xr "C-a" "C-n" "M-m" (prin1 (ma...}@) \n[1165,1166]
     (block<1178,4210>
      (if_statement<1178,4114> if[1178,1180]

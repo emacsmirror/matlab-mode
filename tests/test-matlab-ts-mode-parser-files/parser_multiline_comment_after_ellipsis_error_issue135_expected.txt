@@ -1,0 +1,14 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,442> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) (comment[91,273]@{% Placing a multiline comment after a line continu...}@) \n[273,275]
+ (function_definition<275,441> function[275,283]
+  (function_output<284,287> (identifier[284,285]@{b}@) =[286,287])
+  name: (identifier[288,342]@{parser_multiline_comment_after_ellipsis_error_issu...}@)
+  (function_arguments<342,345> ([342,343] arguments: (identifier[343,344]@{a}@) )[344,345])
+  \n[345,346]
+  (block<350,438>
+   (assignment<350,436> left: (identifier[350,351]@{b}@) =[352,353] (line_continuation[354,358]@{...\n}@) (comment[366,422]@{%\{\n          multiline line\n          comment\n...}@)
+    (ERROR<431,435> (ERROR[431,432]@{a}@) *[433,434] ,[435,435])
+    right: (number[435,436]@{2}@))
+   ;[436,437] \n[437,438])
+  end[438,441])
+ \n[441,442])

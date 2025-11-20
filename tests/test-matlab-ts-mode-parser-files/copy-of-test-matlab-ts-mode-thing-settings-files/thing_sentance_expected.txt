@@ -2,26 +2,26 @@
 (source_file<1,1709> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,55]@{% Case1: (t-utils-xr "M-e" "M-a")}@) \n[55,56]
  (class_definition<56,1708> classdef[56,64] name: (identifier[65,79]@{thing_sentance}@) (comment[85,118]@{% Case2: (t-utils-xr "M-e" "M-e")}@) \n[118,119]
   (properties<123,323> properties[123,133] (comment[142,205]@{% Case3: (t-utils-xr "C-a" "C-n" "M-m" "M-a" "M-a"...}@) \n[205,207]
-   (property<215,223> name: (identifier[215,217]@{p1}@)
-    (default_value<218,221> =[218,219] (number[220,221]@{0}@))
-    \n[221,223])
-   (property<231,279> name: (identifier[231,233]@{p2}@)
-    (default_value<234,253> =[234,235] (line_continuation[236,240]@{...\n}@) (number[252,253]@{0}@))
-    (comment[263,277]@{% comment here}@) \n[277,279])
-   (comment[287,320]@{%\{\n          foo\n        %\}\n\n    }@) end[320,323])
+   (property<215,221> name: (identifier[215,217]@{p1}@)
+    (default_value<218,221> =[218,219] (number[220,221]@{0}@)))
+   \n[221,223]
+   (property<231,253> name: (identifier[231,233]@{p2}@)
+    (default_value<234,253> =[234,235] (line_continuation[236,240]@{...\n}@) (number[252,253]@{0}@)))
+   (comment[263,277]@{% comment here}@) \n[277,279] (comment[287,314]@{%\{\n          foo\n        %\}}@) \n[314,316] end[320,323])
   \n[323,325]
   (methods<329,1577> methods[329,336] \n[336,338]
    (function_definition<346,1348> function[346,354] name: (identifier[355,362]@{method1}@)
     (function_arguments<362,372> ([362,363] arguments: (identifier[363,366]@{in1}@) ,[366,367] (identifier[368,371]@{in2}@) )[371,372])
     \n[372,374]
     (arguments_statement<386,479> arguments[386,395] \n[395,396]
-     (property<412,429> name: (identifier[412,415]@{in1}@)
+     (property<412,428> name: (identifier[412,415]@{in1}@)
       (dimensions<416,421> ([416,417] (number[417,418]@{1}@) ,[418,419] (number[419,420]@{1}@) )[420,421])
-      (identifier[422,428]@{double}@) \n[428,429])
-     (property<445,462> name: (identifier[445,448]@{in2}@)
+      (identifier[422,428]@{double}@))
+     \n[428,429]
+     (property<445,461> name: (identifier[445,448]@{in2}@)
       (dimensions<449,454> ([449,450] (number[450,451]@{1}@) ,[451,452] (number[452,453]@{2}@) )[453,454])
-      (identifier[455,461]@{double}@) \n[461,462])
-     end[474,477] \n[477,479])
+      (identifier[455,461]@{double}@))
+     \n[461,462] end[474,477] \n[477,479])
     (block<491,1337>
      (global_operator<491,509> global[491,497] (identifier[498,503]@{gVar1}@) (identifier[504,509]@{gVar2}@))
      \n[509,510]

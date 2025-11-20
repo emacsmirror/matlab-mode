@@ -1,0 +1,14 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,404> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) (comment[91,280]@{% Placing a single line comment after a line conti...}@) \n[280,282]
+ (function_definition<282,403> function[282,290]
+  (function_output<291,294> (identifier[291,292]@{b}@) =[293,294])
+  name: (identifier[295,351]@{parser_single_line_comment_after_ellipsis_error_is...}@)
+  (function_arguments<351,354> ([351,352] arguments: (identifier[352,353]@{a}@) )[353,354])
+  \n[354,355]
+  (block<359,400>
+   (binary_operator<359,398> left: (identifier[359,360]@{b}@)
+    (ERROR<361,394> =[361,362] (line_continuation[363,367]@{...\n}@) (comment[375,384]@{% comment}@) (ERROR[393,394]@{a}@))
+    *[395,396] right: (number[397,398]@{2}@))
+   ;[398,399] \n[399,400])
+  end[400,403])
+ \n[403,404])

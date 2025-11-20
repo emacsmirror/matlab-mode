@@ -16,33 +16,32 @@
      (string<136,144> '[136,137] (string_content[137,143]@{public}@) '[143,144]))
     )[144,145])
    \n[145,146]
-   (property<154,163> name: (identifier[154,156]@{AP}@)
+   (property<154,161> name: (identifier[154,156]@{AP}@)
     (default_value<157,161> =[157,158]
-     (matrix<159,161> [[159,160] ][160,161]))
-    ;[161,162] \n[162,163])
-   (property<171,198> name: (identifier[171,173]@{AB}@)
+     (matrix<159,161> [[159,160] ][160,161])))
+   ;[161,162] \n[162,163]
+   (property<171,196> name: (identifier[171,173]@{AB}@)
     (default_value<174,196> =[174,175]
-     (string<176,196> '[176,177] (string_content[177,195]@{charvec with space}@) '[195,196]))
-    ;[196,197] \n[197,198])
-   (property<206,239> name: (identifier[206,208]@{AC}@)
+     (string<176,196> '[176,177] (string_content[177,195]@{charvec with space}@) '[195,196])))
+   ;[196,197] \n[197,198]
+   (property<206,237> name: (identifier[206,208]@{AC}@)
     (default_value<209,237> =[209,210]
-     (string<211,237> "[211,212] (string_content[212,236]@{string with space and ( }@) "[236,237]))
-    ;[237,238] \n[238,239])
-   (property<247,267> name: (identifier[247,249]@{AD}@)
+     (string<211,237> "[211,212] (string_content[212,236]@{string with space and ( }@) "[236,237])))
+   ;[237,238] \n[238,239]
+   (property<247,265> name: (identifier[247,249]@{AD}@)
     (default_value<250,265> =[250,251]
      (function_call<252,265> name: (identifier[252,260]@{fun_call}@) ([260,261]
       (arguments<261,264> argument: (number[261,262]@{1}@) ,[262,263] (number[263,264]@{2}@))
-      )[264,265]))
-    ;[265,266] \n[266,267])
-   (property<275,313> name: (identifier[275,277]@{AE}@)
+      )[264,265])))
+   ;[265,266] \n[266,267]
+   (property<275,311> name: (identifier[275,277]@{AE}@)
     (dimensions<278,283> ([278,279] (number[279,280]@{1}@) ,[280,281]
      (spread_operator<281,282> :[281,282])
      )[282,283])
     (identifier[284,290]@{double}@)
     (validation_functions<291,307> {[291,292] (identifier[292,306]@{mustBePositive}@) }[306,307])
-    (default_value<308,311> =[308,309] (number[310,311]@{1}@))
-    ;[311,312] \n[312,313])
-   end[317,320])
+    (default_value<308,311> =[308,309] (number[310,311]@{1}@)))
+   ;[311,312] \n[312,313] end[317,320])
   \n[320,322]
   (properties<326,507> properties[326,336]
    (attributes<337,370> ([337,338]
@@ -51,7 +50,7 @@
     (attribute<353,369> (identifier[353,364]@{NonCopyable}@) =[364,365] (identifier[365,369]@{true}@))
     )[369,370])
    \n[370,371]
-   (property<379,446> name: (identifier[379,381]@{AF}@)
+   (property<379,444> name: (identifier[379,381]@{AF}@)
     (dimensions<382,387> ([382,383] (number[383,384]@{1}@) ,[384,385] (number[385,386]@{1}@) )[386,387])
     (identifier[388,392]@{char}@)
     (validation_functions<393,436> {[393,394]
@@ -68,15 +67,14 @@
       )[434,435])
      }[435,436])
     (default_value<437,444> =[437,438]
-     (string<439,444> '[439,440] (string_content[440,443]@{Low}@) '[443,444]))
-    ;[444,445] \n[445,446])
-   (property<454,500> name: (identifier[454,456]@{AG}@)
+     (string<439,444> '[439,440] (string_content[440,443]@{Low}@) '[443,444])))
+   ;[444,445] \n[445,446]
+   (property<454,498> name: (identifier[454,456]@{AG}@)
     (dimensions<457,462> ([457,458] (number[458,459]@{1}@) ,[459,460] (number[460,461]@{1}@) )[461,462])
     (property_name<463,491> (identifier[463,469]@{matlab}@) .[469,470] (identifier[470,474]@{lang}@) .[474,475] (identifier[475,491]@{OnOffSwitchState}@))
     (default_value<492,498> =[492,493]
-     (string<494,498> '[494,495] (string_content[495,497]@{on}@) '[497,498]))
-    ;[498,499] \n[499,500])
-   end[504,507])
+     (string<494,498> '[494,495] (string_content[495,497]@{on}@) '[497,498])))
+   ;[498,499] \n[499,500] end[504,507])
   \n[507,509]
   (events<513,557> events[513,519] \n[519,520] (identifier[528,534]@{Event1}@) \n[534,535] (identifier[543,549]@{Event2}@) \n[549,550] end[554,557])
   \n[557,559]

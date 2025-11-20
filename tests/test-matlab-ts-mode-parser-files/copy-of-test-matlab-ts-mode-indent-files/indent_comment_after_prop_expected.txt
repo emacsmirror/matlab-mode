@@ -5,9 +5,10 @@
    (property_name<69,75> (identifier[69,75]@{handle}@)))
   (comment[81,90]@{% comment}@) \n[90,91]
   (properties<95,157> properties[95,105] \n[105,106]
-   (property<114,119> name: (identifier[114,117]@{foo}@) ;[117,118] \n[118,119])
-   (property<127,131> name: (identifier[127,130]@{bar}@) ;[130,131])
-   (comment[140,149]@{% comment}@) \n[149,150] end[154,157])
+   (property<114,117> name: (identifier[114,117]@{foo}@))
+   ;[117,118] \n[118,119]
+   (property<127,130> name: (identifier[127,130]@{bar}@))
+   ;[130,131] (comment[140,149]@{% comment}@) \n[149,150] end[154,157])
   (comment[163,172]@{% comment}@) \n[172,173]
   (events<177,222> events[177,183] \n[183,184] (identifier[192,195]@{goo}@) ;[195,196] (comment[205,214]@{% comment}@) \n[214,215] end[219,222])
   (comment[228,237]@{% comment}@) \n[237,238]
@@ -16,8 +17,8 @@
     (function_arguments<290,293> ([290,291] arguments: (identifier[291,292]@{a}@) )[292,293])
     (comment[307,316]@{% comment}@) \n[316,317]
     (arguments_statement<329,394> arguments[329,338] \n[338,339]
-     (property<355,379> name: (identifier[355,356]@{a}@) (comment[369,378]@{% comment}@) \n[378,379])
-     end[391,394])
+     (property<355,356> name: (identifier[355,356]@{a}@))
+     (comment[369,378]@{% comment}@) \n[378,379] end[391,394])
     (comment[408,417]@{% comment}@) \n[417,418]
     (block<430,2076>
      (if_statement<430,2057> if[430,432]

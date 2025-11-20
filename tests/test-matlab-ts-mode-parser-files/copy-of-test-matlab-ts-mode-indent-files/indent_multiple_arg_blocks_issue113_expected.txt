@@ -6,14 +6,15 @@
   (function_arguments<140,156> ([140,141] arguments: (identifier[141,142]@{a}@) ,[142,143] (identifier[144,145]@{b}@) ,[145,146] (identifier[147,155]@{varargin}@) )[155,156])
   \n[156,157]
   (arguments_statement<161,213> arguments[161,170] \n[170,171]
-   (property<179,188> name: (identifier[179,180]@{a}@) (identifier[181,187]@{uint32}@) \n[187,188])
-   (property<196,205> name: (identifier[196,197]@{b}@) (identifier[198,204]@{uint32}@) \n[204,205])
-   end[209,212] \n[212,213])
+   (property<179,187> name: (identifier[179,180]@{a}@) (identifier[181,187]@{uint32}@))
+   \n[187,188]
+   (property<196,204> name: (identifier[196,197]@{b}@) (identifier[198,204]@{uint32}@))
+   \n[204,205] end[209,212] \n[212,213])
   (arguments_statement<217,263> arguments[217,226]
    (attributes<227,238> ([227,228] argument: (identifier[228,237]@{Repeating}@) )[237,238])
    \n[238,239]
-   (property<247,256> name: (identifier[247,255]@{varargin}@) \n[255,256])
-   end[260,263])
+   (property<247,255> name: (identifier[247,255]@{varargin}@))
+   \n[255,256] end[260,263])
   (block<269,300>
    (assignment<269,297> left: (identifier[269,270]@{y}@) =[271,272]
     right: 

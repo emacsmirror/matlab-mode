@@ -4,20 +4,22 @@
   (function_arguments<57,71> ([57,58] arguments: (identifier[58,59]@{x}@) ,[59,60] (identifier[60,61]@{y}@) ,[61,62] (identifier[62,70]@{propArgs}@) )[70,71])
   \n[71,72]
   (arguments_statement<76,193> arguments[76,85] \n[85,86]
-   (property<94,109> name: (identifier[94,95]@{x}@)
+   (property<94,108> name: (identifier[94,95]@{x}@)
     (dimensions<96,101> ([96,97]
      (spread_operator<97,98> :[97,98])
      ,[98,99]
      (spread_operator<99,100> :[99,100])
      )[100,101])
-    (identifier[102,108]@{double}@) \n[108,109])
-   (property<117,132> name: (identifier[117,118]@{y}@)
+    (identifier[102,108]@{double}@))
+   \n[108,109]
+   (property<117,131> name: (identifier[117,118]@{y}@)
     (dimensions<119,124> ([119,120]
      (spread_operator<120,121> :[120,121])
      ,[121,122]
      (spread_operator<122,123> :[122,123])
      )[123,124])
-    (identifier[125,131]@{double}@) \n[131,132])
+    (identifier[125,131]@{double}@))
+   \n[131,132]
    (class_property<140,185> (identifier[140,148]@{propArgs}@) .?[148,150] (identifier[150,156]@{matlab}@) .[156,157] (identifier[157,165]@{graphics}@) .[165,166] (identifier[166,171]@{chart}@) .[171,172] (identifier[172,181]@{primitive}@) .[181,182] (identifier[182,185]@{Bar}@))
    \n[185,186] end[190,193])
   (block<198,268>

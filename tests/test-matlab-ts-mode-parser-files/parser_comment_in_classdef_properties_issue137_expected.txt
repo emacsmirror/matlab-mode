@@ -2,20 +2,18 @@
 (source_file<1,366> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) \n[89,91]
  (class_definition<91,365> classdef[91,99] name: (identifier[100,146]@{parser_comment_in_classdef_properties_issue137}@) \n[146,147]
   (properties<151,361> properties[151,161] \n[161,162]
-   (property<170,204> name: (identifier[170,181]@{Interlacing}@)
+   (property<170,203> name: (identifier[170,181]@{Interlacing}@)
     (dimensions<182,187> ([182,183] (number[183,184]@{1}@) ,[184,185] (number[185,186]@{1}@) )[186,187])
     (identifier[188,195]@{logical}@)
-    (default_value<196,203> =[196,197] (identifier[198,203]@{false}@))
-    ;[203,204])
-   (comment[214,224]@{% comment1}@) \n[224,226]
-   (property<234,354> name: (identifier[234,248]@{InterlaceIndex}@)
+    (default_value<196,203> =[196,197] (identifier[198,203]@{false}@)))
+   ;[203,204] (comment[214,224]@{% comment1}@) \n[224,226]
+   (property<234,352> name: (identifier[234,248]@{InterlaceIndex}@)
     (validation_functions<249,348> {[249,250] (identifier[250,262]@{mustBeVector}@) ,[262,263] (identifier[264,277]@{mustBeNumeric}@) ,[277,278] (identifier[279,292]@{mustBeInteger}@) ,[292,293] (identifier[294,311]@{mustBeNonnegative}@) ,[311,312]
      (function_call<313,347> name: (identifier[313,327]@{mustBeLessThan}@) ([327,328]
       (arguments<328,346> argument: (identifier[328,342]@{InterlaceIndex}@) ,[342,343] (number[344,346]@{10}@))
       )[346,347])
      }[347,348])
-    (default_value<349,352> =[349,350] (number[351,352]@{0}@))
-    ;[352,353] \n[353,354])
-   end[358,361])
+    (default_value<349,352> =[349,350] (number[351,352]@{0}@)))
+   ;[352,353] \n[353,354] end[358,361])
   \n[361,362] end[362,365])
  \n[365,366])

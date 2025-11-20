@@ -27,7 +27,7 @@
    =[336,337])
   name: (identifier[338,342]@{fcn1}@)
   (function_arguments<342,348> ([342,343] arguments: (identifier[343,344]@{a}@) ,[344,345] (identifier[346,347]@{b}@) )[347,348])
-  \n[348,349] (comment[349,395]@{%\{\n  help comment\n\n  with blank lines\n\n%\}\n...}@)
+  \n[348,349] (comment[349,390]@{%\{\n  help comment\n\n  with blank lines\n\n%\}}@)
   (block<395,413>
    (assignment<395,400> left: (identifier[395,396]@{c}@) =[397,398] right: (identifier[399,400]@{a}@))
    ;[400,401]
@@ -35,7 +35,7 @@
    ;[411,412] \n[412,413])
   end[413,416])
  \n[416,419]
- (function_definition<419,583> function[419,427] name: (identifier[428,432]@{fcn2}@) \n[432,433] (comment[433,489]@{%\{\n  help comment\n  \n  with blank lines\n  \n ...}@) (comment[489,569]@{%\{\n\n      block\n      comment\n      for follo...}@)
+ (function_definition<419,583> function[419,427] name: (identifier[428,432]@{fcn2}@) \n[432,433] (comment[433,483]@{%\{\n  help comment\n  \n  with blank lines\n  \n ...}@) \n[483,485] (comment[489,563]@{%\{\n\n      block\n      comment\n      for follo...}@)
   (block<569,580>
    (function_call<569,578> name: (identifier[569,573]@{disp}@) ([573,574]
     (arguments<574,577>

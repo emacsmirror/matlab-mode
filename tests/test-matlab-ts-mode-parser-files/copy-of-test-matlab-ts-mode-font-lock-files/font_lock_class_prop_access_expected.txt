@@ -12,8 +12,8 @@
       }[102,103]))
     )[103,104])
    \n[104,105]
-   (property<111,117> name: (identifier[111,116]@{Prop1}@) \n[116,117])
-   end[120,123])
+   (property<111,116> name: (identifier[111,116]@{Prop1}@))
+   \n[116,117] end[120,123])
   \n[123,124]
   (properties<127,175> properties[127,137]
    (attributes<138,156> ([138,139]
@@ -21,7 +21,7 @@
      (metaclass_operator<148,155> ?[148,149] (identifier[149,155]@{ClassC}@)))
     )[155,156])
    \n[156,157]
-   (property<163,169> name: (identifier[163,168]@{Prop2}@) \n[168,169])
-   end[172,175])
+   (property<163,168> name: (identifier[163,168]@{Prop2}@))
+   \n[168,169] end[172,175])
   \n[175,176] end[176,179])
  \n[179,180])

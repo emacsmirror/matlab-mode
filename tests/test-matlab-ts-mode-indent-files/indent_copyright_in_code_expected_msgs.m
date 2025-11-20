@@ -5,9 +5,9 @@
 
 function b = indent_copyright_in_code %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 %{ %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
-  sadf %  <{Matched rule: (matlab-ts-mode--i-doc-block-comment-matcher parent 2)}>
+  sadf %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 
-  asdfasd %  <{Matched rule: (matlab-ts-mode--i-doc-block-comment-matcher parent 2)}>
+  asdfasd %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 %} %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
     % foo %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
     % foo %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>

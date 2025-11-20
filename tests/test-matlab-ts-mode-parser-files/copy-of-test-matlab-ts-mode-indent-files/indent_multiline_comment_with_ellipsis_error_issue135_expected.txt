@@ -8,8 +8,9 @@
   condition: 
    (boolean_operator<220,280>
     left: (comparison_operator<220,227> (identifier[220,221]@{a}@) ==[222,224] (number[225,227]@{10}@))
-    ||[228,230] (line_continuation[231,235]@{...\n}@) (comment[238,274]@{%\{\n     block\n     comment\n   %\}\n   }@)
-    right: (comparison_operator<274,280> (identifier[274,275]@{b}@) ==[276,278] (number[279,280]@{2}@)))
+    ||[228,230] (line_continuation[231,235]@{...\n}@) (comment[238,270]@{%\{\n     block\n     comment\n   %\}}@)
+    (ERROR<274,279> (ERROR[274,275]@{b}@) ==[276,278] ,[279,279])
+    right: (number[279,280]@{2}@))
   (block<285,298>
    (function_call<285,297> name: (identifier[285,289]@{disp}@) ([289,290]
     (arguments<290,296>

@@ -105,16 +105,16 @@
 
 - Invoking      : "C-M-f" = forward-sexp
   Start point   :  257
-  Moved to point:  264
-  : 10:0:         p2 = ...
-  :       ^
+  Moved to point:  263
+  : 9:14:         p1 = 0
+  :                     ^
   No buffer modifications
 
 - Invoking      : "C-M-f" = forward-sexp
-  Start point   :  264
-  Moved to point:  356
-  : 18:0:     end
-  :       ^
+  Start point   :  263
+  Moved to point:  294
+  : 11:13:             0
+  :                     ^
   No buffer modifications
 
 * Executing commands from thing_sexp.m:22:17:

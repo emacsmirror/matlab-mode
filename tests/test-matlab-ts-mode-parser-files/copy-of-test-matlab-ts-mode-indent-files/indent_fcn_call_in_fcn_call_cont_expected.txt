@@ -6,7 +6,7 @@
     (attribute<80,88> (identifier[80,88]@{Constant}@))
     )[88,89])
    \n[89,90]
-   (property<98,433> name: (identifier[98,107]@{tabularDs}@)
+   (property<98,431> name: (identifier[98,107]@{tabularDs}@)
     (default_value<108,431> =[108,109]
      (function_call<110,431> name: (identifier[110,130]@{tabularTextDatastore}@) ([130,131]
       (arguments<131,430>
@@ -35,8 +35,7 @@
          ,[417,418]
          (string<419,429> '[419,420] (string_content[420,428]@{DepDelay}@) '[428,429]))
         }[429,430]))
-      )[430,431]))
-    ;[431,432] \n[432,433])
-   end[437,440])
+      )[430,431])))
+   ;[431,432] \n[432,433] end[437,440])
   \n[440,441] end[441,444])
  \n[444,445])

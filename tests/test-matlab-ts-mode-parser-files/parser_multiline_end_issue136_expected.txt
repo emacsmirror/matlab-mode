@@ -2,7 +2,7 @@
 (source_file<1,181> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) \n[89,91]
  (function_definition<91,180> function[91,99] name: (identifier[100,129]@{parser_multiline_end_issue136}@)
   (function_arguments<129,132> ([129,130] arguments: (identifier[130,131]@{a}@) )[131,132])
-  \n[132,133] (comment[133,143]@{%\{\n%\}\n    }@)
+  \n[132,133] (comment[133,138]@{%\{\n%\}}@) \n[138,139]
   (block<143,177>
    (if_statement<143,176> if[143,145] condition: (identifier[146,147]@{a}@)
     (block<156,169>

@@ -4,7 +4,7 @@
   (function_arguments<525,530> ([525,526] arguments: (identifier[526,529]@{mat}@) )[529,530])
   \n[530,531]
   (arguments_statement<535,632> arguments[535,544] \n[544,545]
-   (property<553,624> name: (identifier[553,556]@{mat}@)
+   (property<553,623> name: (identifier[553,556]@{mat}@)
     (dimensions<557,563> ([557,558]
      (spread_operator<558,559> :[558,559])
      ,[559,560]
@@ -13,8 +13,7 @@
     (identifier[564,570]@{double}@)
     (validation_functions<571,623> {[571,572]
      (field_expression<572,622> object: (identifier[572,579]@{myUtils}@) .[579,580] field: (identifier[580,586]@{nested}@) .[586,587] (identifier[587,596]@{namespace}@) .[596,597] (identifier[597,622]@{mustBeRealUpperTriangular}@))
-     }[622,623])
-    \n[623,624])
-   end[628,631] \n[631,632])
+     }[622,623]))
+   \n[623,624] end[628,631] \n[631,632])
   end[632,635])
  \n[635,636])

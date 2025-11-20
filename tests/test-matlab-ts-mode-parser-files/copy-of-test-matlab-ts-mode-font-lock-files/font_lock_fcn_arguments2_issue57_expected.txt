@@ -4,14 +4,14 @@
   (function_arguments<63,68> ([63,64] arguments: (identifier[64,65]@{a}@) ,[65,66] (identifier[66,67]@{b}@) )[67,68])
   \n[68,69]
   (arguments_statement<73,192> arguments[73,82] \n[82,83]
-   (property<91,119> name: (identifier[91,92]@{a}@)
+   (property<91,118> name: (identifier[91,92]@{a}@)
     (dimensions<93,98> ([93,94] (number[94,95]@{1}@) ,[95,96]
      (spread_operator<96,97> :[96,97])
      )[97,98])
     (identifier[99,105]@{double}@)
-    (validation_functions<106,118> {[106,107] (identifier[107,117]@{mustBeReal}@) }[117,118])
-    \n[118,119])
-   (property<127,185> name: (identifier[127,128]@{b}@)
+    (validation_functions<106,118> {[106,107] (identifier[107,117]@{mustBeReal}@) }[117,118]))
+   \n[118,119]
+   (property<127,184> name: (identifier[127,128]@{b}@)
     (dimensions<129,134> ([129,130] (number[130,131]@{1}@) ,[131,132]
      (spread_operator<132,133> :[132,133])
      )[133,134])
@@ -22,9 +22,8 @@
        (function_call<163,183> name: (identifier[163,177]@{mustBeSameSize}@) ([177,178]
         (arguments<178,182> argument: (identifier[178,179]@{a}@) ,[179,180] (identifier[181,182]@{b}@))
         )[182,183]))
-     }[183,184])
-    \n[184,185])
-   end[189,192])
+     }[183,184]))
+   \n[184,185] end[189,192])
   (block<198,218>
    (function_call<198,205> name: (identifier[198,202]@{disp}@) ([202,203]
     (arguments<203,204> argument: (identifier[203,204]@{a}@))

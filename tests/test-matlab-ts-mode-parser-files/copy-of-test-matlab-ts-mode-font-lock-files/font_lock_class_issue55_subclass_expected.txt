@@ -5,10 +5,9 @@
    (property_name<130,162> (identifier[130,162]@{font_lock_class_issue55_abstract}@)))
   \n[162,163]
   (properties<167,201> properties[167,177] \n[177,178]
-   (property<186,194> name: (identifier[186,188]@{p1}@)
-    (default_value<189,193> =[189,190] (number[191,193]@{10}@))
-    \n[193,194])
-   end[198,201])
+   (property<186,193> name: (identifier[186,188]@{p1}@)
+    (default_value<189,193> =[189,190] (number[191,193]@{10}@)))
+   \n[193,194] end[198,201])
   \n[201,203]
   (methods<207,365> methods[207,214] \n[214,215]
    (function_definition<223,285> function[223,231]

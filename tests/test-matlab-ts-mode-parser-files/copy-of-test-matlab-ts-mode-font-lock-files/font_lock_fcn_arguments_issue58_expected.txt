@@ -4,23 +4,25 @@
   (function_arguments<241,255> ([241,242] arguments: (identifier[242,243]@{x}@) ,[243,244] (identifier[244,245]@{y}@) ,[245,246] (identifier[246,254]@{propArgs}@) )[254,255])
   \n[255,256]
   (arguments_statement<260,463> arguments[260,269] \n[269,270]
-   (property<278,293> name: (identifier[278,279]@{x}@)
+   (property<278,292> name: (identifier[278,279]@{x}@)
     (dimensions<280,285> ([280,281]
      (spread_operator<281,282> :[281,282])
      ,[282,283]
      (spread_operator<283,284> :[283,284])
      )[284,285])
-    (identifier[286,292]@{double}@) \n[292,293])
-   (property<301,316> name: (identifier[301,302]@{y}@)
+    (identifier[286,292]@{double}@))
+   \n[292,293]
+   (property<301,315> name: (identifier[301,302]@{y}@)
     (dimensions<303,308> ([303,304]
      (spread_operator<304,305> :[304,305])
      ,[305,306]
      (spread_operator<306,307> :[306,307])
      )[307,308])
-    (identifier[309,315]@{double}@) \n[315,316])
+    (identifier[309,315]@{double}@))
+   \n[315,316]
    (class_property<324,369> (identifier[324,332]@{propArgs}@) .?[332,334] (identifier[334,340]@{matlab}@) .[340,341] (identifier[341,349]@{graphics}@) .[349,350] (identifier[350,355]@{chart}@) .[355,356] (identifier[356,365]@{primitive}@) .[365,366] (identifier[366,369]@{Bar}@))
    \n[369,370]
-   (property<378,456>
+   (property<378,455>
     name: (property_name<378,396> (identifier[378,386]@{propArgs}@) .[386,387] (identifier[387,396]@{FaceColor}@))
     (validation_functions<397,446> {[397,398]
      (function_call<398,445> name: (identifier[398,410]@{mustBeMember}@) ([410,411]
@@ -36,9 +38,8 @@
       )[444,445])
      }[445,446])
     (default_value<447,455> =[447,448]
-     (string<449,455> "[449,450] (string_content[450,454]@{blue}@) "[454,455]))
-    \n[455,456])
-   end[460,463])
+     (string<449,455> "[449,450] (string_content[450,454]@{blue}@) "[454,455])))
+   \n[455,456] end[460,463])
   (block<468,538>
    (assignment<468,507> left: (identifier[468,480]@{propertyCell}@) =[481,482]
     right: 

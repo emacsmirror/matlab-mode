@@ -15,7 +15,7 @@
     (attribute<155,174> (identifier[155,164]@{SetAccess}@) =[165,166] (identifier[167,174]@{private}@))
     )[174,175])
    \n[175,176]
-   (property<184,194> name: (identifier[184,193]@{TopicName}@) \n[193,194])
-   end[198,201])
+   (property<184,193> name: (identifier[184,193]@{TopicName}@))
+   \n[193,194] end[198,201])
   \n[201,202] end[202,205])
  \n[205,206])
