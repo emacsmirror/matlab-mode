@@ -4,9 +4,9 @@
 
   Case1: (t-utils-xr
 
-  (re-search-forward "%}") "C-n"
+  (re-search-forward "%}") "C-m"
 
-  (insert "\n") "C-b"  ;; ensure we have a newline
+  "C-m" "C-b"  ;; ensure we have a newline to avoid matlab tree-sitter parse error
 
   (insert "function ...")                  "C-m"
   (insert     "[ ...")                     "C-m"
@@ -26,24 +26,16 @@
   )
 
 - Invoking      : (re-search-forward "%}")
-  Start point   :  997
-  Moved to point: 1000
+  Start point   : 1029
+  Moved to point: 1032
   : 32:2: %}
   :         ^
   No buffer modifications
 
-- Invoking      : "C-n" = next-line
-  Start point   : 1000
-  Moved to point: 1001
+- Invoking      : "C-m" = newline
+  Start point   : 1032
+  Moved to point: 1033
   : 33:0: 
-  :       ^
-  No buffer modifications
-
-- Invoking      : (insert "
-")
-  Start point   : 1001
-  Moved to point: 1002
-  : 34:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
@@ -56,35 +48,11 @@
 +
   #+end_src diff
 
-- Invoking      : "C-b" = backward-char
-  Start point   : 1002
-  Moved to point: 1001
-  : 33:0: 
-  :       ^
-  No buffer modifications
-
-- Invoking      : (insert "function ...")
-  Start point   : 1001
-  Moved to point: 1013
-  : 33:12: function ...
-  :                    ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -30,4 +30,4 @@
-   (t-utils-xr-print-code (point) (point-max))
-   )
- %}
--
-+function ...
-  #+end_src diff
-
 - Invoking      : "C-m" = newline
-  Start point   : 1013
-  Moved to point: 1018
-  : 34:4:     
-  :           ^
+  Start point   : 1033
+  Moved to point: 1034
+  : 34:0: 
+  :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -92,98 +60,110 @@
 @@ -31,3 +31,4 @@
    )
  %}
+ 
++
+  #+end_src diff
+
+- Invoking      : "C-b" = backward-char
+  Start point   : 1034
+  Moved to point: 1033
+  : 33:0: 
+  :       ^
+  No buffer modifications
+
+- Invoking      : (insert "function ...")
+  Start point   : 1033
+  Moved to point: 1045
+  : 33:12: function ...
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -30,5 +30,5 @@
+   (t-utils-xr-print-code (point) (point-max))
+   )
+ %}
+-
++function ...
+ 
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1045
+  Moved to point: 1050
+  : 34:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -31,4 +31,5 @@
+   )
+ %}
  function ...
 +    
+ 
   #+end_src diff
 
 - Invoking      : (insert "[ ...")
-  Start point   : 1018
-  Moved to point: 1023
+  Start point   : 1050
+  Moved to point: 1055
   : 34:9:     [ ...
   :                ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -31,4 +31,4 @@
+@@ -31,5 +31,5 @@
    )
  %}
  function ...
 -    
 +    [ ...
+ 
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1023
-  Moved to point: 1029
+  Start point   : 1055
+  Moved to point: 1061
   : 35:5:      
   :            ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -32,3 +32,4 @@
+@@ -32,4 +32,5 @@
  %}
  function ...
      [ ...
 +     
+ 
   #+end_src diff
 
 - Invoking      : (insert "b ... comment for b")
-  Start point   : 1029
-  Moved to point: 1048
+  Start point   : 1061
+  Moved to point: 1080
   : 35:24:      b ... comment for b
   :                                ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -32,4 +32,4 @@
+@@ -32,5 +32,5 @@
  %}
  function ...
      [ ...
 -     
 +     b ... comment for b
+ 
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1048
-  Moved to point: 1054
+  Start point   : 1080
+  Moved to point: 1086
   : 36:5:      
   :            ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -33,3 +33,4 @@
- function ...
-     [ ...
-      b ... comment for b
-+     
-  #+end_src diff
-
-- Invoking      : (insert "] = ...")
-  Start point   : 1054
-  Moved to point: 1061
-  : 36:12:      ] = ...
-  :                    ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -33,4 +33,4 @@
- function ...
-     [ ...
-      b ... comment for b
--     
-+     ] = ...
-  #+end_src diff
-
-- Invoking      : "C-m" = newline
-  Start point   : 1061
-  Moved to point: 1065
-  : 37:4:     
-  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -192,98 +172,104 @@
  function ...
      [ ...
       b ... comment for b
++     
+ 
+  #+end_src diff
+
+- Invoking      : (insert "] = ...")
+  Start point   : 1086
+  Moved to point: 1093
+  : 36:12:      ] = ...
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -33,5 +33,5 @@
+ function ...
+     [ ...
+      b ... comment for b
+-     
++     ] = ...
+ 
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1093
+  Moved to point: 1097
+  : 37:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -33,5 +33,6 @@
+ function ...
+     [ ...
+      b ... comment for b
 -     ] = ...
 +    ] = ...
 +    
+ 
   #+end_src diff
 
 - Invoking      : (insert "indent_xr_fun5 ...")
-  Start point   : 1065
-  Moved to point: 1083
+  Start point   : 1097
+  Moved to point: 1115
   : 37:22:     indent_xr_fun5 ...
   :                              ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -34,4 +34,4 @@
+@@ -34,5 +34,5 @@
      [ ...
       b ... comment for b
      ] = ...
 -    
 +    indent_xr_fun5 ...
+ 
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1083
-  Moved to point: 1088
+  Start point   : 1115
+  Moved to point: 1120
   : 38:4:     
   :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -35,3 +35,4 @@
+@@ -35,4 +35,5 @@
       b ... comment for b
      ] = ...
      indent_xr_fun5 ...
 +    
+ 
   #+end_src diff
 
 - Invoking      : (insert "( ...")
-  Start point   : 1088
-  Moved to point: 1093
+  Start point   : 1120
+  Moved to point: 1125
   : 38:9:     ( ...
   :                ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -35,4 +35,4 @@
+@@ -35,5 +35,5 @@
       b ... comment for b
      ] = ...
      indent_xr_fun5 ...
 -    
 +    ( ...
+ 
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1093
-  Moved to point: 1098
+  Start point   : 1125
+  Moved to point: 1130
   : 39:4:     
-  :           ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -36,3 +36,4 @@
-     ] = ...
-     indent_xr_fun5 ...
-     ( ...
-+    
-  #+end_src diff
-
-- Invoking      : (insert "a ... comment for a")
-  Start point   : 1098
-  Moved to point: 1117
-  : 39:23:     a ... comment for a
-  :                               ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -36,4 +36,4 @@
-     ] = ...
-     indent_xr_fun5 ...
-     ( ...
--    
-+    a ... comment for a
-  #+end_src diff
-
-- Invoking      : "C-m" = newline
-  Start point   : 1117
-  Moved to point: 1123
-  : 40:4:     
   :           ^
   Buffer modified:
   #+begin_src diff
@@ -293,48 +279,69 @@
      ] = ...
      indent_xr_fun5 ...
      ( ...
++    
+ 
+  #+end_src diff
+
+- Invoking      : (insert "a ... comment for a")
+  Start point   : 1130
+  Moved to point: 1149
+  : 39:23:     a ... comment for a
+  :                               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -36,5 +36,5 @@
+     ] = ...
+     indent_xr_fun5 ...
+     ( ...
+-    
++    a ... comment for a
+ 
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1149
+  Moved to point: 1155
+  : 40:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -36,5 +36,6 @@
+     ] = ...
+     indent_xr_fun5 ...
+     ( ...
 -    a ... comment for a
 +     a ... comment for a
 +    
+ 
   #+end_src diff
 
 - Invoking      : (insert ")")
-  Start point   : 1123
-  Moved to point: 1124
+  Start point   : 1155
+  Moved to point: 1156
   : 40:5:     )
   :            ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -37,4 +37,4 @@
+@@ -37,5 +37,5 @@
      indent_xr_fun5 ...
      ( ...
       a ... comment for a
 -    
 +    )
+ 
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1124
-  Moved to point: 1129
+  Start point   : 1156
+  Moved to point: 1161
   : 41:4:     
-  :           ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -38,3 +38,4 @@
-     ( ...
-      a ... comment for a
-     )
-+    
-  #+end_src diff
-
-- Invoking      : "C-m" = newline
-  Start point   : 1129
-  Moved to point: 1130
-  : 42:4:     
   :           ^
   Buffer modified:
   #+begin_src diff
@@ -344,65 +351,51 @@
      ( ...
       a ... comment for a
      )
++    
+ 
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1161
+  Moved to point: 1162
+  : 42:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -38,5 +38,6 @@
+     ( ...
+      a ... comment for a
+     )
 +
      
+ 
   #+end_src diff
 
 - Invoking      : (insert "b=2*a;")
-  Start point   : 1130
-  Moved to point: 1136
+  Start point   : 1162
+  Moved to point: 1168
   : 42:10:     b=2*a;
   :                  ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -39,4 +39,4 @@
+@@ -39,5 +39,5 @@
       a ... comment for a
      )
  
 -    
 +    b=2*a;
+ 
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1136
-  Moved to point: 1141
+  Start point   : 1168
+  Moved to point: 1173
   : 43:4:     
   :           ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -40,3 +40,4 @@
-     )
- 
-     b=2*a;
-+    
-  #+end_src diff
-
-- Invoking      : (insert "end")
-  Start point   : 1141
-  Moved to point: 1144
-  : 43:7:     end
-  :              ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -40,4 +40,4 @@
-     )
- 
-     b=2*a;
--    
-+    end
-  #+end_src diff
-
-- Invoking      : "C-m" = newline
-  Start point   : 1144
-  Moved to point: 1141
-  : 44:0: 
-  :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -411,25 +404,61 @@
      )
  
      b=2*a;
++    
+ 
+  #+end_src diff
+
+- Invoking      : (insert "end")
+  Start point   : 1173
+  Moved to point: 1176
+  : 43:7:     end
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -40,5 +40,5 @@
+     )
+ 
+     b=2*a;
+-    
++    end
+ 
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   : 1176
+  Moved to point: 1173
+  : 44:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -40,5 +40,6 @@
+     )
+ 
+     b=2*a;
 -    end
 +end
 +
+ 
   #+end_src diff
 
 - Invoking      : (indent-region (point-min) (point-max))
-  Start point   : 1141
+  Start point   : 1173
   No point movement
   No buffer modifications
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   : 1141
-  Moved to point: 1001
+  Start point   : 1173
+  Moved to point: 1033
   : 33:0: function ...
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   : 1001
+  Start point   : 1033
   No point movement
   standard-output:
   #+begin_src matlab-ts
@@ -444,6 +473,7 @@ function ...
 
     b=2*a;
 end
+
 
   #+end_src
   No buffer modifications
