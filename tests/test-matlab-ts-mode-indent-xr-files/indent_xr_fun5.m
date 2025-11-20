@@ -9,9 +9,7 @@
   Case1:
   (t-utils-xr
 
-  (re-search-forward "%}") "C-m"
-
-  "C-m" "C-b"  ;; ensure we have a newline to avoid matlab tree-sitter parse error
+  (re-search-forward "%}")  "C-n"
 
   (insert "function ...")                  "C-m"
   (insert     "[ ...")                     "C-m"
