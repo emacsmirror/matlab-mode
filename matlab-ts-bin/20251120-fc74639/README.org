@@ -1,0 +1,10 @@
+# File: matlab-ts-bin/20251120-fc74639/README.org
+
+This corresponds to commit [[https://github.com/acristoffers/tree-sitter-matlab/commit/fc74639e2239aba2b63398178167ee50b963dad2][fc74639]] on the abi/14 branch of 
+https://github.com/acristoffers/tree-sitter-matlab
+
+
+- 20251120-fc74639/glnxa64/libtree-sitter-matlab.so/libtree-sitter-matlab.so was created on deb11-64
+- 20251120-fc74639/maca64/libtree-sitter-matlab.dylib/libtree-sitter-matlab.dylib was created on maca13-64
+- 20251120-fc74639/maci64/libtree-sitter-matlab.dylib/libtree-sitter-matlab.dylib was created on maci14-64
+- 20251120-fc74639/win64/libtree-sitter-matlab.dll/libtree-sitter-matlab.dll was created on win64
