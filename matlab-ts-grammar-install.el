@@ -221,7 +221,15 @@ When libtree-sitter-matlab.SLIB-EXT already exists on your system,
           (if (not update-type)
               (delete-file grammar-slib-tmp)
             ;; Update grammar-slib
-            (rename-file grammar-slib-tmp grammar-slib t)
+            (condition-case err
+                (rename-file grammar-slib-tmp grammar-slib t)
+              (error
+               (error "\
+Failed to update %s
+  %s
+This can be do the grammar library being used.
+Try exiting Emacs and re-running the install before loading any *.m files"
+                      grammar-slib (error-message-string err))))
 
             ;; Tell Emacs to use matlab-ts-mode for *.m files and matlab org-mode source blocks
             (matlab--ts-grammar-setup)
