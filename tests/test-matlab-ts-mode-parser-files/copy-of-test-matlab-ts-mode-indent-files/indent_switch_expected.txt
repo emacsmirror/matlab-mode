@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,193> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,193> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,192> function[21,29] name: (identifier[30,43]@{indent_switch}@)
   (function_arguments<43,47> ([43,44] arguments: (identifier[44,46]@{in}@) )[46,47])
   \n[47,50]

@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,181> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,181> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,180> classdef[21,29] name: (identifier[30,59]@{font_lock_class_issue59_super}@) \n[59,60]
   (methods<64,176> methods[64,71] \n[71,72]
    (function_definition<80,168> function[80,88]
@@ -13,5 +13,5 @@
      \n[156,157])
     end[165,168])
    \n[168,169] end[173,176])
-  end[177,180])
+  \n[176,177] end[177,180])
  \n[180,181])

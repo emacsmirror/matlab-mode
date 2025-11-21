@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,281> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,281> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (function_definition<22,280> function[22,30] name: (identifier[31,56]@{mustBeRealUpperTriangular}@)
   (function_arguments<56,59> ([56,57] arguments: (identifier[57,58]@{a}@) )[58,59])
   \n[59,60]

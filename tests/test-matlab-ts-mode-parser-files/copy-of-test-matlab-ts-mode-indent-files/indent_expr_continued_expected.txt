@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,394> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,118]@{% For boolean expressions when in an if statement ...}@)
+(source_file<1,394> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,118]@{% For boolean expressions when in an if statement ...}@) \n[118,120]
  (if_statement<120,242> if[120,122]
   condition: 
    (boolean_operator<123,217>

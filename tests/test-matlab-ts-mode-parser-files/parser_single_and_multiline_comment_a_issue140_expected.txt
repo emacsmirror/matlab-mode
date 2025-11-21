@@ -1,0 +1,10 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,196> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) \n[89,91]
+ (function_definition<91,195> function[91,99]
+  (function_output<100,105> (identifier[100,104]@{out1}@) =[104,105])
+  name: (identifier[105,151]@{parser_single_and_multiline_comment_a_issue140}@) (comment[152,179]@{% comment1\n%\{\n  comment2\n%\}}@) \n[179,180]
+  (block<184,192>
+   (assignment<184,190> left: (identifier[184,188]@{out1}@) =[188,189] right: (number[189,190]@{1}@))
+   ;[190,191] \n[191,192])
+  end[192,195])
+ \n[195,196])

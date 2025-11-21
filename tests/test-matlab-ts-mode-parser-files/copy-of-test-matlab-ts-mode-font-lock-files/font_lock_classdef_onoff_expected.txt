@@ -1,10 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,176> (comment[1,89]@{% -*- matlab-ts -*-\n%\n% See https://github.com/a...}@)
+(source_file<1,176> (comment[1,89]@{% -*- matlab-ts -*-\n%\n% See https://github.com/a...}@) \n[89,91]
  (class_definition<91,175> classdef[91,99] name: (identifier[100,124]@{font_lock_classdef_onoff}@) \n[124,125]
   (enumeration<129,171> enumeration[129,140] \n[140,141]
    (enum<149,152> (identifier[149,152]@{off}@))
    \n[152,153]
    (enum<161,163> (identifier[161,163]@{on}@))
    \n[163,164] end[168,171])
-  end[172,175])
+  \n[171,172] end[172,175])
  \n[175,176])

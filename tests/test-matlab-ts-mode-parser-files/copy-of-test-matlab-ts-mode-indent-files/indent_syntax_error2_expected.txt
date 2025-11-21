@@ -4,4 +4,5 @@
   (field_expression<40,50> object: (identifier[40,41]@{C}@) .[41,42]
    (ERROR<43,44> (ERROR[43,44]@{W}@))
    field: (identifier[44,50]@{arning}@))
-  :[50,51]))
+  :[50,51])
+ \n[52,53])

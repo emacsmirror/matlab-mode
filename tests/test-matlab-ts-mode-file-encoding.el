@@ -32,7 +32,7 @@
 This is provided for debugging.
   M-: (test-matlab-ts-mode-file-encoding--file \"test-matlab-ts-mode-file-encoding-files/M-FILE\")"
   (let ((test-matlab-ts-mode-file-encoding--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-file-encoding")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-file-encoding$")))
 
 (ert-deftest test-matlab-ts-mode-file-encoding ()
   "Test file encoding.

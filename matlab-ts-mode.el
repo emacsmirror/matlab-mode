@@ -255,7 +255,7 @@ logical last node is \"end\"."
          (last-idx (1- (length children)))
          (last-node (nth last-idx children)))
     (while (and (>= last-idx 0)
-                (string= (treesit-node-text last-node) "\n"))
+                (string= (treesit-node-type last-node) "\n"))
       (setq last-idx (1- last-idx))
       (setq last-node (nth last-idx children)))
     last-node))
@@ -1244,20 +1244,28 @@ is where we start looking for the error node."
       (re-search-backward "[^ \t\n\r]" nil t))
 
     ;; Move inside the error node if at an error node.
-    (when (string= (treesit-node-type (treesit-node-at (point))) "ERROR")
-      (re-search-backward "[^ \t\n\r]" nil t))
-
-    ;; If on a "[" or "{" move back (we don't want to shift the current line)
-    (when (string-match-p (rx bos (or "[" "{") eos) (treesit-node-type (treesit-node-at (point))))
-      (re-search-backward "[^ \t\n\r]" nil t))
+    (if (string= (treesit-node-type (treesit-node-at (point))) "ERROR")
+        (re-search-backward "[^ \t\n\r]" nil t)
+      ;; If on a "[" or "{" move back (we don't want to shift the current line)
+      (when (string-match-p (rx bos (or "[" "{") eos) (treesit-node-type (treesit-node-at (point))))
+        (re-search-backward "[^ \t\n\r]" nil t)))
 
     ;; Walk over line_continuation, ",", ";" and identify the "check node" we should be looking
     ;; at.
     (let ((check-node (treesit-node-at (point))))
-      (while (string-match-p (rx bos (or "line_continuation" "," ";") eos)
-                             (treesit-node-type check-node))
-        (goto-char (treesit-node-start check-node))
-        (if (re-search-backward "[^ \t\n\r]" nil t)
+      (while (let ((check-type (treesit-node-type check-node)))
+               (cond
+                ((string-match-p (rx bos (or "line_continuation" "," ";") eos) check-type)
+                 (goto-char (treesit-node-start check-node))
+                 (re-search-backward "[^ \t\n\r]" nil t)
+                 t)
+                ((and (string-match-p (rx bos "ERROR" eos) check-type)
+                      (looking-at ";" t))
+                 (goto-char (1- (point)))
+                 (when (looking-at "[ \t\n\r]" t)
+                   (re-search-backward "[^ \t\n\r]" nil t))
+                 t)))
+        (if (not (bobp))
             (let* ((pt (point))
                    (node-at-pt (treesit-node-at pt)))
               ;; Be robust to node-at-point range not covering pt
@@ -1362,7 +1370,7 @@ node."
   (cdr matlab-ts-mode-i-doc-comment-matcher-pair))
 
 (defun matlab-ts-mode--i-in-block-comment-matcher (node parent bol &rest _)
-  "Is NODE, PARENT, BOL within a block \"{% ... %)\"?"
+  "Is NODE, PARENT within a block \"{% ... %)\" and BOL does not start with \"%\"?"
   (and (not node)
        (string= "comment" (treesit-node-type parent))
        (not (save-excursion (goto-char bol)
@@ -2240,6 +2248,20 @@ Example:
   "Return the offset computed by `matlab-ts-mode--i-comment-under-fcn-matcher'."
   (cdr matlab-ts-mode--i-comment-under-fcn-pair))
 
+(defun maltab-ts-mode--i-top-level (node parent _bol &rest _)
+  "Is NODE with PARENT a top-level classdef, function, or code?"
+  (and node
+       (not (string-match-p (rx bos (or "line_continuation" "\n") eos)
+                            (treesit-node-type node)))
+       (equal (treesit-node-type parent) "source_file")))
+
+(defun matlab-ts-mode--column-0 (_node _parent bol &rest _)
+  "Return column-0 for BOL.
+Note treesit column-0 moves point, fixed in Fmacs 31."
+  (save-excursion
+    (goto-char bol)
+    (line-beginning-position)))
+
 (defvar matlab-ts-mode--i-fcn-args-next-line-pair)
 
 (defun matlab-ts-mode--i-fcn-args-next-line-matcher (_node parent _bol &rest _)
@@ -2412,6 +2434,9 @@ Example:
      ;; I-Rule: last line of code block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
 
+     ;; I-Rule: within a code block comment "%{ ... %}"?
+     (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
+
      ;; I-Rule: RET on an incomplete statement. Example:
      ;;         classdef foo
      ;;             ^                     <== TAB or RET on prior line goes here.
@@ -2428,15 +2453,8 @@ Example:
       ,#'matlab-ts-mode--i-comment-under-fcn-offset)
 
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
-     ((lambda (node parent _bol &rest _)
-        (and node
-             (not (string= (treesit-node-type node) "line_continuation"))
-             (equal (treesit-node-type parent) "source_file")))
-      ;; column-0 moves point, fixed in emacs 31
-      (lambda (_node _parent bol &rest _)
-        (save-excursion
-          (goto-char bol)
-          (line-beginning-position)))
+     (,#'maltab-ts-mode--i-top-level
+      ,#'matlab-ts-mode--column-0
       0)
 
      ;; I-Rule: within a function/classdef doc block comment "%{ ... %}"?
@@ -2446,9 +2464,6 @@ Example:
      (,#'matlab-ts-mode--i-doc-comment-matcher
       ,#'matlab-ts-mode--i-doc-comment-anchor
       ,#'matlab-ts-mode--i-doc-comment-offset)
-
-     ;; I-Rule: within a code block comment "%{ ... %}"?
-     (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
 
      ;; I-Rule: switch case and otherwise statements
      ((node-is ,(rx bos (or "case_clause" "otherwise_clause") eos))
@@ -2945,10 +2960,16 @@ function call."
 ;; matlab-ts-mode--thing-settings used for:
 ;;   C-M-a  - M-x beginning-of-defun
 ;;   C-M-e  - M-x end-of-defun
+;;
 ;;   C-M-b  - M-x backward-sexp
 ;;   C-M-f  - M-x forward-sexp
-;;   M-e    - M-x forward-sentence
+;;   C-M-t  - M-x transpose-sexps (transpose right sexp with left sexp)
+;;   C-M-k  - M-x kill-sexp
+;;
 ;;   M-a    - M-x backward-sentence
+;;   M-e    - M-x forward-sentence
+;;   M-k    - M-x kill-sentence (kill from point to end of sentence)
+;;
 ;;   C-M-u  - M-x backward-up-list
 ;;
 (defvar matlab-ts-mode--thing-settings

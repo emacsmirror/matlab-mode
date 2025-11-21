@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,59> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,59> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,58> function[21,29] name: (identifier[30,44]@{imenu_oneliner}@) ,[44,45]
   (block<46,54>
    (assignment<46,53> left: (identifier[46,47]@{x}@) =[48,49] right: (identifier[50,53]@{abc}@))

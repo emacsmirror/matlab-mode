@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,80> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,80> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (if_statement<21,79> if[21,23]
   condition: (comparison_operator<24,29> (identifier[24,25]@{a}@) >[26,27] (number[28,29]@{1}@))
   (block<34,60>

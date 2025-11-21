@@ -40,7 +40,7 @@
 This is provided for debugging.
   M-: (test-matlab-ts-mode-parser--file \"test-matlab-ts-mode-parser-files/M-FILE\")"
   (let ((test-matlab-ts-mode-parser--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-parser")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-parser$")))
 
 (ert-deftest test-matlab-ts-mode-parser ()
   "Test matlab tree-sitter parser on ./test-matlab-ts-mode-parser-files/NAME.m.

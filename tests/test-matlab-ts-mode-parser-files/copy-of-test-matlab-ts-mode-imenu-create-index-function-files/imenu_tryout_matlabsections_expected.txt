@@ -84,7 +84,6 @@
           (function_call<1152,1156> name: (identifier[1152,1153]@{y}@) ([1153,1154]
            (arguments<1154,1155> argument: (number[1154,1155]@{2}@))
            )[1155,1156]))
-         ;[1156,1157]
          (row<1158,1190>
           (binary_operator<1158,1190>
            left: 

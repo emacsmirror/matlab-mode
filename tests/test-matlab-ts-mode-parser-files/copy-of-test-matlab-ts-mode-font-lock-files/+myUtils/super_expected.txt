@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,135> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,135> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,134> classdef[21,29] name: (identifier[30,35]@{super}@) \n[35,36]
   (methods<40,130> methods[40,47] \n[47,48]
    (function_definition<56,122> function[56,64]
@@ -13,5 +13,5 @@
      \n[110,111])
     end[119,122])
    \n[122,123] end[127,130])
-  end[131,134])
+  \n[130,131] end[131,134])
  \n[134,135])

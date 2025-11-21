@@ -173,9 +173,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   :  599
-  Moved to point:  596
-  : 24:0: 
-  :       ^
+  Moved to point:  600
+  : 24:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -186,14 +186,14 @@
          end
 -        end
 +    end
-+
++    
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  596
-  Moved to point:  599
-  : 24:3: end
-  :          ^
+  Start point   :  600
+  Moved to point:  603
+  : 24:7:     end
+  :              ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -202,12 +202,12 @@
          function out=foo
          end
      end
--
-+end
+-    
++    end
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  599
+  Start point   :  603
   Moved to point:  600
   : 25:0: 
   :       ^
@@ -215,10 +215,12 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -22,3 +22,4 @@
+@@ -21,4 +21,5 @@
+         function out=foo
          end
      end
- end
+-    end
++end
 +
   #+end_src diff
 

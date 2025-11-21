@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,219> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
+(source_file<1,219> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@) \n[85,87]
  (class_definition<87,218> classdef[87,95] name: (identifier[96,140]@{font_lock_two_ends_on_a_single_line_issue105}@) \n[140,141]
   (methods<145,214> methods[145,152] \n[152,153]
    (function_definition<161,207> function[161,169]
@@ -12,5 +12,5 @@
      ;[194,195] \n[195,196])
     end[204,207])
    end[211,214])
-  end[215,218])
+  \n[214,215] end[215,218])
  \n[218,219])

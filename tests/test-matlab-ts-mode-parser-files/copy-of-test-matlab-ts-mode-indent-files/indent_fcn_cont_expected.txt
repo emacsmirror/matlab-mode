@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,2197> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,123]@{% t-utils-test-indent: no-line-by-line-indent - na...}@)
+(source_file<1,2197> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,123]@{% t-utils-test-indent: no-line-by-line-indent - na...}@) \n[123,125]
  (function_definition<125,2196> function[125,133]
   (function_output<134,145> (identifier[134,143]@{something}@) =[144,145])
   name: (identifier[146,161]@{indent_fcn_cont}@) (comment[167,223]@{% Matched rule: ((parent-is "\\`arguments\\'") par...}@) \n[223,224]

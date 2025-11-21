@@ -32,7 +32,7 @@
 This is provided for debugging.
   M-: (test-matlab-ts-mode-font-lock--file \"test-matlab-ts-mode-font-lock-files/M-FILE\")"
   (let ((test-matlab-ts-mode-font-lock--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-font-lock")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-font-lock$")))
 
 (ert-deftest test-matlab-ts-mode-font-lock ()
   "Test font-lock using ./test-matlab-ts-mode-font-lock-files/NAME.m.

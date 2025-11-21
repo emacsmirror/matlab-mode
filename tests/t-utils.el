@@ -198,7 +198,7 @@
 ;; This is provided for debugging.
 ;;   M-: (test-LANGUAGE-ts-mode-font-lock--file "test-LANGUAGE-ts-mode-font-lock-files/LANG-FILE")"
 ;;   (let ((test-LANGUAGE-ts-mode-font-lock--file lang-file))
-;;     (ert-run-tests-interactively "test-LANGUAGE-ts-mode-font-lock")))
+;;     (ert-run-tests-interactively "^test-LANGUAGE-ts-mode-font-lock$")))
 ;;
 ;; (ert-deftest test-LANGUAGE-ts-mode-font-lock ()
 ;;   "Test font-lock using ./test-LANGUAGE-ts-mode-font-lock-files/NAME.lang.
@@ -914,7 +914,7 @@ Where ./tests/test-LANGUAGE-ts-mode-movement.el contains:
   (defun test-LANGUAGE-ts-mode-movement--file (lang-file)
     \"Test movement on LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-movement--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-movement\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-movement$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-movement ()
     \"Test movement commands, C-M-f, etc.
@@ -1055,7 +1055,7 @@ containing the LANGUAGE tree-sitter parse errors.
   (defun test-LANGUAGE-ts-mode-view-parse-errors--file (lang-file)
     \"Test an individual LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-view-parse-errors--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-view-parse-errors\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-view-parse-errors$\")))
 
   (defun test-LANGUAGE-ts-mode-view-parse-errors-action-fun ()
     \"Exercise LANGUAGE-ts-mode-view-parse-errors on the current buffer.\"
@@ -1197,7 +1197,7 @@ Where ./tests/test-LANGUAGE-ts-mode-font-lock.el contains:
   (defun test-LANGUAGE-ts-mode-font-lock--file (lang-file)
     \"Test font-lock on LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-font-lock--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-font-lock\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-font-lock$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-font-lock ()
     (let* ((test-name \"test-LANGUAGE-ts-mode-font-lock\")
@@ -1572,7 +1572,7 @@ for you):
   (defun test-LANGUAGE-ts-mode-indent--file (lang-file)
     \"Test indent on LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-indent--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-indent\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-indent$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-indent ()
     (let* ((test-name \"test-LANGUAGE-ts-mode-indent\")
@@ -1988,7 +1988,7 @@ Where ./tests/test-LANGUAGE-ts-mode-syntax-table.el contains:
   (defun test-LANGUAGE-ts-mode-syntax-table--file (lang-file)
     \"Test an individual LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-syntax-table--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-syntax-table\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-syntax-table$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-syntax-table ()
     \"Test syntax-table using ./test-LANGUAGE-ts-mode-syntax-table-files/NAME.lang.
@@ -2087,7 +2087,7 @@ Where ./tests/test-LANGUAGE-ts-mode-treesit-defun-name.el contains:
   (defun test-LANGUAGE-ts-mode-treesit-defun-name--file (lang-file)
     \"Test an individual LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-treesit-defun-name--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-treesit-defun-name\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-treesit-defun-name$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-treesit-defun-name ()
     \"Test defun setup using ./test-LANGUAGE-ts-mode-treesit-defun-name-files/NAME.lang.
@@ -2215,7 +2215,7 @@ Where ./tests/test-LANGUAGE-ts-mode-imenu.el contains:
   (defun test-LANGUAGE-ts-mode-imenu--file (lang-file)
     \"Test an individual LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-imenu--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-imenu\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-imenu$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-imenu ()
     \"Test imenu using ./test-LANGUAGE-ts-mode-imenu-files/NAME.lang.
@@ -2297,7 +2297,7 @@ Where ./tests/test-LANGUAGE-ts-mode-outline.el contains:
   (defun test-LANGUAGE-ts-mode-outline--file (lang-file)
     \"Test an individual LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-outline--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-outline\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-outline$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-outline ()
     \"Test outline mode using ./test-LANGUAGE-ts-mode-outline-files/NAME.lang.
@@ -2399,7 +2399,7 @@ Where ./tests/test-LANGUAGE-ts-mode-file-encoding.el contains:
   (defun test-LANGUAGE-ts-mode-file-encoding--file (lang-file)
     \"Test file-encoding on LANG-FILE.\"
     (let ((test-LANGUAGE-ts-mode-file-encoding--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-file-encoding\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-file-encoding$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-file-encoding ()
     (let* ((test-name \"test-LANGUAGE-ts-mode-file-encoding\")
@@ -3136,7 +3136,7 @@ Where ./tests/test-LANGUAGE-ts-mode-parser.el contains:
 
   (defun test-LANGUAGE-ts-mode-parser--file (lang-file)
     (let ((test-LANGUAGE-ts-mode-parser--file lang-file))
-      (ert-run-tests-interactively \"test-LANGUAGE-ts-mode-parser\")))
+      (ert-run-tests-interactively \"^test-LANGUAGE-ts-mode-parser$\")))
 
   (ert-deftest test-LANGUAGE-ts-mode-parser ()
     (let* ((test-name \"test-LANGUAGE-ts-mode-parser\")

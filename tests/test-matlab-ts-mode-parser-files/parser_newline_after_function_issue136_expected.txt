@@ -1,0 +1,8 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,981> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,920]@{% We get a parse tree with a \n node after the fun...}@) \n[920,922]
+ (function_definition<922,980> function[922,930]
+  (function_output<931,934> (identifier[931,932]@{b}@) =[933,934])
+  name: (identifier[935,973]@{parser_newline_after_function_issue136}@)
+  (function_arguments<973,976> ([973,974] arguments: (identifier[974,975]@{a}@) )[975,976])
+  \n[976,977] end[977,980])
+ \n[980,981])

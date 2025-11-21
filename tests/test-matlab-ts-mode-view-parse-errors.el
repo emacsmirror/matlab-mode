@@ -33,7 +33,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-view-parse-errors--file
       \"test-matlab-ts-mode-view-parse-errors-files/M-FILE\")"
   (let ((test-matlab-ts-mode-view-parse-errors--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-view-parse-errors")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-view-parse-errors$")))
 
 (defun test-matlab-ts-mode-view-parse-errors-action-fun ()
   "Exercise `matlab-ts-mode-view-parse-errors' on the current buffer.

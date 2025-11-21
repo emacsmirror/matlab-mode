@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,299> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+(source_file<1,299> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@) \n[88,90]
  (class_definition<90,298> classdef[90,98] name: (identifier[99,153]@{font_lock_classdef_subclass_super_in_namespace_iss...}@)
   (superclasses<154,169> <[154,155]
    (property_name<156,169> (identifier[156,163]@{myUtils}@) .[163,164] (identifier[164,169]@{super}@)))
@@ -19,5 +19,5 @@
      \n[274,275])
     end[283,286])
    \n[286,287] end[291,294])
-  end[295,298])
+  \n[294,295] end[295,298])
  \n[298,299])

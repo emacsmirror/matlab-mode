@@ -1,6 +1,6 @@
 c ccc ccccccccc ccc
 
-v o bnonnD nD nD nonnbD c c ccccccc cccccc
+v o bnonnD nd nD nonnbD c c ccccccc cccccc
 
 v o doD   c ccccccc ccccccccc ccccccccc
 v o dooD  c ccccccccccccc ccccccccc

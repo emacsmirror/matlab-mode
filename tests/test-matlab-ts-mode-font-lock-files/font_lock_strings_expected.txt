@@ -4,7 +4,7 @@ vv o SsssSD
 vv o SsssEEsssSD
 vv o BBBBBBBbSsss EEsEESD nD nb
 
-v o bn nD n nbD
+v o bn nd n nbD
 v o doD   c ccccccccc
 v o dooD  c ccccccccc ccccccccc ccc cccccccccccc
 v o doooD c ccccccccc ccccccccc ccccccccc ccc cccccccccccc

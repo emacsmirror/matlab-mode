@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,132> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+(source_file<1,132> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See: https://github.com/acristoffers/tree-sitter...}@) \n[89,91]
  (assignment<91,101>
   left: (identifier<91,97> events[91,97])
   =[98,99] right: (number[100,101]@{1}@))

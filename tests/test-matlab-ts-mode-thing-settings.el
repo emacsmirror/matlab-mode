@@ -36,7 +36,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-thing-settings--file
       \"test-matlab-ts-mode-thing-settings-files/M-FILE\")"
   (let ((test-matlab-ts-mode-thing-settings--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-thing-settings")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-thing-settings$")))
 
 (ert-deftest test-matlab-ts-mode-thing-settings ()
   "Test thing settings using ./test-matlab-ts-mode-thing-settings-files/NAME.m.

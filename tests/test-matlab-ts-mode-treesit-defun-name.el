@@ -32,7 +32,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-treesit-defun-name--file
       \"test-matlab-ts-mode-treesit-defun-name-files/M-FILE\")"
   (let ((test-matlab-ts-mode-treesit-defun-name--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-treesit-defun-name")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-treesit-defun-name$")))
 
 (ert-deftest test-matlab-ts-mode-treesit-defun-name ()
   "Test defun setup using ./test-matlab-ts-mode-treesit-defun-name-files/NAME.m.

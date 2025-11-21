@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,620> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,620> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (function_definition<22,619> function[22,30] name: (identifier[31,51]@{indent_if_continued2}@) \n[51,53]
   (block<57,616>
    (if_statement<57,524> if[57,59]

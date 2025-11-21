@@ -1,12 +1,12 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,632> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,161]@{% t-utils-test-indent: no-line-by-line-indent - ty...}@)
+(source_file<1,632> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,161]@{% t-utils-test-indent: no-line-by-line-indent - ty...}@) \n[161,163]
  (class_definition<163,631> classdef[163,171] name: (identifier[172,200]@{indent_class_prop_continued2}@) \n[200,202]
   (properties<206,627> properties[206,216]
    (attributes<217,227> ([217,218]
     (attribute<218,226> (identifier[218,226]@{Constant}@))
     )[226,227])
    \n[227,228]
-   (property<236,428> name: (identifier[236,245]@{property1}@)
+   (property<236,425> name: (identifier[236,245]@{property1}@)
     (default_value<246,425> =[246,247]
      (field_expression<248,425> object: (identifier[248,258]@{containers}@) .[258,259]
       field: 
@@ -26,9 +26,9 @@
           (row<405,410>
            (string<405,410> '[405,406] (string_content[406,409]@{bar}@) '[409,410]))
           }[423,424]))
-        )[424,425])))
-    ;[425,426] \n[426,428])
-   (property<436,620> name: (identifier[436,445]@{property2}@)
+        )[424,425]))))
+   ;[425,426] \n[426,428]
+   (property<436,618> name: (identifier[436,445]@{property2}@)
     (default_value<446,618> =[446,447]
      (function_call<448,618> name: (identifier[448,455]@{someFcn}@) ([455,456] (line_continuation[456,460]@{...\n}@)
       (arguments<472,617>
@@ -46,8 +46,7 @@
         (row<598,603>
          (string<598,603> '[598,599] (string_content[599,602]@{bar}@) '[602,603]))
         }[616,617]))
-      )[617,618]))
-    ;[618,619] \n[619,620])
-   end[624,627])
-  end[628,631])
+      )[617,618])))
+   ;[618,619] \n[619,620] end[624,627])
+  \n[627,628] end[628,631])
  \n[631,632])

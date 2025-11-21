@@ -32,7 +32,7 @@
 This is provided for debugging.
   M-: (test-matlab-ts-mode-comments--file \"test-matlab-ts-mode-comments-files/M-FILE\")"
   (let ((test-matlab-ts-mode-comments--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-comments")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-comments$")))
 
 (ert-deftest test-matlab-ts-mode-comments ()
   "Test comments using ./test-matlab-ts-mode-comments-files/NAME.m.

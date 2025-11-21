@@ -5,7 +5,7 @@
  ;[95,96]
  (assignment<97,142> left: (identifier[97,100]@{bar}@) =[101,102]
   right: 
-   (matrix<103,142> [[103,104] \n[104,105]
+   (matrix<103,142> [[103,104]
     (row<113,134>
      (function_call<113,119> name: (identifier[113,116]@{foo}@) ([116,117]
       (arguments<117,118> argument: (number[117,118]@{1}@))

@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,86> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,86> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,85> function[21,29] name: (identifier[30,64]@{font_lock_command_dual_issue65_cmd}@)
   (function_arguments<64,68> ([64,65] arguments: (identifier[65,67]@{in}@) )[67,68])
   \n[68,69]

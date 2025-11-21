@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,831> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,180]@{% t-utils-test-indent: no-line-by-line-indent - co...}@)
+(source_file<1,831> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,180]@{% t-utils-test-indent: no-line-by-line-indent - co...}@) \n[180,182]
  (function_definition<182,830> function[182,190] name: (identifier[191,210]@{indent_if_continued}@) \n[210,212]
   (block<216,827>
    (if_statement<216,735> if[216,218]

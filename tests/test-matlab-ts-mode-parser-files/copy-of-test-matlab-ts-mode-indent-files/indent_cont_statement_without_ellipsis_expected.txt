@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,481> (comment[1,168]@{% -*- matlab-ts -*-\n%\n% t-utils-test-indent: no-...}@)
+(source_file<1,481> (comment[1,168]@{% -*- matlab-ts -*-\n%\n% t-utils-test-indent: no-...}@) \n[168,169]
  (function_definition<169,480> function[169,177]
   (function_output<178,180> (identifier[178,179]@{a}@) =[179,180])
   name: (identifier[180,218]@{indent_cont_statement_without_ellipsis}@) (comment[223,445]@{% The matlab-tree-sitter, by design for simplicity...}@) \n[445,446]

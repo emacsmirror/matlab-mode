@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(ERROR<1,391> (comment[1,20]@{% -*- matlab-ts -*-}@) function[21,29] (identifier[30,45]@{font_lock_error}@)
+(ERROR<1,391> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21] function[21,29] (identifier[30,45]@{font_lock_error}@)
  (function_arguments<45,50> ([45,46] arguments: (identifier[46,49]@{foo}@) )[49,50])
  \n[50,51]
  (assignment<55,77> left: (identifier[55,58]@{out}@) =[59,60]

@@ -1,17 +1,17 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,318> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+(source_file<1,318> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@) \n[88,90]
  (function_definition<90,317> function[90,98] name: (identifier[99,142]@{font_lock_validation_fcns_with_args_issue78}@)
   (function_arguments<142,155> ([142,143] arguments: (identifier[143,148]@{alpha}@) ,[148,149] (identifier[150,154]@{beta}@) )[154,155])
   \n[155,156]
   (arguments_statement<160,314> arguments[160,169] \n[169,170]
-   (property<178,211> name: (identifier[178,183]@{alpha}@)
+   (property<178,210> name: (identifier[178,183]@{alpha}@)
     (dimensions<184,190> ([184,185] (number[185,186]@{1}@) ,[186,187]
      (spread_operator<188,189> :[188,189])
      )[189,190])
     (identifier[191,197]@{double}@)
-    (validation_functions<198,210> {[198,199] (identifier[199,209]@{mustBeReal}@) }[209,210])
-    \n[210,211])
-   (property<219,306> name: (identifier[219,223]@{beta}@)
+    (validation_functions<198,210> {[198,199] (identifier[199,209]@{mustBeReal}@) }[209,210]))
+   \n[210,211]
+   (property<219,305> name: (identifier[219,223]@{beta}@)
     (dimensions<225,231> ([225,226] (number[226,227]@{1}@) ,[227,228]
      (spread_operator<229,230> :[229,230])
      )[230,231])
@@ -25,8 +25,7 @@
          ,[294,295]
          (string<296,303> "[296,297] (string_content[297,302]@{alpha}@) "[302,303]))
         )[303,304]))
-     }[304,305])
-    \n[305,306])
-   end[310,313] \n[313,314])
+     }[304,305]))
+   \n[305,306] end[310,313] \n[313,314])
   end[314,317])
  \n[317,318])

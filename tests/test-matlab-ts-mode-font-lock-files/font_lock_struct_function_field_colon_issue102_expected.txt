@@ -2,7 +2,7 @@ c ccc ccccccccc ccc
 
 c ccc ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-dDdddddddd o bnD nD ccc
+dDdddddddd o bnD nd ccc
               nD nbD
 
 v o bdDkkkkkkkkbDDnbb

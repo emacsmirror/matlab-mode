@@ -4,5 +4,5 @@ c cccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 vv ccc
     o b ccc
-        SsSD ccc
+        SsSd ccc
       bD

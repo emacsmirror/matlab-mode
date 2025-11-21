@@ -1,9 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,653> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@) (comment[87,167]@{% Below the "catch ME  " should have trailing whit...}@)
+(source_file<1,653> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@) (comment[87,167]@{% Below the "catch ME  " should have trailing whit...}@) \n[167,169]
  (class_definition<169,652> classdef[169,177] name: (identifier[178,228]@{indent_try_catch_with_trailing_whitespace_issue123}@) \n[228,229]
   (properties<233,261> properties[233,243] \n[243,244]
-   (property<252,254> name: (identifier[252,253]@{m}@) \n[253,254])
-   end[258,261])
+   (property<252,253> name: (identifier[252,253]@{m}@))
+   \n[253,254] end[258,261])
+  \n[261,263]
   (methods<267,648> methods[267,274] \n[274,275]
    (function_definition<283,316> function[283,291]
     (function_output<292,297> (identifier[292,295]@{obj}@) =[296,297])
@@ -27,7 +28,6 @@
           right: 
            (matrix<410,421> [[410,411]
             (row<411,415> (number[411,412]@{1}@) ,[412,413] (number[414,415]@{2}@))
-            ;[415,416]
             (row<417,420> (number[417,418]@{3}@) ,[419,419] (number[419,420]@{4}@))
             ][420,421])))
        ;[421,422] \n[422,423])
@@ -57,5 +57,5 @@
      \n[627,628])
     end[636,639])
    \n[639,641] end[645,648])
-  end[649,652])
+  \n[648,649] end[649,652])
  \n[652,653])

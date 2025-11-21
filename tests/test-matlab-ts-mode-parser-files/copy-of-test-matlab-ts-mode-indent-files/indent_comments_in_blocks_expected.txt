@@ -1,18 +1,21 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,551> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,551> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,550> classdef[21,29] name: (identifier[30,55]@{indent_comments_in_blocks}@)
   (superclasses<56,64> <[56,57]
    (property_name<58,64> (identifier[58,64]@{handle}@)))
   \n[64,65]
   (properties<69,123> properties[69,79] \n[79,80]
-   (property<88,116> name: (identifier[88,91]@{bar}@) ;[91,92] (comment[101,115]@{% comment here}@) \n[115,116])
-   end[120,123])
+   (property<88,91> name: (identifier[88,91]@{bar}@))
+   ;[91,92] (comment[101,115]@{% comment here}@) \n[115,116] end[120,123])
+  \n[123,124]
   (events<128,192> events[128,134] \n[134,135] (identifier[143,145]@{e1}@) (comment[154,159]@{% foo}@) \n[159,160] (identifier[168,170]@{e2}@) (comment[179,184]@{% bar}@) \n[184,185] end[189,192])
+  \n[192,194]
   (enumeration<198,269> enumeration[198,209] (comment[218,223]@{% foo}@) \n[223,224]
    (enum<232,235> (identifier[232,235]@{one}@))
    \n[235,236]
    (enum<244,247> (identifier[244,247]@{two}@))
    (comment[256,261]@{% foo}@) \n[261,262] end[266,269])
+  \n[270,271] \n[275,276]
   (methods<280,546> methods[280,287] (comment[296,310]@{% comment here}@) \n[310,311]
    (function_definition<319,538> function[319,327] name: (identifier[328,331]@{foo}@)
     (function_arguments<331,334> ([331,332] arguments: (identifier[332,333]@{a}@) )[333,334])
@@ -25,5 +28,5 @@
      \n[526,527])
     end[535,538])
    \n[538,539] end[543,546])
-  end[547,550])
+  \n[546,547] end[547,550])
  \n[550,551])

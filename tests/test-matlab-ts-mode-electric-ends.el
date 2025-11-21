@@ -33,7 +33,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-electric-ends--file
       \"test-matlab-ts-mode-electric-ends-files/M-FILE\")"
   (let ((test-matlab-ts-mode-electric-ends--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-electric-ends")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-electric-ends$")))
 
 (ert-deftest test-matlab-ts-mode-electric-ends ()
   "Test electric ends using ./test-matlab-ts-mode-electric-ends-files/NAME.m.

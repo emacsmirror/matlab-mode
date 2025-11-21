@@ -6,7 +6,6 @@
     (row<27,34>
      (binary_operator<27,31> left: (number[27,28]@{1}@) +[28,29] right: (number[29,31]@{2i}@))
      ,[31,32] (number[33,34]@{3}@))
-    ;[34,35]
     (row<36,43> (number[36,37]@{4}@) ,[37,38]
      (binary_operator<39,43> left: (number[39,40]@{5}@) -[40,41] right: (number[41,43]@{6i}@)))
     ][43,44]))

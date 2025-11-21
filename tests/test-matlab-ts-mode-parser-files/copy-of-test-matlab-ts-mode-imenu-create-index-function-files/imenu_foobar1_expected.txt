@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,259> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,259> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,56> function[21,29] name: (identifier[30,43]@{imenu_foobar1}@)
   (function_arguments<43,52> ([43,44] arguments: (identifier[44,45]@{a}@) ,[45,46] (identifier[47,48]@{b}@) ,[48,49] (identifier[50,51]@{c}@) )[51,52])
   \n[52,53] end[53,56])

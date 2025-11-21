@@ -35,7 +35,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-imenu-create-index-function--file
        \"test-matlab-ts-mode-imenu-create-index-function-files/M-FILE\")"
   (let ((test-matlab-ts-mode-imenu-create-index-function--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-imenu-create-index-function")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-imenu-create-index-function$")))
 
 (ert-deftest test-matlab-ts-mode-imenu-create-index-function ()
   "Test imenu using ./test-matlab-ts-mode-imenu-create-index-function-files/NAME.m.

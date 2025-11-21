@@ -1,8 +1,8 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,540> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,193]@{% t-utils-test-indent: no-line-by-line-indent - ne...}@)
+(source_file<1,540> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,193]@{% t-utils-test-indent: no-line-by-line-indent - ne...}@) \n[193,195]
  (class_definition<195,539> classdef[195,203] name: (identifier[204,231]@{indent_class_prop_continued}@) \n[231,232]
   (properties<236,535> properties[236,246] \n[246,247]
-   (property<255,396> name: (identifier[255,270]@{ListArrayHeight}@)
+   (property<255,393> name: (identifier[255,270]@{ListArrayHeight}@)
     (default_value<271,393> =[271,272]
      (function_call<273,393> name: (identifier[273,279]@{struct}@) ([279,280] (line_continuation[281,285]@{...\n}@)
       (arguments<297,375>
@@ -23,9 +23,9 @@
        (cell<370,375> {[370,371]
         (row<371,374> (number[371,374]@{100}@))
         }[374,375]))
-      (line_continuation[376,380]@{...\n}@) )[392,393]))
-    ;[393,394] \n[394,396])
-   (property<404,528> name: (identifier[404,407]@{tbl}@)
+      (line_continuation[376,380]@{...\n}@) )[392,393])))
+   ;[393,394] \n[394,396]
+   (property<404,526> name: (identifier[404,407]@{tbl}@)
     (default_value<408,526> =[408,409]
      (function_call<410,526> name: (identifier[410,416]@{struct}@) ([416,417] (line_continuation[417,421]@{...\n}@) (line_continuation[433,451]@{... name    value\n}@)
       (arguments<463,507>
@@ -33,8 +33,7 @@
        ,[468,469] (number[475,476]@{1}@) ,[476,477] (line_continuation[478,482]@{...\n}@)
        (string<494,499> '[494,495] (string_content[495,498]@{bar}@) '[498,499])
        ,[499,500] (number[506,507]@{1}@))
-      (line_continuation[509,513]@{...\n}@) )[525,526]))
-    ;[526,527] \n[527,528])
-   end[532,535])
-  end[536,539])
+      (line_continuation[509,513]@{...\n}@) )[525,526])))
+   ;[526,527] \n[527,528] end[532,535])
+  \n[535,536] end[536,539])
  \n[539,540])

@@ -28,7 +28,7 @@ classdef indent_xr_statement_body < handle
 
                 % Case9: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
             else
-                
+
             end
 
             % Case10: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")

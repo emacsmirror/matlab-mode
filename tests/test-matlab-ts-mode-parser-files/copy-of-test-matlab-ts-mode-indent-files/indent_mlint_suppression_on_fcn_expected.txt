@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,126> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,126> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (function_definition<22,125> function[22,30]
   (function_output<31,34> (identifier[31,32]@{a}@) =[33,34])
   name: (identifier[35,66]@{indent_mlint_suppression_on_fcn}@)

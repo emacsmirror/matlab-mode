@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,194> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,194> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (class_definition<22,193> classdef[22,30] name: (identifier[31,79]@{font_lock_classdef_end_override_issue98_subclass}@)
   (superclasses<80,119> <[80,81]
    (property_name<82,119> (identifier[82,119]@{font_lock_classdef_end_override_super}@)))
@@ -11,5 +11,5 @@
     (function_arguments<158,169> ([158,159] arguments: (identifier[159,162]@{obj}@) ,[162,163] (identifier[164,165]@{k}@) ,[165,166] (identifier[167,168]@{n}@) )[168,169])
     \n[169,170] end[178,181])
    \n[181,182] end[186,189])
-  end[190,193])
+  \n[189,190] end[190,193])
  \n[193,194])

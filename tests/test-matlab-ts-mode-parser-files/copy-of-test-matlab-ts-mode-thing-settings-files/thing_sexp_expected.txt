@@ -1,29 +1,30 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,2537> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,63]@{% Case1: (t-utils-xr "C-a" "C-n" "C-M-f")}@)
+(source_file<1,2537> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,63]@{% Case1: (t-utils-xr "C-a" "C-n" "C-M-f")}@) \n[63,64]
  (class_definition<64,2536> classdef[64,72] name: (identifier[73,83]@{thing_sexp}@)
   (superclasses<84,92> <[84,85]
    (property_name<86,92> (identifier[86,92]@{handle}@)))
   (comment[98,169]@{% Case2: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-...}@) \n[169,170]
   (properties<174,363> properties[174,184] (comment[193,248]@{% Case3: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-...}@) \n[248,249]
-   (property<257,264> name: (identifier[257,259]@{p1}@)
-    (default_value<260,263> =[260,261] (number[262,263]@{0}@))
-    \n[263,264])
-   (property<272,356> name: (identifier[272,274]@{p2}@)
-    (default_value<275,294> =[275,276] (line_continuation[277,281]@{...\n}@) (number[293,294]@{0}@))
-    (comment[304,318]@{% comment here}@) (comment[328,355]@{%\{\n          foo\n        %\}}@) \n[355,356])
-   end[360,363])
+   (property<257,263> name: (identifier[257,259]@{p1}@)
+    (default_value<260,263> =[260,261] (number[262,263]@{0}@)))
+   \n[263,264]
+   (property<272,294> name: (identifier[272,274]@{p2}@)
+    (default_value<275,294> =[275,276] (line_continuation[277,281]@{...\n}@) (number[293,294]@{0}@)))
+   (comment[304,318]@{% comment here}@) \n[318,320] (comment[328,355]@{%\{\n          foo\n        %\}}@) \n[355,356] end[360,363])
+  \n[363,365]
   (methods<369,2275> methods[369,376] (comment[386,441]@{% Case4: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-...}@) \n[441,442]
    (function_definition<450,1953> function[450,458] name: (identifier[459,466]@{method1}@)
     (function_arguments<466,476> ([466,467] arguments: (identifier[467,470]@{in1}@) ,[470,471] (identifier[472,475]@{in2}@) )[475,476])
     (comment[490,602]@{% Case5: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C-...}@) \n[602,603]
     (arguments_statement<615,708> arguments[615,624] \n[624,625]
-     (property<641,658> name: (identifier[641,644]@{in1}@)
+     (property<641,657> name: (identifier[641,644]@{in1}@)
       (dimensions<645,650> ([645,646] (number[646,647]@{1}@) ,[647,648] (number[648,649]@{1}@) )[649,650])
-      (identifier[651,657]@{double}@) \n[657,658])
-     (property<674,691> name: (identifier[674,677]@{in2}@)
+      (identifier[651,657]@{double}@))
+     \n[657,658]
+     (property<674,690> name: (identifier[674,677]@{in2}@)
       (dimensions<678,683> ([678,679] (number[679,680]@{1}@) ,[680,681] (number[681,682]@{2}@) )[682,683])
-      (identifier[684,690]@{double}@) \n[690,691])
-     end[703,706] \n[706,708])
+      (identifier[684,690]@{double}@))
+     \n[690,691] end[703,706] \n[706,708])
     (block<720,1942>
      (global_operator<720,738> global[720,726] (identifier[727,732]@{gVar1}@) (identifier[733,738]@{gVar2}@))
      \n[738,739]
@@ -181,11 +182,13 @@
      \n[2255,2256])
     end[2264,2267])
    \n[2267,2268] end[2272,2275])
+  \n[2275,2277]
   (events<2281,2400> events[2281,2287] (comment[2296,2352]@{% Case11: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C...}@) \n[2352,2353] (identifier[2361,2363]@{e1}@) \n[2363,2364] (identifier[2372,2374]@{e2}@) (comment[2383,2392]@{% comment}@) \n[2392,2393] end[2397,2400])
+  \n[2400,2402]
   (enumeration<2406,2532> enumeration[2406,2417] (comment[2426,2482]@{% Case12: (t-utils-xr "C-a" "C-n" "M-m" "C-M-f" "C...}@) \n[2482,2483]
    (enum<2491,2494> (identifier[2491,2494]@{one}@))
    \n[2494,2495]
    (enum<2503,2506> (identifier[2503,2506]@{two}@))
    (comment[2515,2524]@{% comment}@) \n[2524,2525] end[2529,2532])
-  end[2533,2536])
+  \n[2532,2533] end[2533,2536])
  \n[2536,2537])

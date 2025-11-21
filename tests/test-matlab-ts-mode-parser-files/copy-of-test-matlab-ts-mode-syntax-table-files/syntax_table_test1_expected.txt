@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,259> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,259> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,258> function[21,29] name: (identifier[30,48]@{syntax_table_test1}@) (comment[49,63]@{% help comment}@) (comment[69,83]@{% code comment}@) \n[83,84]
   (block<88,255>
    (assignment<88,113> left: (identifier[88,89]@{x}@) =[90,91]
@@ -10,11 +10,11 @@
    ;[144,145]
    (assignment<150,211> left: (identifier[150,151]@{x}@) =[152,153]
     right: 
-     (matrix<154,211> [[154,155] \n[155,156]
+     (matrix<154,211> [[154,155]
       (row<166,169> (number[166,167]@{1}@) ,[168,168] (number[168,169]@{2}@))
-      ;[169,170] (line_continuation[171,175]@{...\n}@)
+      (line_continuation[171,175]@{...\n}@)
       (row<185,188> (number[185,186]@{3}@) ,[187,187] (number[187,188]@{4}@))
-      ;[188,189] (line_continuation[190,202]@{... comment\n}@) ][210,211]))
+      (line_continuation[190,202]@{... comment\n}@) ][210,211]))
    ;[211,212]
    (assignment<217,223> left: (identifier[217,218]@{x}@) =[219,220]
     right: (postfix_operator<221,223> operand: (identifier[221,222]@{x}@) '[222,223]))

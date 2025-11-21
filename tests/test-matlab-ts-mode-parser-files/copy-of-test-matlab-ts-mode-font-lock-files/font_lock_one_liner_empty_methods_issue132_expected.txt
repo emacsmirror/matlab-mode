@@ -1,0 +1,20 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,301> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) \n[89,91]
+ (class_definition<91,300> classdef[91,99] name: (identifier[100,142]@{font_lock_one_liner_empty_methods_issue132}@) \n[142,144]
+  (methods<148,296> methods[148,155] \n[155,156]
+   (function_definition<164,195> function[164,172]
+    (function_output<173,178> (identifier[173,176]@{obj}@) =[177,178])
+    name: (identifier[179,191]@{emptyMethods}@) end[192,195])
+   \n[195,197]
+   (function_definition<205,224> function[205,213] name: (identifier[214,220]@{Empty2}@) end[221,224])
+   \n[224,226]
+   (function_definition<234,255> function[234,242] name: (identifier[243,249]@{Empty3}@)
+    (function_arguments<249,251> ([249,250] )[250,251])
+    end[252,255])
+   \n[255,257]
+   (function_definition<265,288> function[265,273] name: (identifier[274,280]@{Empty4}@)
+    (function_arguments<280,284> ([280,281] arguments: (identifier[281,283]@{in}@) )[283,284])
+    end[285,288])
+   \n[288,289] end[293,296])
+  \n[296,297] end[297,300])
+ \n[300,301])

@@ -35,7 +35,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-mfile-type--file
       \"test-matlab-ts-mode-mfile-type-files/M-FILE\")"
   (let ((test-matlab-ts-mode-mfile-type--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-mfile-type")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-mfile-type$")))
 
 (ert-deftest test-matlab-ts-mode-mfile-type ()
   "Test `matlab-ts-mode--mfile-type'.

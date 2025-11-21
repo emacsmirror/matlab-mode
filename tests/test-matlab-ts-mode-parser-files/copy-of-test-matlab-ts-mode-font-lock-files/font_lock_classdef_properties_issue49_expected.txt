@@ -1,9 +1,10 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,245> (comment[1,139]@{% -*- matlab-ts -*-\n%\n% See: https://github.com/...}@)
+(source_file<1,245> (comment[1,139]@{% -*- matlab-ts -*-\n%\n% See: https://github.com/...}@) \n[139,141]
  (class_definition<141,244> classdef[141,149] name: (identifier[150,187]@{font_lock_classdef_properties_issue49}@) \n[187,188]
   (properties<192,240> properties[192,202] \n[202,203]
-   (property<211,214> name: (identifier[211,213]@{p0}@) \n[213,214])
-   (property<222,233> name: (identifier[222,224]@{p1}@) (identifier[225,231]@{double}@) ;[231,232] \n[232,233])
-   end[237,240])
-  end[241,244])
+   (property<211,213> name: (identifier[211,213]@{p0}@))
+   \n[213,214]
+   (property<222,231> name: (identifier[222,224]@{p1}@) (identifier[225,231]@{double}@))
+   ;[231,232] \n[232,233] end[237,240])
+  \n[240,241] end[241,244])
  \n[244,245])

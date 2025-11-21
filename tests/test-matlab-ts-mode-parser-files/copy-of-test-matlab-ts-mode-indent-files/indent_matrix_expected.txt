@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,594> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,594> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,593> function[21,29] name: (identifier[30,43]@{indent_matrix}@) \n[43,44]
   (block<48,590>
    (assignment<48,111> left: (identifier[48,49]@{a}@) =[50,51]
@@ -27,7 +27,6 @@
     right: 
      (matrix<198,219> [[198,199]
       (row<199,203> (number[199,200]@{1}@) ,[200,201] (number[202,203]@{2}@))
-      ;[203,204]
       (row<214,218> (number[214,215]@{3}@) ,[215,216] (number[217,218]@{4}@))
       ][218,219]))
    ;[219,220]
@@ -61,7 +60,7 @@
     right: 
      (matrix<407,455> [[407,408] (line_continuation[409,413]@{...\n}@)
       (row<423,424> (number[423,424]@{1}@))
-      ;[424,425] (line_continuation[426,430]@{...\n}@)
+      (line_continuation[426,430]@{...\n}@)
       (row<440,441> (number[440,441]@{2}@))
       (line_continuation[442,454]@{...\n        }@) ][454,455]))
    ;[455,456]
@@ -71,7 +70,7 @@
    ;[468,469]
    (assignment<475,560> left: (identifier[475,490]@{long_variable_a}@) =[491,492] (line_continuation[493,497]@{...\n}@)
     right: 
-     (matrix<505,560> [[505,506] \n[506,507]
+     (matrix<505,560> [[505,506]
       (row<517,528> (number[517,518]@{2}@) ,[518,519] (number[520,523]@{123}@) ,[523,524] (number[525,528]@{456}@))
       (row<539,550> (number[539,540]@{3}@) ,[540,541] (number[544,545]@{2}@) ,[549,549] (number[549,550]@{7}@))
       ][559,560]))

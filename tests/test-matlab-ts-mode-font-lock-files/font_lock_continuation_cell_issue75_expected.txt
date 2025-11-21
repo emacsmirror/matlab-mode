@@ -6,10 +6,10 @@ c cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 vv ccc
     o ccc
     b ccc
-      SsSD ccc
+      SsSd ccc
     bD
 
 vv o ccc
     b ccc
-      SsSD ccc
+      SsSd ccc
     bD

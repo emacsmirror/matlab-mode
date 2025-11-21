@@ -35,7 +35,7 @@
 This is provided for debugging.
   M-: (test-matlab-ts-mode-page--file \"test-matlab-ts-mode-page-files/M-FILE\")"
   (let ((test-matlab-ts-mode-page--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-page")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-page$")))
 
 (ert-deftest test-matlab-ts-mode-page ()
   "Test page movement using ./test-matlab-ts-mode-page-files/NAME.m.

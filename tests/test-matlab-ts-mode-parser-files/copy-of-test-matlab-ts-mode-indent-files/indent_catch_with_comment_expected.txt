@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,80> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,80> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (try_statement<22,79> try[22,25]
   (block<30,42>
    (assignment<30,40> left: (identifier[30,31]@{a}@) =[32,33]

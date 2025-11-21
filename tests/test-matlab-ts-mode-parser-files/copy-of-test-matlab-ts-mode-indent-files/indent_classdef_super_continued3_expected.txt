@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,203> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,203> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (class_definition<22,202> classdef[22,30] name: (identifier[31,63]@{indent_classdef_super_continued3}@) (line_continuation[64,68]@{...\n}@)
   (superclasses<72,123> <[72,73]
    (property_name<74,84> (identifier[74,84]@{otherThing}@))
@@ -15,7 +15,7 @@
     (attribute<152,171> (identifier[152,161]@{SetAccess}@) =[162,163] (identifier[164,171]@{private}@))
     )[171,172])
    \n[172,173]
-   (property<181,191> name: (identifier[181,190]@{TopicName}@) \n[190,191])
-   end[195,198])
-  end[199,202])
+   (property<181,190> name: (identifier[181,190]@{TopicName}@))
+   \n[190,191] end[195,198])
+  \n[198,199] end[199,202])
  \n[202,203])

@@ -1,12 +1,12 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,445> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,445> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (class_definition<22,444> classdef[22,30] name: (identifier[31,63]@{indent_fcn_call_in_fcn_call_cont}@) \n[63,64]
   (properties<68,440> properties[68,78]
    (attributes<79,89> ([79,80]
     (attribute<80,88> (identifier[80,88]@{Constant}@))
     )[88,89])
    \n[89,90]
-   (property<98,433> name: (identifier[98,107]@{tabularDs}@)
+   (property<98,431> name: (identifier[98,107]@{tabularDs}@)
     (default_value<108,431> =[108,109]
      (function_call<110,431> name: (identifier[110,130]@{tabularTextDatastore}@) ([130,131]
       (arguments<131,430>
@@ -35,8 +35,7 @@
          ,[417,418]
          (string<419,429> '[419,420] (string_content[420,428]@{DepDelay}@) '[428,429]))
         }[429,430]))
-      )[430,431]))
-    ;[431,432] \n[432,433])
-   end[437,440])
-  end[441,444])
+      )[430,431])))
+   ;[431,432] \n[432,433] end[437,440])
+  \n[440,441] end[441,444])
  \n[444,445])

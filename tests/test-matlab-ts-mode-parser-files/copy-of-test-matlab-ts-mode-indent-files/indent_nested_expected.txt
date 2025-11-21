@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,515> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,101]@{% t-utils-test-indent: no-line-by-line-indent - ne...}@)
+(source_file<1,515> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,101]@{% t-utils-test-indent: no-line-by-line-indent - ne...}@) \n[101,103]
  (function_definition<103,514> function[103,111]
   (function_output<112,115> (identifier[112,113]@{b}@) =[114,115])
   name: (identifier[116,129]@{indent_nested}@)

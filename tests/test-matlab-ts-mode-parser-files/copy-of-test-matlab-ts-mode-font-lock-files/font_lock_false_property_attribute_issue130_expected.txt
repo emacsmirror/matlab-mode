@@ -1,0 +1,14 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,198> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@) \n[89,91]
+ (class_definition<91,197> classdef[91,99] name: (identifier[100,143]@{font_lock_false_property_attribute_issue130}@) \n[143,144]
+  (properties<148,193> properties[148,158]
+   (attributes<159,170> ([159,160]
+    (attribute<160,169>
+     (not_operator<160,169> ~[160,161] (identifier[161,169]@{Constant}@)))
+    )[169,170])
+   \n[170,171]
+   (property<179,184> name: (identifier[179,180]@{A}@)
+    (default_value<181,184> =[181,182] (number[183,184]@{1}@)))
+   ;[184,185] \n[185,186] end[190,193])
+  \n[193,194] end[194,197])
+ \n[197,198])

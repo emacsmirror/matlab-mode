@@ -1,13 +1,13 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,155> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,155> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,154> function[21,29] name: (identifier[30,54]@{indent_line_continuation}@)
   (function_arguments<54,61> ([54,55] arguments: (identifier[55,60]@{inArg}@) )[60,61])
   \n[61,62]
   (arguments_statement<66,134> arguments[66,75] \n[75,76]
-   (property<84,127> name: (identifier[84,89]@{inArg}@)
+   (property<84,126> name: (identifier[84,89]@{inArg}@)
     (dimensions<90,95> ([90,91] (number[91,92]@{1}@) ,[92,93] (number[93,94]@{1}@) )[94,95])
-    (line_continuation[96,108]@{... comment\n}@) (identifier[120,126]@{double}@) \n[126,127])
-   end[131,134])
+    (line_continuation[96,108]@{... comment\n}@) (identifier[120,126]@{double}@))
+   \n[126,127] end[131,134])
   (block<139,151>
    (function_call<139,150> name: (identifier[139,143]@{disp}@) ([143,144]
     (arguments<144,149> argument: (identifier[144,149]@{inArg}@))

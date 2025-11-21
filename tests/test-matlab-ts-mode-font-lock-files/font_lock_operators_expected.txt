@@ -3,15 +3,15 @@ vv o BBBD
 
 v o n o n o n o n o n
 
-v o bn n nD n n nbD
-v o bn n nD n n nbD
+v o bn n nd n n nbD
+v o bn n nd n n nbD
 v o d oo d
 
 v o d oo d
 
 v o d oo n
 
-v o bn nD n nb o n
+v o bn nd n nb o n
 
 v o doo
 v o do

@@ -1,23 +1,24 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,8147> (comment[1,154]@{% -*- matlab-ts -*-\n% See ../indents.m which is u...}@)
+(source_file<1,8147> (comment[1,154]@{% -*- matlab-ts -*-\n% See ../indents.m which is u...}@) \n[154,155]
  (function_definition<155,1302> function[155,163] name: (identifier[164,182]@{indent_old_indents}@)
   (function_arguments<182,219> ([182,183] arguments: (identifier[183,184]@{a}@) ,[184,185] (identifier[185,186]@{b}@) ,[186,187] (identifier[187,192]@{stuff}@) ,[192,193] (identifier[193,205]@{cmddual1fake}@) ,[205,206] (identifier[206,218]@{cmddual2fake}@) )[218,219])
   (comment[220,259]@{% Help text\n% !!0\n% of many lines\n% !!0}@) (comment[269,325]@{% including a gap - comment for following code\n  ...}@) \n[325,326] \n[330,331]
   (arguments_statement<335,650> arguments[335,344]
    (attributes<345,356> ([345,346] argument: (identifier[346,355]@{Repeating}@) )[355,356])
    (comment[357,362]@{% !!4}@) \n[362,363]
-   (property<371,433> name: (identifier[371,372]@{a}@)
+   (property<371,394> name: (identifier[371,372]@{a}@)
     (dimensions<373,378> ([373,374] (number[374,375]@{1}@) ,[375,376] (number[376,377]@{1}@) )[377,378])
-    (validation_functions<379,394> {[379,380] (identifier[380,393]@{mustBeNumeric}@) }[393,394])
-    (comment[427,432]@{% !!8}@) \n[432,433])
-   (property<441,503> name: (identifier[441,442]@{b}@)
+    (validation_functions<379,394> {[379,380] (identifier[380,393]@{mustBeNumeric}@) }[393,394]))
+   (comment[427,432]@{% !!8}@) \n[432,433]
+   (property<441,455> name: (identifier[441,442]@{b}@)
     (dimensions<443,448> ([443,444]
      (spread_operator<444,445> :[444,445])
      ,[445,446]
      (spread_operator<446,447> :[446,447])
      )[447,448])
-    (identifier[449,455]@{double}@) (comment[497,502]@{% !!8}@) \n[502,503])
-   (property<511,573> name: (identifier[511,516]@{stuff}@)
+    (identifier[449,455]@{double}@))
+   (comment[497,502]@{% !!8}@) \n[502,503]
+   (property<511,565> name: (identifier[511,516]@{stuff}@)
     (validation_functions<517,565> {[517,518]
      (function_call<518,564> name: (identifier[518,530]@{mustBeMember}@) ([530,531]
       (arguments<531,563> argument: (identifier[531,536]@{stuff}@) ,[536,537]
@@ -30,11 +31,12 @@
          (string<554,561> '[554,555] (string_content[555,560]@{other}@) '[560,561]))
         }[562,563]))
       )[563,564])
-     }[564,565])
-    (comment[567,572]@{% !!8}@) \n[572,573])
-   (property<581,608> name: (identifier[581,593]@{cmddual1fake}@) (identifier[594,600]@{double}@) (comment[602,607]@{% !!8}@) \n[607,608])
-   (property<616,643> name: (identifier[616,628]@{cmddual2fake}@) (identifier[629,632]@{int}@) (comment[637,642]@{% !!8}@) \n[642,643])
-   end[647,650])
+     }[564,565]))
+   (comment[567,572]@{% !!8}@) \n[572,573]
+   (property<581,600> name: (identifier[581,593]@{cmddual1fake}@) (identifier[594,600]@{double}@))
+   (comment[602,607]@{% !!8}@) \n[607,608]
+   (property<616,632> name: (identifier[616,628]@{cmddual2fake}@) (identifier[629,632]@{int}@))
+   (comment[637,642]@{% !!8}@) \n[642,643] end[647,650])
   (comment[651,656]@{% !!4}@) \n[656,657] \n[661,662]
   (block<666,1299>
    (persistent_operator<666,681> persistent[666,676] (identifier[677,681]@{var1}@))
@@ -214,17 +216,17 @@
     right: 
      (matrix<2577,2627> [[2577,2578]
       (row<2579,2582> (number[2579,2580]@{1}@) ,[2581,2581] (number[2581,2582]@{2}@))
-      ;[2582,2583] (comment[2584,2588]@{%!!4}@)
+      (comment[2584,2588]@{%!!4}@)
       (row<2603,2606> (number[2603,2604]@{3}@) ,[2605,2605] (number[2605,2606]@{4}@))
-      ;[2606,2607] (comment[2608,2613]@{%!!14}@) ][2626,2627]))
+      (comment[2608,2613]@{%!!14}@) ][2626,2627]))
    ;[2627,2628] (comment[2629,2634]@{%!!12}@)
    (assignment<2644,2712> left: (identifier[2644,2648]@{Csep}@) =[2649,2650]
     right: 
-     (matrix<2651,2712> [[2651,2652] \n[2653,2654]
+     (matrix<2651,2712> [[2651,2652]
       (row<2667,2670> (number[2667,2668]@{1}@) ,[2669,2669] (number[2669,2670]@{2}@))
-      ;[2670,2671] (comment[2672,2676]@{%!!8}@)
+      (comment[2672,2676]@{%!!8}@)
       (row<2690,2693> (number[2690,2691]@{3}@) ,[2692,2692] (number[2692,2693]@{4}@))
-      ;[2693,2694] (comment[2695,2699]@{%!!8}@) ][2711,2712]))
+      (comment[2695,2699]@{%!!8}@) ][2711,2712]))
    ;[2712,2713] (comment[2714,2719]@{%!!11}@)
    (assignment<2729,3137> left: (identifier[2729,2738]@{multinest}@) =[2739,2740]
     right: 
@@ -235,12 +237,12 @@
         (comment[2763,2767]@{%!!4}@)
         (row<2788,2791> (number[2788,2789]@{3}@) ,[2790,2790] (number[2790,2791]@{4}@))
         ][2792,2793]))
-      ;[2793,2794] (comment[2806,2811]@{%!!20}@)
+      (comment[2806,2811]@{%!!20}@)
       (row<2830,2919>
        (cell<2830,2919> {[2830,2831]
         (row<2832,2882> (number[2832,2833]@{5}@) ,[2834,2834] (number[2834,2835]@{6}@) ,[2836,2836] (number[2836,2837]@{7}@) (line_continuation[2838,2876]@{...         %!!18\n                    }@) ,[2876,2876] (number[2876,2877]@{8}@) ,[2878,2878] (number[2878,2879]@{9}@) ,[2880,2880] (number[2880,2882]@{10}@))
         (line_continuation[2883,2918]@{...        %!!20\n                  }@) }[2918,2919]))
-      ;[2919,2920] (comment[2938,2943]@{%!!18}@)
+      (comment[2938,2943]@{%!!18}@)
       (row<2962,3112>
        (function_call<2962,3112> name: (identifier[2962,2969]@{fcncall}@) ([2969,2970]
         (arguments<2970,3111> argument: (number[2970,2972]@{10}@) ,[2972,2973] (line_continuation[2974,2988]@{...     %!!18\n}@) (number[3014,3016]@{12}@) ,[3016,3017] (line_continuation[3018,3032]@{...     %!!26\n}@)
@@ -316,15 +318,15 @@
    ;[4229,4230] (comment[4233,4238]@{%!!14}@) (comment[4244,4321]@{% This array has bad syntactic expression parsing ...}@)
    (assignment<4326,4464> left: (identifier[4326,4334]@{Closures}@) =[4335,4336]
     right: 
-     (matrix<4337,4464> [[4337,4338] \n[4339,4340]
+     (matrix<4337,4464> [[4337,4338]
       (row<4357,4363> (number[4357,4363]@{755009}@))
-      ;[4364,4365] (line_continuation[4366,4412]@{... % 21-Feb-2067 Washington's Birthday (Mon)\n}@)
+      (line_continuation[4366,4412]@{... % 21-Feb-2067 Washington's Birthday (Mon)\n}@)
       (row<4429,4435> (number[4429,4435]@{755010}@))
-      ;[4436,4437] (comment[4442,4447]@{% !!8}@) ][4463,4464]))
+      (comment[4442,4447]@{% !!8}@) ][4463,4464]))
    ;[4464,4465]
    (assignment<4475,4699> left: (identifier[4475,4478]@{dep}@) =[4479,4480]
     right: 
-     (matrix<4481,4699> [[4481,4482] \n[4482,4483]
+     (matrix<4481,4699> [[4481,4482]
       (row<4495,4604>
        (function_call<4495,4538> name: (identifier[4495,4499]@{root}@) ([4499,4500]
         (arguments<4500,4537>
@@ -432,10 +434,10 @@
  \n[5903,5905]
  (function_definition<5905,7121> function[5905,5913]
   (function_output<5914,5917> (identifier[5914,5915]@{B}@) =[5916,5917])
-  name: (identifier[5918,5950]@{continuations_and_block_comments}@) (comment[5951,5992]@{% !!0\n% !!0\n% !!0\n%\{\n  !!2  \{  \}\n  !!2\n%\...}@) (comment[6002,6125]@{%\{\n      blank line means this block comment is ...}@) \n[6125,6127]
+  name: (identifier[5918,5950]@{continuations_and_block_comments}@) (comment[5951,5992]@{% !!0\n% !!0\n% !!0\n%\{\n  !!2  \{  \}\n  !!2\n%\...}@) \n[5992,5993] \n[5997,5998] (comment[6002,6125]@{%\{\n      blank line means this block comment is ...}@)
   (block<6131,7118>
    (assignment<6131,6137> left: (identifier[6131,6135]@{arg1}@) =[6135,6136] right: (number[6136,6137]@{1}@))
-   ;[6137,6138] (comment[6148,6188]@{%\{\n    %  !!4\n      !!6\n    % !!4\n    %\}}@) (comment[6198,6286]@{% Block comment indicators MUST be on a line by th...}@)
+   ;[6137,6138] \n[6138,6139] \n[6143,6144] (comment[6148,6188]@{%\{\n    %  !!4\n      !!6\n    % !!4\n    %\}}@) (comment[6198,6286]@{% Block comment indicators MUST be on a line by th...}@)
    (function_call<6296,6302> name: (identifier[6296,6299]@{foo}@) ([6299,6300]
     (arguments<6300,6301> argument: (number[6300,6301]@{1}@))
     )[6301,6302])

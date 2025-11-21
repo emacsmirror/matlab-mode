@@ -12,7 +12,7 @@
   (insert          "p3continued = ...")     "C-m"
   (insert              "0")                 "C-m"
   (insert     "end")                        "C-m"
-  (insert "end")
+  (insert "end")                            "C-m"
   (re-search-backward "^classdef")
   (t-utils-xr-print-code (point) (point-max))
   )

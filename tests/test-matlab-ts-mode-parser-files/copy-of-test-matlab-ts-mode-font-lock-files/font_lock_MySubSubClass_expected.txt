@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,609> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,609> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (class_definition<21,608> classdef[21,29] name: (identifier[30,53]@{font_lock_MySubSubClass}@)
   (superclasses<54,83> <[54,55]
    (property_name<56,68> (identifier[56,68]@{ParentClass1}@))
@@ -7,10 +7,10 @@
    (property_name<71,83> (identifier[71,83]@{ParentClass2}@)))
   (comment[84,98]@{% help comment}@) \n[98,99]
   (properties<103,191> properties[103,113] \n[113,114]
-   (property<122,184> name: (identifier[122,132]@{MyProperty}@) (identifier[133,139]@{double}@)
-    (default_value<140,143> =[140,141] (number[142,143]@{0}@))
-    ;[143,144] (comment[145,183]@{% Public property with a default value}@) \n[183,184])
-   end[188,191])
+   (property<122,143> name: (identifier[122,132]@{MyProperty}@) (identifier[133,139]@{double}@)
+    (default_value<140,143> =[140,141] (number[142,143]@{0}@)))
+   ;[143,144] (comment[145,183]@{% Public property with a default value}@) \n[183,184] end[188,191])
+  \n[191,193]
   (methods<197,604> methods[197,204] \n[204,205]
    (function_definition<213,337> function[213,221]
     (function_output<222,227> (identifier[222,225]@{obj}@) =[226,227])
@@ -47,5 +47,5 @@
      ;[583,584] \n[584,585])
     end[593,596])
    \n[596,597] end[601,604])
-  end[605,608])
+  \n[604,605] end[605,608])
  \n[608,609])

@@ -33,7 +33,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-movement--file
       \"test-matlab-ts-mode-movement-files/M-FILE\")"
   (let ((test-matlab-ts-mode-movement--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-movement")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-movement$")))
 
 (ert-deftest test-matlab-ts-mode-movement ()
   "Test movement commands, C-M-f, etc.

@@ -2,11 +2,10 @@
 (source_file<1,233> (comment[1,20]@{% -*- matlab-ts -*-}@)
  (assignment<22,84> left: (identifier[22,30]@{myMatrix}@) =[31,32]
   right: 
-   (matrix<33,84> [[33,34] \n[35,36]
+   (matrix<33,84> [[33,34]
     (row<49,52> (number[49,50]@{1}@) ,[51,51] (number[51,52]@{2}@))
-    ;[52,53]
     (row<67,70> (number[67,68]@{3}@) ,[69,69] (number[69,70]@{4}@))
-    ;[70,71] ][83,84]))
+    ][83,84]))
  ;[84,85]
  (function_call<87,128> name: (identifier[87,91]@{disp}@) ([91,92]
   (arguments<92,127>

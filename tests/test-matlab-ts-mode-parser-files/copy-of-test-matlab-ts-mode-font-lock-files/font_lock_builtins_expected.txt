@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,127> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,127> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
  (function_definition<21,126> function[21,29]
   (function_output<30,41> (identifier[30,39]@{varargout}@) =[40,41])
   name: (identifier[42,60]@{font_lock_builtins}@)

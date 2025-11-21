@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,336> (comment[1,140]@{% -*- matlab-ts -*-\n% Missing continuation should...}@)
+(source_file<1,336> (comment[1,140]@{% -*- matlab-ts -*-\n% Missing continuation should...}@) \n[140,141]
  (function_definition<141,310> function[141,149] name: (identifier[150,186]@{font_lock_error_missing_continuation}@)
   (function_arguments<186,283> ([186,187]
    (ERROR<234,235> (ERROR[234,235]@{i}@))

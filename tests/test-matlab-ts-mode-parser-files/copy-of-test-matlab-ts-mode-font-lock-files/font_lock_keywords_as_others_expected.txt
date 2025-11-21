@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,952> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+(source_file<1,952> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% See https://github.com/acristoffers/tree-sitter-...}@) \n[88,90]
  (assignment<90,103>
   left: (identifier<90,99> arguments[90,99])
   =[100,101] right: (number[102,103]@{1}@))

@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,629> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,629> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (function_definition<22,601> function[22,30]
   (function_output<31,33> (identifier[31,32]@{d}@) =[32,33])
   name: (identifier[33,63]@{indent_namespace_fcn_continued}@)
@@ -12,7 +12,6 @@
       right: 
        (matrix<91,96> [[91,92]
         (row<92,93> (identifier[92,93]@{a}@))
-        ;[93,94]
         (row<94,95> (identifier[94,95]@{b}@))
         ][95,96]))
      ;[96,97] \n[97,98])

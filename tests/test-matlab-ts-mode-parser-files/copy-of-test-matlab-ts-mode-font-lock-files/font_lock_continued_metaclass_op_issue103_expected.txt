@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,241> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% see https://github.com/acristoffers/tree-sitter-...}@)
+(source_file<1,241> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% see https://github.com/acristoffers/tree-sitter-...}@) \n[89,91]
  (class_definition<91,239> classdef[91,99] name: (identifier[100,141]@{font_lock_continued_metaclass_op_issue103}@) \n[141,142]
   (properties<146,235> properties[146,156]
    (attributes<157,216> ([157,158]
@@ -10,7 +10,7 @@
       }[214,215]))
     )[215,216])
    \n[216,217]
-   (property<225,228> name: (identifier[225,227]@{p1}@) \n[227,228])
-   end[232,235])
-  end[236,239])
+   (property<225,227> name: (identifier[225,227]@{p1}@))
+   \n[227,228] end[232,235])
+  \n[235,236] end[236,239])
  \n[239,241])

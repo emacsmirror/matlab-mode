@@ -33,7 +33,7 @@ This is provided for debugging.
   M-: (test-matlab-ts-mode-on-save-fixes--file
       \"test-matlab-ts-mode-on-save-fixes-files/M-FILE\")"
   (let ((test-matlab-ts-mode-on-save-fixes--file m-file))
-    (ert-run-tests-interactively "test-matlab-ts-mode-on-save-fixes")))
+    (ert-run-tests-interactively "^test-matlab-ts-mode-on-save-fixes$")))
 
 (ert-deftest test-matlab-ts-mode-on-save-fixes ()
   "Test fix of fcn name using ./test-matlab-ts-mode-on-save-fixes-files/NAME.m.

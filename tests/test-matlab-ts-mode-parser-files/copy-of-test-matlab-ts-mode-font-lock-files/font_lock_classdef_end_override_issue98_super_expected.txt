@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,335> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@) (comment[90,221]@{% see "Overload end for Classes"\n% https://www.ma...}@)
+(source_file<1,335> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,88]@{% see https://github.com/acristoffers/tree-sitter-...}@) (comment[90,221]@{% see "Overload end for Classes"\n% https://www.ma...}@) \n[221,223]
  (class_definition<223,334> classdef[223,231]
   (attributes<232,242> ([232,233]
    (attribute<233,241> (identifier[233,241]@{Abstract}@))
@@ -10,5 +10,5 @@
    name: (identifier[307,310]@{end}@)
    (function_signature<310,321> ([310,311] arguments: (identifier[311,314]@{obj}@) ,[314,315] (identifier[316,317]@{k}@) ,[317,318] (identifier[319,320]@{n}@) )[320,321])
    ;[321,322] \n[322,323] end[327,330])
-  end[331,334])
+  \n[330,331] end[331,334])
  \n[334,335])

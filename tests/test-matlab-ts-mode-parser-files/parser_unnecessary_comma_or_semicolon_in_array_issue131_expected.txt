@@ -1,0 +1,51 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,209> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<91,109> left: (identifier[91,93]@{a1}@) =[94,95]
+  right: 
+   (matrix<96,109> [[96,97]
+    (row<103,108> (number[103,104]@{1}@) ,[105,106] (number[107,108]@{2}@))
+    ][108,109]))
+ \n[109,111]
+ (assignment<111,126> left: (identifier[111,113]@{a2}@) =[114,115]
+  right: 
+   (cell<116,126> {[116,117]
+    (row<117,119> (number[117,118]@{1}@) ,[118,119])
+    (row<124,125> (number[124,125]@{2}@))
+    }[125,126]))
+ \n[126,128]
+ (assignment<128,143> left: (identifier[128,131]@{a3a}@) =[132,133]
+  right: 
+   (matrix<134,143> [[134,135]
+    (row<136,142>
+     (function_call<136,142> name: (identifier[136,139]@{cos}@) ([139,140]
+      (arguments<140,141> argument: (number[140,141]@{5}@))
+      )[141,142]))
+    ][142,143]))
+ \n[143,145]
+ (assignment<145,168> left: (identifier[145,148]@{a3b}@) =[149,150]
+  right: 
+   (matrix<151,168> [[151,152]
+    (row<153,159>
+     (function_call<153,159> name: (identifier[153,156]@{cos}@) ([156,157]
+      (arguments<157,158> argument: (number[157,158]@{5}@))
+      )[158,159]))
+    (row<161,167>
+     (function_call<161,167> name: (identifier[161,164]@{sin}@) ([164,165]
+      (arguments<165,166> argument: (number[165,166]@{5}@))
+      )[166,167]))
+    ][167,168]))
+ \n[168,170]
+ (assignment<170,208> left: (identifier[170,173]@{a3c}@) =[174,175]
+  right: 
+   (matrix<176,208> [[176,177]
+    (row<180,186>
+     (function_call<180,186> name: (identifier[180,183]@{cos}@) ([183,184]
+      (arguments<184,185> argument: (number[184,185]@{5}@))
+      )[185,186]))
+    (line_continuation[187,199]@{...\n        }@)
+    (row<201,207>
+     (function_call<201,207> name: (identifier[201,204]@{sin}@) ([204,205]
+      (arguments<205,206> argument: (number[205,206]@{5}@))
+      )[206,207]))
+    ][207,208]))
+ \n[208,209])

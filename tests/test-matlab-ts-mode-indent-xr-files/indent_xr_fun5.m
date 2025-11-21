@@ -9,9 +9,7 @@
   Case1:
   (t-utils-xr
 
-  (re-search-forward "%}") "C-n"
-
-  (insert "\n") "C-b"  ;; ensure we have a newline
+  (re-search-forward "%}")  "C-n"
 
   (insert "function ...")                  "C-m"
   (insert     "[ ...")                     "C-m"
