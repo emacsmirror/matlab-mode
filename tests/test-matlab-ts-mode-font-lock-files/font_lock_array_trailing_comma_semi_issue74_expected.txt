@@ -5,8 +5,8 @@ c cccc cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 vv o bSsssSDb
 
-vv o bbSsssSDbDDD bSsssSDbDDDb
+vv o bbSsssSDbddd bSsssSDbdddb
 
 vv o bnDb
 
-vv o bnDnDnDDD nDnDnDDDDb
+vv o bnDnDnddd nDnDnddddb

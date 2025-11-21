@@ -1244,20 +1244,28 @@ is where we start looking for the error node."
       (re-search-backward "[^ \t\n\r]" nil t))
 
     ;; Move inside the error node if at an error node.
-    (when (string= (treesit-node-type (treesit-node-at (point))) "ERROR")
-      (re-search-backward "[^ \t\n\r]" nil t))
-
-    ;; If on a "[" or "{" move back (we don't want to shift the current line)
-    (when (string-match-p (rx bos (or "[" "{") eos) (treesit-node-type (treesit-node-at (point))))
-      (re-search-backward "[^ \t\n\r]" nil t))
+    (if (string= (treesit-node-type (treesit-node-at (point))) "ERROR")
+        (re-search-backward "[^ \t\n\r]" nil t)
+      ;; If on a "[" or "{" move back (we don't want to shift the current line)
+      (when (string-match-p (rx bos (or "[" "{") eos) (treesit-node-type (treesit-node-at (point))))
+        (re-search-backward "[^ \t\n\r]" nil t)))
 
     ;; Walk over line_continuation, ",", ";" and identify the "check node" we should be looking
     ;; at.
     (let ((check-node (treesit-node-at (point))))
-      (while (string-match-p (rx bos (or "line_continuation" "," ";") eos)
-                             (treesit-node-type check-node))
-        (goto-char (treesit-node-start check-node))
-        (if (re-search-backward "[^ \t\n\r]" nil t)
+      (while (let ((check-type (treesit-node-type check-node)))
+               (cond
+                ((string-match-p (rx bos (or "line_continuation" "," ";") eos) check-type)
+                 (goto-char (treesit-node-start check-node))
+                 (re-search-backward "[^ \t\n\r]" nil t)
+                 t)
+                ((and (string-match-p (rx bos "ERROR" eos) check-type)
+                      (looking-at ";" t))
+                 (goto-char (1- (point)))
+                 (when (looking-at "[ \t\n\r]" t)
+                   (re-search-backward "[^ \t\n\r]" nil t))
+                 t)))
+        (if (not (bobp))
             (let* ((pt (point))
                    (node-at-pt (treesit-node-at pt)))
               ;; Be robust to node-at-point range not covering pt

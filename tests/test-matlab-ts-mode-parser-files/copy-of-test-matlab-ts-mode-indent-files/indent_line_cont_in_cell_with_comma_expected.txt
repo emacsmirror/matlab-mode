@@ -6,7 +6,7 @@
    ,[126,127] (line_continuation[128,132]@{...\n}@) (line_continuation[136,149]@{... comment1\n}@)
    (string<153,160> '[153,154] (string_content[154,159]@{-foo1}@) '[159,160])
    ,[160,161] (line_continuation[162,166]@{...\n}@)
-   (cell<170,390> {[170,171] \n[171,172] (line_continuation[178,192]@{... comment 2\n}@)
+   (cell<170,390> {[170,171] (line_continuation[178,192]@{... comment 2\n}@)
     (row<198,380>
      (cell<198,314> {[198,199]
       (row<199,302>

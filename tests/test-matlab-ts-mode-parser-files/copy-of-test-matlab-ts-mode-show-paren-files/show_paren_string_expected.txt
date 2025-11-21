@@ -4,7 +4,6 @@
   right: 
    (matrix<25,35> [[25,26]
     (row<26,29> (number[26,27]@{1}@) ,[28,28] (number[28,29]@{2}@))
-    ;[29,30]
     (row<31,34> (number[31,32]@{3}@) ,[33,33] (number[33,34]@{4}@))
     ][34,35]))
  ;[35,36] (comment[38,147]@{% Case1: (t-utils-xr "C-a" "C-n" (re-search-forwar...}@)
