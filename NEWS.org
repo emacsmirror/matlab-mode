@@ -3,6 +3,11 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.3.2 Nov 21, 2025
+
+1. Update to latest https://github.com/acristoffers/tree-sitter-matlab which improves
+   matlab-ts-mode.  The changes fix parsing errors up through issues 141 in matlab tree-sitter.
+
 * Release 7.3.1 Nov 14, 2025
 
 1. Fixed M-q (fill-paragraph) in comments when there no space after the '%' character.
