@@ -3199,4 +3199,4 @@ To debug a specific -parser test file
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash md
 ;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's darwin libtree
-;; LocalWords:  defface fontify keymap
+;; LocalWords:  defface fontify keymap curr

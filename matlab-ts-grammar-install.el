@@ -28,6 +28,52 @@
 (require 'org-src)
 (require 'url)
 
+(defvar matlab--ts-grammar-release "matlab-ts-abi14-20251122-90ce9da")
+
+(defun matlab--ts-grammar-check-version ()
+  "Validate Emacs and grammar version are okay, error if not."
+  (when (< emacs-major-version 30)
+    (user-error "Unsupported Emacs version, %d" emacs-major-version))
+
+  (let ((ts-abi-ver (treesit-library-abi-version))
+        (release-abi-ver (if (string-match "\\`matlab-ts-abi\\([0-9]+\\)-"
+                                           matlab--ts-grammar-release)
+                             (string-to-number (match-string 1 matlab--ts-grammar-release))
+                           (error "Unexpected matlab--ts-grammar-release %s"
+                                  matlab--ts-grammar-release))))
+    (when (not (= ts-abi-ver release-abi-ver))
+      (user-error "Emacs treesit-library-abi-version is %d and the matlab-ts grammar version "
+                  "is %d, which indicates a new build is required for matlab-ts"))))
+
+(defun matlab--ts-get-grammar-branch-and-install-dir (prompt)
+  "Get branch and tree-sitter install directory.
+When PROMPT, prompt for these."
+
+  (let* ((branch-default "default")
+         (branch (if prompt
+                     (let ((ans ""))
+                       (while (string= ans "")
+                         (setq ans (string-trim (read-string "Branch: " branch-default))))
+                       ans)
+                   branch-default))
+         (dir-default (concat user-emacs-directory "tree-sitter/"))
+         (dir (if prompt
+                  (let ((ans ""))
+                    (while (string= ans "")
+                      (setq ans (read-directory-name "Download directory: " dir-default)))
+                    ans)
+                dir-default)))
+
+    (if (string= dir dir-default)
+        (when (not (file-directory-p dir))
+          (make-directory dir t))
+      (when (not (file-directory-p dir))
+        (user-error "%s is not an existing directory" dir)))
+
+    (setq dir (file-name-as-directory (file-truename dir)))
+
+    (cons branch dir)))
+
 (defun matlab--ts-grammar-arch-and-shared-lib ()
   "Return ARCH/libtree-sitter-matlab.SLIB_EXT.
 ARCH is the same as the MATLAB computer('arch') command result."
@@ -45,62 +91,6 @@ ARCH is the same as the MATLAB computer('arch') command result."
       (user-error "Unsupported system-type %s, system-configuration %s" system-type
                   system-configuration))
     result))
-
-(defun matlab--ts-grammar-download-url (branch prompt-for-version)
-  "Get the download tree-sitter-matlab URL for BRANCH.
-When PROMPT-FOR-VERSION is non-nil, prompt for the version to download."
-
-  ;; Use GitHub REST API to get the download URL
-  (let* ((bin-url (concat "https://api.github.com/repos/mathworks/Emacs-MATLAB-mode/contents/"
-                          "matlab-ts-bin?ref=" branch))
-         (raw-url-start (concat "https://raw.githubusercontent.com/mathworks/Emacs-MATLAB-Mode/"
-                                branch "/matlab-ts-bin"))
-
-         (bin-buf (url-retrieve-synchronously bin-url))
-         (versions '())
-         latest-ver-date-num
-         latest-ver
-         download-url)
-
-    (with-current-buffer bin-buf
-      (let* ((response-content
-              (let ((result (buffer-string)))
-                (goto-char (point-min))
-                (if (re-search-forward "^\\(HTTP/[0-9.]* \\([0-9]+\\) .*\\)$" nil t)
-                    (let ((response (match-string 1))
-                          (response-code (match-string 2)))
-                      (when (not (string= response-code "200"))
-                        (user-error "Invalid response \"%s\" received from %s"
-                                    response bin-url)))
-                  (user-error "Unexpected result from %s: %s" bin-url result))
-                (cadr (split-string result "\n\n" t))))
-             (entries (json-read-from-string response-content)))
-        (cl-loop for entry across entries do
-                 (let ((rel-file (alist-get 'path entry))) ;; matlab-ts-bin/FILE
-                   ;; Have YYYYMMDD-SHA1
-                   (when (string-match "^matlab-ts-bin/\\(\\([0-9]+\\)-[0-9a-z]+\\)$" rel-file)
-                     (let ((ver (match-string 1 rel-file))
-                           (date-num (string-to-number (match-string 2 rel-file))))
-                       (when (or (not latest-ver)
-                                 (> date-num latest-ver-date-num))
-                         (setq latest-ver ver
-                               latest-ver-date-num date-num))
-                       (push ver versions)))))))
-
-    (when (not latest-ver)
-      (user-error "Failed to get release versions from %s" bin-url))
-
-    (let ((ver-to-download (if prompt-for-version
-                               (completing-read (concat
-                                                 "Version to download (" latest-ver " is latest): ")
-                                                versions nil t latest-ver)
-                             latest-ver))
-          (arch-slib (matlab--ts-grammar-arch-and-shared-lib)))
-
-      (setq download-url (concat raw-url-start "/" ver-to-download "/" arch-slib)))
-
-    (kill-buffer bin-buf)
-    download-url))
 
 (defun matlab--files-equal-p (file1 file2)
   "Return t if the contents of FILE1 and FILE2 are identical, nil otherwise."
@@ -163,9 +153,6 @@ With prefix ARG, prompt for
  - BRANCH in https://github.com/mathworks/Emacs-MATLAB-Mode.  This defaults
    to the \"default\" branch.
 
- - VERSION of the shared library to download.  This defaults to the latest
-   version.
-
 When libtree-sitter-matlab.SLIB-EXT already exists on your system,
 
  - If it is up-to-date, it will not be touched and a message is displayed
@@ -176,35 +163,16 @@ When libtree-sitter-matlab.SLIB-EXT already exists on your system,
 
   (interactive "P")
 
-  (when (< emacs-major-version 30)
-    (user-error "Unsupported Emacs version, %d" emacs-major-version))
+  (matlab--ts-grammar-check-version)
 
-  (let* ((branch-default "default")
-         (branch (if arg
-                     (let ((ans ""))
-                       (while (string= ans "")
-                         (setq ans (string-trim (read-string "Branch: " branch-default))))
-                       ans)
-                   branch-default))
-         (dir-default (concat user-emacs-directory "tree-sitter/"))
-         (dir (if arg
-                  (let ((ans ""))
-                    (while (string= ans "")
-                      (setq ans (read-directory-name "Download directory: " dir-default)))
-                    ans)
-                dir-default)))
+  (let* ((branch-and-dir (matlab--ts-get-grammar-branch-and-install-dir arg))
+         (branch (car branch-and-dir))
+         (dir (cdr branch-and-dir)))
 
-    (if (string= dir dir-default)
-        (when (not (file-directory-p dir))
-          (make-directory dir t))
-      (when (not (file-directory-p dir))
-        (user-error "%s is not an existing directory" dir)))
-
-    (setq dir (file-name-as-directory (file-truename dir)))
-
-    (let* ((download-url (matlab--ts-grammar-download-url branch arg))
-           (grammar-slib-base (file-name-nondirectory download-url))
-           (grammar-slib (concat dir grammar-slib-base))
+    (let* ((download-url (concat "https://raw.githubusercontent.com/mathworks/Emacs-MATLAB-Mode/"
+                                 branch "/matlab-ts-bin/" matlab--ts-grammar-release "/"
+                                 (matlab--ts-grammar-arch-and-shared-lib)))
+           (grammar-slib (concat dir (file-name-nondirectory download-url)))
            (grammar-slib-tmp (concat grammar-slib ".tmp")))
 
       (when (y-or-n-p (format "Download %s\nto %s? " download-url grammar-slib))
@@ -239,8 +207,8 @@ Try exiting Emacs and re-running the install before loading any *.m files"
                (message "Downloaded %s" grammar-slib))
               ('downloaded-and-updated
                (let ((prompt (concat "Downloaded and updated " grammar-slib "\n"
-                                     "If the older " grammar-slib-base
-                                     " was in use, Emacs must be restarted.\n"
+                                     "If an older grammar library was in use, "
+                                     "Emacs must be restarted.\n"
                                      "Exit Emacs? ")))
                  (when (y-or-n-p prompt)
                    (save-buffers-kill-terminal))))
@@ -251,4 +219,4 @@ Try exiting Emacs and re-running the install before loading any *.m files"
 ;;; matlab-ts-grammar-install.el ends here
 
 ;; LocalWords:  libtree dylib defun SLIB pcase darwin aarch maca linux nt buf cadr alist YYYYMMDD
-;; LocalWords:  SHA setq slib truename nondirectory tmp delq lang repeat:nil
+;; LocalWords:  SHA setq slib truename nondirectory tmp delq lang repeat:nil abi ce da treesit cdr

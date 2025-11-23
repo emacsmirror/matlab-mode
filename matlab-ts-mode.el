@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 7.3.2
+;; Version: 7.3.3
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -2248,7 +2248,7 @@ Example:
   "Return the offset computed by `matlab-ts-mode--i-comment-under-fcn-matcher'."
   (cdr matlab-ts-mode--i-comment-under-fcn-pair))
 
-(defun maltab-ts-mode--i-top-level (node parent _bol &rest _)
+(defun matlab-ts-mode--i-top-level (node parent _bol &rest _)
   "Is NODE with PARENT a top-level classdef, function, or code?"
   (and node
        (not (string-match-p (rx bos (or "line_continuation" "\n") eos)
@@ -2257,7 +2257,7 @@ Example:
 
 (defun matlab-ts-mode--column-0 (_node _parent bol &rest _)
   "Return column-0 for BOL.
-Note treesit column-0 moves point, fixed in Fmacs 31."
+Note treesit column-0 moves point, fixed in Emacs 31."
   (save-excursion
     (goto-char bol)
     (line-beginning-position)))
@@ -2453,7 +2453,7 @@ Example:
       ,#'matlab-ts-mode--i-comment-under-fcn-offset)
 
      ;; I-Rule: classdef's, function's, or code for a script that is at the top-level
-     (,#'maltab-ts-mode--i-top-level
+     (,#'matlab-ts-mode--i-top-level
       ,#'matlab-ts-mode--column-0
       0)
 
@@ -4364,4 +4364,4 @@ matlab-language-server-lsp-mode.org\n"
 ;; LocalWords:  funcall mfile elec foo'bar mapcar lsp noerror alnum featurep grep'ing mapconcat wie
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
 ;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd
-;; LocalWords:  matlabls vscode buf dolist sp ppss
+;; LocalWords:  matlabls vscode buf dolist sp ppss bobp sexps

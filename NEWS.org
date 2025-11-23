@@ -3,6 +3,11 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.3.3 Nov 23, 2025
+
+1. Update to latest https://github.com/acristoffers/tree-sitter-matlab which improves
+   matlab-ts-mode: matlab-ts-abi14-20251122-90ce9da
+
 * Release 7.3.2 Nov 21, 2025
 
 1. Update to latest https://github.com/acristoffers/tree-sitter-matlab which improves
