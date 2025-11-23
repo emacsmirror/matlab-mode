@@ -166,13 +166,13 @@ When libtree-sitter-matlab.SLIB-EXT already exists on your system,
   (matlab--ts-grammar-check-version)
 
   (let* ((branch-and-dir (matlab--ts-get-grammar-branch-and-install-dir arg))
-         (branch (nth 0 branch-and-dir))
-         (dir (nth 1 branch-and-dir)))
+         (branch (car branch-and-dir))
+         (dir (cdr branch-and-dir)))
 
     (let* ((download-url (concat "https://raw.githubusercontent.com/mathworks/Emacs-MATLAB-Mode/"
                                  branch "/matlab-ts-bin/" matlab--ts-grammar-release "/"
                                  (matlab--ts-grammar-arch-and-shared-lib)))
-           (grammar-slib (concat dir (file-name-nondirectory matlab--ts-grammar-release)))
+           (grammar-slib (concat dir (file-name-nondirectory download-url)))
            (grammar-slib-tmp (concat grammar-slib ".tmp")))
 
       (when (y-or-n-p (format "Download %s\nto %s? " download-url grammar-slib))
@@ -219,4 +219,4 @@ Try exiting Emacs and re-running the install before loading any *.m files"
 ;;; matlab-ts-grammar-install.el ends here
 
 ;; LocalWords:  libtree dylib defun SLIB pcase darwin aarch maca linux nt buf cadr alist YYYYMMDD
-;; LocalWords:  SHA setq slib truename nondirectory tmp delq lang repeat:nil abi ce da treesit
+;; LocalWords:  SHA setq slib truename nondirectory tmp delq lang repeat:nil abi ce da treesit cdr
