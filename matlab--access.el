@@ -138,8 +138,8 @@ is found using `executable-find'.  If `matlab-shell-command' is
 MATLAB installed command found using
 `matlab--default-matlab-exe'.
 
-If NO-ERROR is t, and matlab command is not found, nil is return,
-otherwise an error is signaled."
+If NO-ERROR is non-nil, and matlab command is not found, nil is
+returned, otherwise an error is signaled."
   (condition-case err
       (let (abs-matlab-exe)
         (cond

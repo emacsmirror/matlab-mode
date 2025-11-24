@@ -2517,14 +2517,25 @@ each element is a cons pair (NAME . NODE)."
               result-list)))
     (reverse result-list)))
 
-(defun t-utils-sweep-test-ts-grammar (test-name
-                                      directory
-                                      lang-file-regexp
-                                      major-mode-fun
-                                      syntax-checker-fun
-                                      &optional error-node-type
-                                      log-file
-                                      result-file)
+(defun t-utils--err-locs-str (err-locs lang-file)
+  "Return a string representing ERR-LOCS in LANG-FILE."
+  (let ((str ""))
+    (dolist (line err-locs)
+      (setq str (concat
+                 str
+                 (when (string-match "at line \\([0-9]+:[0-9]+\\)" line)
+                   (concat lang-file ":" (match-string 1 line) ": error: "))
+                 line)))
+    str))
+
+(cl-defun t-utils-sweep-test-ts-grammar (test-name
+                                         directory
+                                         lang-file-regexp
+                                         major-mode-fun
+                                         syntax-checker-fun
+                                         &optional error-node-type
+                                         log-file
+                                         result-file)
   "Sweep test a tree-sitter grammar shared library looking for parse issues.
 
 File base names matching LANG-FILE-REGEXP under DIRECTORY
@@ -2605,8 +2616,10 @@ otherwise the result is displayed on stdout."
                                                                       error-nodes))
                                          (cons "no-syntax-errors" nil))))
               (puthash lang-file syntax-status-pair ts-parse-result-ht)
-              (t-utils--log log-file (format "ts-parse: %s > %S\n"
-                                             lang-file syntax-status-pair)))))))
+              (t-utils--log log-file (format "ts-parse: %s > %s\n%s"
+                                             lang-file (car syntax-status-pair)
+                                             (t-utils--err-locs-str (cdr syntax-status-pair)
+                                                                    lang-file))))))))
 
     (when (= (length lang-files-to-check) 0)
       (user-error "No files to check (all skipped)\n"))
@@ -2618,6 +2631,10 @@ otherwise the result is displayed on stdout."
           (files-with-bad-ts-error-parse "")
           (files-with-bad-ts-success-parse "")
           (n-consistent-files 0))
+
+      ;; nil returned by syntax-checker-fun means it couldn't check
+      (when (not syntax-check-result-ht)
+        (cl-return-from t-utils-sweep-test-ts-grammar))
 
       (t-utils--log log-file (format "Examining %S result\n" syntax-checker-fun))
 

@@ -127,9 +127,6 @@ M-FILE is not in test-matlab-ts-mode-parser-files"
 
     (list update m-file test-m-file)))
 
-;; TODO update the files and add ert test to validate (test-matlab-ts-mode-parser--all-files)
-;; returns ""
-
 (defun test-matlab-ts-mode-parser--all-files (&optional update-if-needed)
   "Verify we use ./test-matlab-ts-mode-*/*.m as baselines.
 We use all ./test-matlab-ts-mode-*/*.m files as test points.
@@ -188,6 +185,10 @@ you that updates are needed."
                           "M-: (test-matlab-ts-mode-parser--all-files t)  "
                           "to update them")
                   n-updates))))))
+
+(defun batch-test-matlab-ts-mode-parser ()
+  "Run test-matlab-ts-mode-parser when in batch mode."
+  (ert-run-tests-batch-and-exit "\\`test-matlab-ts-mode-parser\\'"))
 
 (provide 'test-matlab-ts-mode-parser)
 ;;; test-matlab-ts-mode-parser.el ends here

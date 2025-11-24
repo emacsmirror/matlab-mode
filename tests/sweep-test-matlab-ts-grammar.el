@@ -28,15 +28,11 @@
 (require 'matlab-ts-mode)
 (require 'matlab--access)
 
+(defun sweep-test-matlab-ts-grammar--run-syntax-check (matlab-exe m-files)
+  "Using MATLAB-EXE check M-FILES using MATLAB checkIssue.
+See `sweep-test-matlab-ts-grammar--syntax-checker' for return."
 
-(defun sweep-test-matlab-ts-grammar--syntax-checker (m-files)
-  "Syntax check each *.m file in M-FILES using MATLAB checkIssue.
-
-Returns hash table where the keys are the m-files and each key
-value is either \"no-syntax-errors\" or \"has-syntax-errors\"."
-  (let* ((matlab-exe (or (matlab--get-abs-matlab-exe)
-                         (error "No matlab found (to fix put matlab on your PATH)")))
-         (tmp-check-file (make-temp-file "sweep_test_matlab_ts_grammar" nil ".m"))
+  (let* ((tmp-check-file (make-temp-file "sweep_test_matlab_ts_grammar" nil ".m"))
          (check-fun (file-name-sans-extension (file-name-nondirectory tmp-check-file)))
          (tmp-check-file-dir (file-name-directory tmp-check-file))
          (result-ht (make-hash-table :test 'equal)))
@@ -193,6 +189,19 @@ end
 
     (delete-file tmp-check-file)
     result-ht))
+
+(defun sweep-test-matlab-ts-grammar--syntax-checker (m-files)
+  "Syntax check each *.m file in M-FILES using MATLAB checkIssue.
+
+Returns hash table where the keys are the m-files and each key
+value is either \"no-syntax-errors\" or \"has-syntax-errors\"."
+  (let ((matlab-exe (matlab--get-abs-matlab-exe 'no-error)))
+    (if matlab-exe
+        (sweep-test-matlab-ts-grammar--run-syntax-check matlab-exe m-files)
+      (message (concat "Unable to use MATLAB codeIssues() command to compare against matlab "
+                       "tree-sitter because matlab is not found.\n"
+                       "Examine the *.log file for results.\n"))
+      nil)))
 
 (defun sweep-test-matlab-ts-grammar (&optional directory log-file)
   "Check matlab tree-sitter parse of all *.m files under DIRECTORY.
