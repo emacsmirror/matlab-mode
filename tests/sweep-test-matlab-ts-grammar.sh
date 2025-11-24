@@ -3,6 +3,8 @@
 # Abstract:
 #
 #   See ./README-TEST-MATLAB-TREE-SITTER.org for usage.
+#
+# Copyright (C) 2025 Free Software Foundation, Inc.
 
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 

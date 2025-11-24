@@ -1,5 +1,6 @@
 # File: tests/README-TEST-MATLAB-TREE-SITTER.org
 #
+# Copyright (C) 2025 Free Software Foundation, Inc.
 
 #+startup: showall
 #+options: toc:nil
@@ -16,7 +17,7 @@ use of the shared library by matlab-ts-mode.  The tests use Emacs as a "test dri
 
 To run the tests,
 
-1. Install Emacs 30 or later and validate you emacs is on your system path and runs the desired version:
+1. Install Emacs 30 or later and validate emacs is on your system path and runs the desired version:
 
    #+begin_src bash
      emacs --version
@@ -48,9 +49,9 @@ To run the tests,
    The grammar shared library must be named =libtree-sitter-matlab.SLIB_EXT= where SLIB_EXT is =so=
    on Linux, =dylib= on Mac, or =dll= on Windows.
 
-   By default the shared library should be placed in
+   By default, the shared library should be placed in
    =~/.emacs.d/tree-sitter/libtree-sitter-matlab.SLIB_EXT=.  You can place it in another location
-   and tell Emacs where it is in the next step.
+   and tell Emacs where it is using the =-libtree-sitter-matlab= switch in the tests below.
 
    ABI 14 is required by Emacs 30. On Debian 12, you can build using:
 
@@ -72,14 +73,12 @@ To run the tests,
 
 * Test: sweep-test-matlab-ts-grammar.sh
 
-Check matlab tree-sitter parse by /sweeping/ over all *.m files in a directory tree.
+Check matlab tree-sitter parse by /sweeping/ over the =*.m= files in a directory tree.
 
-This validates that if MATLAB tree-sitter parse has ERROR nodes that the
-MATLAB codeIssues command,
-https://www.mathworks.com/help/matlab/ref/codeissues.html says the file
-has syntax issues (issue severity of error).  Likewise if MATLAB
-tree-sitter parse says no syntax errors this test confirms that the
-MATLAB codeIssues command reports the same.
+This validates that if MATLAB tree-sitter parse has ERROR nodes that the MATLAB codeIssues command,
+https://www.mathworks.com/help/matlab/ref/codeissues.html says the file has syntax issues (issue
+severity of error).  Likewise, if MATLAB tree-sitter parse says no syntax errors, this test confirms
+that the MATLAB codeIssues command reports the same.
 
 To use sweep-test-matlab-ts-grammar.sh
 
@@ -103,9 +102,8 @@ To use sweep-test-matlab-ts-grammar.sh
 
    - *sweep-test-matlab-ts-grammar.result.txt*
 
-     This is created if matlab is available. If matlab is available, the codeIssues()
-     matlab command is used to compare matlab parse v.s. the matlab tree-sitter parse
-     and has contains sections:
+     This is created if the matlab command is available (=which matlab=). The codeIssues() MATLAB
+     command is used to compare MATLAB parse v.s. the matlab tree-sitter parse and has sections:
 
      : Files-with-parse-error-nodes-but-pass-syntax-checker-fun:
      :   <files with tree-sitter error nodes>
@@ -145,6 +143,9 @@ have paired files, =NAME.m= and =NAME_expected.txt= where =NAME.m= contains MATL
    #+end_example
 
    and you can compare the 'Got' file with the 'Expected' file.
+
+   Difference in the annotated parse tree could be okay, in which case we'll need to update the
+   =*_expected.txt= baselines.
 
 ** test-matlab-ts-mode-parser annotated Parse Tree, NAME_expected.txt
 
@@ -194,24 +195,14 @@ position in the buffer.  The length of text for the node is =END-START=.  For na
 
 You can view the annotated parse tree of a =*.m= file using:
 
-1. Run emacs
-
-   #+begin_src bash
-     emacs
-   #+end_src
-   
+1. Run Emacs
+   : emacs
 2. Load t-utils.el
-   
    : M-x load-file RET /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/t-utils.el RET
-
 3. View a =*.m= file
-
    : C-x C-f NAME.m
-
 4. View the annotated parse tree
-
    : M-x t-utils-view-parse-tree
-
    You can click with mouse or type RET on the =[START,END]= ranges to highlight the text in
    =NAME.m=.
 

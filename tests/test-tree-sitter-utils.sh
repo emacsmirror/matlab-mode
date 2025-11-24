@@ -5,6 +5,7 @@
 #
 #   testName.sh -libtree-sitter-matlab /PATH/TO/libtree-sitter-matlab.SLIB_EXT
 #
+# Copyright (C) 2025 Free Software Foundation, Inc.
 
 #----------------------------------------------#
 # Get shared library extension: so, dylib, dll #
