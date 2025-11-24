@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-# File: Emacs-MATLAB-Mode/tests/sweep-test-matlab-ts-grammar.sh
+# File: Emacs-MATLAB-Mode/tests/test-matlab-ts-mode-parser.sh
 # Abstract:
 #
 #   See ./README-TEST-MATLAB-TREE-SITTER.org for usage.
@@ -15,7 +15,5 @@ emacs --batch -q "${tsExtraLoadPath[@]}" \
         -l "$EmacsMATLABModeDir/matlab-autoload.el" \
         -L "$EmacsMATLABModeDir/tests" \
         -l "$EmacsMATLABModeDir/tests/t-utils.el" \
-        -l "$EmacsMATLABModeDir/tests/sweep-test-matlab-ts-grammar.el" \
-        -f sweep-test-matlab-ts-grammar
-
-# LocalWords:  usr MFILES dylib slib uname elif esac libtree realpath fn setq treesit dev utils
+        -l "$EmacsMATLABModeDir/tests/test-matlab-ts-mode-parser.el" \
+        -f batch-test-matlab-ts-mode-parser
