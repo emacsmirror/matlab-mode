@@ -31,7 +31,7 @@ To run the tests,
        apt -t bookworm-backports install emacs
      #+end_src
    
-   - On Mac, you can install Emacs 30 using from https://emacsformacosx.com/
+   - On Mac, you can install Emacs 30 from https://emacsformacosx.com/
      
 2. Install Emacs-MATLAB-Mode
 
