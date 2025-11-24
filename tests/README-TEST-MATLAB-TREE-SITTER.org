@@ -1,5 +1,4 @@
 # File: tests/README-TEST-MATLAB-TREE-SITTER.org
-#
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
 #+startup: showall
