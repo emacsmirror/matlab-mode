@@ -1,6 +1,6 @@
 # File: matlab-ts-bin/matlab-ts-abi14-20251122-90ce9da/README.org
 
-This corresponds to commit 90ce9da on the abi/14 branch of
+This corresponds to commit [[https://github.com/acristoffers/tree-sitter-matlab/commit/90ce9daffd5bc1525469f79f36342155ea82795a][90ce9da]] on the abi/14 branch of
 https://github.com/acristoffers/tree-sitter-matlab
 
 Source for the builds has been copied to ./src. To build the source, see
