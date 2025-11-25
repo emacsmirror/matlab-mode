@@ -87,11 +87,15 @@ ifneq ($(filter tests all, $(GOALS)),)
     # matlab-shell.
     MATLAB_EXE = matlab
     ifeq ($(shell which $(MATLAB_EXE)),)
-        $(warning $(MATLAB_EXE) not found. Consider running: make MATLAB_EXE=/path/to/matlab)
+        $(warning warning: $(MATLAB_EXE) command not found. Consider running: make MATLAB_EXE=/path/to/matlab)
+	MATLAB_EXE = none
+    else
+        export MATLAB_PROG_SETUP = \
+           "--eval=(setq matlab-shell-command \"$(MATLAB_EXE)\")" \
+           "--eval=(setq matlab-shell-command-switches '(\"-nodesktop\" \"-nosplash\" \"-noFigureWindows\"))"
     endif
-    export MATLAB_PROG_SETUP = \
-        "--eval=(setq matlab-shell-command \"$(MATLAB_EXE)\")" \
-	"--eval=(setq matlab-shell-command-switches '(\"-nodesktop\" \"-nosplash\" \"-noFigureWindows\"))"
+    # Provide MATLAB_EXE for ./test/Makefile
+    export MATLAB_EXE
 endif
 
 .PHONY: tests

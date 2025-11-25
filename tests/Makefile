@@ -38,7 +38,12 @@ else
 
     # OS is defined on Windows (e.g. OS=Windows_NT) and there's no MATLAB shell tests on windows.
     ifndef OS
-       TEST_TARGETS += shelltests
+        # ../Makefile will set MATLAB_EXE to none if there is no MATLAB
+        ifeq ($(MATLAB_EXE),none)
+            $(warning warning: matlab not available, skipping M-x matlab-shell tests)
+        else
+            TEST_TARGETS += shelltests
+        endif
     endif
 endif
 
@@ -64,4 +69,4 @@ endif
 
 # [eof] tests/Makefile
 
-# LocalWords:  EMACSFLAGS setq ifneq modetests shelltests metest mstest eof
+# LocalWords:  EMACSFLAGS setq ifneq modetests shelltests metest mstest eof utils treesit ifeq env
