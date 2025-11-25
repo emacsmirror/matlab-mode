@@ -1,15 +1,80 @@
-# matlab-ts-bin/README.org
+# File: matlab-ts-bin/README.org
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
+
+#+startup: showall
+#+startup: logdone
+#+startup: inlineimages
+#+startup: latexpreview
+#+options: ^:{}    # a_{b} for subscript, a^{b} for superscript, leave a_b and a^b as is.
+#+options: toc:2   # toc:nil == no toc, toc:1 == one level, toc:2 == two levels, etc.
+
+#+latex_header: \usepackage[margin=0.25in]{geometry}
+#+latex_header: \usepackage{parskip}
+#+latex_header: \usepackage{svg}
+#+latex_header: \sloppy
+
+#+title:  matlab-ts-bin/README.org
+#+author: John Ciolfi
+#+date:   Nov-24-2025
 
 Builds of https://github.com/acristoffers/tree-sitter-matlab
 
 We use the following subdirectory naming convention:
 
-: ./YYYYMMDD-SHA1/ARCH/
+: ./matlab-ts-abiNN/YYYYMMDD-SHA1/ARCH/
 
-where =YYYYMMDD= corresponds to the year, month, day of the
-https://github.com/acristoffers/tree-sitter-matlab commit =SHA1= and
-ARCH is from the MATLAB command, =computer('arch')=.
+where
 
-We are using this convention instead of the tree-sitter-matlab release number
-to make things more flexible.  This convention lets us deploy based on commits
-rather than release numbers.
+ - =NN= is the tree-sitter ABI version. For example =NN==14= for Emacs 30.
+
+ - =YYYYMMDD= corresponds to the year, month, day of the
+   https://github.com/acristoffers/tree-sitter-matlab commit =SHA1=
+
+ - =ARCH= is from the MATLAB command, =computer('arch')= where we have:
+
+   + glnxa64 :: GNU/Linux running on x86_64 (=uname -m=)
+
+     Build:
+
+     #+begin_src bash
+       cd ./matlab-ts-abiNN/YYYYMMDD-SHA1/src
+       cc -fPIC -O -c -I. parser.c
+       cc -fPIC -O -c -I. scanner.c
+       cc -fPIC -shared parser.o scanner.o -o ../glnxa64/libtree-sitter-matlab.so
+     #+end_src
+     
+   + maca64 :: MacOS running on arm64 (=uname -m=)
+
+     #+begin_src bash
+       cd ./matlab-ts-abiNN/YYYYMMDD-SHA1/src
+       cc -fPIC -O -c -I. parser.c
+       cc -fPIC -O -c -I. scanner.c
+       cc -fPIC -shared parser.o scanner.o -o ../maca64/libtree-sitter-matlab.dylib
+     #+end_src
+
+   + maci64 :: MacOS running on x86_64 (=uname -m=). Note MATLAB release, R2025b, is the last release
+     that supports Intel/AMD based MacOS systems.
+
+     #+begin_src bash
+       cd ./matlab-ts-abiNN/YYYYMMDD-SHA1/src
+       cc -fPIC -O -c -I. parser.c
+       cc -fPIC -O -c -I. scanner.c
+       cc -fPIC -shared parser.o scanner.o -o ../maca64/libtree-sitter-matlab.dylib
+     #+end_src
+
+   + win64 :: Microsoft Windows running on Intel/AMD (=echo %PROCESSOR_ARCHITECTURE%= is AMD64 in a
+     Command Window)
+
+     #+begin_src bash
+       "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
+       cd ./matlab-ts-abiNN/YYYYMMDD-SHA1/src
+       cl /LD /I src\tree_sitter parser.c scanner.c /link /out:..\win64\libtree-sitter-matlab.dll
+     #+end_src
+
+We are using this convention instead of the tree-sitter-matlab release number to make things more
+flexible.  This convention lets us deploy based on commits rather than release numbers.
+
+We also save the source in a src directory under each build subdirectory.
+
+# LocalWords:  showall logdone inlineimages latexpreview usepackage parskip svg abi NN YYYYMMDD SHA
+# LocalWords:  uname maca maci MSYS libtree dylib VC vcvars
