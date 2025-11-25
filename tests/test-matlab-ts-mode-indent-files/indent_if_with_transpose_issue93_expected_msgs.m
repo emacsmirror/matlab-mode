@@ -1,42 +1,42 @@
-% -*- matlab-ts -*- %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+% -*- matlab-ts -*- %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-% t-utils-test-indent: no-line-by-line-indent - if conditions don't require a terminator %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+% t-utils-test-indent: no-line-by-line-indent - if conditions don't require a terminator %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-% The following produces %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+% The following produces %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 %    ans = %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 % %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 %         2 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 % %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 %    here %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 
-a=1; %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-b=2; %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+a=1; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+b=2; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-if a'b' %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+if a'b' %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
      disp('here') %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
 
-% MATLAB does not require a statement terminator after the if-condition, so, for example, you can %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+% MATLAB does not require a statement terminator after the if-condition, so, for example, you can %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 % write: %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 % %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 %  if 1 < 2 a = 3; end %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 % %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 % Thus above is equivalent to: %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 
-a=1; %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-b=2; %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+a=1; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+b=2; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-if a' %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+if a' %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
     b' %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
     disp('here') %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
 
-% Note, the Code Analyzer suggests that a line terminator should be added. %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+% Note, the Code Analyzer suggests that a line terminator should be added. %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-% Information on tree-sitter handling from %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+% Information on tree-sitter handling from %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 % https://github.com/acristoffers/tree-sitter-matlab/issues/93 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
 
-%{ %  <{Matched rule: (maltab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+%{ %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
   Is there a look-ahead concept in tree-sitter? If you have an identifier followed by the single-quote, then the single-quote has to be a transpose, correct? Likewise for other constructs such as m(10:12,20:22)' where m a matrix and we're taking a slice of it, then transposing. Though, I'm not very confident on this observation. %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 
