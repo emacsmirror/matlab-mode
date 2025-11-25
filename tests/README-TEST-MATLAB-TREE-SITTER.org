@@ -2,7 +2,16 @@
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
 #+startup: showall
-#+options: toc:nil
+#+startup: logdone
+#+startup: inlineimages
+#+startup: latexpreview
+#+options: ^:{}    # a_{b} for subscript, a^{b} for superscript, leave a_b and a^b as is.
+#+options: toc:nil   # toc:nil == no toc, toc:1 == one level, toc:2 == two levels, etc.
+
+#+latex_header: \usepackage[margin=0.25in]{geometry}
+#+latex_header: \usepackage{parskip}
+#+latex_header: \usepackage{svg}
+#+latex_header: \sloppy
 
 #+title:  MATLAB tree-sitter only testing
 #+author: John Ciolfi
@@ -30,9 +39,9 @@ To run the tests,
        apt update
        apt -t bookworm-backports install emacs
      #+end_src
-   
+
    - On Mac, you can install Emacs 30 from https://emacsformacosx.com/
-     
+
 2. Install Emacs-MATLAB-Mode
 
    #+begin_src bash
@@ -52,23 +61,46 @@ To run the tests,
    =~/.emacs.d/tree-sitter/libtree-sitter-matlab.SLIB_EXT=.  You can place it in another location
    and tell Emacs where it is using the =-libtree-sitter-matlab= switch in the tests below.
 
-   ABI 14 is required by Emacs 30. On Debian 12, you can build using:
+   ABI 14 is required by Emacs 30 which we get via:
 
    #+begin_src bash
      cd /YOUR/WORK/DIRECTORY
-     if [ -e tree-sitter-matlab ]; then
-         rm -rf tree-sitter-matlab
-     fi
      git clone https://github.com/acristoffers/tree-sitter-matlab
      cd tree-sitter-matlab
 
      git checkout abi/14
-
-     cd tree-sitter-matlab/src
-     cc -fPIC -O -c -I. parser.c
-     cc -fPIC -O -c -I. scanner.c
-     cc -fPIC -shared parser.o scanner.o -o ~/.emacs.d/tree-sitter/libtree-sitter-matlab.so
    #+end_src
+
+   Build. See [[file:doc/install-matlab-tree-sitter-grammar.org][doc/install-matlab-tree-sitter-grammar.org]]
+
+   - Linux
+
+     #+begin_src bash
+       cd /YOUR/WORK/DIRECTORY/tree-sitter-matlab/src
+       cc -fPIC -O -c -I. parser.c
+       cc -fPIC -O -c -I. scanner.c
+       cc -fPIC -shared parser.o scanner.o -o ~/.emacs.d/tree-sitter/libtree-sitter-matlab.so
+     #+end_src
+
+   - MacOS
+
+     #+begin_src bash
+       cd /YOUR/WORK/DIRECTORY/tree-sitter-matlab/src
+       cc -fPIC -O -c -I. parser.c
+       cc -fPIC -O -c -I. scanner.c
+       cc -fPIC -shared parser.o scanner.o -o ~/.emacs.d/tree-sitter/libtree-sitter-matlab.dylib
+     #+end_src
+
+   - Windows
+
+     Note, update the path below for the version of Visual Studio you are using.
+
+     #+begin_src bash
+       mkdir %HOME%\.emacs.d\tree-sitter
+       cd \YOUR\WORK\DIRECTORY\tree-sitter-matlab\src
+       "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+       cl /LD /I src\tree_sitter src\parser.c src\scanner.c /link /out:%HOME%\.emacs.d\tree-sitter\libtree-sitter-matlab.dll
+     #+end_src
 
 * Test: sweep-test-matlab-ts-grammar.sh
 
@@ -91,7 +123,7 @@ To use sweep-test-matlab-ts-grammar.sh
    If your grammar shared library is not located at
    =~/.emacs.d/tree-sitter/libtree-sitter-matlab.SLIB_EXT=, add option
 
-   : -libtree-sitter-matlab /PATH/TO/libtree-sitter-matlab.SLIB_EXT
+   : /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/sweep-test-matlab-ts-grammar.sh -libtree-sitter-matlab /PATH/TO/libtree-sitter-matlab.SLIB_EXT
 
 2. Results
 
@@ -106,10 +138,10 @@ To use sweep-test-matlab-ts-grammar.sh
 
      : Files-with-parse-error-nodes-but-pass-syntax-checker-fun:
      :   <files with tree-sitter error nodes>
-     : 
+     :
      : Files-that-parsed-successfully-but-failed-syntax-checker-fun:
      :   <files without tree-sitter error nodes>
-     : 
+     :
      : Total-consistently-parsed-files: M of N
 
 * Test: test-matlab-ts-mode-parser.sh
@@ -129,12 +161,12 @@ have paired files, =NAME.m= and =NAME_expected.txt= where =NAME.m= contains MATL
    If your grammar shared library is not located at
    =~/.emacs.d/tree-sitter/libtree-sitter-matlab.SLIB_EXT=, add option
 
-   : -libtree-sitter-matlab /PATH/TO/libtree-sitter-matlab.SLIB_EXT
+   : /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/test-matlab-ts-mode-parser.sh -libtree-sitter-matlab /PATH/TO/libtree-sitter-matlab.SLIB_EXT
 
 2. Results
 
    If the annotated parse tree for =NAME.m= doesn't match NAME_expected.txt, you will see:
-   
+
    #+begin_example
      (("Test: /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/test-matlab-ts-mode-parser-files/parser_cell.m"
        "Got: /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/test-matlab-ts-mode-parser-files/parser_cell_expected.txt~"
@@ -205,4 +237,4 @@ You can view the annotated parse tree of a =*.m= file using:
    You can click with mouse or type RET on the =[START,END]= ranges to highlight the text in
    =NAME.m=.
 
-#  LocalWords:  showall backports libtree SLIB dylib ABI abi MFILES utils
+#  LocalWords:  showall backports libtree SLIB dylib ABI abi MFILES utils VC vcvars
