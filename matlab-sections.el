@@ -46,17 +46,17 @@
   "MATLAB \"%% code sections\"."
   :group 'matlab)
 
-(defface matlab-sections-highlight-face
-  '((t :weight extra-bold))
-  "Default face for highlighting the current section in matlab-sections-minor-mode."
-  :group 'matlab-sections)
-
 (defface matlab-sections-section-break-face
   '((t :inherit font-lock-comment-face
        :overline t
        :height 1.25))
-  "Face for \"%% code section\" headings in matlab-sections-minor-mode.
+  "Face for \"%% code section\" headings in `matlab-sections-minor-mode'.
 This is the face used when demarcating code sections in MATLAB script files."
+  :group 'matlab-sections)
+
+(defface matlab-sections-highlight-face
+  '((t :weight extra-bold))
+  "Default face for highlighting the current section in `matlab-sections-minor-mode'."
   :group 'matlab-sections)
 
 (defcustom matlab-sections-highlight-section t

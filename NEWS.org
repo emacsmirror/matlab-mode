@@ -3,9 +3,23 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.4.0 Nov 26, 2025
+
+1. Place the =matlab-*-face= definitions in customize matlab-ts-faces group.
+
+2. Add =M-x matlab-ts-describe-faces= along with menu item
+
+   : MATLAB -> Describe faces
+
+   that will bring up a help buffer containing the faces used by matlab-ts-mode.  From there you can
+   customize them. This differs from viewing the matlab-ts-faces group in that it contains both
+   matlab-*-faces plus other built-in faces such as font-lock-type-face. This help buffer also
+   contain more information on when the faces are used.
+
 * Release 7.3.4 Nov 25, 2025
 
-1. Adds the source and build instructions for the libtree-sitter-matlab.SLIB_EXT binaries
+1. Add the source and build instructions for the libtree-sitter-matlab.SLIB_EXT binaries
+   found in [[file:matlab-ts-bin][./matlab-ts-bin]] and used by =M-x matlab-ts-grammar-install=.
 
 * Release 7.3.3 Nov 23, 2025
 
@@ -362,4 +376,5 @@ prior to sourceforge no longer exist.
 See older history [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/2ff6f96294353f3f17757a2522a64c427929ff01/ChangeLog][ChangeLog]], [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/528a4fc79426adc7cf9a484d231dec7defd9c5f4/ChangeLog.old1][ChangeLog.old1]], [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/528a4fc79426adc7cf9a484d231dec7defd9c5f4/ChangeLog.old2][ChangeLog.old2]], and older [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/b7e170ee37a23b6852e461772de1c4e986bb6833/NEWS.org][NEWS.org]].
 
 # LocalWords:  showall ELPA MELPA fontification fontify sexp SPC LSP builtins MLint flycheck lsp
-# LocalWords:  netshell emacsinit imenu matlabls netsell sourceforge MMM YYYY emacsrunregion
+# LocalWords:  netshell emacsinit imenu matlabls netsell sourceforge MMM YYYY emacsrunregion libtree
+# LocalWords:  SLIB abi ce da utils fcf
