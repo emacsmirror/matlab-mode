@@ -1,0 +1,51 @@
+#+startup: showall
+
+* Executing commands from indent_xr_ret_after_end.m:7:6:
+
+  Case1: (t-utils-xr
+
+      (re-search-forward "end")
+      "C-m"
+      (insert "%comment"))
+
+- Invoking      : (re-search-forward "end")
+  Start point   :  168
+  Moved to point:  214
+  : 16:7:     end
+  :              ^
+  No buffer modifications
+
+- Invoking      : "C-m" = newline
+  Start point   :  214
+  Moved to point:  219
+  : 17:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -14,4 +14,5 @@
+     arguments
+         A
+     end
++    
+ end
+  #+end_src diff
+
+- Invoking      : (insert "%comment")
+  Start point   :  219
+  Moved to point:  227
+  : 17:12:     %comment
+  :                    ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -14,5 +14,5 @@
+     arguments
+         A
+     end
+-    
++    %comment
+ end
+  #+end_src diff

@@ -3,6 +3,19 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.4.1 Nov 26, 2025
+
+1. Fix indent bug. In following typing RET after the argument end statement, the indent now goes to
+   the 4th column and not the 8th column:
+
+   #+begin_src matlab
+     function test(A)
+         arguments
+             A
+         end
+     end
+   #+end_src
+
 * Release 7.4.0 Nov 26, 2025
 
 1. Place the =matlab-*-face= definitions in customize matlab-ts-faces group.

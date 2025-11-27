@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 7.4.0
+;; Version: 7.4.1
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -2454,6 +2454,49 @@ Example:
   "Return anchor for `matlab-ts-mode--i-row-matcher'."
   matlab-ts-mode--i-row-anchor-value)
 
+(defvar matlab-ts-mode--i-ret-pair)
+
+(defun matlab-ts-mode--i-ret-matcher (node parent bol &rest _)
+  "Is NODE, PARENT, and BOL for RET on prior line indent matcher?"
+  (when (and (not node)
+             (string= "\n" (treesit-node-type parent)))
+    (let ((grand-parent (treesit-node-parent parent))
+          offset)
+      (when (string-match-p (rx bos (or "class_definition"
+                                        "properties"
+                                        "enumeration"
+                                        "methods"
+                                        "events"
+                                        "function_definition"
+                                        "arguments_statement"
+                                        "spmd_statement"
+                                        "try_statement"
+                                        "catch_clause"
+                                        "while_statement"
+                                        "for_statement"
+                                        "if_statement"
+                                        "else_clause"
+                                        "elseif_clause"))
+                            (treesit-node-type grand-parent))
+        (save-excursion
+          (goto-char bol)
+          (if (and (looking-at "^[ \t]*$")
+                   (re-search-backward "[^ \t\r\n]" nil t)
+                   (string= "end" (treesit-node-type (treesit-node-at (point)))))
+              (setq offset 0)
+            (setq offset matlab-ts-mode--indent-level)))
+
+
+        (setq matlab-ts-mode--i-ret-pair (cons (treesit-node-start grand-parent) offset))))))
+
+(defun matlab-ts-mode--i-ret-anchor (&rest _)
+  "Return anchor for `matlab-ts-mode--i-ret-matcher'."
+  (car matlab-ts-mode--i-ret-pair))
+
+(defun matlab-ts-mode--i-ret-offset (&rest _)
+  "Return anchor for `matlab-ts-mode--i-ret-matcher'."
+  (cdr matlab-ts-mode--i-ret-pair))
+
 (defvar matlab-ts-mode--indent-rules
   `((matlab
 
@@ -2582,22 +2625,9 @@ Example:
      ;;             ^             <== TAB or RET on prior line
      ;;         end
      ;; See: tests/test-matlab-ts-mode-indent-xr-files/indent_xr_statement_body.m
-     ((n-p-gp nil ,(rx bos "\n" eos)
-              ,(rx bos (or "class_definition"
-                           "properties"
-                           "enumeration"
-                           "methods"
-                           "events"
-                           "function_definition"
-                           "arguments_statement"
-                           "spmd_statement"
-                           "try_statement"
-                           "catch_clause"
-                           "while_statement"
-                           "for_statement"
-                           "if_statement" "else_clause" "elseif_clause")
-                   eos))
-      grand-parent ,matlab-ts-mode--indent-level)
+     (,#'matlab-ts-mode--i-ret-matcher
+      ,#'matlab-ts-mode--i-ret-anchor
+      ,#'matlab-ts-mode--i-ret-offset)
 
      ;; I-Rule: grandparent is block
      ;;      for i=1:10
@@ -3876,7 +3906,7 @@ provided."
 ;; so the mode line indicator, "matlab-ts-parse-errors" is slightly shorter
 
 (define-compilation-mode matlab-ts-parse-errors-mode "m-ts-parse-errors"
-                         "Variant of `compilation-mode' used for `matlab-ts-view-parse-errors'.")
+  "Variant of `compilation-mode' used for `matlab-ts-view-parse-errors'.")
 
 (defun matlab-ts-view-parse-errors (&optional no-pop-to-buffer)
   "View parse errors in matlab-ts-mode current buffer.
@@ -3958,7 +3988,7 @@ EXTRA-DOC is extra doc info to add to the face documentation."
 
       (insert "The following faces are used by matlab-ts-mode when displaying code.
 A face includes the font, style, color, etc.\n")
-      
+
       (matlab-ts--face-section "Comments")
       (matlab-ts--face-button 'font-lock-doc-face
                               "% documentation comment for function's and classdef's\n")
@@ -3983,7 +4013,7 @@ A face includes the font, style, color, etc.\n")
       (matlab-ts--face-section "Brackets")
       (matlab-ts--face-button 'font-lock-bracket-face
                               "( ) [ ] { }\n")
-      
+
       (matlab-ts--face-section "Delimiters")
       (matlab-ts--face-button 'font-lock-delimiter-face
                               ". , : ;\n")
@@ -4026,7 +4056,7 @@ A face includes the font, style, color, etc.\n")
                               "! ls *.m *.txt")
 
       (matlab-ts--face-section "Builtins")
-      
+
       (matlab-ts--face-button 'font-lock-builtin-face
                               "disp"
                               (concat "This includes any builtin identifier, function, etc.\n"
@@ -4051,7 +4081,7 @@ A face includes the font, style, color, etc.\n")
       (matlab-ts--face-section "Keywords")
       (matlab-ts--face-button 'font-lock-keyword-face
                               "if else elseif end")
-       
+
       (matlab-ts--face-section "Code")
       (matlab-ts--face-button 'default
                               "sample"
@@ -4063,7 +4093,7 @@ A face includes the font, style, color, etc.\n")
       (matlab-ts--face-section "Type Functions")
       (matlab-ts--face-button 'font-lock-type-face
                               "int8 int16")
-                               
+
       (matlab-ts--face-section "Numbers")
       (matlab-ts--face-button 'matlab-ts-mode-number-face
                               "1234")
@@ -4079,7 +4109,7 @@ A face includes the font, style, color, etc.\n")
                               "a*/*b"
                               (concat "Used when `matlab-ts-mode-font-lock-level' is set to "
                                       "show syntax errors"))
-      
+
       )))
 
 ;;; Our M-q matlab-ts-mode-prog-fill-reindent-defun
