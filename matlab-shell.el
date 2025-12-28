@@ -469,7 +469,8 @@ Try C-h f matlab-shell RET"))
            (process-environment (cons newvar process-environment))
            (abs-matlab-exe (matlab--get-abs-matlab-exe))
            (matlab-exe (if (file-remote-p abs-matlab-exe)
-                           matlab-shell-command
+                           ;; Extract only local name
+                           (file-local-name matlab-shell-command)
                          abs-matlab-exe)))
       (message "Running: %s" abs-matlab-exe)
       (apply #'make-comint matlab-shell-buffer-name matlab-exe
