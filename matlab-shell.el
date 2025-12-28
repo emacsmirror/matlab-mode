@@ -470,7 +470,7 @@ Try C-h f matlab-shell RET"))
            (abs-matlab-exe (matlab--get-abs-matlab-exe))
            (matlab-exe (if (file-remote-p abs-matlab-exe)
                            ;; Extract only local name
-                           (file-local-name matlab-shell-command)
+                           (file-local-name abs-matlab-exe)
                          abs-matlab-exe)))
       (message "Running: %s" abs-matlab-exe)
       (apply #'make-comint matlab-shell-buffer-name matlab-exe
