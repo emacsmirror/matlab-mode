@@ -1,0 +1,48 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,589> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (if_statement<22,588> if[22,24] condition: (number[25,26]@{1}@) (comment[31,84]@{% Case1: (t-utils-xr (re-search-forward "2  ") "C-...}@)
+  (block<89,585>
+   (assignment<89,116> left: (identifier[89,91]@{v1}@) =[92,93]
+    right: 
+     (binary_operator<94,116> left: (number[94,95]@{1}@) ./[100,102]
+      right: 
+       (matrix<103,116> [[103,104]
+        (row<104,115> (number[104,105]@{2}@) ,[110,110] (number[110,115]@{42222}@))
+        ][115,116])))
+   ;[116,117] (comment[123,193]@{% Case2: (t-utils-xr (re-search-forward "42") (bac...}@)
+   (assignment<198,225> left: (identifier[198,200]@{v2}@) =[201,202]
+    right: 
+     (binary_operator<203,225> left: (number[203,204]@{1}@) ./[209,211]
+      right: 
+       (matrix<212,225> [[212,213]
+        (row<213,224> (number[213,214]@{2}@) ,[219,219] (number[219,224]@{42222}@))
+        ][224,225])))
+   ;[225,226] (comment[232,302]@{% Case3: (t-utils-xr (re-search-forward "v3") (bac...}@)
+   (assignment<307,334> left: (identifier[307,309]@{v3}@) =[310,311]
+    right: 
+     (binary_operator<312,334> left: (number[312,313]@{1}@) ./[318,320]
+      right: 
+       (matrix<321,334> [[321,322]
+        (row<322,333> (number[322,323]@{2}@) ,[328,328] (number[328,333]@{42222}@))
+        ][333,334])))
+   ;[334,335] (comment[341,415]@{% Case4: (t-utils-xr (re-search-forward "22    ") ...}@)
+   (assignment<420,460> left: (identifier[420,422]@{v4}@) =[423,424]
+    right: 
+     (binary_operator<425,460> left: (number[425,426]@{2}@) *[427,428]
+      right: 
+       (matrix<431,460> [[431,432]
+        (row<432,437> (number[432,434]@{11}@) ,[435,435] (number[435,437]@{22}@))
+        (row<453,459> (number[453,455]@{33}@) ,[457,457] (number[457,459]@{44}@))
+        ][459,460])))
+   ;[460,461] (comment[467,538]@{% Case5: (t-utils-xr (re-search-forward "33 ") (ba...}@)
+   (assignment<543,583> left: (identifier[543,545]@{v5}@) =[546,547]
+    right: 
+     (binary_operator<548,583> left: (number[548,549]@{2}@) *[550,551]
+      right: 
+       (matrix<554,583> [[554,555]
+        (row<555,560> (number[555,557]@{11}@) ,[558,558] (number[558,560]@{22}@))
+        (row<576,582> (number[576,578]@{33}@) ,[580,580] (number[580,582]@{44}@))
+        ][582,583])))
+   ;[583,584] \n[584,585])
+  end[585,588])
+ \n[588,589])

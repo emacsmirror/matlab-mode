@@ -1,0 +1,70 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,185> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,70> left: (identifier[22,24]@{l1}@) =[25,26]
+  right: 
+   (lambda<27,70> @[27,28] ([28,29]
+    (arguments<29,30> (identifier[29,30]@{x}@))
+    )[30,31]
+    expression: 
+     (parenthesis<42,70> ([42,43]
+      (parenthesis<43,69> ([43,44]
+       (boolean_operator<44,68>
+        left: 
+         (function_call<44,53> name: (identifier[44,50]@{ischar}@) ([50,51]
+          (arguments<51,52> argument: (identifier[51,52]@{x}@))
+          )[52,53])
+        ||[54,56]
+        right: 
+         (function_call<57,68> name: (identifier[57,65]@{isstring}@) ([65,66]
+          (arguments<66,67> argument: (identifier[66,67]@{x}@))
+          )[67,68]))
+       )[68,69])
+      )[69,70])))
+ ;[70,71]
+ (assignment<73,164> left: (identifier[73,75]@{l2}@) =[76,77]
+  right: 
+   (lambda<78,164> @[78,79] ([79,80]
+    (arguments<80,81> (identifier[80,81]@{x}@))
+    )[81,82]
+    expression: 
+     (parenthesis<82,164> ([82,83]
+      (boolean_operator<83,163>
+       left: 
+        (parenthesis<83,125> ([83,84]
+         (boolean_operator<84,124>
+          left: 
+           (boolean_operator<84,108>
+            left: 
+             (function_call<84,93> name: (identifier[84,90]@{ischar}@) ([90,91]
+              (arguments<91,92> argument: (identifier[91,92]@{x}@))
+              )[92,93])
+            ||[94,96]
+            right: 
+             (function_call<97,108> name: (identifier[97,105]@{isstring}@) ([105,106]
+              (arguments<106,107> argument: (identifier[106,107]@{x}@))
+              )[107,108]))
+          ||[109,111]
+          right: 
+           (function_call<112,124> name: (identifier[112,121]@{isnumeric}@) ([121,122]
+            (arguments<122,123> argument: (identifier[122,123]@{x}@))
+            )[123,124]))
+         )[124,125])
+       &&[126,128] (line_continuation[129,133]@{...\n}@)
+       right: 
+        (not_operator<143,163> ~[143,144]
+         (function_call<144,163> name: (identifier[144,151]@{strcmpi}@) ([151,152]
+          (arguments<152,162> argument: (identifier[152,153]@{x}@) ,[153,154]
+           (string<155,162> '[155,156] (string_content[156,161]@{fubar}@) '[161,162]))
+          )[162,163])))
+      )[163,164])))
+ ;[164,165]
+ (assignment<167,183> left: (identifier[167,169]@{l3}@) =[170,171]
+  right: 
+   (lambda<172,183> @[172,173] ([173,174]
+    (arguments<174,175> (identifier[174,175]@{x}@))
+    )[175,176]
+    expression: 
+     (function_call<176,183> name: (identifier[176,180]@{disp}@) ([180,181]
+      (arguments<181,182> argument: (identifier[181,182]@{x}@))
+      )[182,183])))
+ ;[183,184] \n[184,185])

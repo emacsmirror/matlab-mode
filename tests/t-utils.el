@@ -1327,7 +1327,7 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
 
         (call-interactively #'indent-for-tab-command) ;; TAB on code just added
 
-        ;; While next line in our original contents is a newline insert "\n"
+        ;; While next line in our original contents is a newline, insert a newline
         (while (let ((next-line (nth (line-number-at-pos (point)) lines)))
                  (and next-line (string-match-p "^[ \t\r]*$" next-line)))
           (goto-char (line-end-position))
@@ -1336,6 +1336,7 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
           ;; TAB on the same blank line can result in different tree-sitter nodes than
           ;; the RET, so exercise that.
           (call-interactively #'indent-for-tab-command))
+
         (forward-line))
 
       ;; By design indent-for-tab-command adds whitespace up to the indent level for code insertion
@@ -1770,11 +1771,17 @@ errors according to the syntax-checker-fun\n%s" lang-file check-result))))
 
     (cons parse-error invalid-successful-parse)))
 
-(cl-defun t-utils-sweep-test-indent (test-name directory lang-file-regexp major-mode-fun
-                                               &key syntax-checker-fun check-valid-parse
-                                               error-nodes-regexp
-                                               log-file
-                                               result-file)
+(cl-defun t-utils-sweep-test-indent (test-name
+                                     directory
+                                     lang-file-regexp
+                                     major-mode-fun
+                                     &key
+                                     syntax-checker-fun
+                                     check-valid-parse
+                                     error-nodes-regexp
+                                     log-file
+                                     result-file
+                                     save-indent-to-tilde-file)
   "Sweep test indent on files under DIRECTORY recursively.
 File base names matching LANG-FILE-REGEXP are tested.
 TEST-NAME is used in messages.
@@ -1794,7 +1801,7 @@ processed to verify that the a successful tree-sitter parse also has no
 errors according to SYNTAX-CHECKER-FUN.
 
 Progress messages are logged to LOG-FILE which defaults to
-TEST_NAME.log.  Result is written to RESULT-FILE which defaults
+TEST_NAME.log.  Result summary is written to RESULT-FILE which defaults
 to TEST_NAME.result.txt.
 
 If the tree-sitter parse tree contains a node matching ERROR-NODES-REGEXP,
@@ -1803,7 +1810,10 @@ it is reported because the tree-sitter parser says it has errors and
 the SYNTAX-CHECKER-FUN says it does not.
 
 Next, the buffer is indented using `indent-region' and if this fails it
-is reported.  In addition, the slowest indents are reported.
+is reported.  In addition, the slowest indents are reported.  If
+SAVE-INDENT-TO-TILDE-FILE is non-nil, the indent result is saved to the
+file name with a tilde suffix, e.g. indent of foo.ext is saved to
+foo.ext~.
 
 Callers of this function should activate any assertions prior to calling
 this function.  For example, the last rule of the tree-sitter mode may
@@ -1894,6 +1904,10 @@ LANGUAGE tree-sitter that need addressing or some other issue."
 
           (condition-case err
               (progn
+                (with-current-buffer (find-file-noselect lang-file)
+                  (when (not (eq major-mode major-mode-fun))
+                    (error "Error %s has major-mode=%s which is not %s" lang-file
+                           (symbol-name major-mode) (symbol-name major-mode-fun))))
                 (t-utils--insert-file-for-test lang-file major-mode-fun)
                 (setq ok t))
             (error
@@ -1911,11 +1925,18 @@ LANGUAGE tree-sitter that need addressing or some other issue."
                 (let ((indent-start (current-time)))
                   (indent-region (point-min) (point-max))
                   (puthash lang-file (float-time (time-subtract (current-time) indent-start))
-                           took-ht))
-              (error (setq indent-errors
-                           (concat indent-errors
-                                   (format "%s:1: error: failed to indent, %s\n"
-                                           lang-file (error-message-string err))))))))))
+                           took-ht)
+                  (when save-indent-to-tilde-file
+                    (let ((lang-file-tilde (concat lang-file "~")))
+                      (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
+                      (write-region (point-min) (point-max) lang-file-tilde)))
+                  )
+              (error (progn
+                       (t-utils--log log-file (format "Failed-indent-region: %s\n" lang-file))
+                       (setq indent-errors
+                             (concat indent-errors
+                                     (format "%s:1: error: failed to indent, %s\n"
+                                             lang-file (error-message-string err)))))))))))
 
     (let* ((slow-files (let ((files '()))
                          (maphash (lambda (file _took-time)

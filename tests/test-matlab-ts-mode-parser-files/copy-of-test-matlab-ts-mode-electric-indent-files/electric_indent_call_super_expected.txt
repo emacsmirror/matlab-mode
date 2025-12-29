@@ -1,0 +1,23 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,227> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (class_definition<22,226> classdef[22,30] name: (identifier[31,57]@{electric_indent_call_super}@)
+  (superclasses<58,73> <[58,59]
+   (property_name<60,73> (identifier[60,67]@{myUtils}@) .[67,68] (identifier[68,73]@{super}@)))
+  \n[73,74]
+  (methods<78,222> methods[78,85] \n[85,86]
+   (function_definition<94,211> function[94,102]
+    (function_output<103,107> (identifier[103,106]@{obj}@) =[106,107])
+    name: (identifier[107,133]@{electric_indent_call_super}@) \n[133,134]
+    (block<149,198>
+     (function_call<149,166> name: (identifier[149,152]@{obj}@) @[152,153]
+      (superclass<153,166> (identifier[153,160]@{myUtils}@) .[160,161] (identifier[161,166]@{super}@)))
+     ;[166,167]
+     (function_call<178,197> name: (identifier[178,182]@{disp}@) ([182,183]
+      (arguments<183,196>
+       argument: (string<183,196> '[183,184] (string_content[184,195]@{in SubClass}@) '[195,196]))
+      )[196,197])
+     \n[197,198])
+    end[208,211])
+   \n[211,212] end[219,222])
+  \n[222,223] end[223,226])
+ \n[226,227])

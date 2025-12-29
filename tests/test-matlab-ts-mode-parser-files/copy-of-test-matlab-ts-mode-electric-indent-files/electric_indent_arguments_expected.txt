@@ -1,0 +1,32 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,318> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
+ (function_definition<21,317> function[21,29] name: (identifier[30,55]@{electric_indent_arguments}@)
+  (function_arguments<55,75> ([55,56] arguments: (identifier[56,59]@{in1}@) ,[59,60] (identifier[61,64]@{in2}@) ,[64,65] (identifier[66,74]@{varargin}@) )[74,75])
+  \n[75,76]
+  (arguments_statement<80,206> arguments[80,89] \n[89,90]
+   (property<98,143> name: (identifier[98,101]@{in1}@)
+    (validation_functions<102,143> {[102,103] (identifier[103,116]@{mustBeNumeric}@) ,[116,117] (identifier[118,128]@{mustBeReal}@) ,[128,129] (identifier[130,142]@{mustBeFinite}@) }[142,143]))
+   \n[143,144]
+   (property<152,197> name: (identifier[152,155]@{in2}@)
+    (validation_functions<156,197> {[156,157] (identifier[157,170]@{mustBeNumeric}@) ,[170,171] (identifier[172,182]@{mustBeReal}@) ,[182,183] (identifier[184,196]@{mustBeFinite}@) }[196,197]))
+   \n[197,198] end[202,205] \n[205,206])
+  (arguments_statement<213,263> arguments[213,222]
+   (attributes<227,238> ([227,228] argument: (identifier[228,237]@{Repeating}@) )[237,238])
+   \n[238,239]
+   (property<247,255> name: (identifier[247,255]@{varargin}@))
+   \n[255,256] end[260,263])
+  (block<268,314>
+   (function_call<268,277> name: (identifier[268,272]@{disp}@) ([272,273]
+    (arguments<273,276> argument: (identifier[273,276]@{in1}@))
+    )[276,277])
+   ;[277,278]
+   (function_call<283,292> name: (identifier[283,287]@{disp}@) ([287,288]
+    (arguments<288,291> argument: (identifier[288,291]@{in2}@))
+    )[291,292])
+   ;[292,293]
+   (function_call<298,312> name: (identifier[298,302]@{disp}@) ([302,303]
+    (arguments<303,311> argument: (identifier[303,311]@{varargin}@))
+    )[311,312])
+   ;[312,313] \n[313,314])
+  end[314,317])
+ \n[317,318])

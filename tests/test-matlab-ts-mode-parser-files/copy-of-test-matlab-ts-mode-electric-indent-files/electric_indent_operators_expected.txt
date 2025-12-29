@@ -1,0 +1,229 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,734> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (if_statement<22,96> if[22,24]
+  condition: 
+   (boolean_operator<25,75>
+    left: 
+     (not_operator<25,50> ~[25,26]
+      (function_call<26,50> name: (identifier[26,33]@{isempty}@) ([33,34]
+       (arguments<34,49>
+        argument: 
+         (field_expression<34,49>
+          object: 
+           (function_call<34,40> name: (identifier[34,37]@{foo}@) ([37,38]
+            (arguments<38,39> argument: (number[38,39]@{1}@))
+            )[39,40])
+          .[40,41] field: (identifier[41,49]@{SrcBlock}@)))
+       )[49,50]))
+    &&[51,53]
+    right: 
+     (comparison_operator<54,75>
+      (field_expression<54,69>
+       object: 
+        (function_call<54,60> name: (identifier[54,57]@{bar}@) ([57,58]
+         (arguments<58,59> argument: (number[58,59]@{1}@))
+         )[59,60])
+       .[60,61] field: (identifier[61,69]@{SrcBlock}@))
+      ~=[70,72]
+      (unary_operator<73,75> -[73,74] operand: (number[74,75]@{1}@))))
+  (block<80,93>
+   (function_call<80,92> name: (identifier[80,84]@{disp}@) ([84,85]
+    (arguments<85,91>
+     argument: (string<85,91> '[85,86] (string_content[86,90]@{here}@) '[90,91]))
+    )[91,92])
+   \n[92,93])
+  end[93,96])
+ \n[96,98]
+ (assignment<98,109> left: (identifier[98,99]@{D}@) =[100,101]
+  right: 
+   (binary_operator<102,109> left: (identifier[102,103]@{B}@) *[104,105]
+    right: (binary_operator<106,109> left: (identifier[106,107]@{r}@) ^[107,108] right: (number[108,109]@{2}@))))
+ ;[109,110]
+ (assignment<111,119> left: (identifier[111,112]@{x}@) =[113,114]
+  right: (binary_operator<115,119> left: (identifier[115,116]@{r}@) .^[116,118] right: (number[118,119]@{2}@)))
+ ;[119,120]
+ (assignment<122,129> left: (identifier[122,123]@{s}@) =[124,125]
+  right: (postfix_operator<127,129> operand: (identifier[127,128]@{D}@) '[128,129]))
+ ;[129,130]
+ (assignment<131,148> left: (identifier[131,132]@{t}@) =[133,134]
+  right: (postfix_operator<145,148> operand: (identifier[145,146]@{D}@) .'[146,148]))
+ ;[148,149]
+ (function_call<151,227> name: (identifier[151,154]@{foo}@) ([154,155]
+  (arguments<155,226> argument: (identifier[155,156]@{p}@) ,[156,157]
+   (string<157,165> '[157,158] (string_content[158,164]@{folder}@) '[164,165])
+   ,[165,166]
+   (lambda<169,226> @[169,170] ([170,171]
+    (arguments<171,172> (identifier[171,172]@{x}@))
+    )[172,173]
+    expression: 
+     (function_call<174,226> name: (identifier[174,192]@{validateattributes}@) ([192,193]
+      (arguments<193,225> argument: (identifier[193,194]@{x}@) ,[194,195]
+       (cell<195,212> {[195,196]
+        (row<196,211>
+         (string<196,202> '[196,197] (string_content[197,201]@{char}@) '[201,202])
+         ,[202,203]
+         (string<203,211> '[203,204] (string_content[204,210]@{string}@) '[210,211]))
+        }[211,212])
+       ,[212,213]
+       (cell<213,225> {[213,214]
+        (row<214,224>
+         (string<214,224> '[214,215] (string_content[215,223]@{nonempty}@) '[223,224]))
+        }[224,225]))
+      )[225,226])))
+  )[226,227])
+ ;[227,228]
+ (assignment<230,256> left: (identifier[230,232]@{mc}@) =[235,236]
+  right: (metaclass_operator<236,256> ?[236,237] (identifier[237,243]@{matlab}@) .[243,244] (identifier[244,249]@{mixin}@) .[249,250] (identifier[250,256]@{SetGet}@)))
+ ;[256,257]
+ (assignment<259,296>
+  left: 
+   (function_call<259,266> name: (identifier[259,260]@{P}@) ([260,261]
+    (arguments<261,265> argument: (identifier[261,265]@{hTmp}@))
+    )[265,266])
+  =[267,268]
+  right: 
+   (binary_operator<269,296>
+    left: 
+     (function_call<269,274> name: (identifier[269,271]@{P0}@) ([271,272]
+      (arguments<272,273> argument: (number[272,273]@{1}@))
+      )[273,274])
+    *[274,275]
+    right: 
+     (binary_operator<275,296> left: (identifier[275,280]@{theta}@) .^[280,282]
+      right: 
+       (parenthesis<282,296> ([282,283]
+        (binary_operator<283,295>
+         left: (unary_operator<283,286> -[283,284] operand: (identifier[284,286]@{g0}@))
+         /[286,287]
+         right: 
+          (parenthesis<287,295> ([287,288]
+           (binary_operator<288,294>
+            left: 
+             (function_call<288,292> name: (identifier[288,289]@{L}@) ([289,290]
+              (arguments<290,291> argument: (number[290,291]@{1}@))
+              )[291,292])
+            *[292,293] right: (identifier[293,294]@{R}@))
+           )[294,295]))
+        )[295,296]))))
+ ;[296,297]
+ (assignment<299,321> left: (identifier[299,301]@{a2}@) =[302,303]
+  right: 
+   (binary_operator<304,321>
+    left: 
+     (parenthesis<304,311> ([304,305]
+      (binary_operator<305,310> left: (number[305,306]@{1}@) +[307,308] right: (number[309,310]@{2}@))
+      )[310,311])
+    ^[312,313]
+    right: 
+     (parenthesis<314,321> ([314,315]
+      (binary_operator<315,320> left: (number[315,316]@{3}@) +[317,318] right: (number[319,320]@{4}@))
+      )[320,321])))
+ ;[321,322]
+ (assignment<324,347> left: (identifier[324,326]@{a3}@) =[327,328]
+  right: 
+   (binary_operator<329,347>
+    left: 
+     (parenthesis<329,336> ([329,330]
+      (binary_operator<330,335> left: (number[330,331]@{1}@) +[332,333] right: (number[334,335]@{2}@))
+      )[335,336])
+    .^[337,339]
+    right: 
+     (parenthesis<340,347> ([340,341]
+      (binary_operator<341,346> left: (number[341,342]@{3}@) +[343,344] right: (number[345,346]@{4}@))
+      )[346,347])))
+ ;[347,348]
+ (assignment<350,355> left: (identifier[350,351]@{a}@) =[352,353] right: (number[354,355]@{2}@))
+ ;[355,356]
+ (assignment<357,362> left: (identifier[357,358]@{b}@) =[359,360] right: (number[361,362]@{3}@))
+ ;[362,363]
+ (assignment<365,377> left: (identifier[365,367]@{m1}@) =[368,369]
+  right: 
+   (binary_operator<370,377>
+    left: (binary_operator<370,373> left: (number[370,371]@{2}@) ^[371,372] right: (number[372,373]@{3}@))
+    *[374,375] right: (number[376,377]@{4}@)))
+ ;[377,378]
+ (assignment<379,394> left: (identifier[379,381]@{m2}@) =[382,383]
+  right: 
+   (binary_operator<384,394>
+    left: (binary_operator<384,390> left: (identifier[384,385]@{a}@) ^[386,387] right: (number[389,390]@{4}@))
+    *[391,392] right: (number[393,394]@{4}@)))
+ ;[394,395]
+ (assignment<396,411> left: (identifier[396,398]@{m3}@) =[399,400]
+  right: 
+   (binary_operator<401,411>
+    left: (binary_operator<401,407> left: (identifier[401,402]@{a}@) ^[403,404] right: (identifier[406,407]@{b}@))
+    *[408,409] right: (number[410,411]@{4}@)))
+ ;[411,412]
+ (assignment<413,429> left: (identifier[413,415]@{m4}@) =[416,417]
+  right: 
+   (binary_operator<418,429> left: (number[418,419]@{2}@) ^[420,421]
+    right: 
+     (parenthesis<422,429> ([422,423]
+      (binary_operator<423,428> left: (number[423,424]@{3}@) *[425,426] right: (number[427,428]@{4}@))
+      )[428,429])))
+ ;[429,430]
+ (assignment<432,445> left: (identifier[432,434]@{m5}@) =[435,436]
+  right: 
+   (binary_operator<437,445>
+    left: (binary_operator<437,441> left: (number[437,439]@{2.}@) ^[439,440] right: (number[440,441]@{3}@))
+    *[442,443] right: (number[444,445]@{4}@)))
+ ;[445,446]
+ (assignment<447,463> left: (identifier[447,449]@{m6}@) =[450,451]
+  right: 
+   (binary_operator<452,463>
+    left: (binary_operator<452,459> left: (identifier[452,453]@{a}@) .^[454,456] right: (number[458,459]@{4}@))
+    *[460,461] right: (number[462,463]@{4}@)))
+ ;[463,464]
+ (assignment<465,481> left: (identifier[465,467]@{m7}@) =[468,469]
+  right: 
+   (binary_operator<470,481>
+    left: (binary_operator<470,477> left: (identifier[470,471]@{a}@) .^[472,474] right: (identifier[476,477]@{b}@))
+    *[478,479] right: (number[480,481]@{4}@)))
+ ;[481,482]
+ (assignment<483,500> left: (identifier[483,485]@{m8}@) =[486,487]
+  right: 
+   (binary_operator<488,500> left: (number[488,489]@{2}@) .^[490,492]
+    right: 
+     (parenthesis<493,500> ([493,494]
+      (binary_operator<494,499> left: (number[494,495]@{3}@) *[496,497] right: (number[498,499]@{4}@))
+      )[499,500])))
+ ;[500,501] \n[501,503]
+ (function_definition<503,733> function[503,511] name: (identifier[512,517]@{myBar}@)
+  (function_arguments<517,531> ([517,518] arguments: (identifier[518,519]@{x}@) ,[519,520] (identifier[520,521]@{y}@) ,[521,522] (identifier[522,530]@{propArgs}@) )[530,531])
+  \n[531,532]
+  (arguments_statement<536,655> arguments[536,545] \n[545,546]
+   (property<554,568> name: (identifier[554,555]@{x}@)
+    (dimensions<556,561> ([556,557]
+     (spread_operator<557,558> :[557,558])
+     ,[558,559]
+     (spread_operator<559,560> :[559,560])
+     )[560,561])
+    (identifier[562,568]@{double}@))
+   \n[568,569]
+   (property<577,591> name: (identifier[577,578]@{y}@)
+    (dimensions<579,584> ([579,580]
+     (spread_operator<580,581> :[580,581])
+     ,[581,582]
+     (spread_operator<582,583> :[582,583])
+     )[583,584])
+    (identifier[585,591]@{double}@))
+   \n[591,592]
+   (class_property<600,647> (identifier[600,608]@{propArgs}@) .?[609,611] (identifier[612,618]@{matlab}@) .[618,619] (identifier[619,627]@{graphics}@) .[627,628] (identifier[628,633]@{chart}@) .[633,634] (identifier[634,643]@{primitive}@) .[643,644] (identifier[644,647]@{Bar}@))
+   \n[647,648] end[652,655])
+  (block<660,730>
+   (assignment<660,699> left: (identifier[660,672]@{propertyCell}@) =[673,674]
+    right: 
+     (function_call<675,699> name: (identifier[675,689]@{namedargs2cell}@) ([689,690]
+      (arguments<690,698> argument: (identifier[690,698]@{propArgs}@))
+      )[698,699]))
+   ;[699,700]
+   (function_call<705,729> name: (identifier[705,708]@{bar}@) ([708,709]
+    (arguments<709,728> argument: (identifier[709,710]@{x}@) ,[710,711] (identifier[711,712]@{y}@) ,[712,713]
+     (function_call<713,728> name: (identifier[713,725]@{propertyCell}@) {[725,726]
+      (arguments<726,727>
+       argument: (spread_operator<726,727> :[726,727]))
+      }[727,728]))
+    )[728,729])
+   \n[729,730])
+  end[730,733])
+ \n[733,734])

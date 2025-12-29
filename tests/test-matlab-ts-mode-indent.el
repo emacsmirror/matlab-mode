@@ -73,7 +73,8 @@ after validating them, rename them to
                                       (parent (and node (treesit-node-parent node))))
                                  (when (string= (treesit-node-type parent) "ERROR")
                                    (insert " ")))
-                               (forward-line)))))
+                               (forward-line))))
+         (matlab-ts-mode-electric-indent nil))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-indent test-name m-files
                          :indent-checker indent-checker

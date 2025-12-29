@@ -93,7 +93,8 @@ the results are displayed on stdout."
      (rx ".m" eos)
      #'matlab-ts-mode
      :syntax-checker-fun #'sweep-test-matlab-ts-mode-indent--syntax-checker
-     :check-valid-parse check-valid-parse)))
+     :check-valid-parse check-valid-parse
+     :save-indent-to-tilde-file t)))
 
 (provide 'sweep-test-matlab-ts-mode-indent)
 ;;; sweep-test-matlab-ts-mode-indent.el ends here
