@@ -3,6 +3,10 @@
 
 # Copyright (C) 2025 Free Software Foundation, Inc.
 
+* Release 7.4.2 Dec 29, 2025
+
+Fix bug in tramp (remote) matlab-shell when matlab is installed in a custom location.
+
 * Release 7.4.1 Nov 26, 2025
 
 1. Fix indent bug. In following typing RET after the argument end statement, the indent now goes to
