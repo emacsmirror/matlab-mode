@@ -31,3 +31,9 @@ g = foo(1,2,3);
 x = 2;
   y = 3;
    z = x * y;
+
+% The a(d("=")) = 1; statement is not aligned because of the use of an equal in a string "="
+  foo = 1;
+   d = dictionary("=", 1);
+     other = 2;
+a(d("=")) = 1;

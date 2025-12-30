@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,657> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,57]@{% Consecuitvie assignment alignment}@) (comment[59,294]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
+(source_file<1,820> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,57]@{% Consecuitvie assignment alignment}@) (comment[59,294]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
  (assignment<296,302> left: (identifier[296,297]@{a}@) =[298,299] right: (number[300,302]@{10}@))
  ;[302,303]
  (assignment<308,333> left: (identifier[308,321]@{bLongVariable}@) =[322,323]
@@ -77,4 +77,28 @@
  ;[641,642]
  (assignment<646,655> left: (identifier[646,647]@{z}@) =[648,649]
   right: (binary_operator<650,655> left: (identifier[650,651]@{x}@) *[652,653] right: (identifier[654,655]@{y}@)))
- ;[655,656] \n[656,657])
+ ;[655,656] (comment[658,750]@{% The a(d("=")) = 1; statement is not aligned beca...}@)
+ (assignment<753,760> left: (identifier[753,756]@{foo}@) =[757,758] right: (number[759,760]@{1}@))
+ ;[760,761]
+ (assignment<765,787> left: (identifier[765,766]@{d}@) =[767,768]
+  right: 
+   (function_call<769,787> name: (identifier[769,779]@{dictionary}@) ([779,780]
+    (arguments<780,786>
+     argument: (string<780,783> "[780,781] (string_content[781,782]@{=}@) "[782,783])
+     ,[783,784] (number[785,786]@{1}@))
+    )[786,787]))
+ ;[787,788]
+ (assignment<794,803> left: (identifier[794,799]@{other}@) =[800,801] right: (number[802,803]@{2}@))
+ ;[803,804]
+ (assignment<805,818>
+  left: 
+   (function_call<805,814> name: (identifier[805,806]@{a}@) ([806,807]
+    (arguments<807,813>
+     argument: 
+      (function_call<807,813> name: (identifier[807,808]@{d}@) ([808,809]
+       (arguments<809,812>
+        argument: (string<809,812> "[809,810] (string_content[810,811]@{=}@) "[811,812]))
+       )[812,813]))
+    )[813,814])
+  =[815,816] right: (number[817,818]@{1}@))
+ ;[818,819] \n[819,820])
