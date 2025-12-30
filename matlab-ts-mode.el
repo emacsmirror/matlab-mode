@@ -3351,30 +3351,113 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               (setq ei-info (list ei-line new-line-offset (nth 2 ei-info) (nth 3 ei-info)))))))))
   ei-info)
 
+(defun matlab-ts-mode--ei-trailing-comment-offset (ei-info)
+  "Get trailing comment offset from first char current line?
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents.
+To simplify implementation, we require that the first \"%\" character in
+the line be the start of the trailing comment.  Thus,
+  s = \"foo % bar\" % comment
+is not identified as a trailing comment and
+  s = \"foo bar\" %comment
+is identified as a trailing comment."
+  (when ei-info
+    (save-excursion
+      (beginning-of-line)
+      (when (re-search-forward "%" (line-end-position) t)
+        (let ((node (treesit-node-at (point))))
+          (when (equal (treesit-node-type node) "comment")
+            (let* ((new-line (nth 0 ei-info))
+                   (offset (- (string-match-p "%" new-line) (string-match-p "[^ \t]" new-line))))
+              (when (> offset 0)
+                ;; have trailing comment at offset from first char in new-line
+                offset))))))))
+
+(defvar-local matlab-ts-mode--ei-align-comment-alist nil)
+
+(defun matlab-ts-mode--ei-align-trailing-comments (ei-info)
+  "Align trailing comments in EI-INFO.
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
+  (let* ((line-comment-offset (matlab-ts-mode--ei-trailing-comment-offset ei-info)))
+    (when line-comment-offset
+      (let* (comment-offset
+             line-nums
+             line-start-pt)
+
+        (when (or (not matlab-ts-mode--ei-align-comment-alist)
+                  (not (setq comment-offset (alist-get (line-number-at-pos)
+                                                       matlab-ts-mode--ei-align-comment-alist))))
+          (setq comment-offset line-comment-offset)
+          (setq line-nums `(,(line-number-at-pos)))
+          (save-excursion
+            (beginning-of-line)
+            (setq line-start-pt (point))
+
+            ;; Look backwards and then forwards for lines with trailing comments
+            (cl-loop
+             for direction in '(-1 1) do
+             (goto-char line-start-pt)
+             (cl-loop
+              while (not (if (= direction -1) (bobp) (eobp))) do
+              (forward-line direction)
+              (let* ((ei-l-info (matlab-ts-mode--ei-get-new-line))
+                     (l-offset (matlab-ts-mode--ei-trailing-comment-offset ei-l-info)))
+                (if l-offset
+                    (progn
+                      (push (line-number-at-pos) line-nums)
+                      (when (> l-offset comment-offset)
+                        (setq comment-offset l-offset)))
+                  (cl-return))))))
+
+          (when matlab-ts-mode--ei-align-comment-alist
+            (dolist (line-num line-nums)
+              (push `(,line-num . ,comment-offset) matlab-ts-mode--ei-align-comment-alist))))
+
+        (let ((diff (- comment-offset line-comment-offset)))
+          (when (> diff 0)
+            (let* ((ei-line (nth 0 ei-info))
+                   (loc (1- (string-match "%" ei-line)))
+                   (new-line-offset (let ((line-offset (nth 1 ei-info)))
+                                      (when line-offset
+                                        (if (<= loc line-offset)
+                                            (+ line-offset diff)
+                                          line-offset)))))
+              (setq ei-line (concat (substring ei-line 0 loc)
+                                    (make-string diff ? )
+                                    (substring ei-line loc)))
+              (setq ei-info (list ei-line new-line-offset (nth 2 ei-info) (nth 3 ei-info))))))))
+    ei-info))
+
+(defun matlab-ts-mode--ei-align (ei-info)
+  "Align elements in EI-INFO.
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
+  (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
+  (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info))
+  ei-info)
+
 (cl-defun matlab-ts-mode--indent-elements-in-line (&optional start-node start-offset)
-    "Indent current line by adjust spacing around elements.
+  "Indent current line by adjust spacing around elements.
 Optional START-NODE and START-OFFSET are used to restore the point when
 line is updated.  Returns t if line was updated."
 
-    ;; If line was indented (ei-line is not same as current line), then update the buffer
-    (let ((ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
-      (when ei-info
-        (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
-        (let* ((ei-line (nth 0 ei-info))
-               (line-offset (nth 1 ei-info))
-               (line-node-types (nth 2 ei-info))
-               (curr-line (buffer-substring (line-beginning-position) (line-end-position)))
-               (updated (not (string= curr-line ei-line))))
+  ;; If line was indented (ei-line is not same as current line), then update the buffer
+  (let ((ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
+    (when ei-info
+      (setq ei-info (matlab-ts-mode--ei-align ei-info))
+      (let* ((ei-line (nth 0 ei-info))
+             (line-offset (nth 1 ei-info))
+             (line-node-types (nth 2 ei-info))
+             (curr-line (buffer-substring (line-beginning-position) (line-end-position)))
+             (updated (not (string= curr-line ei-line))))
 
-          (when updated
-            (delete-region (line-beginning-position) (line-end-position))
-            (insert ei-line)
-            (when matlab-ts-mode--electric-indent-assert
-              (matlab-ts-mode--electric-indent-assert-match line-node-types))
-            (when line-offset
-              (goto-char (+ (line-beginning-position) line-offset))))
-          ;; result
-          updated))))
+        (when updated
+          (delete-region (line-beginning-position) (line-end-position))
+          (insert ei-line)
+          (when matlab-ts-mode--electric-indent-assert
+            (matlab-ts-mode--electric-indent-assert-match line-node-types))
+          (when line-offset
+            (goto-char (+ (line-beginning-position) line-offset))))
+        ;; result
+        updated))))
 
 (defun matlab-ts-mode--treesit-indent ()
   "Call `treesit-indent', then do electric indent."
@@ -3424,7 +3507,8 @@ line is updated.  Returns t if line was updated."
           (progn
             ;; Add invalid entry to matlab-ts-mode--ei-align-assign-alist as a marker to activate
             ;; caching of computed offsets for assignment alignment.
-            (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0)))
+            (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
+                        matlab-ts-mode--ei-align-comment-alist '((-1 . 0)))
             (save-excursion
               (goto-char beg)
               (while (<= curr-line end-line)
@@ -3439,7 +3523,8 @@ line is updated.  Returns t if line was updated."
               (forward-line end-line)
               (setq end (point))))
 
-        (setq-local matlab-ts-mode--ei-align-assign-alist nil)))
+        (setq-local matlab-ts-mode--ei-align-assign-alist nil
+                    matlab-ts-mode--ei-align-comment-alist nil)))
 
     (treesit-indent-region beg end)))
 
