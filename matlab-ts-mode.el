@@ -3160,120 +3160,207 @@ Assumes that current point is at `back-to-indentation'."
       line-node-types
     (concat line-node-types (when line-node-types " ") node-type)))
 
+(cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-offset)
+  "Get new line content with element spacing adjusted.
+Optional START-NODE and START-OFFSET are used to compute new line-offset
+to restore point after updating line.  Note, new line content may be same
+as current line.  Also computes line-node-types which is a string containing
+the line node types.
+Returns electric indent info, ei-info,
+  (list NEW-LINE-CONTENT LINE-OFFSET LINE-NODE-TYPES FIRST-NODE-IN-LINE)
+or nil."
+  (save-excursion
+    (back-to-indentation)
+    (when (matlab-ts-mode--no-elements-to-indent)
+      (cl-return-from matlab-ts-mode--ei-get-new-line))
+
+    ;; Compute ei-line, the electric indented line content
+    (let* (line-offset ;; used in restoring point
+           (ei-line (buffer-substring (line-beginning-position) (point)))
+           (pair (matlab-ts-mode--move-to-and-get-node))
+           (node (or (car pair)
+                     (cl-return-from matlab-ts-mode--ei-get-new-line)))
+           (node-type (cdr pair))
+           (first-node node)
+           line-node-types
+           next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
+           next2-n-spaces-between)
+
+      (cl-loop
+       while (and (< (point) (line-end-position))
+                  (< (treesit-node-end node) (line-end-position)))
+       do
+       (let* ((next-pair (progn
+                           (goto-char (treesit-node-end node))
+                           (or next2-pair
+                               (matlab-ts-mode--move-to-and-get-node))))
+              (next-node (let ((candidate-node (car next-pair)))
+                           (when (not candidate-node)
+                             (cl-return))
+                           (when (= (treesit-node-start candidate-node)
+                                    (treesit-node-end candidate-node))
+                             ;; Syntax errors can result in empty nodes, so skip this line
+                             ;; TopTester: electric_indent_empty_node_error.m
+                             (cl-return-from matlab-ts-mode--ei-get-new-line))
+                           candidate-node))
+              (next-node-type (cdr next-pair))
+              (n-spaces-between next2-n-spaces-between))
+
+         (setq next2-pair nil
+               next2-n-spaces-between nil)
+
+         (when matlab-ts-mode--electric-indent-assert
+           (setq line-node-types (matlab-ts-mode--update-line-node-types line-node-types
+                                                                         node node-type)))
+
+         (when (not n-spaces-between)
+           (cl-loop for tuple in matlab-ts-mode--electric-indent-spacing do
+                    (let* ((node-re (nth 0 tuple))
+                           (next-spec (nth 1 tuple))
+                           (next-node-re (if (listp next-spec) (car next-spec) next-spec))
+                           (next2-node-re (when (listp next-spec) (cdr next-spec))))
+
+                      (when (and (string-match-p node-re node-type)
+                                 (string-match-p next-node-re next-node-type)
+                                 (or (not next2-node-re)
+                                     (save-excursion
+                                       (goto-char (treesit-node-end next-node))
+                                       (let* ((pair (matlab-ts-mode--move-to-and-get-node))
+                                              (next2-node-type
+                                               (or (cdr pair)
+                                                   (cl-return-from
+                                                       matlab-ts-mode--ei-get-new-line))))
+
+                                         (when (string-match-p next2-node-re next2-node-type)
+                                           (setq next2-pair pair)
+                                           (setq next2-n-spaces-between (nth 2 tuple))
+                                           t)))))
+
+                        (setq n-spaces-between (nth 2 tuple))
+                        (when matlab-ts-mode--electric-indent-verbose
+                          (message "-->ei-matched: %S for node=<\"%s\" %S> next-node=<\"%s\" %S>"
+                                   tuple node-type node next-node-type next-node))
+                        (cl-return)))))
+
+         (when (not n-spaces-between)
+           (error "Internal error, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
+                  node-type node next-node-type next-node))
+
+         (let* ((node-end (treesit-node-end node))
+                (next-node-start (treesit-node-start next-node))
+                (extra-chars (matlab-ts-mode--node-extra-chars node-end next-node-start)))
+           ;; Update ei-line
+           (when (equal start-node node)
+             (setq line-offset (+ (length ei-line) start-offset)))
+
+           (setq ei-line (matlab-ts-mode--concat-ei-line ei-line node extra-chars n-spaces-between))
+
+           (setq node next-node
+                 node-type next-node-type)
+           )))
+
+      (when node
+        (when matlab-ts-mode--electric-indent-assert
+          (setq line-node-types (matlab-ts-mode--update-line-node-types line-node-types
+                                                                        node node-type)))
+        (let ((extra-chars (matlab-ts-mode--node-extra-chars
+                            (min (treesit-node-end node) (line-end-position))
+                            (line-end-position))))
+          (setq ei-line (matlab-ts-mode--concat-ei-line ei-line node extra-chars 0))))
+
+      (list ei-line line-offset line-node-types first-node))))
+
+(defun matlab-ts-mode--ei-is-assign (node)
+  "Is NODE the first node of a single-line assignmnet?"
+  (let ((parent (treesit-node-parent node)))
+    (while (and parent
+                (not (string= (treesit-node-type parent) "assignment")))
+      (setq parent (treesit-node-parent parent)))
+    (and parent
+         (let ((first-child (treesit-node-child parent 0)))
+           (eq (treesit-node-start node) (treesit-node-start first-child)))
+         (<= (treesit-node-end parent) (line-end-position))
+         (save-excursion
+           (beginning-of-line)
+           (when (re-search-forward "=" (line-end-position) t)
+             (backward-char)
+             (let ((eq-node (treesit-node-at (point))))
+               (and (equal (treesit-node-type eq-node) "=")
+                    (equal (treesit-node-type (treesit-node-parent eq-node)) "assignment"))))))))
+
+(defun matlab-ts-mode--ei-assign-offset (ei-line)
+  "Get the assignment offset from the indent-level in EI-LINE."
+  (let* ((first-char-offset (or (string-match-p "[^ \t]" ei-line) (error "Assert: no first char")))
+         (offset (- (or (string-match-p "=" ei-line) (error "Assert: no ="))
+                    first-char-offset)))
+    offset))
+
+(defun matlab-ts-mode--ei-align-assignments (ei-info)
+  "Update EI-INfO to align assignments.
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
+  (let ((first-node-in-line (nth 3 ei-info)))
+    (when (matlab-ts-mode--ei-is-assign first-node-in-line)
+      (let* ((ei-line (nth 0 ei-info))
+             (line-assign-offset (matlab-ts-mode--ei-assign-offset ei-line))
+             (assign-offset line-assign-offset)
+             line-start-pt)
+        (save-excursion
+          (beginning-of-line)
+          (setq line-start-pt (point))
+
+          ;; Look backwards and then forwards for single-line assignments
+          (cl-loop
+           for direction in '(-1 1) do
+           (goto-char line-start-pt)
+           (cl-loop
+            while (not (if (= direction -1) (bobp) (eobp))) do
+            (forward-line direction)
+            (let* ((l-info (matlab-ts-mode--ei-get-new-line))
+                   (l-first-node (nth 3 l-info)))
+              (if (and l-first-node
+                       (matlab-ts-mode--ei-is-assign l-first-node))
+                  (let ((l-offset (matlab-ts-mode--ei-assign-offset (nth 0 l-info))))
+                    (when (> l-offset assign-offset)
+                      (setq assign-offset l-offset)))
+                  (cl-return))))))
+        (let ((diff (- assign-offset line-assign-offset)))
+          (when (> diff 0)
+            (let* ((loc (1- (string-match "=" ei-line)))
+                   (new-line-offset (let ((line-offset (nth 1 ei-info)))
+                                      (when line-offset
+                                        (if (<= loc line-offset)
+                                            (+ line-offset diff)
+                                          line-offset)))))
+              (setq ei-line (concat (substring ei-line 0 loc)
+                                    (make-string diff ? )
+                                    (substring ei-line loc)))
+              (setq ei-info (list ei-line new-line-offset (nth 2 ei-info) (nth 3 ei-info)))))))))
+  ei-info)
+
 (cl-defun matlab-ts-mode--indent-elements-in-line (&optional start-node start-offset)
-  "Indent current line by adjust spacing around elements.
+    "Indent current line by adjust spacing around elements.
 Optional START-NODE and START-OFFSET are used to restore the point when
 line is updated.  Returns t if line was updated."
 
-  (back-to-indentation)
-  (when (matlab-ts-mode--no-elements-to-indent)
-    (cl-return-from matlab-ts-mode--indent-elements-in-line))
-
-  ;; Compute ei-line, the electric indented line content
-  (let* (line-offset ;; used in restoring point
-         (ei-line (buffer-substring (line-beginning-position) (point)))
-         (pair (matlab-ts-mode--move-to-and-get-node))
-         (node (or (car pair)
-                   (cl-return-from matlab-ts-mode--indent-elements-in-line)))
-         (node-type (cdr pair))
-         line-node-types
-         next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
-         next2-n-spaces-between)
-
-    (cl-loop
-     while (and (< (point) (line-end-position))
-                (< (treesit-node-end node) (line-end-position)))
-     do
-     (let* ((next-pair (progn
-                         (goto-char (treesit-node-end node))
-                         (or next2-pair
-                             (matlab-ts-mode--move-to-and-get-node))))
-            (next-node (let ((candidate-node (car next-pair)))
-                         (when (not candidate-node)
-                           (cl-return))
-                         (when (= (treesit-node-start candidate-node)
-                                  (treesit-node-end candidate-node))
-                           ;; Syntax errors can result in empty nodes, so skip this line
-                           ;; TopTester: electric_indent_empty_node_error.m
-                           (cl-return-from matlab-ts-mode--indent-elements-in-line))
-                         candidate-node))
-            (next-node-type (cdr next-pair))
-            (n-spaces-between next2-n-spaces-between))
-
-       (setq next2-pair nil
-             next2-n-spaces-between nil)
-
-       (when matlab-ts-mode--electric-indent-assert
-         (setq line-node-types (matlab-ts-mode--update-line-node-types line-node-types
-                                                                       node node-type)))
-
-       (when (not n-spaces-between)
-         (cl-loop for tuple in matlab-ts-mode--electric-indent-spacing do
-                  (let* ((node-re (nth 0 tuple))
-                         (next-spec (nth 1 tuple))
-                         (next-node-re (if (listp next-spec) (car next-spec) next-spec))
-                         (next2-node-re (when (listp next-spec) (cdr next-spec))))
-
-                    (when (and (string-match-p node-re node-type)
-                               (string-match-p next-node-re next-node-type)
-                               (or (not next2-node-re)
-                                   (save-excursion
-                                     (goto-char (treesit-node-end next-node))
-                                     (let* ((pair (matlab-ts-mode--move-to-and-get-node))
-                                            (next2-node-type
-                                             (or (cdr pair)
-                                                 (cl-return-from
-                                                     matlab-ts-mode--indent-elements-in-line))))
-
-                                       (when (string-match-p next2-node-re next2-node-type)
-                                         (setq next2-pair pair)
-                                         (setq next2-n-spaces-between (nth 2 tuple))
-                                         t)))))
-
-                      (setq n-spaces-between (nth 2 tuple))
-                      (when matlab-ts-mode--electric-indent-verbose
-                        (message "-->ei-matched: %S for node=<\"%s\" %S> next-node=<\"%s\" %S>"
-                                 tuple node-type node next-node-type next-node))
-                      (cl-return)))))
-
-       (when (not n-spaces-between)
-         (error "Internal error, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
-                node-type node next-node-type next-node))
-
-       (let* ((node-end (treesit-node-end node))
-              (next-node-start (treesit-node-start next-node))
-              (extra-chars (matlab-ts-mode--node-extra-chars node-end next-node-start)))
-         ;; Update ei-line
-         (when (equal start-node node)
-           (setq line-offset (+ (length ei-line) start-offset)))
-
-         (setq ei-line (matlab-ts-mode--concat-ei-line ei-line node extra-chars n-spaces-between))
-
-         (setq node next-node
-               node-type next-node-type)
-         )))
-
-    (when node
-      (when matlab-ts-mode--electric-indent-assert
-        (setq line-node-types (matlab-ts-mode--update-line-node-types line-node-types
-                                                                      node node-type)))
-      (let ((extra-chars (matlab-ts-mode--node-extra-chars
-                          (min (treesit-node-end node) (line-end-position))
-                          (line-end-position))))
-        (setq ei-line (matlab-ts-mode--concat-ei-line ei-line node extra-chars 0))))
-
     ;; If line was indented (ei-line is not same as current line), then update the buffer
-    (let* ((curr-line (buffer-substring (line-beginning-position) (line-end-position)))
-           (updated (not (string= curr-line ei-line))))
-      (when updated
-        (delete-region (line-beginning-position) (line-end-position))
-        (insert ei-line)
-        (when matlab-ts-mode--electric-indent-assert
-          (matlab-ts-mode--electric-indent-assert-match line-node-types))
-        (when line-offset
-          (goto-char (+ (line-beginning-position) line-offset))))
-      ;; result
-      updated)))
+    (let ((ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
+      (when ei-info
+        (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
+        (let* ((ei-line (nth 0 ei-info))
+               (line-offset (nth 1 ei-info))
+               (line-node-types (nth 2 ei-info))
+               (curr-line (buffer-substring (line-beginning-position) (line-end-position)))
+               (updated (not (string= curr-line ei-line))))
+
+          (when updated
+            (delete-region (line-beginning-position) (line-end-position))
+            (insert ei-line)
+            (when matlab-ts-mode--electric-indent-assert
+              (matlab-ts-mode--electric-indent-assert-match line-node-types))
+            (when line-offset
+              (goto-char (+ (line-beginning-position) line-offset))))
+          ;; result
+          updated))))
 
 (defun matlab-ts-mode--treesit-indent ()
   "Call `treesit-indent', then do electric indent."
@@ -3318,6 +3405,7 @@ line is updated.  Returns t if line was updated."
          (curr-line start-line)
          (end-line (line-number-at-pos end)))
 
+    ;; TODO optimize assignment alignment to compute once
     (when matlab-ts-mode-electric-indent
       (save-excursion
         (goto-char beg)

@@ -54,4 +54,4 @@ c3 = {{[17.50 0] [17.50 0]} {[120 0] [120 20]}}; %  <{Matched rule: (matlab-ts-m
 
 
 c4{1} = [1 2; 3 4]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-v4 = [c4{1}(1, 1), c4{1}(1, 1)]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+v4    = [c4{1}(1, 1), c4{1}(1, 1)]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>

@@ -1,34 +1,80 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,198> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,57]@{% Consecuitvie assignment alignment}@)
- (assignment<59,65> left: (identifier[59,60]@{a}@) =[61,62] right: (number[63,65]@{10}@))
- ;[65,66]
- (assignment<67,92> left: (identifier[67,80]@{bLongVariable}@) =[81,82]
+(source_file<1,657> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,57]@{% Consecuitvie assignment alignment}@) (comment[59,294]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
+ (assignment<296,302> left: (identifier[296,297]@{a}@) =[298,299] right: (number[300,302]@{10}@))
+ ;[302,303]
+ (assignment<308,333> left: (identifier[308,321]@{bLongVariable}@) =[322,323]
   right: 
-   (matrix<83,92> [[83,84]
-    (row<84,91> (number[84,85]@{1}@) ,[85,86] (number[87,88]@{2}@) ,[88,89] (number[90,91]@{3}@))
-    ][91,92]))
- ;[92,93]
- (assignment<94,99> left: (identifier[94,95]@{c}@) =[96,97] right: (number[98,99]@{5}@))
- ;[99,100]
- (assignment<101,116> left: (identifier[101,107]@{dShort}@) =[108,109]
+   (matrix<324,333> [[324,325]
+    (row<325,332> (number[325,326]@{1}@) ,[326,327] (number[328,329]@{2}@) ,[329,330] (number[331,332]@{3}@))
+    ][332,333]))
+ ;[333,334]
+ (assignment<335,340> left: (identifier[335,336]@{c}@) =[337,338] right: (number[339,340]@{5}@))
+ ;[340,341]
+ (assignment<349,364> left: (identifier[349,355]@{dShort}@) =[356,357]
   right: 
-   (matrix<110,116> [[110,111]
-    (row<111,115> (number[111,112]@{1}@) ,[112,113] (number[114,115]@{2}@))
-    ][115,116]))
- ;[116,117]
- (assignment<118,152> left: (identifier[118,119]@{x}@) =[120,121]
+   (matrix<358,364> [[358,359]
+    (row<359,363> (number[359,360]@{1}@) ,[360,361] (number[362,363]@{2}@))
+    ][363,364]))
+ ;[364,365]
+ (assignment<366,412> left: (identifier[366,367]@{x}@) =[380,381]
   right: 
-   (binary_operator<122,152>
+   (binary_operator<382,412>
     left: 
-     (binary_operator<122,143>
-      left: (binary_operator<122,139> left: (identifier[122,123]@{a}@) +[124,125] right: (identifier[126,139]@{bLongVariable}@))
-      +[140,141] right: (identifier[142,143]@{c}@))
-    +[144,145] right: (identifier[146,152]@{dShort}@)))
- ;[152,153]
- (assignment<155,165> left: (identifier[155,161]@{length}@) =[162,163] right: (number[164,165]@{5}@))
- ;[165,166]
- (assignment<167,177> left: (identifier[167,172]@{width}@) =[173,174] right: (number[175,177]@{10}@))
- ;[177,178]
- (assignment<179,196> left: (identifier[179,183]@{area}@) =[183,184]
-  right: (binary_operator<184,196> left: (identifier[184,190]@{length}@) *[190,191] right: (identifier[191,196]@{width}@)))
- ;[196,197] \n[197,198])
+     (binary_operator<382,403>
+      left: (binary_operator<382,399> left: (identifier[382,383]@{a}@) +[384,385] right: (identifier[386,399]@{bLongVariable}@))
+      +[400,401] right: (identifier[402,403]@{c}@))
+    +[404,405] right: (identifier[406,412]@{dShort}@)))
+ ;[412,413]
+ (function_call<414,421> name: (identifier[414,418]@{disp}@) ([418,419]
+  (arguments<419,420> argument: (identifier[419,420]@{x}@))
+  )[420,421])
+ ;[421,422]
+ (assignment<424,434> left: (identifier[424,430]@{length}@) =[431,432] right: (number[433,434]@{5}@))
+ ;[434,435]
+ (assignment<436,446> left: (identifier[436,441]@{width}@) =[442,443] right: (number[444,446]@{10}@))
+ ;[446,447]
+ (assignment<448,465> left: (identifier[448,452]@{area}@) =[452,453]
+  right: (binary_operator<453,465> left: (identifier[453,459]@{length}@) *[459,460] right: (identifier[460,465]@{width}@)))
+ ;[465,466] (comment[468,475]@{% other}@)
+ (assignment<477,486> left: (identifier[477,478]@{a}@) =[479,480] right: (number[481,486]@{1.234}@))
+ ;[486,487]
+ (assignment<500,521> left: (identifier[500,503]@{abc}@) =[504,505]
+  right: 
+   (matrix<506,521> [[506,507]
+    (row<507,518> (number[507,508]@{1}@) ,[508,509] (number[510,511]@{2}@) ,[514,515] (number[517,518]@{5}@))
+    ][520,521]))
+ ;[521,522]
+ (assignment<523,547> left: (identifier[523,530]@{abcdefg}@) =[531,532]
+  right: 
+   (matrix<533,547> [[533,534]
+    (row<534,538> (number[534,535]@{1}@) ,[535,536] (number[537,538]@{2}@))
+    (row<540,545> (number[540,541]@{3}@) ,[541,542] (number[543,545]@{44}@))
+    ][546,547]))
+ ;[547,548]
+ (assignment<549,554> left: (identifier[549,550]@{x}@) =[551,552] right: (number[553,554]@{1}@))
+ ;[554,555]
+ (assignment<574,595>
+  left: 
+   (function_call<574,590> name: (identifier[574,575]@{f}@) ([575,576]
+    (arguments<583,589>
+     argument: 
+      (function_call<583,587> name: (identifier[583,584]@{a}@) ([584,585]
+       (arguments<585,586> argument: (identifier[585,586]@{x}@))
+       )[586,587])
+     ,[587,588] (number[588,589]@{1}@))
+    )[589,590])
+  =[591,592] right: (number[593,595]@{10}@))
+ ;[595,596]
+ (assignment<597,611> left: (identifier[597,598]@{g}@) =[599,600]
+  right: 
+   (function_call<601,611> name: (identifier[601,604]@{foo}@) ([604,605]
+    (arguments<605,610> argument: (number[605,606]@{1}@) ,[606,607] (number[607,608]@{2}@) ,[608,609] (number[609,610]@{3}@))
+    )[610,611]))
+ ;[611,612] (comment[614,625]@{% some more}@)
+ (assignment<627,632> left: (identifier[627,628]@{x}@) =[629,630] right: (number[631,632]@{2}@))
+ ;[632,633]
+ (assignment<636,641> left: (identifier[636,637]@{y}@) =[638,639] right: (number[640,641]@{3}@))
+ ;[641,642]
+ (assignment<646,655> left: (identifier[646,647]@{z}@) =[648,649]
+  right: (binary_operator<650,655> left: (identifier[650,651]@{x}@) *[652,653] right: (identifier[654,655]@{y}@)))
+ ;[655,656] \n[656,657])

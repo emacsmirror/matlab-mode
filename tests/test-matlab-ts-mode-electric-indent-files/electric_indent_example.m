@@ -1,5 +1,7 @@
 % -*- matlab-ts -*-
 
+% t-utils-test-indent: no-line-by-line-indent - alignment of assignments not possible with line-by-line indent
+
 % Calculate the Golden Ratio (phi)
                phi=  (     1+ sqrt(    5))/   2  ;
      disp(   [    'Golden Ratio (phi): ',        num2str( phi )  ]  );       % Display the value
