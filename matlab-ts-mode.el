@@ -3271,7 +3271,7 @@ or nil."
       (list ei-line line-offset line-node-types first-node))))
 
 (defun matlab-ts-mode--ei-is-assign (node)
-  "Is NODE the first node of a single-line assignmnet?"
+  "Is NODE the first node of a single-line assignment?"
   (let ((parent (treesit-node-parent node)))
     (while (and parent
                 (not (string= (treesit-node-type parent) "assignment")))
@@ -3295,34 +3295,48 @@ or nil."
                     first-char-offset)))
     offset))
 
+(defvar-local matlab-ts-mode--ei-align-assign-alist nil)
+
 (defun matlab-ts-mode--ei-align-assignments (ei-info)
-  "Update EI-INfO to align assignments.
-See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
+  "Update EI-INFO to align assignments.
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (let ((first-node-in-line (nth 3 ei-info)))
     (when (matlab-ts-mode--ei-is-assign first-node-in-line)
       (let* ((ei-line (nth 0 ei-info))
              (line-assign-offset (matlab-ts-mode--ei-assign-offset ei-line))
-             (assign-offset line-assign-offset)
+             assign-offset
+             line-nums
              line-start-pt)
-        (save-excursion
-          (beginning-of-line)
-          (setq line-start-pt (point))
 
-          ;; Look backwards and then forwards for single-line assignments
-          (cl-loop
-           for direction in '(-1 1) do
-           (goto-char line-start-pt)
-           (cl-loop
-            while (not (if (= direction -1) (bobp) (eobp))) do
-            (forward-line direction)
-            (let* ((l-info (matlab-ts-mode--ei-get-new-line))
-                   (l-first-node (nth 3 l-info)))
-              (if (and l-first-node
-                       (matlab-ts-mode--ei-is-assign l-first-node))
-                  (let ((l-offset (matlab-ts-mode--ei-assign-offset (nth 0 l-info))))
-                    (when (> l-offset assign-offset)
-                      (setq assign-offset l-offset)))
+        (when (or (not matlab-ts-mode--ei-align-assign-alist)
+                  (not (setq assign-offset (alist-get (line-number-at-pos)
+                                                      matlab-ts-mode--ei-align-assign-alist))))
+          (setq assign-offset line-assign-offset)
+          (setq line-nums `(,(line-number-at-pos)))
+          (save-excursion
+            (beginning-of-line)
+            (setq line-start-pt (point))
+
+            ;; Look backwards and then forwards for single-line assignments
+            (cl-loop
+             for direction in '(-1 1) do
+             (goto-char line-start-pt)
+             (cl-loop
+              while (not (if (= direction -1) (bobp) (eobp))) do
+              (forward-line direction)
+              (let* ((l-info (matlab-ts-mode--ei-get-new-line))
+                     (l-first-node (nth 3 l-info)))
+                (if (and l-first-node
+                         (matlab-ts-mode--ei-is-assign l-first-node))
+                    (let ((l-offset (matlab-ts-mode--ei-assign-offset (nth 0 l-info))))
+                      (push (line-number-at-pos) line-nums)
+                      (when (> l-offset assign-offset)
+                        (setq assign-offset l-offset)))
                   (cl-return))))))
+          (when matlab-ts-mode--ei-align-assign-alist
+            (dolist (line-num line-nums)
+              (push `(,line-num . ,assign-offset) matlab-ts-mode--ei-align-assign-alist))))
+
         (let ((diff (- assign-offset line-assign-offset)))
           (when (> diff 0)
             (let* ((loc (1- (string-match "=" ei-line)))
@@ -3405,21 +3419,27 @@ line is updated.  Returns t if line was updated."
          (curr-line start-line)
          (end-line (line-number-at-pos end)))
 
-    ;; TODO optimize assignment alignment to compute once
     (when matlab-ts-mode-electric-indent
-      (save-excursion
-        (goto-char beg)
-        (while (<= curr-line end-line)
-          (beginning-of-line)
-          (matlab-ts-mode--indent-elements-in-line)
-          (forward-line)
-          (setq curr-line (1+ curr-line)))
-        (goto-char (point-min))
-        (forward-line (1- start-line))
-        (setq beg (point))
-        (goto-char (point-min))
-        (forward-line end-line)
-        (setq end (point))))
+      (unwind-protect
+          (progn
+            ;; Add invalid entry to matlab-ts-mode--ei-align-assign-alist as a marker to activate
+            ;; caching of computed offsets for assignment alignment.
+            (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0)))
+            (save-excursion
+              (goto-char beg)
+              (while (<= curr-line end-line)
+                (beginning-of-line)
+                (matlab-ts-mode--indent-elements-in-line)
+                (forward-line)
+                (setq curr-line (1+ curr-line)))
+              (goto-char (point-min))
+              (forward-line (1- start-line))
+              (setq beg (point))
+              (goto-char (point-min))
+              (forward-line end-line)
+              (setq end (point))))
+
+        (setq-local matlab-ts-mode--ei-align-assign-alist nil)))
 
     (treesit-indent-region beg end)))
 
@@ -5175,3 +5195,4 @@ matlab-language-server-lsp-mode.org\n"
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
 ;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd
 ;; LocalWords:  matlabls vscode buf dolist sp ppss bobp sexps pragmas curr ei isstring eol listp
+;; LocalWords:  nums
