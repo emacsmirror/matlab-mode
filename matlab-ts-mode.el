@@ -93,12 +93,36 @@ You can also install via use-package or other methods."
   :type 'boolean)
 
 (defcustom matlab-ts-mode-electric-indent t
-  "*If t, indent elements within lines of code.
-This will adjust the whitespace within elements of code.
-Consider
-    a = b+ c *d ;
-When electric indent is active, this will be indented to be:
-    a = b + c * d;"
+  "*If t, indent (format) language elements within code.
+- Canonicalize language elements spacing
+     Example                        |  Result
+     -----------------------------  |  -----------------------------
+     a = b+ c *d ;                  |  a = b + c * d;
+
+- Align consecutive assignments
+     Example                        |  Result
+     -----------------------------  |  -----------------------------
+     width = 100;                   |  width  = 100;
+     length = 200;                  |  length = 200;
+     area=width * length;           |  area   = width * length;
+
+- Align trailing comments
+     Example                        |  Result
+     -----------------------------  |  -----------------------------
+     a = myFcn1(1, 2); % comment 1  |  a = myFcn1(1, 2); % comment 1
+     a = a + 5; % comment 2         |  a = a + 2;        % comment 2
+
+- Align matrix columns
+     Example                        |  Result
+     -----------------------------  |  -----------------------------
+     m = [2,4000                    |  m = [   2, 4000
+            3000,1]                 |       3000,    1]
+
+- Align properties
+   Example:
+      TODO
+   is indented as:
+      TODO"
   :type 'boolean)
 
 (defvar matlab-ts-mode--electric-indent-verbose nil)
@@ -2440,31 +2464,56 @@ Example:
   "Return anchor for `matlab-ts-mode--i-arg-namespace-fcn-prop-matcher'."
   matlab-ts-mode--i-arg-namespace-fcn-prop-anchor-value)
 
-(defvar matlab-ts-mode--i-row-anchor-value nil)
+(defvar matlab-ts-mode--i-row-matcher-pair nil)
 
-(defun matlab-ts-mode--i-row-matcher (node parent _bol &rest _)
+(cl-defun matlab-ts-mode--i-row-matcher (node parent _bol &rest _)
   "Is NODE, PARENT in a matrix with first row on the \"[\" or \"{\" line?
 Example:
-   m = [1, 2, ...
+   m = [1, 2
         3, 4]       <== TAB to here."
-  (and node
-       (string= (treesit-node-type node) "row")
-       (string-match-p (rx bos (or "cell" "matrix") eos) (treesit-node-type parent))
-       (save-excursion
-         (goto-char (treesit-node-start parent))
-         (forward-char)
-         (when (and (looking-at "[ \t]")
-                    (re-search-forward "[^ \t]" (line-end-position) t))
-           (backward-char))
-         ;; Have something after the "[", e.g. "[  123" or "[ ..."?
-         (when (and (looking-at "[^ \t\r\n]")
-                    (not (equal (treesit-node-type (treesit-node-at (point))) "line_continuation")))
-           (setq matlab-ts-mode--i-row-anchor-value (treesit-node-start (treesit-node-at (point))))
-           t))))
 
-(defun matlab-ts-mode--i-row-anchor (_node _parent _bol &rest _)
+  (when (or (not node)
+            (not (string= (treesit-node-type node) "row")))
+    (cl-return-from matlab-ts-mode--i-row-matcher))
+
+  (when (and matlab-ts-mode-electric-indent
+             (string= "matrix" (treesit-node-type parent))
+             (matlab-ts-mode--ei-is-m-matrix parent))
+    ;; Align to first column width
+    ;;       m1 = [   23      |    m2 = [45678      |    m3 = [  23
+    ;; TAB>        45678]     |             23]     |           333
+    ;;                                              |          4444]
+    (let* ((first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra parent))
+           (column-widths (matlab-ts-mode--ei-m-matrix-col-widths parent first-col-extra t))
+           (el-width (save-excursion
+                       (goto-char (treesit-node-start node))
+                       (let ((el (treesit-node-at (point))))
+                         (- (treesit-node-end el) (treesit-node-start el)))))
+           (el-spaces (- (alist-get 1 column-widths) el-width)))
+      (setq matlab-ts-mode--i-row-matcher-pair (cons (treesit-node-start parent) (1+ el-spaces)))
+      (cl-return-from matlab-ts-mode--i-row-matcher t)))
+
+  (when (string-match-p (rx bos (or "cell" "matrix") eos) (treesit-node-type parent))
+    (save-excursion
+      (goto-char (treesit-node-start parent))
+      (forward-char)
+      (when (and (looking-at "[ \t]")
+                 (re-search-forward "[^ \t]" (line-end-position) t))
+        (backward-char))
+      ;; Have something after the "[", e.g. "[  123" or "[ ..."?
+      (let ((node-at-pt (treesit-node-at (point))))
+        (when (and (looking-at "[^ \t\r\n]")
+                   (not (equal (treesit-node-type node-at-pt) "line_continuation")))
+          (setq matlab-ts-mode--i-row-matcher-pair (cons (treesit-node-start node-at-pt) 0))
+          t)))))
+
+(defun matlab-ts-mode--i-row-matcher-anchor (&rest _)
   "Return anchor for `matlab-ts-mode--i-row-matcher'."
-  matlab-ts-mode--i-row-anchor-value)
+  (car matlab-ts-mode--i-row-matcher-pair))
+
+(defun matlab-ts-mode--i-row-matcher-offset (&rest _)
+  "Return offset for `matlab-ts-mode--i-row-matcher'."
+  (cdr matlab-ts-mode--i-row-matcher-pair))
 
 (defvar matlab-ts-mode--i-ret-pair)
 
@@ -2714,8 +2763,8 @@ Example:
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_matrix.m
      ;; See: tests/test-matlab-ts-mode-indent-files/indent_cell.m
      (,#'matlab-ts-mode--i-row-matcher
-      ,#'matlab-ts-mode--i-row-anchor
-      0)
+      ,#'matlab-ts-mode--i-row-matcher-anchor
+      ,#'matlab-ts-mode--i-row-matcher-offset)
 
      ;; I-Rule:  a = [   ...    |    a = { ...
      ;; <TAB>          2 ...    |          2 ...
@@ -3085,21 +3134,34 @@ Assumes point is at of current node or beginning of line."
       (error "Assert: line-node-types mismatch \"%s\" !EQ \"%s\" at line %d in %s"
              curr-line-node-types line-node-types (line-number-at-pos (point)) (buffer-name)))))
 
-(defun matlab-ts-mode--concat-ei-line (ei-line node extra-chars n-spaces-to-append)
+(defun matlab-ts-mode--concat-ei-line (ei-line node extra-chars &optional n-spaces-to-append)
   "Return concat EI-LINE with NODE text.
 NODE-END is the NODE end accounting for ignored nodes (semicolons).
 EXTRA-CHARS are appended to EL-LINE.
-N-SPACES-TO-APPEND is the number of spaces to append."
+N-SPACES-TO-APPEND is the number of spaces to append between nodes."
 
-  (let ((node-end (treesit-node-end node)))
+  (let* ((node-end (treesit-node-end node))
+         (last-pt (if (< node-end (line-end-position)) node-end (line-end-position))))
     (concat ei-line
-            (if (< node-end (line-end-position))
-                (buffer-substring (treesit-node-start node) node-end)
-              (string-trim-right
-               (buffer-substring (treesit-node-start node) (line-end-position))))
+            (buffer-substring (treesit-node-start node) last-pt)
             extra-chars
-            (when (> n-spaces-to-append 0)
-              (make-string n-spaces-to-append ? )))))
+            (if (not n-spaces-to-append) ;; last node?
+                ;; Add trailing whitespace when in an ERROR node. Consider
+                ;;    switch a
+                ;;      case                    ;; One trailing whitespace
+                ;;    end
+                ;; TopTester: electric_indent_xr_switch.m
+                (when (and (treesit-parent-until node (rx bos "ERROR" eos))
+                           (< last-pt (line-end-position)))
+                  (save-excursion
+                    (end-of-line)
+                    (when (re-search-backward "[^ \t]" (line-beginning-position) t)
+                      (forward-char)
+                      (when (not (= (point) (line-end-position)))
+                        (buffer-substring (point) (line-end-position))
+                        ))))
+              (when (> n-spaces-to-append 0)
+                (make-string n-spaces-to-append ? ))))))
 
 (defun matlab-ts-mode--no-elements-to-indent ()
   "Return t if no elements in the current line to indent.
@@ -3162,12 +3224,12 @@ Assumes that current point is at `back-to-indentation'."
 
 (cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-offset)
   "Get new line content with element spacing adjusted.
-Optional START-NODE and START-OFFSET are used to compute new line-offset
-to restore point after updating line.  Note, new line content may be same
-as current line.  Also computes line-node-types which is a string containing
-the line node types.
+Optional START-NODE and START-OFFSET are used to compute new pt-offset,
+the point offset in the line used to restore point after updating line.
+Note, new line content may be same as current line.  Also computes
+line-node-types which is a string containing the line node types.
 Returns electric indent info, ei-info,
-  (list NEW-LINE-CONTENT LINE-OFFSET LINE-NODE-TYPES FIRST-NODE-IN-LINE)
+  (list NEW-LINE-CONTENT PT-OFFSET LINE-NODE-TYPES FIRST-NODE-IN-LINE)
 or nil."
   (save-excursion
     (back-to-indentation)
@@ -3175,7 +3237,7 @@ or nil."
       (cl-return-from matlab-ts-mode--ei-get-new-line))
 
     ;; Compute ei-line, the electric indented line content
-    (let* (line-offset ;; used in restoring point
+    (let* (pt-offset ;; used in restoring point
            (ei-line (buffer-substring (line-beginning-position) (point)))
            (pair (matlab-ts-mode--move-to-and-get-node))
            (node (or (car pair)
@@ -3251,7 +3313,7 @@ or nil."
                 (extra-chars (matlab-ts-mode--node-extra-chars node-end next-node-start)))
            ;; Update ei-line
            (when (equal start-node node)
-             (setq line-offset (+ (length ei-line) start-offset)))
+             (setq pt-offset (+ (length ei-line) start-offset)))
 
            (setq ei-line (matlab-ts-mode--concat-ei-line ei-line node extra-chars n-spaces-between))
 
@@ -3260,33 +3322,353 @@ or nil."
            )))
 
       (when node
+        (when (equal start-node node)
+          (setq pt-offset (+ (length ei-line) start-offset)))
         (when matlab-ts-mode--electric-indent-assert
           (setq line-node-types (matlab-ts-mode--update-line-node-types line-node-types
                                                                         node node-type)))
         (let ((extra-chars (matlab-ts-mode--node-extra-chars
                             (min (treesit-node-end node) (line-end-position))
                             (line-end-position))))
-          (setq ei-line (matlab-ts-mode--concat-ei-line ei-line node extra-chars 0))))
+          (setq ei-line (matlab-ts-mode--concat-ei-line ei-line node extra-chars))))
 
-      (list ei-line line-offset line-node-types first-node))))
+      (list ei-line pt-offset line-node-types first-node))))
 
-(defun matlab-ts-mode--ei-is-assign (node)
-  "Is NODE the first node of a single-line assignment?"
-  (let ((parent (treesit-node-parent node)))
+(cl-defun matlab-ts-mode--ei-m-matrix-first-col-extra (matrix)
+  "For MATRIX indent alignment, get first-col-extra."
+  ;; For first-col-extra consider the following where matlab-ts-mode--array-indent-level is 2.
+  ;; In this case first-col-extra will be 1.
+  ;;   m = [
+  ;;         1 2
+  ;;         3 4
+  ;;       ];
+  (let ((first-col-extra (save-excursion
+                           (goto-char (treesit-node-start matrix))
+                           (forward-char) ;; step over the "["
+                           (let ((found-element nil))
+                             ;; found a matrix element?
+                             (while (and (not found-element)
+                                         (re-search-forward "[^ \t]" (line-end-position) t))
+                               (backward-char)
+                               (let ((node (treesit-node-at (point))))
+                                 (when (not (string-match-p (rx bos (or "comment"
+                                                                        "line_continuation")
+                                                                eos)
+                                                            (treesit-node-type node)))
+                                   (setq found-element t))
+                                 (goto-char (min (line-end-position)
+                                                 (treesit-node-end node)))))
+                             (if found-element 0 (1- matlab-ts-mode--array-indent-level))))))
+    first-col-extra))
+
+(cl-defun matlab-ts-mode--ei-m-matrix-col-widths (matrix first-col-extra &optional first-col-only)
+  "Get multi-line MATRIX column widths adding in FIRST-COL-EXTRA to first column.
+If optional FIRST-COL-ONLY is non-nil, then return only the width of the
+first column in MATRIX.
+Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
+  (let ((column-widths '())) ;; (alist-get column-num column-widths) ==> width
+    (dolist (m-child (treesit-node-children matrix))
+      (when (string= (treesit-node-type m-child) "row")
+        (let ((column-num 0))
+          (cl-loop
+           for entry in (treesit-node-children m-child)
+           do
+           (when (not (string= (treesit-node-type entry) ","))
+             (setq column-num (1+ column-num))
+             (let ((width (or (alist-get column-num column-widths) 0))) ;; matrix element width
+               (let ((el-width (- (treesit-node-end entry) (treesit-node-start entry))))
+                 (when (> el-width width)
+                   (if (= width 0)
+                       (push `(,column-num . ,el-width) column-widths)
+                     (setf (alist-get column-num column-widths) el-width)))))
+             (when first-col-only
+               (cl-return))
+             )))))
+
+    (when (> first-col-extra 0)
+      (let ((col1-width (+ (alist-get 1 column-widths) first-col-extra)))
+        (setf (alist-get 1 column-widths) col1-width)))
+
+    column-widths))
+
+(defun matlab-ts-mode--get-m-matrix-row-in-line ()
+  "Given point within a matrix assignment statement, return row node.
+Note, nil may be returned when line is only a continuation, e.g.
+   v = [1 2; ...
+        ...
+        3 4];
+when on the 2nd continuation only line, nil is returned."
+  (save-excursion
+    (back-to-indentation)
+    (let (row-node
+          found-ans)
+      (cl-loop
+       while (not found-ans) do
+
+       (let* ((node-at-pt (treesit-node-at (point)))
+              (node node-at-pt))
+         (while (and node
+                     (not (string-match-p (rx bos (or "row" "matrix" "assignment") eos)
+                                          (treesit-node-type node))))
+           (setq node (treesit-node-parent node)))
+
+         (if (and node
+                  (string= (treesit-node-type node) "row"))
+             (setq found-ans t
+                   row-node node)
+           (goto-char (min (treesit-node-end node-at-pt) (line-end-position)))
+           (when (not (re-search-forward "[^ \t]" (line-end-position) t))
+             (setq found-ans t)))))
+      row-node)))
+
+;; Internal variable that shouldn't be altered. It's used to avoid infinite recursion.
+(defvar matlab-ts-mode--ei-align-enabled t)
+
+;; This is used to cache matrix alignments for indent-region
+;; It will be non-nil when called from indent-region.
+(defvar matlab-ts-mode--ei-align-matrix-alist nil)
+
+(defun matlab-ts-mode--ei-indent-matrix-in-tmp-buf (assign-node)
+  "Insert ASSIGN-NODE in to current tmp-buf and indent.
+Point is left at beginning of line containing the ASSIGN-NODE text."
+  (let (assign-str
+        n-levels
+        start-pt)
+    (with-current-buffer (treesit-node-buffer assign-node)
+      (let* ((assign-start-pos (save-excursion (goto-char (treesit-node-start assign-node))
+                                              (line-beginning-position)))
+             (assign-end-pos (save-excursion (goto-char (treesit-node-end assign-node))
+                                             (line-end-position)))
+             (indent-spaces (- (treesit-node-start assign-node) assign-start-pos)))
+        (setq assign-str (buffer-substring assign-start-pos assign-end-pos)
+              n-levels (if (= (mod indent-spaces matlab-ts-mode--indent-level) 0)
+                           (/ indent-spaces matlab-ts-mode--indent-level)
+                         ;; else: not at a standard level so no need to add conditionals as the
+                         ;; indent level will be corrected later.
+                         0))))
+
+    (cl-loop for level from 1 to n-levels do
+             (insert "if 1\n"))
+
+    (insert assign-str "\n")
+
+    (cl-loop for level from 1 to n-levels do
+             (insert "end\n"))
+
+    (matlab-ts-mode)
+
+    ;; Indent to adjust spacing among operators, but don't do other alignment items
+    (let ((matlab-ts-mode--ei-align-enabled nil)
+          ;; t-utils-test-indent captures messages using treesit--indent-verbose and we don't
+          ;; want to capture the messages from this temp indent-region.
+          (treesit--indent-verbose nil))
+      (indent-region (point-min) (point-max)))
+
+
+    (goto-char (point-min))
+    (when (> n-levels 0)
+      (forward-line n-levels))))
+
+(cl-defun matlab-ts-mode--ei-align-line-in-m-matrix (assign-node ei-info)
+  "Align current line with EI-INFO in a multi-line matrix of ASSIGN-NODE.
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
+
+  ;; TopTester: test-matlab-ts-mode-electric-indent-files/electric_indent_matrix_cols.m
+  (when matlab-ts-mode--ei-align-matrix-alist ;; Use cached value?
+    (let ((ei-line (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-matrix-alist)))
+      (when ei-line
+        (cl-return-from matlab-ts-mode--ei-align-line-in-m-matrix (cons ei-line (cdr ei-info))))))
+
+  (let* ((assign-start-linenum (line-number-at-pos (treesit-node-start assign-node)))
+         (tmp-buf-ei-linenum (1+ (- (line-number-at-pos) assign-start-linenum)))
+         (tmp-buf-row-linenum (if matlab-ts-mode--ei-align-matrix-alist 1 tmp-buf-ei-linenum))
+         (matrix-alist matlab-ts-mode--ei-align-matrix-alist))
+    (with-temp-buffer
+      (matlab-ts-mode--ei-indent-matrix-in-tmp-buf assign-node)
+
+      (let* ((matrix-node (treesit-node-parent (treesit-search-subtree
+                                                (treesit-buffer-root-node) (rx bos "[" eos) nil t)))
+             (first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra matrix-node))
+             (column-widths (matlab-ts-mode--ei-m-matrix-col-widths matrix-node first-col-extra)))
+
+        ;; Move to the line of interest when we called from matlab-ts-mode--treesit-indent,
+        ;; otherwise calculate all matrix rows for indent-region.
+        (when (and (not matrix-alist)
+                   (> tmp-buf-ei-linenum 1))
+          (forward-line (1- tmp-buf-ei-linenum)))
+
+        (while (not (eobp)) ;; Adjust column widths
+          (back-to-indentation)
+          (let* ((row-node (matlab-ts-mode--get-m-matrix-row-in-line))
+                 (indent-start-pt (point))
+                 ;; line content does not have leading indent-level spaces
+                 (content (buffer-substring indent-start-pt (line-end-position)))
+                 (ei-line (buffer-substring (line-beginning-position) (line-end-position)))
+                 n-spaces)
+            (when row-node
+              (let* ((col-num (length column-widths))
+                     (pt-offset (nth 1 ei-info))
+                     (matrix-offset (save-excursion
+                                      (goto-char (treesit-node-start matrix-node))
+                                      (1+ (- (point) (line-beginning-position)))))
+                     (indent-offset (or (string-match-p "[^ \t]+" ei-line)
+                                        (error "Assert: no offset"))))
+
+                (when (< matrix-offset indent-offset)
+                  (when pt-offset
+                    (setq pt-offset (- pt-offset (- indent-offset matrix-offset))))
+                  (setq indent-offset matrix-offset))
+
+                (dolist (element (reverse (treesit-node-children row-node)))
+                  (when (not (string= (treesit-node-type element) ",")) ;; at a column?
+                    (let ((width (or (alist-get col-num column-widths)
+                                     (error "Assert: no col width")))
+                          (curr-width (- (treesit-node-end element) (treesit-node-start element))))
+                      (setq n-spaces (- width curr-width))
+                      (when (< curr-width width)
+                        (let ((offset (- (treesit-node-start element) indent-start-pt)))
+                          (when (and pt-offset
+                                     (or (= indent-start-pt (point-min))
+                                         (<= (+ offset matrix-offset) pt-offset)))
+                            (setq pt-offset (+ pt-offset n-spaces)))
+                          (setq content (concat (substring content 0 offset)
+                                                (make-string n-spaces ? )
+                                                (substring content offset)))))
+                      (setq col-num (1- col-num)))))
+
+                (setq ei-line (concat (substring ei-line 0 indent-offset) content))
+                (when (= tmp-buf-row-linenum tmp-buf-ei-linenum)
+                  (setq ei-info (list ei-line pt-offset (nth 2 ei-info) (nth 3 ei-info))))))
+
+            (when matrix-alist
+              (let* ((buf-linenum (1- (+ assign-start-linenum tmp-buf-row-linenum))))
+                (push `(,buf-linenum . ,ei-line) matrix-alist)))
+
+            (if (not matrix-alist)
+                (goto-char (point-max))
+              (forward-line)
+              (setq tmp-buf-row-linenum (1+ tmp-buf-row-linenum)))))))
+
+    (when matrix-alist
+      (setq matlab-ts-mode--ei-align-matrix-alist matrix-alist)))
+  ;; ei-info for current line
+  ei-info)
+
+(cl-defun matlab-ts-mode--ei-matrix-ends-on-line (matrix)
+  "Does MATRIX end on a line by itself?"
+  (save-excursion
+    (goto-char (treesit-node-end matrix))
+    (while (re-search-forward "[^ \t]" (line-end-position) t)
+      (backward-char)
+      (let ((node (treesit-node-at (point))))
+        (when (not (string-match-p (rx bos (or "," ";" "comment" "line_continuation") eos)
+                                   (treesit-node-type node)))
+          (cl-return-from matlab-ts-mode--ei-matrix-ends-on-line))
+        (goto-char (treesit-node-end node)))))
+  t)
+
+(cl-defun matlab-ts-mode--ei-is-m-matrix (matrix)
+  "Is MATRIX node a multi-line matrix?
+We define a a multi-line matrix has one row per line and more than one
+column."
+  (let ((start-line (line-number-at-pos (treesit-node-start matrix)))
+        (end-line (line-number-at-pos (treesit-node-end matrix)))
+        (n-rows 0)
+        n-cols)
+    (when (and (> end-line start-line) ;; multi-line matrix?
+               (matlab-ts-mode--ei-matrix-ends-on-line matrix)
+               (not (treesit-search-subtree matrix (rx bos "ERROR" eos) nil t)))
+      (dolist (child (treesit-node-children matrix))
+        (let ((child-type (treesit-node-type child)))
+          (cond
+           ((string= child-type "row")
+            (let ((row-start-line-num (line-number-at-pos (treesit-node-start child))))
+              ;; Return nil if row not on one line
+              (when (not (= row-start-line-num (line-number-at-pos (treesit-node-end child))))
+                (cl-return-from matlab-ts-mode--ei-is-m-matrix))
+              ;; Return nil if more than one row one the line
+              (let ((next-node (treesit-node-next-sibling child)))
+                (when (and (string= (treesit-node-type next-node) "row")
+                           (= row-start-line-num (line-number-at-pos
+                                                  (treesit-node-start next-node))))
+                  (cl-return-from matlab-ts-mode--ei-is-m-matrix)))
+              ;; Return nil if row contains sub-matrices
+              (when (treesit-search-subtree child (rx bos (or "[" "]") eos) nil t)
+                (cl-return-from matlab-ts-mode--ei-is-m-matrix))
+
+              (setq n-rows (1+ n-rows))
+
+              ;; Count the columns
+              (let ((n-cols-in-row 0))
+                (dolist (el (treesit-node-children child))
+                  (when (not (string= (treesit-node-type el) ","))
+                    (setq n-cols-in-row (1+ n-cols-in-row))))
+                (if (not n-cols)
+                    (setq n-cols n-cols-in-row)
+                  (if (not (= n-cols n-cols-in-row))
+                      (cl-return-from matlab-ts-mode--ei-is-m-matrix))))
+              ))
+           ;; Case unexpected matrix child node
+           ((not (string-match-p (rx bos (or "[" "]" "comment" "line_continuation") eos)
+                                 child-type))
+            (error "Assert: unexpected matrix child %S" child))))))
+    ;; Matrix with more than one row and more than one column where each row is on its own line?
+    (and (> n-rows 1) (>= n-cols 1))))
+
+(defun matlab-ts-mode--ei-is-assign (first-node type)
+  "Is FIRST-NODE of line for an assignment that matches TYPE?
+TYPE can be \\='single-line or \\='multi-line-matrix.  When
+\\='multi-line-matrix, the assignment is to a matrix with two or more
+rows and two or more columns, where each row is on its own line.  The
+assignment node is return or nil."
+  (let ((assign-node (treesit-node-parent first-node)))
+    (while (and assign-node
+                (not (string= (treesit-node-type assign-node) "assignment")))
+      (setq assign-node (treesit-node-parent assign-node)))
+    (when assign-node
+      (save-excursion
+        (beginning-of-line)
+        (when (re-search-forward "=" (line-end-position) t)
+          (backward-char)
+          (let ((eq-node (treesit-node-at (point))))
+            ;; First "=" must be an assignment (assumptions elsewhere require this).
+            (when (and (equal (treesit-node-type eq-node) "=")
+                       (equal (treesit-node-type (treesit-node-parent eq-node)) "assignment"))
+              (cond
+               ;; Single-line assignment? Example: v1 = [1, 2];
+               ((eq type 'single-line)
+                (when (<= (treesit-node-end assign-node) (line-end-position))
+                  assign-node))
+
+               ;; Multi-line matrix assignment? Example: m1 = [1 2
+               ;;                                              3 4];
+               ((eq type 'multi-line-matrix)
+                (goto-char (treesit-node-end eq-node))
+                (let ((next-node (treesit-node-next-sibling eq-node)))
+                  (while (equal (treesit-node-type next-node) "line_continuation")
+                    (setq next-node (treesit-node-next-sibling next-node)))
+                  (when (and (equal (treesit-node-type next-node) "matrix")
+                             (matlab-ts-mode--ei-is-m-matrix next-node))
+                    assign-node)))
+               (t
+                (error "Assert: bad type %S" type))))))))))
+
+(defun matlab-ts-mode--ei-point-in-m-matrix (ei-info)
+  "Are we in a multi-line matrix?
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents.  Returns
+mat-info a (list matrix-node n-rows n-cols) if in a multi-line matrix."
+  (let* ((first-node-in-line (nth 3 ei-info))
+         (parent (treesit-node-parent first-node-in-line)))
     (while (and parent
                 (not (string= (treesit-node-type parent) "assignment")))
       (setq parent (treesit-node-parent parent)))
-    (and parent
-         (let ((first-child (treesit-node-child parent 0)))
-           (eq (treesit-node-start node) (treesit-node-start first-child)))
-         (<= (treesit-node-end parent) (line-end-position))
-         (save-excursion
-           (beginning-of-line)
-           (when (re-search-forward "=" (line-end-position) t)
-             (backward-char)
-             (let ((eq-node (treesit-node-at (point))))
-               (and (equal (treesit-node-type eq-node) "=")
-                    (equal (treesit-node-type (treesit-node-parent eq-node)) "assignment"))))))))
+    (when parent ;; In an assignment?
+      (save-excursion
+        (goto-char (treesit-node-start parent))
+        (beginning-of-line)
+        (back-to-indentation)
+        (let ((first-node (treesit-node-at (point))))
+          (matlab-ts-mode--ei-is-assign first-node 'multi-line-matrix))))))
 
 (defun matlab-ts-mode--ei-assign-offset (ei-line)
   "Get the assignment offset from the indent-level in EI-LINE."
@@ -3295,13 +3677,14 @@ or nil."
                     first-char-offset)))
     offset))
 
+;; This is used to cache aligned assignments for indent-region
 (defvar-local matlab-ts-mode--ei-align-assign-alist nil)
 
 (defun matlab-ts-mode--ei-align-assignments (ei-info)
   "Update EI-INFO to align assignments.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (let ((first-node-in-line (nth 3 ei-info)))
-    (when (matlab-ts-mode--ei-is-assign first-node-in-line)
+    (when (matlab-ts-mode--ei-is-assign first-node-in-line 'single-line)
       (let* ((ei-line (nth 0 ei-info))
              (line-assign-offset (matlab-ts-mode--ei-assign-offset ei-line))
              assign-offset
@@ -3327,7 +3710,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               (let* ((l-info (matlab-ts-mode--ei-get-new-line))
                      (l-first-node (nth 3 l-info)))
                 (if (and l-first-node
-                         (matlab-ts-mode--ei-is-assign l-first-node))
+                         (matlab-ts-mode--ei-is-assign l-first-node 'single-line))
                     (let ((l-offset (matlab-ts-mode--ei-assign-offset (nth 0 l-info))))
                       (push (line-number-at-pos) line-nums)
                       (when (> l-offset assign-offset)
@@ -3340,15 +3723,15 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
         (let ((diff (- assign-offset line-assign-offset)))
           (when (> diff 0)
             (let* ((loc (1- (string-match "=" ei-line)))
-                   (new-line-offset (let ((line-offset (nth 1 ei-info)))
-                                      (when line-offset
-                                        (if (<= loc line-offset)
-                                            (+ line-offset diff)
-                                          line-offset)))))
+                   (new-pt-offset (let ((pt-offset (nth 1 ei-info)))
+                                      (when pt-offset
+                                        (if (<= loc pt-offset)
+                                            (+ pt-offset diff)
+                                          pt-offset)))))
               (setq ei-line (concat (substring ei-line 0 loc)
                                     (make-string diff ? )
                                     (substring ei-line loc)))
-              (setq ei-info (list ei-line new-line-offset (nth 2 ei-info) (nth 3 ei-info)))))))))
+              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info)))))))))
   ei-info)
 
 (defun matlab-ts-mode--ei-trailing-comment-offset (ei-info)
@@ -3372,6 +3755,7 @@ is identified as a trailing comment."
                 ;; have trailing comment at offset from first char in new-line
                 offset))))))))
 
+;; This is used to cache comment alignments for indent-region
 (defvar-local matlab-ts-mode--ei-align-comment-alist nil)
 
 (defun matlab-ts-mode--ei-align-trailing-comments (ei-info)
@@ -3416,22 +3800,26 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
           (when (> diff 0)
             (let* ((ei-line (nth 0 ei-info))
                    (loc (1- (string-match "%" ei-line)))
-                   (new-line-offset (let ((line-offset (nth 1 ei-info)))
-                                      (when line-offset
-                                        (if (<= loc line-offset)
-                                            (+ line-offset diff)
-                                          line-offset)))))
+                   (new-pt-offset (let ((pt-offset (nth 1 ei-info)))
+                                      (when pt-offset
+                                        (if (<= loc pt-offset)
+                                            (+ pt-offset diff)
+                                          pt-offset)))))
               (setq ei-line (concat (substring ei-line 0 loc)
                                     (make-string diff ? )
                                     (substring ei-line loc)))
-              (setq ei-info (list ei-line new-line-offset (nth 2 ei-info) (nth 3 ei-info))))))))
+              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info))))))))
     ei-info))
 
 (defun matlab-ts-mode--ei-align (ei-info)
   "Align elements in EI-INFO.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
-  (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
-  (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info))
+  (let ((matrix-node (matlab-ts-mode--ei-point-in-m-matrix ei-info)))
+    (if matrix-node
+        (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-node ei-info)))
+    ;; else do single-line alignments
+    (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
+    (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info)))
   ei-info)
 
 (cl-defun matlab-ts-mode--indent-elements-in-line (&optional start-node start-offset)
@@ -3442,9 +3830,10 @@ line is updated.  Returns t if line was updated."
   ;; If line was indented (ei-line is not same as current line), then update the buffer
   (let ((ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
     (when ei-info
-      (setq ei-info (matlab-ts-mode--ei-align ei-info))
+      (when matlab-ts-mode--ei-align-enabled
+        (setq ei-info (matlab-ts-mode--ei-align ei-info)))
       (let* ((ei-line (nth 0 ei-info))
-             (line-offset (nth 1 ei-info))
+             (pt-offset (nth 1 ei-info))
              (line-node-types (nth 2 ei-info))
              (curr-line (buffer-substring (line-beginning-position) (line-end-position)))
              (updated (not (string= curr-line ei-line))))
@@ -3454,8 +3843,8 @@ line is updated.  Returns t if line was updated."
           (insert ei-line)
           (when matlab-ts-mode--electric-indent-assert
             (matlab-ts-mode--electric-indent-assert-match line-node-types))
-          (when line-offset
-            (goto-char (+ (line-beginning-position) line-offset))))
+          (when pt-offset
+            (goto-char (+ (line-beginning-position) pt-offset))))
         ;; result
         updated))))
 
@@ -3473,20 +3862,21 @@ line is updated.  Returns t if line was updated."
           ;; Consider:  A = [B   C];
           ;;                   ^
           ;; node is the invisible "," and moving to start gives us node for C
-          (when (< (point) (treesit-node-start node))
-            (if (re-search-forward "[^ \t]" (line-end-position) t)
-                (progn
-                  (backward-char)
-                  (setq node (treesit-node-at (point))))
-              (if (re-search-backward "[^ \t]" (line-beginning-position) t)
-                  (setq node (treesit-node-at (point)))
-                (setq node nil))))
+          (save-excursion
+            (when (< (point) (treesit-node-start node))
+              (if (re-search-forward "[^ \t]" (line-end-position) t)
+                  (progn
+                    (backward-char)
+                    (setq node (treesit-node-at (point))))
+                (if (re-search-backward "[^ \t]" (line-beginning-position) t)
+                    (setq node (treesit-node-at (point)))
+                  (setq node nil))))
 
-          (when (and node
-                     (>= (point) (treesit-node-start node))
-                     (<= (point) (treesit-node-end node)))
-            (setq start-node node)
-            (setq start-offset (- (point) (treesit-node-start node))))))
+            (when (and node
+                       (>= (point) (treesit-node-start node))
+                       (<= (point) (treesit-node-end node)))
+              (setq start-node node)
+              (setq start-offset (- (point) (treesit-node-start node)))))))
 
       (if (matlab-ts-mode--indent-elements-in-line start-node start-offset)
           (when at-eol
@@ -3498,34 +3888,55 @@ line is updated.  Returns t if line was updated."
   "Call `treesit-indent-region' on BEG END, then do electric indent."
   ;; `treesit-indent-region' will not alter the number of lines, but it may reduce the buffer size,
   ;; thus grab the start/end lines for `matlab-ts-mode--indent-elements-in-line'.
-  (let* ((start-line (line-number-at-pos beg))
-         (curr-line start-line)
-         (end-line (line-number-at-pos end)))
+  (if matlab-ts-mode-electric-indent
+      (let* ((start-linenum (line-number-at-pos beg))
+             (curr-linenum start-linenum)
+             (end-linenum (save-excursion
+                            (goto-char end)
+                            (let ((linenum (line-number-at-pos)))
+                              (when (= (point) (line-beginning-position))
+                                (setq linenum (1- linenum)))
+                              linenum))))
 
-    (when matlab-ts-mode-electric-indent
-      (unwind-protect
+        ;; We need to run electric indent before treesit-indent-region. Consider
+        ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
+        ;;                 ~strcmpi(x, 'fubar'));
+        ;; If we indent-region first, we'll get
+        ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
+        ;;              ~strcmpi(x, 'fubar'));
+        ;; then when we adjust spacing, we'll have the following where the 2nd line is not
+        ;; indented correctly.
+        ;;    l2 = @(x) ((ischar(x) || isstring(x) || isnumeric(x)) && ...
+        ;;              ~strcmpi(x, 'fubar'));
+        (unwind-protect
+            (progn
+              ;; Add invalid entry to matlab-ts-mode--ei-align-assign-alist as a marker to activate
+              ;; caching of computed offsets for assignment alignment.
+              (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
+                          matlab-ts-mode--ei-align-comment-alist '((-1 . 0))
+                          matlab-ts-mode--ei-align-matrix-alist '((-1 . "")))
+              (save-excursion
+                (goto-char beg)
+                (while (<= curr-linenum end-linenum)
+                  (beginning-of-line)
+                  (matlab-ts-mode--indent-elements-in-line)
+                  (forward-line)
+                  (setq curr-linenum (1+ curr-linenum)))
+                ;; Restore point accounting for whitespace adjustments in the lines
+                (goto-char (point-min))
+                (forward-line (1- start-linenum))
+                (setq beg (point))
+                (goto-char (point-min))
+                (forward-line end-linenum)
+                (setq end (point)))
+
+              (treesit-indent-region beg end))
           (progn
-            ;; Add invalid entry to matlab-ts-mode--ei-align-assign-alist as a marker to activate
-            ;; caching of computed offsets for assignment alignment.
-            (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
-                        matlab-ts-mode--ei-align-comment-alist '((-1 . 0)))
-            (save-excursion
-              (goto-char beg)
-              (while (<= curr-line end-line)
-                (beginning-of-line)
-                (matlab-ts-mode--indent-elements-in-line)
-                (forward-line)
-                (setq curr-line (1+ curr-line)))
-              (goto-char (point-min))
-              (forward-line (1- start-line))
-              (setq beg (point))
-              (goto-char (point-min))
-              (forward-line end-line)
-              (setq end (point))))
+            (setq-local matlab-ts-mode--ei-align-assign-alist nil
+                        matlab-ts-mode--ei-align-comment-alist nil
+                        matlab-ts-mode--ei-align-matrix-alist nil))))
 
-        (setq-local matlab-ts-mode--ei-align-assign-alist nil
-                    matlab-ts-mode--ei-align-comment-alist nil)))
-
+    ;; else indent without electric additions
     (treesit-indent-region beg end)))
 
 ;;; Thing settings for movement, etc.
@@ -4009,7 +4420,7 @@ If optional NO-PROMPT is t, fix the name if needed without prompting."
                   ;; Case: function_definition or class_definition
                   ((string-match-p (rx bos (or "function_definition" "class_definition") eos)
                                    child-type)
-                   (when (treesit-search-subtree child (rx bos "ERROR" eos))
+                   (when (treesit-search-subtree child (rx bos "ERROR" eos) nil t)
                      ;; Don't try to fix code if there's an error, e.g. don't change in1:
                      ;;   function ...
                      ;;       [    ...
@@ -5280,4 +5691,4 @@ matlab-language-server-lsp-mode.org\n"
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
 ;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd
 ;; LocalWords:  matlabls vscode buf dolist sp ppss bobp sexps pragmas curr ei isstring eol listp
-;; LocalWords:  nums
+;; LocalWords:  nums setf tmp fubar linenum

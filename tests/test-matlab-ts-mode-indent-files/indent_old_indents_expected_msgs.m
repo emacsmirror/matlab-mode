@@ -133,7 +133,7 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
     A = [ 1 2 3 ]; %!!4 %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
 
     Blong = [ 1 2; %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-              3 4; %!!14 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+              3 4; %!!14 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
             ]; %!!12 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     Csep = [ %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
@@ -142,14 +142,14 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
            ]; %!!11 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     multinest = { [ 1 2               %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-                    3 4 ];            %!!20 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-                  { 5 6 7 ...         %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                    3 4 ];            %!!20 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+                  { 5 6 7 ...         %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                     8 9 10 ...        %!!20 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
                   };                  %!!18 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
-                  fcncall(10, ...     %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                  fcncall(10, ...     %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                           12, ...     %!!26 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
                           [ 13 14;    %!!26 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
-                            15 16 ])  %!!28 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                            15 16 ])  %!!28 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                 } ;  %!!16 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     nest = { ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
@@ -170,9 +170,9 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
     % I don't know why the below indents this way. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
     % It should either do all max indent, or all lined up with parens. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
     thing.thing.long.long.longname({ 'str' %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                                    });   %!!35 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     thing.thing.long.long.longname('str', ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
@@ -209,13 +209,13 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
 
     % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
     out = { A     %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-            Blong %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            Csep  %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            nest  %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            multinest%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            cascade_long_name%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            Closures%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            dep %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+            Blong %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            Csep  %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            nest  %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            multinest%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            cascade_long_name%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            Closures%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            dep %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
           };      %!!10 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
@@ -302,7 +302,7 @@ function B = continuations_and_block_comments %  <{Matched rule: (matlab-ts-mode
                  arg2); %!!17 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
     A = [ 1 2  % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-          3 4 ]; % !!10 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+          3 4 ]; % !!10 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
 
     foo(['this is a very long string', ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
          'with a continution to do something very exciting']);%!!9 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>

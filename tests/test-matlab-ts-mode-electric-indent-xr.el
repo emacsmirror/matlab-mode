@@ -49,7 +49,7 @@ and run this function.  The baseline is saved for you as
 after validating it, rename it to
   ./test-matlab-ts-mode-electric-indent-xr-files/NAME_expected.org"
 
-  (let* ((matlab-ts-mode-electric-ends nil)
+  (let* ((matlab-ts-mode-electric-ends t)
          (test-name "test-matlab-ts-mode-electric-indent-xr")
          (m-files (t-utils-get-files test-name
                                      :base-regexp (rx ".m" eos)

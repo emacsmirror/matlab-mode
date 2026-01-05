@@ -662,9 +662,9 @@
 
 - Invoking      : "C-m" = newline
   Start point   : 1196
-  Moved to point: 1215
-  : 44:18:               case
-  :                          ^
+  Moved to point: 1211
+  : 44:14:               case 
+  :                      ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -673,7 +673,7 @@
  
              % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
-+              case
++              case 
 +            end
 +
              % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
@@ -682,15 +682,17 @@
   #+end_src diff
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1215
-  No point movement
+  Start point   : 1211
+  Moved to point: 1216
+  : 44:19:               case 
+  :                           ^
   No buffer modifications
 
 - Invoking      : (insert "1")
-  Start point   : 1215
-  Moved to point: 1216
-  : 44:19:               case1
-  :                           ^
+  Start point   : 1216
+  Moved to point: 1217
+  : 44:20:               case 1
+  :                            ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -699,15 +701,15 @@
  
              % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
--              case
-+              case1
+-              case 
++              case 1
              end
  
              % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1216
+  Start point   : 1217
   Moved to point: 1234
   : 45:16:                 
   :                        ^
@@ -715,12 +717,10 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -41,7 +41,8 @@
- 
+@@ -42,6 +42,7 @@
              % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
--              case1
-+              case 1
+               case 1
 +                
              end
  
