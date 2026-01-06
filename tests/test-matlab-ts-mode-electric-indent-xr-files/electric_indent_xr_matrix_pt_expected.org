@@ -1,0 +1,75 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_matrix_pt.m:3:9:
+
+  case1: (t-utils-xr (re-search-forward "223") (backward-char 3) "C-i")
+
+- Invoking      : (re-search-forward "223")
+  Start point   :   93
+  Moved to point:  129
+  : 5:34: m3a = [    21    ,          2, 223;
+  :                                         ^
+  No buffer modifications
+
+- Invoking      : (backward-char 3)
+  Start point   :  129
+  Moved to point:  126
+  : 5:31: m3a = [    21    ,          2, 223;
+  :                                      ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  126
+  Moved to point:  115
+  : 5:20: m3a = [  21,     2, 223;
+  :                           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ 
+ % case1: (t-utils-xr (re-search-forward "223") (backward-char 3) "C-i")
+ 
+-m3a = [    21    ,          2, 223;
++m3a = [  21,     2, 223;
+           4, 53333,   6; ...
+        1222,     4,   5];
+ 
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_matrix_pt.m:9:9:
+
+  case2: (t-utils-xr (re-search-forward "444") "C-a" "C-i")
+
+- Invoking      : (re-search-forward "444")
+  Start point   :  235
+  Moved to point:  288
+  : 12:15:             444, 53333, 6; ...
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  288
+  Moved to point:  273
+  : 12:0:             444, 53333, 6; ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  273
+  Moved to point:  281
+  : 12:8:         444, 53333,   6; ...
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -9,5 +9,5 @@
+ % case2: (t-utils-xr (re-search-forward "444") "C-a" "C-i")
+ 
+ m3b = [    21    ,          2, 223;
+-            444, 53333, 6; ...
++        444, 53333,   6; ...
+        1222,     4,   5];
+  #+end_src diff
