@@ -1,13 +1,17 @@
 % -*- matlab-ts -*-
-function electric_indent_arguments(in1, in2, varargin)
+
+% t-utils-test-indent: no-line-by-line-indent - when typing line-by-line we can't align the
+% arguments because we don't have them all.
+
+function electric_indent_arguments(a, param2, varargin)
     arguments
-        in1 {mustBeNumeric, mustBeReal, mustBeFinite}
-        in2 {mustBeNumeric, mustBeReal, mustBeFinite}
+        a      {mustBeNumeric, mustBeReal, mustBeFinite}
+        param2 {mustBeNumeric, mustBeReal, mustBeFinite}
     end
     arguments (Repeating)
         varargin
     end
-    disp(in1);
-    disp(in2);
+    disp(a);
+    disp(param2);
     disp(varargin);
 end

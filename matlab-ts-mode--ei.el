@@ -5,7 +5,7 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
 ;; Author: John Ciolfi <john.ciolfi.32@gmail.com>
-;; Created: Jul-7-2025
+;; Created: Dec-29-2025
 ;; Keywords: MATLAB
 
 ;; Copyright (C) 2025-2026 Free Software Foundation, Inc.
@@ -25,7 +25,7 @@
 
 ;;; Commentary:
 ;;
-;; Electric indent for matlab-ts-mode
+;; Electric indent for matlab-ts-mode, see `matlab-ts-mode-electric-indent' custom variable.
 
 ;;; Code:
 
@@ -42,7 +42,7 @@
 
 (defcustom matlab-ts-mode-electric-indent t
   "*If t, indent (format) language elements within code.
-- Canonicalize language elements spacing
+- Canonicalize language element spacing
      Example                        |  Result
      -----------------------------  |  -----------------------------
      a = b+ c *d ;                  |  a = b + c * d;
@@ -66,11 +66,16 @@
      m = [2,4000                    |  m = [   2, 4000
             3000,1]                 |       3000,    1]
 
-- Align properties
-   Example:
-      TODO
-   is indented as:
-      TODO"
+- Align properties and arguments
+     Example                        |  Result
+     -----------------------------  |  -----------------------------
+     classdef c1                    |  classdef c1
+         properties                 |      properties
+             foo (1,3)              |          foo    (1,3)
+             foobar (1,1)           |          foobar (1,1)
+             p1 (1,1)               |          p1     (1,1)
+         end                        |      end
+     end                            |  end"
   :type 'boolean)
 
 (defvar matlab-ts-mode--electric-indent-verbose nil)
@@ -450,7 +455,7 @@ or nil."
 
          (when matlab-ts-mode--electric-indent-assert
            (setq line-node-types (matlab-ts-mode--ei-update-line-node-types line-node-types
-                                                                         node node-type)))
+                                                                            node node-type)))
 
          (when (not n-spaces-between)
            (cl-loop for tuple in matlab-ts-mode--ei-spacing do
@@ -612,7 +617,7 @@ Point is left at beginning of line containing the ASSIGN-NODE text."
         n-levels)
     (with-current-buffer (treesit-node-buffer assign-node)
       (let* ((assign-start-pos (save-excursion (goto-char (treesit-node-start assign-node))
-                                              (line-beginning-position)))
+                                               (line-beginning-position)))
              (assign-end-pos (save-excursion (goto-char (treesit-node-end assign-node))
                                              (line-end-position)))
              (indent-spaces (- (treesit-node-start assign-node) assign-start-pos)))
@@ -900,14 +905,94 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
           (when (> diff 0)
             (let* ((loc (1- (string-match "=" ei-line)))
                    (new-pt-offset (let ((pt-offset (nth 1 ei-info)))
-                                      (when pt-offset
-                                        (if (<= loc pt-offset)
-                                            (+ pt-offset diff)
-                                          pt-offset)))))
+                                    (when pt-offset
+                                      (if (<= loc pt-offset)
+                                          (+ pt-offset diff)
+                                        pt-offset)))))
               (setq ei-line (concat (substring ei-line 0 loc)
                                     (make-string diff ? )
                                     (substring ei-line loc)))
               (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info)))))))))
+  ei-info)
+
+(defun matlab-ts-mode--ei-get-prop-node (ei-info)
+  "Return property or argument node for first node in EI-INFO.
+Returns nil if not a property or argument node."
+  (let* ((first-node-in-line (nth 3 ei-info))
+         (parent (when first-node-in-line (treesit-node-parent first-node-in-line)))
+         (prop-node (pcase (treesit-node-type parent)
+                      ("property"
+                       first-node-in-line)
+                      ("property_name"
+                       parent))))
+    ;; properties / arguments can span multiple lines, so skip these
+    (when (= (line-number-at-pos (treesit-node-start prop-node))
+             (line-number-at-pos (treesit-node-end prop-node)))
+      prop-node)))
+
+(defun matlab-ts-mode--ei-prop-length (ei-info)
+  "Get the property length from the electric indented line in EI-INFO."
+  ;; We need to use the ei-line and not the current content of the buffer because the ei-line could
+  ;; have been adjusted. Example:
+  ;;    arguments
+  ;;       nameValueArgs .  foo ( 1,1)
+  ;;    end
+  ;; becomes "nameValueArgs.foo (1,1)" in EI-LINE.
+  (let ((ei-line (nth 0 ei-info)))
+    (when (not (string-match "[^ \t]+" ei-line))
+      (error "Assert: no property in ei-line %s" ei-line))
+    (- (match-end 0) (match-beginning 0))))
+
+;; This is used to cache aligned properties/arguments for indent-region, and contains
+;; '(linenum . prop-length) entries.
+(defvar-local matlab-ts-mode--ei-align-prop-alist nil)
+
+(defun matlab-ts-mode--ei-align-properties (ei-info)
+  "Align properties and arguments in EI-INFO.
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
+  (when (matlab-ts-mode--ei-get-prop-node ei-info)
+    (let ((ei-info-p-length (matlab-ts-mode--ei-prop-length ei-info))
+          (p-length (when matlab-ts-mode--ei-align-prop-alist
+                      (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-prop-alist))))
+      (when (not p-length)
+        (save-excursion
+          (beginning-of-line)
+          (let* ((line-nums `(,(line-number-at-pos)))
+                 (line-start-pt (point)))
+
+            (setq p-length ei-info-p-length)
+
+            ;; Look backwards and then forwards for properties/arguments
+            (cl-loop
+             for direction in '(-1 1) do
+
+             (goto-char line-start-pt)
+             (cl-loop
+              while (not (if (= direction -1) (bobp) (eobp))) do
+              (forward-line direction)
+              (let* ((l-ei-info (matlab-ts-mode--ei-get-new-line)))
+                (if (matlab-ts-mode--ei-get-prop-node l-ei-info)
+                    (let ((l-p-length (matlab-ts-mode--ei-prop-length l-ei-info)))
+                      (when matlab-ts-mode--ei-align-prop-alist
+                        (push (line-number-at-pos) line-nums))
+                      (when (> l-p-length p-length)
+                        (setq p-length l-p-length)))
+                  (cl-return)))))
+
+            (when matlab-ts-mode--ei-align-prop-alist
+              (dolist (line-num line-nums)
+                (push `(,line-num . ,p-length) matlab-ts-mode--ei-align-prop-alist))))))
+
+      (when (not (= p-length ei-info-p-length))
+        (let* ((diff (- p-length ei-info-p-length))
+               (ei-line (nth 0 ei-info))
+               (p-end (when (string-match "\\([^ \t]+\\)[ \t]+[^ \t;]" ei-line)
+                        (match-end 1))))
+          (when p-end
+            (setq ei-line (concat (substring ei-line 0 p-end)
+                                  (make-string diff ? )
+                                  (substring ei-line p-end)))
+            (setq ei-info (cons ei-line (cdr ei-info))))))))
   ei-info)
 
 (defun matlab-ts-mode--ei-trailing-comment-offset (ei-info)
@@ -977,10 +1062,10 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
             (let* ((ei-line (nth 0 ei-info))
                    (loc (1- (string-match "%" ei-line)))
                    (new-pt-offset (let ((pt-offset (nth 1 ei-info)))
-                                      (when pt-offset
-                                        (if (<= loc pt-offset)
-                                            (+ pt-offset diff)
-                                          pt-offset)))))
+                                    (when pt-offset
+                                      (if (<= loc pt-offset)
+                                          (+ pt-offset diff)
+                                        pt-offset)))))
               (setq ei-line (concat (substring ei-line 0 loc)
                                     (make-string diff ? )
                                     (substring ei-line loc)))
@@ -995,6 +1080,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
         (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-node ei-info)))
     ;; else do single-line alignments
     (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
+    (setq ei-info (matlab-ts-mode--ei-align-properties ei-info))
     (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info)))
   ei-info)
 
@@ -1026,3 +1112,6 @@ line is updated.  Returns t if line was updated."
 
 (provide 'matlab-ts-mode--ei)
 ;;; matlab-ts-mode--ei.el ends here
+
+;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
+;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase

@@ -1057,7 +1057,7 @@ Example, disp variable is overriding the disp builtin function:
 ;;                 } ...
 ;;               }
 ;;
-;;    
+;;
 ;; 5. Canonicalize language elements spacing.
 ;;    [Implemented in the indent engine]
 ;;
@@ -1175,8 +1175,17 @@ Example, disp variable is overriding the disp builtin function:
 ;;        length = 10;
 ;;        area   = width * length;
 ;;
-;; 10. Align properties
-;;     TODO
+;; 10. Align properties and arguments
+;;     [Implemented in the indent engine]
+;;
+;;     Example:
+;;        classdef c1
+;;            properties
+;;                foo    (1,3)
+;;                foobar (1,1)
+;;                x      {mustBeReal}
+;;            end
+;;        end
 ;;
 ;; 11. Align consecutive trailing comments
 ;;     [Implemented in the indent engine]
@@ -2915,6 +2924,7 @@ Example:
               ;; Add invalid entry to matlab-ts-mode--ei-align-assign-alist as a marker to activate
               ;; caching of computed offsets for assignment alignment.
               (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
+                          matlab-ts-mode--ei-align-prop-alist '((-1 . 0))
                           matlab-ts-mode--ei-align-comment-alist '((-1 . 0))
                           matlab-ts-mode--ei-align-matrix-alist '((-1 . "")))
               (save-excursion
@@ -2935,6 +2945,7 @@ Example:
               (treesit-indent-region beg end))
           (progn
             (setq-local matlab-ts-mode--ei-align-assign-alist nil
+                        matlab-ts-mode--ei-align-prop-alist nil
                         matlab-ts-mode--ei-align-comment-alist nil
                         matlab-ts-mode--ei-align-matrix-alist nil))))
 
