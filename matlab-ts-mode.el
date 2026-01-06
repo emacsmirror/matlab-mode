@@ -2864,36 +2864,10 @@ Example:
   "Call `treesit-indent', then do electric indent."
   (treesit-indent)
   (when matlab-ts-mode-electric-indent
-    (let ((start-pt (point))
-          start-node
-          start-offset
-          (at-eol (looking-at "[ \t]*$")))
-
-      (when (not at-eol)
-        (let ((node (treesit-node-at (point))))
-          ;; Consider:  A = [B   C];
-          ;;                   ^
-          ;; node is the invisible "," and moving to start gives us node for C
-          (save-excursion
-            (when (< (point) (treesit-node-start node))
-              (if (re-search-forward "[^ \t]" (line-end-position) t)
-                  (progn
-                    (backward-char)
-                    (setq node (treesit-node-at (point))))
-                (if (re-search-backward "[^ \t]" (line-beginning-position) t)
-                    (setq node (treesit-node-at (point)))
-                  (setq node nil))))
-
-            (when (and node
-                       (>= (point) (treesit-node-start node))
-                       (<= (point) (treesit-node-end node)))
-              (setq start-node node)
-              (setq start-offset (- (point) (treesit-node-start node)))))))
-
-      (if (matlab-ts-mode--ei-indent-elements-in-line start-node start-offset)
-          (when at-eol
-            (end-of-line))
-        (goto-char start-pt)))))
+    (let ((at-eol (looking-at "[ \t]*$")))
+      (when (matlab-ts-mode--ei-indent-elements-in-line)
+        (when at-eol
+          (end-of-line))))))
 
 (defun matlab-ts-mode--treesit-indent-region (beg end)
   "Call `treesit-indent-region' on BEG END, then do electric indent."
@@ -2931,7 +2905,7 @@ Example:
                 (goto-char beg)
                 (while (<= curr-linenum end-linenum)
                   (beginning-of-line)
-                  (matlab-ts-mode--ei-indent-elements-in-line)
+                  (matlab-ts-mode--ei-indent-elements-in-line 'indent-region)
                   (forward-line)
                   (setq curr-linenum (1+ curr-linenum)))
                 ;; Restore point accounting for whitespace adjustments in the lines

@@ -114,7 +114,7 @@
       eos))
 
 (defvar matlab-ts-mode--ei-pad-op-re
-  (rx bos (or "+" "-" "*" "/" ".*" "./" "\\"
+  (rx bos (or "+" "-" "*" "/" ".*" "./" ".\\" "\\"
               "==" "~=" ">" ">=" "<" "<="
               "&" "|" "&&" "||"
               "="
@@ -499,7 +499,7 @@ or nil."
                         (cl-return)))))
 
          (when (not n-spaces-between)
-           (error "Internal error, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
+           (error "Assert: ei, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
                   node-type node next-node-type next-node))
 
          (let* ((node-end (treesit-node-end node))
@@ -1101,13 +1101,95 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
     (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info)))
   ei-info)
 
-(cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional start-node start-offset)
-  "Indent current line by adjust spacing around elements.
-Optional START-NODE and START-OFFSET are used to restore the point when
-line is updated.  Returns t if line was updated."
+(defun matlab-ts-mode--ei-get-start-info ()
+  "Get start node and start offset in line prior to electric indent.
+Returns (cons start-node start-offset) where
+- start-node is non-nil if the point is at a node
+- start-offset is the offset of the point from the beginning of start-node.
+Example where point is on the \"d\" in width:
+  area = width * length;
+           ^
+start-node is the identifier node for width and start-offset is 2."
+  (let (start-node
+        start-offset
+        (at-eol (looking-at "[ \t]*$")))
 
-  ;; If line was indented (ei-line is not same as current line), then update the buffer
-  (let ((ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
+    ;; The node when at-eol is not on the current line.
+    (when (not at-eol)
+      (let ((node (treesit-node-at (point))))
+        ;; Consider:  A = [B   C];
+        ;;                   ^
+        ;; node is the invisible "," and moving to start gives us node for C
+        (save-excursion
+          (when (< (point) (treesit-node-start node))
+            (if (re-search-forward "[^ \t]" (line-end-position) t)
+                (progn
+                  (backward-char)
+                  (setq node (treesit-node-at (point))))
+              (if (re-search-backward "[^ \t]" (line-beginning-position) t)
+                  (setq node (treesit-node-at (point)))
+                (setq node nil))))
+
+          (when (and node
+                     (>= (point) (treesit-node-start node))
+                     (<= (point) (treesit-node-end node)))
+            (setq start-node node)
+            (setq start-offset (- (point) (treesit-node-start node)))))))
+    (cons start-node start-offset)))
+
+(defun matlab-ts-mode--ei-workaround-143 ()
+  "Workaround https://github.com/acristoffers/tree-sitter-matlab/issues/143."
+
+  (let ((line-pt (point))
+        (eol-pt (line-end-position)))
+    (save-excursion
+      (back-to-indentation)
+      
+      (while (< (point) eol-pt)
+        (let ((node (if (looking-at "[ \t]")
+                        (if (re-search-forward "[^ \t]" (line-end-position) t)
+                            (progn (backward-char)
+                                   (treesit-node-at (point)))
+                          (goto-char eol-pt)
+                          nil)
+                      (treesit-node-at (point)))))
+          (when node
+            (if (<= (treesit-node-end node) (point))
+                ;; Consider
+                ;;   a= [1, 2; 3, 44 ];
+                ;;           ^          ==> node at ';' returns the node for 2 because
+                ;;                          ';' is an ignored node.
+                (forward-char)
+              (if (string= (or (treesit-node-type node) "") "number") ;; Something like 1234./2?
+                  (progn
+                    (goto-char (treesit-node-end node))
+                    (backward-char)
+                    ;; Note, .' (e.g. 1234.') is not parsed correctly and that's okay because
+                    ;; electric indent binds the transpose to the item to its left.
+                    (if (looking-at "\\.[/\\*\\\\]")
+                        (progn
+                          (when (<= (point) line-pt)
+                            (setq line-pt (1+ line-pt)))
+                          (insert " ")
+                          (setq eol-pt (line-end-position)))
+                      (forward-char)))
+                ;; Nodes can span multiple lines, so new point maybe > eol-pt.
+                (goto-char (treesit-node-end node))))))))
+    (goto-char line-pt)))
+
+(cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region)
+  "Indent current line by adjust spacing around elements.
+When IS-INDENT-REGION is nil, we restore the point to it's logical
+location when the line is updated.  Returns t if line was updated."
+
+  (matlab-ts-mode--ei-workaround-143)
+  
+  ;; If line was indented (nth 0 ei-info) is not same as current line, then update the buffer
+  (let* ((start-pair (when (not is-indent-region)
+                       (matlab-ts-mode--ei-get-start-info)))
+         (start-node (car start-pair))
+         (start-offset (cdr start-pair))
+         (ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
     (when ei-info
       (when matlab-ts-mode--ei-align-enabled
         (setq ei-info (matlab-ts-mode--ei-align ei-info)))
