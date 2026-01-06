@@ -295,8 +295,19 @@ Assumes point is at of current node or beginning of line."
            )))
       (cons node node-type))))
 
-(defun matlab-ts-mode--ei-assert-match (line-node-types)
-  "Assert that LINE-NODE-TYPES string matches current line."
+(defun matlab-ts-mode--ei-assert-match (orig-line orig-line-node-types)
+  "Assert new line has same code meaning as ORIG-LINE.
+This is done by validating that ORIG-LINE-NODE-TYPES matches the current
+line node types.  We also validate line text matches ignoring
+whitespace."
+  (let* ((new-line (buffer-substring (line-beginning-position) (line-end-position)))
+         (new-line-no-spaces (replace-regexp-in-string "[ \t]" "" new-line))
+         (orig-line-no-spaces (replace-regexp-in-string "[ \t]" "" orig-line)))
+    (when (not (string= new-line-no-spaces orig-line-no-spaces))
+      (error "Assert: line-content-no-space-mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
+             new-line-no-spaces orig-line-no-spaces
+             (line-number-at-pos (point)) (buffer-name))))
+
   (back-to-indentation)
   (let (curr-line-node-types)
     (cl-loop
@@ -314,9 +325,9 @@ Assumes point is at of current node or beginning of line."
              (goto-char node-end)
            (goto-char (line-end-position))))))
 
-    (when (not (string= curr-line-node-types line-node-types))
-      (error "Assert: line-node-types mismatch \"%s\" !EQ \"%s\" at line %d in %s"
-             curr-line-node-types line-node-types (line-number-at-pos (point)) (buffer-name)))))
+    (when (not (string= curr-line-node-types orig-line-node-types))
+      (error "Assert: line-node-types mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
+             curr-line-node-types orig-line-node-types (line-number-at-pos (point)) (buffer-name)))))
 
 (defun matlab-ts-mode--ei-concat-line (ei-line node extra-chars &optional n-spaces-to-append)
   "Return concat EI-LINE with NODE text.
@@ -1189,6 +1200,8 @@ location when the line is updated.  Returns t if line was updated."
                        (matlab-ts-mode--ei-get-start-info)))
          (start-node (car start-pair))
          (start-offset (cdr start-pair))
+         (orig-line (when matlab-ts-mode--electric-indent-assert
+                      (buffer-substring (line-beginning-position) (line-end-position))))
          (ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
     (when ei-info
       (when matlab-ts-mode--ei-align-enabled
@@ -1203,7 +1216,7 @@ location when the line is updated.  Returns t if line was updated."
           (delete-region (line-beginning-position) (line-end-position))
           (insert ei-line)
           (when matlab-ts-mode--electric-indent-assert
-            (matlab-ts-mode--ei-assert-match line-node-types))
+            (matlab-ts-mode--ei-assert-match orig-line line-node-types))
           (when pt-offset
             (goto-char (+ (line-beginning-position) pt-offset))))
         ;; result
