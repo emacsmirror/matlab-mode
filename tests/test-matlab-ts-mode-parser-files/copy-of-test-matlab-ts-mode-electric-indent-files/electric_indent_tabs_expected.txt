@@ -1,0 +1,16 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,152> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,109]@{% The assignment to x below has a TAB character st...}@) \n[109,111]
+ (if_statement<111,151> if[111,113] condition: (number[114,115]@{1}@) \n[115,116]
+  (block<120,148>
+   (if_statement<120,147> if[120,122] condition: (number[123,124]@{2}@)
+    (block<126,140>
+     (assignment<126,137> left: (identifier[126,127]@{x}@) =[128,129]
+      right: 
+       (binary_operator<129,137>
+        left: (binary_operator<129,134> left: (identifier[129,130]@{a}@) *[131,132] right: (identifier[133,134]@{b}@))
+        -[134,135] right: (identifier[136,137]@{c}@)))
+     ;[137,138] \n[139,140])
+    end[144,147])
+   \n[147,148])
+  end[148,151])
+ \n[151,152])

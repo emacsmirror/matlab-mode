@@ -75,7 +75,9 @@
              foobar (1,1)           |          foobar (1,1)
              p1 (1,1)               |          p1     (1,1)
          end                        |      end
-     end                            |  end"
+     end                            |  end
+
+- Untabify (convert TAB characters to spaces)"
   :type 'boolean)
 
 (defvar matlab-ts-mode--electric-indent-verbose nil)
@@ -404,6 +406,16 @@ Assumes that current point is at `back-to-indentation'."
       line-node-types
     (concat line-node-types (when line-node-types " ") node-type)))
 
+(defun matlab-ts-mode--ei-get-indent-level-spaces ()
+  "Get indent-level spaces for current line expanding tabs."
+  (let ((spaces (buffer-substring (line-beginning-position) (point))))
+    (when (string-match "\t" spaces)
+      (setq spaces (with-temp-buffer
+                     (insert spaces)
+                     (untabify (point-min) (point-max))
+                     (buffer-string))))
+    spaces))
+
 (cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-offset)
   "Get new line content with element spacing adjusted.
 Optional START-NODE and START-OFFSET are used to compute new pt-offset,
@@ -420,7 +432,7 @@ or nil."
 
     ;; Compute ei-line, the electric indented line content
     (let* (pt-offset ;; used in restoring point
-           (ei-line (buffer-substring (line-beginning-position) (point)))
+           (ei-line (matlab-ts-mode--ei-get-indent-level-spaces))
            (pair (matlab-ts-mode--ei-move-to-and-get-node))
            (node (or (car pair)
                      (cl-return-from matlab-ts-mode--ei-get-new-line)))
@@ -1119,4 +1131,4 @@ line is updated.  Returns t if line was updated."
 ;;; matlab-ts-mode--ei.el ends here
 
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
-;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase
+;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase Untabify untabify
