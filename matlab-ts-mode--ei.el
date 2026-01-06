@@ -989,10 +989,15 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                (p-end (when (string-match "\\([^ \t]+\\)[ \t]+[^ \t;]" ei-line)
                         (match-end 1))))
           (when p-end
-            (setq ei-line (concat (substring ei-line 0 p-end)
-                                  (make-string diff ? )
-                                  (substring ei-line p-end)))
-            (setq ei-info (cons ei-line (cdr ei-info))))))))
+            (let ((new-pt-offset (let ((pt-offset (nth 1 ei-info)))
+                                   (when pt-offset
+                                     (if (<= p-end pt-offset)
+                                         (+ pt-offset diff)
+                                       pt-offset)))))
+              (setq ei-line (concat (substring ei-line 0 p-end)
+                                    (make-string diff ? )
+                                    (substring ei-line p-end)))
+              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info)))))))))
   ei-info)
 
 (defun matlab-ts-mode--ei-trailing-comment-offset (ei-info)
