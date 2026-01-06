@@ -39,7 +39,7 @@ EL_SRCS  := $(filter-out flycheck_%, $(EL_SRCS))
 HAVE_TREESIT_EMACS = $(shell "$(EMACS)" --batch -Q --eval \
 		      	"(when (>= emacs-major-version 30) (message \"have-treesit\"))" 2>&1)
 ifneq ($(filter have-treesit,$(HAVE_TREESIT_EMACS)),have-treesit)
-    EL_SRCS := $(filter-out matlab-ts-mode.el,$(EL_SRCS))
+    EL_SRCS := $(filter-out matlab-ts-mode%, $(EL_SRCS))
 endif
 
 ELC = $(EL_SRCS:.el=.elc)
