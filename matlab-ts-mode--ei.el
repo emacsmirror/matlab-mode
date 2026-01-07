@@ -635,9 +635,11 @@ when on the 2nd continuation only line, nil is returned."
 
 (defun matlab-ts-mode--ei-indent-matrix-in-tmp-buf (assign-node)
   "Insert ASSIGN-NODE in to current tmp-buf and indent.
-Point is left at beginning of line containing the ASSIGN-NODE text."
+Point is left at beginning of line containing the ASSIGN-NODE text.
+Returns the line number after the ASSIGN-NODE in the tmp-buf."
   (let (assign-str
-        n-levels)
+        n-levels
+        end-linenum)
     (with-current-buffer (treesit-node-buffer assign-node)
       (let* ((assign-start-pos (save-excursion (goto-char (treesit-node-start assign-node))
                                                (line-beginning-position)))
@@ -656,6 +658,8 @@ Point is left at beginning of line containing the ASSIGN-NODE text."
 
     (insert assign-str "\n")
 
+    (setq end-linenum (line-number-at-pos))
+
     (cl-loop for level from 1 to n-levels do
              (insert "end\n"))
 
@@ -671,7 +675,8 @@ Point is left at beginning of line containing the ASSIGN-NODE text."
 
     (goto-char (point-min))
     (when (> n-levels 0)
-      (forward-line n-levels))))
+      (forward-line n-levels))
+    end-linenum))
 
 (cl-defun matlab-ts-mode--ei-align-line-in-m-matrix (assign-node ei-info)
   "Align current line with EI-INFO in a multi-line matrix of ASSIGN-NODE.
@@ -686,9 +691,10 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (let* ((assign-start-linenum (line-number-at-pos (treesit-node-start assign-node)))
          (tmp-buf-ei-linenum (1+ (- (line-number-at-pos) assign-start-linenum)))
          (tmp-buf-row-linenum (if matlab-ts-mode--ei-align-matrix-alist 1 tmp-buf-ei-linenum))
-         (matrix-alist matlab-ts-mode--ei-align-matrix-alist))
+         (matrix-alist matlab-ts-mode--ei-align-matrix-alist)
+         end-linenum)
     (with-temp-buffer
-      (matlab-ts-mode--ei-indent-matrix-in-tmp-buf assign-node)
+      (setq end-linenum (matlab-ts-mode--ei-indent-matrix-in-tmp-buf assign-node))
 
       (let* ((matrix-node (treesit-node-parent (treesit-search-subtree
                                                 (treesit-buffer-root-node) (rx bos "[" eos) nil t)))
@@ -701,7 +707,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                    (> tmp-buf-ei-linenum 1))
           (forward-line (1- tmp-buf-ei-linenum)))
 
-        (while (not (eobp)) ;; Adjust column widths
+        (while (< (line-number-at-pos) end-linenum) ;; Adjust column widths
           (back-to-indentation)
           (let* ((row-node (matlab-ts-mode--ei-get-m-matrix-row-in-line))
                  (indent-start-pt (point))
@@ -1155,7 +1161,7 @@ start-node is the identifier node for width and start-offset is 2."
         (eol-pt (line-end-position)))
     (save-excursion
       (back-to-indentation)
-      
+
       (while (< (point) eol-pt)
         (let ((node (if (looking-at "[ \t]")
                         (if (re-search-forward "[^ \t]" (line-end-position) t)
@@ -1194,7 +1200,7 @@ When IS-INDENT-REGION is nil, we restore the point to it's logical
 location when the line is updated.  Returns t if line was updated."
 
   (matlab-ts-mode--ei-workaround-143)
-  
+
   ;; If line was indented (nth 0 ei-info) is not same as current line, then update the buffer
   (let* ((start-pair (when (not is-indent-region)
                        (matlab-ts-mode--ei-get-start-info)))

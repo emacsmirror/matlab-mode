@@ -1006,8 +1006,6 @@ Example, disp variable is overriding the disp builtin function:
 ;;    line should convey the operation being performed by the line.  Adding unrelated concepts on a
 ;;    give line hurts readability. Hence the recommendation that lines are not too long.
 ;;
-;;    The indent engine should NOT automatically re-flow lines to fit within 100 columns.
-;;
 ;;    Consider the following where the row content causes the column width to be 105.
 ;;    Re-flowing would hurt readability.
 ;;
@@ -1018,7 +1016,7 @@ Example, disp variable is overriding the disp builtin function:
 ;;                <row-N>;
 ;;              ]
 ;;
-;;    Consider the following where the model/path/to/block causes the line to be greater than
+;;    Consider the following where a very long model/path/to/block causes the line to be greater than
 ;;    100. Re-flowing will hurt readability.
 ;;
 ;;      set_param(...
@@ -1031,10 +1029,10 @@ Example, disp variable is overriding the disp builtin function:
 ;; 3. Use 2-space offset for case labels.
 ;;    [Implemented in the indent engine]
 ;;
-;;;   The code under case or otherwise statements is one
-;;    condition and hence should have the same indent level anchored from the switch statement.
-;;    The level of complexity of the following two statements is the same which is clear from
-;;    the level of indent of the doIt function call.
+;;    The code under switch case or otherwise statements is one condition and hence should have the
+;;    same indent level anchored from the switch statement.  The level of complexity of the
+;;    following two statements is the same which is clear from the level of indent of the doIt
+;;    function call.
 ;;
 ;;    if condition1 == 1      |     switch condition1
 ;;       doIt                 |       case 1
@@ -1109,17 +1107,22 @@ Example, disp variable is overriding the disp builtin function:
 ;;    [Implemented in the indent engine]
 ;;
 ;;    - On a single line
-;;         function [out1, out2] = myFunction(in1, in2)
+;;        function [out1, out2] = myFunction(in1, in2)
 ;;
 ;;    - Aligned on multiple lines
 ;;
-;;         function ...
-;;             [out1, ...         % comment
-;;              out2] ...         % comment
-;;             = myFunction ...
-;;             (in1, ...          % comment
-;;              in2)              % comment
-;;
+;;        function ...
+;;            [ ...
+;;             out1, ... comment about out1
+;;             out2 ...  comment about out2
+;;            ] ...
+;;            = myFunction ...
+;;            ( ...
+;;             in1, ... comment about in1
+;;             in2 ...  comment about in2
+;;            )
+;;        end
+;; ;;
 ;; 8. Expressions
 ;;    [Guidance - not implemented in the indent engine]
 ;;
@@ -1131,25 +1134,27 @@ Example, disp variable is overriding the disp builtin function:
 ;;    the expression continues. For example the && is at the end of the 1st line
 ;;    and not the start of the 2nd line:
 ;;
-;;     if (thisOneThing > thisOtherLongLongLongLongLongLongThing &&
+;;     if (thisOneThing > thisOtherLongLongLongLongLongLongThing && ...
 ;;         aThirdThing == aFourthLongLongLongLongLongLongThing)
 ;;
 ;;         % code
 ;;     end
 ;;
-;;    You can use extra newlines when it helps with readability, e.g.
+;;    You can use extra newlines when it helps with readability. For example, suppose
+;;    the following conditions are more readable when on separate lines.
 ;;
-;;     if (c > 30 &&  % is cost per unit must be high?
-;;         d > 40)    % and distance traveled high?
+;;     if c > 30 && ...
+;;        d > 40
 ;;
-;;         // code
+;;         % code
 ;;     end
 ;;
-;;    Use parentheses to clarify the intended precedence of "&&" and "||".
+;;    Use parentheses to clarify the precedence of "&&" and "||", even when not strictly necessary
+;;    because it is common to forget that "&&" has higher precedence than "||".
 ;;    For example:
 ;;
-;;     if (c > 30 || (a > 10 && b > 20))
-;;
+;;     if c > 30 || (a > 10 && b > 20)
+;;         % code
 ;;     end
 ;;
 ;;    Do not overuse parentheses. Don't add them when they are not needed.  Overuse of parentheses
@@ -1157,13 +1162,13 @@ Example, disp variable is overriding the disp builtin function:
 ;;    operator precedence rules are not in use, for example, "a = b * (c + d)" indicates to the
 ;;    reader that standard operator precedence is not in use.
 ;;
-;;    As a guideline, use the minimum number of parentheses, except for
-;;    parenthesis to clarify the precedence of "&&" and "||" or more
-;;    generally, if in doubt about operator precedence, parenthesize.
+;;    As a guideline, use the minimum number of parentheses, except for parenthesis to clarify the
+;;    precedence of "&&" and "||" or more generally, if in doubt about operator precedence,
+;;    parenthesize.
 ;;
 ;;    Examples:
 ;;
-;;     % Good                           % Bad: too many parens
+;;     % Good                           % Bad: too many parentheses
 ;;     if (c > 30 && d > 40) || e       if (((c > 30) && (d > 40)) || e)
 ;;     end                              end
 ;;
@@ -1171,29 +1176,29 @@ Example, disp variable is overriding the disp builtin function:
 ;;    [Implemented in the indent engine]
 ;;
 ;;    Example:
-;;        width  = 5;
-;;        length = 10;
-;;        area   = width * length;
+;;      width1  = 5;
+;;      length1 = 10;
+;;      area1   = width1 * length1;
 ;;
 ;; 10. Align properties and arguments
 ;;     [Implemented in the indent engine]
 ;;
 ;;     Example:
-;;        classdef c1
-;;            properties
-;;                foo    (1,3)
-;;                foobar (1,1)
-;;                x      {mustBeReal}
-;;            end
-;;        end
+;;       classdef c1
+;;           properties
+;;               foo    (1,3)
+;;               foobar (1,1)
+;;               x      {mustBeReal}
+;;           end
+;;       end
 ;;
 ;; 11. Align consecutive trailing comments
 ;;     [Implemented in the indent engine]
 ;;
 ;;     Example:
-;;        width  = 5;              % width of rectangle
-;;        length = 10;             % length of rectangle
-;;        area   = width * length; % area of rectangle
+;;       width1  = 5;                % width of rectangle one
+;;       length1 = 10;               % length of rectangle one
+;;       area1   = width1 * length1; % area of rectangle one
 ;;
 ;; 12. Function/classdef doc help should be aligned with the function/classdef keyword.
 ;;     [Implemented in the indent engine]
@@ -1493,7 +1498,7 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
 (defvar matlab-ts-mode--indent-assert-rule
   '((lambda (node parent bol)
       (when matlab-ts-mode--indent-assert
-        (error "Assert no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
+        (error "Assert: no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
                node parent bol
                (treesit-node-parent parent)
                (treesit-node-prev-sibling node)
@@ -2425,6 +2430,17 @@ Example:
   "Return anchor for `matlab-ts-mode--i-arg-namespace-fcn-prop-matcher'."
   matlab-ts-mode--i-arg-namespace-fcn-prop-anchor-value)
 
+(defun matlab-ts-mode--i-matrix-element ()
+  "Get the matrix element node at point."
+  (let* ((node (treesit-node-at (point)))
+         (parent (treesit-node-parent node)))
+    (while (and parent
+                (not (string= (treesit-node-type parent) "row")))
+      (setq node parent
+            parent (treesit-node-parent parent)))
+    (cl-assert parent)
+    node))
+
 (defvar matlab-ts-mode--i-row-matcher-pair nil)
 
 (cl-defun matlab-ts-mode--i-row-matcher (node parent _bol &rest _)
@@ -2448,7 +2464,7 @@ Example:
            (column-widths (matlab-ts-mode--ei-m-matrix-col-widths parent first-col-extra t))
            (el-width (save-excursion
                        (goto-char (treesit-node-start node))
-                       (let ((el (treesit-node-at (point))))
+                       (let ((el (matlab-ts-mode--i-matrix-element)))
                          (- (treesit-node-end el) (treesit-node-start el)))))
            (el-spaces (- (alist-get 1 column-widths) el-width)))
       (setq matlab-ts-mode--i-row-matcher-pair (cons (treesit-node-start parent) (1+ el-spaces)))
