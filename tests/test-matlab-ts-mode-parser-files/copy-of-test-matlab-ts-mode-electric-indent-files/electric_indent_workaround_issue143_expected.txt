@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,180> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,96]@{% workaround https://github.com/acristoffers/tree-...}@) \n[96,98]
+(source_file<1,237> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,96]@{% workaround https://github.com/acristoffers/tree-...}@) \n[96,98]
  (if_statement<98,179> if[98,100] condition: (number[101,102]@{1}@)
   (block<118,176>
    (assignment<118,171> left: (identifier[118,119]@{a}@) =[119,120]
@@ -33,4 +33,16 @@
         )[170,171])))
    ;[171,172] \n[175,176])
   end[176,179])
- \n[179,180])
+ \n[179,181]
+ (assignment<181,198> left: (identifier[181,182]@{x}@) =[183,184]
+  right: 
+   (binary_operator<185,198>
+    left: (binary_operator<185,192> left: (number[185,189]@{123.}@) *[189,190] right: (number[191,192]@{4}@))
+    +[193,194] right: (number[195,198]@{567}@)))
+ (comment[200,218]@{% x = 123.*4 + 567}@) \n[218,220]
+ (assignment<220,236> left: (identifier[220,221]@{y}@) =[222,223]
+  right: 
+   (binary_operator<224,236>
+    left: (binary_operator<224,230> left: (number[224,228]@{123.}@) *[228,229] right: (number[229,230]@{4}@))
+    +[231,232] right: (number[233,236]@{567}@)))
+ \n[236,237])

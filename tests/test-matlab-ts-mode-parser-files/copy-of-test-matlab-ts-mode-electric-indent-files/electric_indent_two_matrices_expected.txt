@@ -1,0 +1,36 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,555> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,170]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) (comment[172,348]@{% The following two matrices do not have blank lin...}@) \n[348,350]
+ (if_statement<350,554> if[350,352] condition: (number[353,354]@{1}@)
+  (block<363,551>
+   (assignment<363,444> left: (identifier[363,386]@{tp_taper_BorderVertices}@) =[387,388]
+    right: 
+     (matrix<389,444> [[389,390]
+      (row<390,408> (identifier[390,408]@{neg_BorderVertices}@))
+      (line_continuation[409,413]@{...\n}@)
+      (row<421,443> (identifier[421,443]@{topcover_taper_Face_BV}@))
+      ][443,444]))
+   ;[444,445]
+   (assignment<450,549> left: (identifier[450,467]@{tp_taper_Polygons}@) =[468,469]
+    right: 
+     (matrix<470,549> [[470,471]
+      (row<471,483> (identifier[471,483]@{neg_Polygons}@))
+      (line_continuation[484,488]@{...\n}@)
+      (row<496,548>
+       (binary_operator<496,548>
+        left: 
+         (function_call<496,523> name: (identifier[496,520]@{topcover_taper_Face_poly}@) {[520,521]
+          (arguments<521,522> argument: (number[521,522]@{1}@))
+          }[522,523])
+        +[524,525]
+        right: 
+         (function_call<526,548> name: (identifier[526,529]@{max}@) ([529,530]
+          (arguments<530,547>
+           argument: 
+            (function_call<530,547> name: (identifier[530,533]@{max}@) ([533,534]
+             (arguments<534,546> argument: (identifier[534,546]@{neg_Polygons}@))
+             )[546,547]))
+          )[547,548])))
+      ][548,549]))
+   ;[549,550] \n[550,551])
+  end[551,554])
+ \n[554,555])
