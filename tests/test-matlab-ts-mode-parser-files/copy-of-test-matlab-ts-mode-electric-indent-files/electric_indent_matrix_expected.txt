@@ -1,358 +1,358 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,952> (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment<22,33> left: (identifier[22,24]@{a0}@) =[25,26]
+(source_file<1,1116> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,184]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
+ (assignment<186,197> left: (identifier[186,188]@{a0}@) =[189,190]
   right: 
-   (matrix<27,33> [[27,28]
-    (row<28,29> (number[28,29]@{1}@))
-    (row<31,32> (number[31,32]@{1}@))
-    ][32,33]))
- ;[33,34]
- (assignment<36,63> left: (identifier[36,38]@{a1}@) =[39,40]
+   (matrix<191,197> [[191,192]
+    (row<192,193> (number[192,193]@{1}@))
+    (row<195,196> (number[195,196]@{1}@))
+    ][196,197]))
+ ;[197,198]
+ (assignment<200,227> left: (identifier[200,202]@{a1}@) =[203,204]
   right: 
-   (matrix<43,63> [[43,44]
-    (row<47,53>
-     (matrix<47,53> [[47,48]
-      (row<50,51> (number[50,51]@{1}@))
-      ][52,53]))
-    (row<55,62>
-     (matrix<55,62> [[55,56]
-      (row<58,59> (number[58,59]@{7}@))
-      ][61,62]))
-    ][62,63]))
- ;[63,64]
- (assignment<66,113> left: (identifier[66,68]@{a2}@) =[69,70]
+   (matrix<207,227> [[207,208]
+    (row<211,217>
+     (matrix<211,217> [[211,212]
+      (row<214,215> (number[214,215]@{1}@))
+      ][216,217]))
+    (row<219,226>
+     (matrix<219,226> [[219,220]
+      (row<222,223> (number[222,223]@{7}@))
+      ][225,226]))
+    ][226,227]))
+ ;[227,228]
+ (assignment<230,277> left: (identifier[230,232]@{a2}@) =[233,234]
   right: 
-   (matrix<73,113> [[73,74]
-    (row<77,94>
-     (matrix<77,94> [[77,78]
-      (row<80,93> (number[80,81]@{1}@) ,[81,82] (number[83,84]@{3}@) ,[84,85]
-       (binary_operator<86,93>
+   (matrix<237,277> [[237,238]
+    (row<241,258>
+     (matrix<241,258> [[241,242]
+      (row<244,257> (number[244,245]@{1}@) ,[245,246] (number[247,248]@{3}@) ,[248,249]
+       (binary_operator<250,257>
         left: 
-         (parenthesis<86,91> ([86,87]
-          (binary_operator<87,90> left: (number[87,88]@{4}@) +[88,89] right: (number[89,90]@{4}@))
-          )[90,91])
-        *[91,92] right: (number[92,93]@{2}@)))
-      ][93,94]))
-    (row<100,112>
-     (matrix<100,112> [[100,101]
-      (row<103,109> (number[103,104]@{5}@) ,[104,105] (number[105,106]@{6}@) ,[106,107] (number[108,109]@{7}@))
-      ][111,112]))
-    ][112,113]))
- ;[113,114]
- (assignment<116,140> left: (identifier[116,117]@{b}@) =[118,119]
+         (parenthesis<250,255> ([250,251]
+          (binary_operator<251,254> left: (number[251,252]@{4}@) +[252,253] right: (number[253,254]@{4}@))
+          )[254,255])
+        *[255,256] right: (number[256,257]@{2}@)))
+      ][257,258]))
+    (row<264,276>
+     (matrix<264,276> [[264,265]
+      (row<267,273> (number[267,268]@{5}@) ,[268,269] (number[269,270]@{6}@) ,[270,271] (number[272,273]@{7}@))
+      ][275,276]))
+    ][276,277]))
+ ;[277,278]
+ (assignment<280,304> left: (identifier[280,281]@{b}@) =[282,283]
   right: 
-   (matrix<123,140> [[123,124]
-    (row<124,131>
-     (matrix<124,131> [[124,125]
-      (row<125,130> (number[125,126]@{1}@) ,[126,127] (number[127,128]@{3}@) ,[128,129] (number[129,130]@{4}@))
-      ][130,131]))
-    (row<132,139>
-     (matrix<132,139> [[132,133]
-      (row<133,138> (number[133,134]@{5}@) ,[134,135] (number[135,136]@{6}@) ,[136,137] (number[137,138]@{7}@))
-      ][138,139]))
-    ][139,140]))
- \n[140,142]
- (assignment<142,159> left: (identifier[142,143]@{c}@) =[144,145]
+   (matrix<287,304> [[287,288]
+    (row<288,295>
+     (matrix<288,295> [[288,289]
+      (row<289,294> (number[289,290]@{1}@) ,[290,291] (number[291,292]@{3}@) ,[292,293] (number[293,294]@{4}@))
+      ][294,295]))
+    (row<296,303>
+     (matrix<296,303> [[296,297]
+      (row<297,302> (number[297,298]@{5}@) ,[298,299] (number[299,300]@{6}@) ,[300,301] (number[301,302]@{7}@))
+      ][302,303]))
+    ][303,304]))
+ \n[304,306]
+ (assignment<306,323> left: (identifier[306,307]@{c}@) =[308,309]
   right: 
-   (matrix<149,159> [[149,150]
-    (row<150,156> (number[150,151]@{1}@) ,[153,154] (number[155,156]@{2}@))
-    ][158,159]))
- ;[159,160]
- (assignment<162,173> left: (identifier[162,163]@{d}@) =[163,164]
+   (matrix<313,323> [[313,314]
+    (row<314,320> (number[314,315]@{1}@) ,[317,318] (number[319,320]@{2}@))
+    ][322,323]))
+ ;[323,324]
+ (assignment<326,337> left: (identifier[326,327]@{d}@) =[327,328]
   right: 
-   (matrix<164,173> [[164,165]
-    (row<165,172> (number[165,166]@{0}@) ,[171,171] (number[171,172]@{0}@))
-    ][172,173]))
- ;[173,174]
- (assignment<176,179> left: (identifier[176,177]@{e}@) =[177,178] right: (number[178,179]@{0}@))
- \n[179,181]
- (binary_operator<181,184> left: (identifier[181,182]@{e}@) +[182,183] right: (identifier[183,184]@{e}@))
- \n[184,186]
- (matrix<186,196> [[186,187]
-  (row<187,195>
-   (unary_operator<187,189> -[187,188] operand: (identifier[188,189]@{e}@))
-   ,[193,193]
-   (unary_operator<193,195> +[193,194] operand: (identifier[194,195]@{e}@)))
-  ][195,196])
- \n[196,198]
- (assignment<198,215> left: (identifier[198,199]@{f}@) =[200,201]
+   (matrix<328,337> [[328,329]
+    (row<329,336> (number[329,330]@{0}@) ,[335,335] (number[335,336]@{0}@))
+    ][336,337]))
+ ;[337,338]
+ (assignment<340,343> left: (identifier[340,341]@{e}@) =[341,342] right: (number[342,343]@{0}@))
+ \n[343,345]
+ (binary_operator<345,348> left: (identifier[345,346]@{e}@) +[346,347] right: (identifier[347,348]@{e}@))
+ \n[348,350]
+ (matrix<350,360> [[350,351]
+  (row<351,359>
+   (unary_operator<351,353> -[351,352] operand: (identifier[352,353]@{e}@))
+   ,[357,357]
+   (unary_operator<357,359> +[357,358] operand: (identifier[358,359]@{e}@)))
+  ][359,360])
+ \n[360,362]
+ (assignment<362,379> left: (identifier[362,363]@{f}@) =[364,365]
   right: 
-   (matrix<202,215> [[202,203]
-    (row<203,214>
-     (binary_operator<203,208> left: (identifier[203,204]@{e}@) +[205,206] right: (identifier[207,208]@{e}@))
-     ,[209,209]
-     (unary_operator<209,211> -[209,210] operand: (identifier[210,211]@{e}@))
-     ,[212,212]
-     (unary_operator<212,214> +[212,213] operand: (identifier[213,214]@{e}@)))
-    ][214,215]))
- \n[215,217]
- (assignment<217,224> left: (identifier[217,218]@{g}@) =[219,220]
-  right: (unary_operator<221,224> -[221,222] operand: (identifier[223,224]@{e}@)))
- \n[224,226]
- (assignment<229,265> left: (identifier[229,230]@{h}@) =[231,232]
+   (matrix<366,379> [[366,367]
+    (row<367,378>
+     (binary_operator<367,372> left: (identifier[367,368]@{e}@) +[369,370] right: (identifier[371,372]@{e}@))
+     ,[373,373]
+     (unary_operator<373,375> -[373,374] operand: (identifier[374,375]@{e}@))
+     ,[376,376]
+     (unary_operator<376,378> +[376,377] operand: (identifier[377,378]@{e}@)))
+    ][378,379]))
+ \n[379,381]
+ (assignment<381,388> left: (identifier[381,382]@{g}@) =[383,384]
+  right: (unary_operator<385,388> -[385,386] operand: (identifier[387,388]@{e}@)))
+ \n[388,390]
+ (assignment<393,429> left: (identifier[393,394]@{h}@) =[395,396]
   right: 
-   (matrix<238,265> [[238,239]
-    (row<239,242> (number[239,240]@{1}@) ,[241,241] (number[241,242]@{2}@))
-    (line_continuation[244,248]@{...\n}@)
-    (row<255,261> (number[255,256]@{3}@) ,[260,260] (number[260,261]@{4}@))
-    ][264,265]))
- ;[265,266]
- (assignment<268,304> left: (identifier[268,270]@{c2}@) =[271,272]
+   (matrix<402,429> [[402,403]
+    (row<403,406> (number[403,404]@{1}@) ,[405,405] (number[405,406]@{2}@))
+    (line_continuation[408,412]@{...\n}@)
+    (row<419,425> (number[419,420]@{3}@) ,[424,424] (number[424,425]@{4}@))
+    ][428,429]))
+ ;[429,430]
+ (assignment<432,468> left: (identifier[432,434]@{c2}@) =[435,436]
   right: 
-   (cell<273,304> {[273,274]
-    (row<276,303>
-     (matrix<276,290> [[276,277]
-      (row<277,289>
-       (string<277,283> '[277,278] (string_content[278,282]@{freq}@) '[282,283])
-       ,[286,286]
-       (string<286,289> '[286,287] (string_content[287,288]@{%}@) '[288,289]))
-      ][289,290])
-     ,[293,293]
-     (function_call<293,303> name: (identifier[293,300]@{num2str}@) ([300,301]
-      (arguments<301,302> argument: (number[301,302]@{2}@))
-      )[302,303]))
-    }[303,304]))
- ;[304,305]
- (assignment<307,330> left: (identifier[307,309]@{c3}@) =[310,311]
+   (cell<437,468> {[437,438]
+    (row<440,467>
+     (matrix<440,454> [[440,441]
+      (row<441,453>
+       (string<441,447> '[441,442] (string_content[442,446]@{freq}@) '[446,447])
+       ,[450,450]
+       (string<450,453> '[450,451] (string_content[451,452]@{%}@) '[452,453]))
+      ][453,454])
+     ,[457,457]
+     (function_call<457,467> name: (identifier[457,464]@{num2str}@) ([464,465]
+      (arguments<465,466> argument: (number[465,466]@{2}@))
+      )[466,467]))
+    }[467,468]))
+ ;[468,469]
+ (assignment<471,494> left: (identifier[471,473]@{c3}@) =[474,475]
   right: 
-   (cell<312,330> {[312,313]
-    (row<313,329> (identifier[313,314]@{a}@) ,[315,315] (identifier[315,316]@{b}@) ,[317,317]
-     (matrix<317,324> [[317,318]
-      (row<318,323> (identifier[318,319]@{c}@) ,[320,320]
-       (string<320,323> '[320,321] (string_content[321,322]@{%}@) '[322,323]))
-      ][323,324])
-     ,[325,325]
-     (function_call<325,329> name: (identifier[325,326]@{f}@) ([326,327]
-      (arguments<327,328> argument: (number[327,328]@{1}@))
-      )[328,329]))
-    }[329,330]))
- ;[330,331]
- (assignment<333,368> left: (identifier[333,334]@{x}@) =[335,336]
+   (cell<476,494> {[476,477]
+    (row<477,493> (identifier[477,478]@{a}@) ,[479,479] (identifier[479,480]@{b}@) ,[481,481]
+     (matrix<481,488> [[481,482]
+      (row<482,487> (identifier[482,483]@{c}@) ,[484,484]
+       (string<484,487> '[484,485] (string_content[485,486]@{%}@) '[486,487]))
+      ][487,488])
+     ,[489,489]
+     (function_call<489,493> name: (identifier[489,490]@{f}@) ([490,491]
+      (arguments<491,492> argument: (number[491,492]@{1}@))
+      )[492,493]))
+    }[493,494]))
+ ;[494,495]
+ (assignment<497,532> left: (identifier[497,498]@{x}@) =[499,500]
   right: 
-   (matrix<337,368> [[337,338]
-    (row<345,349> (number[345,346]@{1}@) ,[346,347] (number[348,349]@{2}@))
-    (row<357,361> (number[357,358]@{3}@) ,[358,359] (number[360,361]@{4}@))
-    ][367,368]))
- ;[368,369]
- (assignment<371,422> left: (identifier[371,373]@{x2}@) =[374,375]
+   (matrix<501,532> [[501,502]
+    (row<509,513> (number[509,510]@{1}@) ,[510,511] (number[512,513]@{2}@))
+    (row<521,525> (number[521,522]@{3}@) ,[522,523] (number[524,525]@{4}@))
+    ][531,532]))
+ ;[532,533]
+ (assignment<535,586> left: (identifier[535,537]@{x2}@) =[538,539]
   right: 
-   (matrix<376,422> [[376,377]
-    (row<384,392> (number[384,385]@{1}@) ,[387,388] (number[391,392]@{2}@))
-    (row<407,413> (number[407,408]@{3}@) ,[411,412] (number[412,413]@{4}@))
-    ][421,422]))
- ;[422,423]
- (assignment<426,555> left: (identifier[426,428]@{d1}@) =[429,430]
+   (matrix<540,586> [[540,541]
+    (row<548,556> (number[548,549]@{1}@) ,[551,552] (number[555,556]@{2}@))
+    (row<571,577> (number[571,572]@{3}@) ,[575,576] (number[576,577]@{4}@))
+    ][585,586]))
+ ;[586,587]
+ (assignment<590,719> left: (identifier[590,592]@{d1}@) =[593,594]
   right: 
-   (function_call<431,555> name: (identifier[431,441]@{dictionary}@) ([441,442]
-    (arguments<442,554>
+   (function_call<595,719> name: (identifier[595,605]@{dictionary}@) ([605,606]
+    (arguments<606,718>
      argument: 
-      (matrix<442,489> [[442,443]
-       (row<443,464>
-        (function_call<443,464> name: (identifier[443,459]@{nativeProperties}@) ([459,460]
-         (arguments<460,463>
-          argument: (spread_operator<460,461> :[460,461])
-          ,[461,462] (number[462,463]@{1}@))
-         )[463,464]))
-       ;[464,465]
-       (row<465,488>
-        (function_call<465,488> name: (identifier[465,483]@{propertyStateArray}@) ([483,484]
-         (arguments<484,487>
-          argument: (spread_operator<484,485> :[484,485])
-          ,[485,486] (number[486,487]@{1}@))
-         )[487,488]))
-       ][488,489])
-     ,[489,490] (line_continuation[491,495]@{...\n}@)
-     (matrix<507,554> [[507,508]
-      (row<508,529>
-       (function_call<508,529> name: (identifier[508,524]@{nativeProperties}@) ([524,525]
-        (arguments<525,528>
-         argument: (spread_operator<525,526> :[525,526])
-         ,[526,527] (number[527,528]@{2}@))
-        )[528,529]))
-      ;[529,530]
-      (row<530,553>
-       (function_call<530,553> name: (identifier[530,548]@{propertyStateArray}@) ([548,549]
-        (arguments<549,552>
-         argument: (spread_operator<549,550> :[549,550])
-         ,[550,551] (number[551,552]@{2}@))
-        )[552,553]))
-      ][553,554]))
-    )[554,555]))
- ;[555,556]
- (assignment<558,697> left: (identifier[558,560]@{d2}@) =[561,562]
+      (matrix<606,653> [[606,607]
+       (row<607,628>
+        (function_call<607,628> name: (identifier[607,623]@{nativeProperties}@) ([623,624]
+         (arguments<624,627>
+          argument: (spread_operator<624,625> :[624,625])
+          ,[625,626] (number[626,627]@{1}@))
+         )[627,628]))
+       ;[628,629]
+       (row<629,652>
+        (function_call<629,652> name: (identifier[629,647]@{propertyStateArray}@) ([647,648]
+         (arguments<648,651>
+          argument: (spread_operator<648,649> :[648,649])
+          ,[649,650] (number[650,651]@{1}@))
+         )[651,652]))
+       ][652,653])
+     ,[653,654] (line_continuation[655,659]@{...\n}@)
+     (matrix<671,718> [[671,672]
+      (row<672,693>
+       (function_call<672,693> name: (identifier[672,688]@{nativeProperties}@) ([688,689]
+        (arguments<689,692>
+         argument: (spread_operator<689,690> :[689,690])
+         ,[690,691] (number[691,692]@{2}@))
+        )[692,693]))
+      ;[693,694]
+      (row<694,717>
+       (function_call<694,717> name: (identifier[694,712]@{propertyStateArray}@) ([712,713]
+        (arguments<713,716>
+         argument: (spread_operator<713,714> :[713,714])
+         ,[714,715] (number[715,716]@{2}@))
+        )[716,717]))
+      ][717,718]))
+    )[718,719]))
+ ;[719,720]
+ (assignment<722,861> left: (identifier[722,724]@{d2}@) =[725,726]
   right: 
-   (function_call<563,697> name: (identifier[563,573]@{dictionary}@) ([573,574]
-    (arguments<574,696>
+   (function_call<727,861> name: (identifier[727,737]@{dictionary}@) ([737,738]
+    (arguments<738,860>
      argument: 
-      (matrix<574,624> [[574,575]
-       (row<575,597>
-        (function_call<575,597> name: (identifier[575,591]@{nativeProperties}@) ([591,592]
-         (arguments<592,596>
-          argument: (spread_operator<592,593> :[592,593])
-          ,[593,594] (number[595,596]@{1}@))
-         )[596,597]))
-       (row<599,623>
-        (function_call<599,623> name: (identifier[599,617]@{propertyStateArray}@) ([617,618]
-         (arguments<618,622>
-          argument: (spread_operator<618,619> :[618,619])
-          ,[619,620] (number[621,622]@{1}@))
-         )[622,623]))
-       ][623,624])
-     ,[624,625] (line_continuation[626,630]@{...\n}@)
-     (matrix<646,696> [[646,647]
-      (row<647,669>
-       (function_call<647,669> name: (identifier[647,663]@{nativeProperties}@) ([663,664]
-        (arguments<664,668>
-         argument: (spread_operator<664,665> :[664,665])
-         ,[665,666] (number[667,668]@{2}@))
-        )[668,669]))
-      (row<671,695>
-       (function_call<671,695> name: (identifier[671,689]@{propertyStateArray}@) ([689,690]
-        (arguments<690,694>
-         argument: (spread_operator<690,691> :[690,691])
-         ,[691,692] (number[693,694]@{2}@))
-        )[694,695]))
-      ][695,696]))
-    )[696,697]))
- ;[697,698]
- (assignment<700,784> left: (identifier[700,702]@{m3}@) =[703,704]
+      (matrix<738,788> [[738,739]
+       (row<739,761>
+        (function_call<739,761> name: (identifier[739,755]@{nativeProperties}@) ([755,756]
+         (arguments<756,760>
+          argument: (spread_operator<756,757> :[756,757])
+          ,[757,758] (number[759,760]@{1}@))
+         )[760,761]))
+       (row<763,787>
+        (function_call<763,787> name: (identifier[763,781]@{propertyStateArray}@) ([781,782]
+         (arguments<782,786>
+          argument: (spread_operator<782,783> :[782,783])
+          ,[783,784] (number[785,786]@{1}@))
+         )[786,787]))
+       ][787,788])
+     ,[788,789] (line_continuation[790,794]@{...\n}@)
+     (matrix<810,860> [[810,811]
+      (row<811,833>
+       (function_call<811,833> name: (identifier[811,827]@{nativeProperties}@) ([827,828]
+        (arguments<828,832>
+         argument: (spread_operator<828,829> :[828,829])
+         ,[829,830] (number[831,832]@{2}@))
+        )[832,833]))
+      (row<835,859>
+       (function_call<835,859> name: (identifier[835,853]@{propertyStateArray}@) ([853,854]
+        (arguments<854,858>
+         argument: (spread_operator<854,855> :[854,855])
+         ,[855,856] (number[857,858]@{2}@))
+        )[858,859]))
+      ][859,860]))
+    )[860,861]))
+ ;[861,862]
+ (assignment<864,948> left: (identifier[864,866]@{m3}@) =[867,868]
   right: 
-   (function_call<705,784> name: (identifier[705,710]@{uint8}@) ([710,711]
-    (arguments<713,783>
+   (function_call<869,948> name: (identifier[869,874]@{uint8}@) ([874,875]
+    (arguments<877,947>
      argument: 
-      (matrix<713,783> [[713,714]
-       (row<716,726>
-        (function_call<716,726> name: (identifier[716,720]@{ones}@) ([720,721]
-         (arguments<721,725> argument: (number[721,723]@{20}@) ,[723,724] (number[724,725]@{1}@))
-         )[725,726]))
-       (row<730,741>
-        (binary_operator<730,741> left: (number[730,731]@{2}@) *[731,732]
+      (matrix<877,947> [[877,878]
+       (row<880,890>
+        (function_call<880,890> name: (identifier[880,884]@{ones}@) ([884,885]
+         (arguments<885,889> argument: (number[885,887]@{20}@) ,[887,888] (number[888,889]@{1}@))
+         )[889,890]))
+       (row<894,905>
+        (binary_operator<894,905> left: (number[894,895]@{2}@) *[895,896]
          right: 
-          (function_call<732,741> name: (identifier[732,736]@{ones}@) ([736,737]
-           (arguments<737,740> argument: (number[737,738]@{8}@) ,[738,739] (number[739,740]@{1}@))
-           )[740,741])))
-       (row<742,751>
-        (function_call<742,751> name: (identifier[742,746]@{ones}@) ([746,747]
-         (arguments<747,750> argument: (number[747,748]@{8}@) ,[748,749] (number[749,750]@{1}@))
-         )[750,751]))
-       (row<756,767>
-        (binary_operator<756,767> left: (number[756,757]@{2}@) *[757,758]
+          (function_call<896,905> name: (identifier[896,900]@{ones}@) ([900,901]
+           (arguments<901,904> argument: (number[901,902]@{8}@) ,[902,903] (number[903,904]@{1}@))
+           )[904,905])))
+       (row<906,915>
+        (function_call<906,915> name: (identifier[906,910]@{ones}@) ([910,911]
+         (arguments<911,914> argument: (number[911,912]@{8}@) ,[912,913] (number[913,914]@{1}@))
+         )[914,915]))
+       (row<920,931>
+        (binary_operator<920,931> left: (number[920,921]@{2}@) *[921,922]
          right: 
-          (function_call<758,767> name: (identifier[758,762]@{ones}@) ([762,763]
-           (arguments<763,766> argument: (number[763,764]@{8}@) ,[764,765] (number[765,766]@{1}@))
-           )[766,767])))
-       (row<769,778>
-        (function_call<769,778> name: (identifier[769,773]@{ones}@) ([773,774]
-         (arguments<774,777> argument: (number[774,775]@{7}@) ,[775,776] (number[776,777]@{1}@))
-         )[777,778]))
-       ][782,783]))
-    )[783,784]))
- ;[784,785]
- (assignment<787,842>
+          (function_call<922,931> name: (identifier[922,926]@{ones}@) ([926,927]
+           (arguments<927,930> argument: (number[927,928]@{8}@) ,[928,929] (number[929,930]@{1}@))
+           )[930,931])))
+       (row<933,942>
+        (function_call<933,942> name: (identifier[933,937]@{ones}@) ([937,938]
+         (arguments<938,941> argument: (number[938,939]@{7}@) ,[939,940] (number[940,941]@{1}@))
+         )[941,942]))
+       ][946,947]))
+    )[947,948]))
+ ;[948,949]
+ (assignment<951,1006>
   left: 
-   (function_call<787,799> name: (identifier[787,793]@{foo123}@) ([793,794]
-    (arguments<794,798> argument: (identifier[794,796]@{t0}@) ,[796,797]
-     (spread_operator<797,798> :[797,798]))
-    )[798,799])
-  =[800,801]
+   (function_call<951,963> name: (identifier[951,957]@{foo123}@) ([957,958]
+    (arguments<958,962> argument: (identifier[958,960]@{t0}@) ,[960,961]
+     (spread_operator<961,962> :[961,962]))
+    )[962,963])
+  =[964,965]
   right: 
-   (binary_operator<802,842>
+   (binary_operator<966,1006>
     left: 
-     (function_call<802,815> name: (identifier[802,805]@{tan}@) ([805,806]
-      (arguments<806,814>
+     (function_call<966,979> name: (identifier[966,969]@{tan}@) ([969,970]
+      (arguments<970,978>
        argument: 
-        (binary_operator<806,814>
+        (binary_operator<970,978>
          left: 
-          (function_call<806,812> name: (identifier[806,808]@{th}@) ([808,809]
-           (arguments<809,811> argument: (identifier[809,811]@{t0}@))
-           )[811,812])
-         /[812,813] right: (number[813,814]@{2}@)))
-      )[814,815])
-    .*[815,817]
+          (function_call<970,976> name: (identifier[970,972]@{th}@) ([972,973]
+           (arguments<973,975> argument: (identifier[973,975]@{t0}@))
+           )[975,976])
+         /[976,977] right: (number[977,978]@{2}@)))
+      )[978,979])
+    .*[979,981]
     right: 
-     (matrix<817,842> [[817,818]
-      (row<818,841>
-       (postfix_operator<818,825>
+     (matrix<981,1006> [[981,982]
+      (row<982,1005>
+       (postfix_operator<982,989>
         operand: 
-         (function_call<818,824> name: (identifier[818,820]@{sx}@) ([820,821]
-          (arguments<821,823> argument: (identifier[821,823]@{t0}@))
-          )[823,824])
-        '[824,825])
-       ,[826,826]
-       (postfix_operator<826,833>
+         (function_call<982,988> name: (identifier[982,984]@{sx}@) ([984,985]
+          (arguments<985,987> argument: (identifier[985,987]@{t0}@))
+          )[987,988])
+        '[988,989])
+       ,[990,990]
+       (postfix_operator<990,997>
         operand: 
-         (function_call<826,832> name: (identifier[826,828]@{sy}@) ([828,829]
-          (arguments<829,831> argument: (identifier[829,831]@{t0}@))
-          )[831,832])
-        '[832,833])
-       ,[834,834]
-       (postfix_operator<834,841>
+         (function_call<990,996> name: (identifier[990,992]@{sy}@) ([992,993]
+          (arguments<993,995> argument: (identifier[993,995]@{t0}@))
+          )[995,996])
+        '[996,997])
+       ,[998,998]
+       (postfix_operator<998,1005>
         operand: 
-         (function_call<834,840> name: (identifier[834,836]@{sz}@) ([836,837]
-          (arguments<837,839> argument: (identifier[837,839]@{t0}@))
-          )[839,840])
-        '[840,841]))
-      ][841,842])))
- ;[842,843]
- (assignment<845,892> left: (identifier[845,847]@{c3}@) =[848,849]
+         (function_call<998,1004> name: (identifier[998,1000]@{sz}@) ([1000,1001]
+          (arguments<1001,1003> argument: (identifier[1001,1003]@{t0}@))
+          )[1003,1004])
+        '[1004,1005]))
+      ][1005,1006])))
+ ;[1006,1007]
+ (assignment<1009,1056> left: (identifier[1009,1011]@{c3}@) =[1012,1013]
   right: 
-   (cell<850,892> {[850,851]
-    (row<851,891>
-     (cell<851,872> {[851,852]
-      (row<852,871>
-       (matrix<852,861> [[852,853]
-        (row<853,860> (number[853,858]@{17.50}@) ,[859,859] (number[859,860]@{0}@))
-        ][860,861])
-       ,[862,862]
-       (matrix<862,871> [[862,863]
-        (row<863,870> (number[863,868]@{17.50}@) ,[869,869] (number[869,870]@{0}@))
-        ][870,871]))
-      }[871,872])
-     ,[873,873]
-     (cell<873,891> {[873,874]
-      (row<874,890>
-       (matrix<874,881> [[874,875]
-        (row<875,880> (number[875,878]@{120}@) ,[879,879] (number[879,880]@{0}@))
-        ][880,881])
-       ,[882,882]
-       (matrix<882,890> [[882,883]
-        (row<883,889> (number[883,886]@{120}@) ,[887,887] (number[887,889]@{20}@))
-        ][889,890]))
-      }[890,891]))
-    }[891,892]))
- ;[892,893]
- (assignment<896,914>
+   (cell<1014,1056> {[1014,1015]
+    (row<1015,1055>
+     (cell<1015,1036> {[1015,1016]
+      (row<1016,1035>
+       (matrix<1016,1025> [[1016,1017]
+        (row<1017,1024> (number[1017,1022]@{17.50}@) ,[1023,1023] (number[1023,1024]@{0}@))
+        ][1024,1025])
+       ,[1026,1026]
+       (matrix<1026,1035> [[1026,1027]
+        (row<1027,1034> (number[1027,1032]@{17.50}@) ,[1033,1033] (number[1033,1034]@{0}@))
+        ][1034,1035]))
+      }[1035,1036])
+     ,[1037,1037]
+     (cell<1037,1055> {[1037,1038]
+      (row<1038,1054>
+       (matrix<1038,1045> [[1038,1039]
+        (row<1039,1044> (number[1039,1042]@{120}@) ,[1043,1043] (number[1043,1044]@{0}@))
+        ][1044,1045])
+       ,[1046,1046]
+       (matrix<1046,1054> [[1046,1047]
+        (row<1047,1053> (number[1047,1050]@{120}@) ,[1051,1051] (number[1051,1053]@{20}@))
+        ][1053,1054]))
+      }[1054,1055]))
+    }[1055,1056]))
+ ;[1056,1057]
+ (assignment<1060,1078>
   left: 
-   (function_call<896,901> name: (identifier[896,898]@{c4}@) {[898,899]
-    (arguments<899,900> argument: (number[899,900]@{1}@))
-    }[900,901])
-  =[902,903]
+   (function_call<1060,1065> name: (identifier[1060,1062]@{c4}@) {[1062,1063]
+    (arguments<1063,1064> argument: (number[1063,1064]@{1}@))
+    }[1064,1065])
+  =[1066,1067]
   right: 
-   (matrix<904,914> [[904,905]
-    (row<905,908> (number[905,906]@{1}@) ,[907,907] (number[907,908]@{2}@))
-    (row<910,913> (number[910,911]@{3}@) ,[912,912] (number[912,913]@{4}@))
-    ][913,914]))
- ;[914,915]
- (assignment<916,950> left: (identifier[916,918]@{v4}@) =[919,920]
+   (matrix<1068,1078> [[1068,1069]
+    (row<1069,1072> (number[1069,1070]@{1}@) ,[1071,1071] (number[1071,1072]@{2}@))
+    (row<1074,1077> (number[1074,1075]@{3}@) ,[1076,1076] (number[1076,1077]@{4}@))
+    ][1077,1078]))
+ ;[1078,1079]
+ (assignment<1080,1114> left: (identifier[1080,1082]@{v4}@) =[1083,1084]
   right: 
-   (matrix<921,950> [[921,922]
-    (row<922,949>
-     (function_call<922,934>
+   (matrix<1085,1114> [[1085,1086]
+    (row<1086,1113>
+     (function_call<1086,1098>
       name: 
-       (function_call<922,927> name: (identifier[922,924]@{c4}@) {[924,925]
-        (arguments<925,926> argument: (number[925,926]@{1}@))
-        }[926,927])
-      ([927,928]
-      (arguments<928,933> argument: (number[928,929]@{1}@) ,[929,930] (number[932,933]@{1}@))
-      )[933,934])
-     ,[934,935]
-     (function_call<936,949>
+       (function_call<1086,1091> name: (identifier[1086,1088]@{c4}@) {[1088,1089]
+        (arguments<1089,1090> argument: (number[1089,1090]@{1}@))
+        }[1090,1091])
+      ([1091,1092]
+      (arguments<1092,1097> argument: (number[1092,1093]@{1}@) ,[1093,1094] (number[1096,1097]@{1}@))
+      )[1097,1098])
+     ,[1098,1099]
+     (function_call<1100,1113>
       name: 
-       (function_call<936,941> name: (identifier[936,938]@{c4}@) {[938,939]
-        (arguments<939,940> argument: (number[939,940]@{1}@))
-        }[940,941])
-      ([941,942]
-      (arguments<942,948> argument: (number[942,943]@{1}@) ,[943,944] (number[947,948]@{1}@))
-      )[948,949]))
-    ][949,950]))
- ;[950,951] \n[951,952])
+       (function_call<1100,1105> name: (identifier[1100,1102]@{c4}@) {[1102,1103]
+        (arguments<1103,1104> argument: (number[1103,1104]@{1}@))
+        }[1104,1105])
+      ([1105,1106]
+      (arguments<1106,1112> argument: (number[1106,1107]@{1}@) ,[1107,1108] (number[1111,1112]@{1}@))
+      )[1112,1113]))
+    ][1113,1114]))
+ ;[1114,1115] \n[1115,1116])

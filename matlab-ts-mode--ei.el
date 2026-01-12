@@ -217,6 +217,13 @@
     ;; Case: c3 = {{[17.50 0] [17.50 0]} {[120 0] [120 20]}};
     ;;                                 ^ ^
     (,(rx bos (or ")" "}") eos)       "."                                                        1)
+
+    ;; We shouldn't hit the ERROR node because matlab-ts-mode--ei-no-elements-to-indent
+    ;; says to skip lines with ERROR nodes, but be safe in case an ERROR node spans
+    ;; multiple lines without inner ERROR nodes.
+    ;; TODO - double check this logic. Try creating a case that hits this by removing this line.
+    (,(rx bos "ERROR" eos)            "."                                                        1)
+
     ))
 
 (defun matlab-ts-mode--ei-fast-back-to-indentation ()
@@ -372,6 +379,27 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
               (when (> n-spaces-to-append 0)
                 (make-string n-spaces-to-append ? ))))))
 
+(defvar matlab-ts-mode--ei-error-query (treesit-query-compile 'matlab '((ERROR) @e)))
+(defvar-local matlab-ts-mode--ei-errors-alist nil)
+
+(defun matlab-ts-mode--ei-get-errors-alist ()
+  "Return an alist of `(ERROR-LINENUM . t) elements.
+If an error node spans multiple lines, we ignore it assuming
+there's an inner error node.  This always returns non-nil, thus
+enabling caching."
+  (let ((capture-errors (treesit-query-capture (treesit-buffer-root-node)
+                                               matlab-ts-mode--ei-error-query))
+        (error-linenums `(-1 . nil)))
+    (dolist (capture-error capture-errors)
+      (let* ((error-node (cdr capture-error))
+             (error-start-pt (treesit-node-start error-node))
+             (error-end-pt (treesit-node-end error-node))
+             (error-start-linenum (line-number-at-pos error-start-pt))
+             (error-end-linenum (line-number-at-pos error-end-pt)))
+        (when (= error-start-linenum error-end-linenum)
+          (push `(,error-start-linenum . t) error-linenums))))
+    error-linenums))
+
 (defun matlab-ts-mode--ei-no-elements-to-indent ()
   "Return t if no elements in the current line to indent.
 Assumes that current point is at `back-to-indentation'."
@@ -381,18 +409,9 @@ Assumes that current point is at `back-to-indentation'."
      (string-match-p (rx bos (or "line_continuation" "comment") eos) first-node-type))
    ;; (2) Syntax error *within* the line? If error node covers whole line, assume nodes in
    ;;     line are good, i.e. electric indent the line.
-   (let ((beg (line-beginning-position))
-         (end (line-end-position))
-         (capture-errors (treesit-query-capture (treesit-buffer-root-node) '((ERROR) @e))))
-     (cl-loop
-      for capture-error in capture-errors do
-      (let* ((error-node (cdr capture-error))
-             (error-start (treesit-node-start error-node))
-             (error-end (treesit-node-end error-node)))
-        (when (and (> error-start beg)
-                   (< error-end end))
-          (cl-return t))
-        )))))
+   (let ((error-linenums (or matlab-ts-mode--ei-errors-alist (matlab-ts-mode--ei-get-errors-alist)))
+         (curr-linenum (line-number-at-pos (point))))
+     (alist-get curr-linenum error-linenums))))
 
 (defun matlab-ts-mode--ei-node-extra-chars (node-end next-node-start)
   "Get extra chars after NODE-END and before NEXT-NODE-START."
@@ -1274,7 +1293,8 @@ This expansion of the region is done to simplify electric indent."
          (start-pt-offset (- start-pt (save-excursion
                                         (goto-char start-pt)
                                         ;; offset from beginning of start-pt-linenum
-                                        (pos-bol)))))
+                                        (pos-bol))))
+         new-content-buf)
 
     (matlab-ts-mode--ei-workaround-143 beg end) ;; may insert spaces on lines in BEG END region
 
@@ -1300,10 +1320,12 @@ This expansion of the region is done to simplify electric indent."
             (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
                         matlab-ts-mode--ei-align-prop-alist '((-1 . 0))
                         matlab-ts-mode--ei-align-comment-alist '((-1 . 0))
-                        matlab-ts-mode--ei-align-matrix-alist '((-1 . "")))
+                        matlab-ts-mode--ei-align-matrix-alist '((-1 . ""))
+                        matlab-ts-mode--ei-errors-alist (matlab-ts-mode--ei-get-errors-alist))
 
-            (let (new-content
-                  updated)
+            (setq new-content-buf (get-buffer-create
+                                   (generate-new-buffer-name " *temp-matlab-indent-region*")))
+            (let (region-updated)
 
               (while (<= curr-linenum end-linenum)
                 (beginning-of-line)
@@ -1318,34 +1340,41 @@ This expansion of the region is done to simplify electric indent."
                   (when new-start-pt-offset
                     (setq start-pt-offset new-start-pt-offset))
 
-                  (setq new-content (concat new-content new-line
-                                            (when (< curr-linenum end-linenum) "\n")))
+                  (with-current-buffer new-content-buf
+                    (insert new-line)
+                    (when (< curr-linenum end-linenum)
+                      (insert "\n")))
+
                   (when line-updated
-                    (setq updated t)))
+                    (setq region-updated t)))
 
                 (forward-line)
                 (setq curr-linenum (1+ curr-linenum)))
 
-              (when updated
+              (when region-updated
                 (save-excursion
                   (goto-char beg)
                   (delete-region beg end)
-                  (insert new-content))
+                  (insert (with-current-buffer new-content-buf
+                            (buffer-string)))
 
-                ;; Restore end point accounting for whitespace adjustments in the lines
-                (goto-char (point-min))
-                (forward-line end-linenum)
-                (setq end (point)))))
+                  ;; Restore end point accounting for whitespace adjustments in the lines
+                  (goto-char (point-min))
+                  (forward-line end-linenum)
+                  (setq end (point))))))
+
         (setq-local matlab-ts-mode--ei-align-assign-alist nil
                     matlab-ts-mode--ei-align-prop-alist nil
                     matlab-ts-mode--ei-align-comment-alist nil
-                    matlab-ts-mode--ei-align-matrix-alist nil)))
+                    matlab-ts-mode--ei-align-matrix-alist nil
+                    matlab-ts-mode--ei-errors-alist nil)
+        (kill-buffer new-content-buf)))
 
     ;; Update point to keep it on the starting semantic element
     (goto-char (point-min))
     (forward-line (1- start-pt-linenum))
     (forward-char start-pt-offset)
-    
+
     ;; Return updated BEG and END region points
     (cons beg end)))
 
@@ -1353,4 +1382,5 @@ This expansion of the region is done to simplify electric indent."
 ;;; matlab-ts-mode--ei.el ends here
 
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
-;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase Untabify untabify
+;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase Untabify untabify SPC
+;; LocalWords:  linenums reindent bol

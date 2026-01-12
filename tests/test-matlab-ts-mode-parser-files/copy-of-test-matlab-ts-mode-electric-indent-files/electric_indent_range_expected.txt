@@ -1,35 +1,35 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,145> (comment[1,20]@{% -*- matlab-ts -*-}@)
- (assignment<22,143> left: (identifier[22,29]@{dataTbl}@) =[30,31]
+(source_file<1,309> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,184]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
+ (assignment<186,307> left: (identifier[186,193]@{dataTbl}@) =[194,195]
   right: 
-   (matrix<32,143> [[32,33]
-    (row<33,142>
-     (function_call<33,65> name: (identifier[33,40]@{dataTbl}@) ([40,41]
-      (arguments<41,64>
-       argument: (spread_operator<41,42> :[41,42])
-       ,[42,43]
-       (range<44,64> (number[44,45]@{1}@) :[45,46]
-        (binary_operator<46,64>
+   (matrix<196,307> [[196,197]
+    (row<197,306>
+     (function_call<197,229> name: (identifier[197,204]@{dataTbl}@) ([204,205]
+      (arguments<205,228>
+       argument: (spread_operator<205,206> :[205,206])
+       ,[206,207]
+       (range<208,228> (number[208,209]@{1}@) :[209,210]
+        (binary_operator<210,228>
          left: 
-          (function_call<46,62> name: (identifier[46,59]@{varColNumbers}@) ([59,60]
-           (arguments<60,61> argument: (number[60,61]@{1}@))
-           )[61,62])
-         -[62,63] right: (number[63,64]@{1}@))))
-      )[64,65])
-     (line_continuation[65,80]@{...\n           }@) ,[80,80] (identifier[80,103]@{tableWithDateColumnOnly}@) ,[104,104]
-     (function_call<104,142> name: (identifier[104,111]@{dataTbl}@) ([111,112]
-      (arguments<112,141>
-       argument: (spread_operator<112,113> :[112,113])
-       ,[113,114]
-       (range<115,141>
-        (binary_operator<115,135>
+          (function_call<210,226> name: (identifier[210,223]@{varColNumbers}@) ([223,224]
+           (arguments<224,225> argument: (number[224,225]@{1}@))
+           )[225,226])
+         -[226,227] right: (number[227,228]@{1}@))))
+      )[228,229])
+     (line_continuation[229,244]@{...\n           }@) ,[244,244] (identifier[244,267]@{tableWithDateColumnOnly}@) ,[268,268]
+     (function_call<268,306> name: (identifier[268,275]@{dataTbl}@) ([275,276]
+      (arguments<276,305>
+       argument: (spread_operator<276,277> :[276,277])
+       ,[277,278]
+       (range<279,305>
+        (binary_operator<279,299>
          left: 
-          (function_call<115,131> name: (identifier[115,128]@{varColNumbers}@) ([128,129]
-           (arguments<129,130> argument: (number[129,130]@{1}@))
-           )[130,131])
-         +[132,133] right: (number[134,135]@{1}@))
-        :[136,137]
-        (end_keyword<138,141> end[138,141])))
-      )[141,142]))
-    ][142,143]))
- ;[143,144] \n[144,145])
+          (function_call<279,295> name: (identifier[279,292]@{varColNumbers}@) ([292,293]
+           (arguments<293,294> argument: (number[293,294]@{1}@))
+           )[294,295])
+         +[296,297] right: (number[298,299]@{1}@))
+        :[300,301]
+        (end_keyword<302,305> end[302,305])))
+      )[305,306]))
+    ][306,307]))
+ ;[307,308] \n[308,309])
