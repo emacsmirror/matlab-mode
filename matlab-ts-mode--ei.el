@@ -322,7 +322,7 @@ whitespace."
              new-line-no-spaces orig-line-no-spaces
              (line-number-at-pos (point)) (buffer-name))))
 
-  (back-to-indentation)
+  (matlab-ts-mode--ei-fast-back-to-indentation)
   (let (curr-line-node-types)
     (cl-loop
      while (< (point) (line-end-position))
@@ -376,12 +376,10 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
   "Return t if no elements in the current line to indent.
 Assumes that current point is at `back-to-indentation'."
   (or
-   ;; (1) Empty line?
-   (not (looking-at "[^ \t\n\r]"))
-   ;; (2) Comment line? Nothing to indent in line if it's a comment line.
+   ;; (1) Comment line? Nothing to indent in line if it's a comment line.
    (let ((first-node-type (or (treesit-node-type (treesit-node-at (point))) "")))
      (string-match-p (rx bos (or "line_continuation" "comment") eos) first-node-type))
-   ;; (3) Syntax error *within* the line? If error node covers whole line, assume nodes in
+   ;; (2) Syntax error *within* the line? If error node covers whole line, assume nodes in
    ;;     line are good, i.e. electric indent the line.
    (let ((beg (line-beginning-position))
          (end (line-end-position))
@@ -451,9 +449,11 @@ Returns electric indent info, ei-info,
   (list NEW-LINE-CONTENT PT-OFFSET LINE-NODE-TYPES FIRST-NODE-IN-LINE)
 or nil."
   (save-excursion
-    (back-to-indentation)
-    (when (matlab-ts-mode--ei-no-elements-to-indent)
-      (cl-return-from matlab-ts-mode--ei-get-new-line))
+    ;; Move to first non-whitespace character on the line
+    (let ((have-non-empty-line (matlab-ts-mode--ei-fast-back-to-indentation)))
+      (when (or (not have-non-empty-line)
+                (matlab-ts-mode--ei-no-elements-to-indent))
+        (cl-return-from matlab-ts-mode--ei-get-new-line)))
 
     ;; Compute ei-line, the electric indented line content
     (let* (pt-offset ;; used in restoring point
@@ -618,7 +618,7 @@ Note, nil may be returned when line is only a continuation, e.g.
         3 4];
 when on the 2nd continuation only line, nil is returned."
   (save-excursion
-    (back-to-indentation)
+    (matlab-ts-mode--ei-fast-back-to-indentation)
     (let (row-node
           found-ans)
       (cl-loop
@@ -722,7 +722,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
           (forward-line (1- tmp-buf-ei-linenum)))
 
         (while (< (line-number-at-pos) end-linenum) ;; Adjust column widths
-          (back-to-indentation)
+          (matlab-ts-mode--ei-fast-back-to-indentation)
           (let* ((row-node (matlab-ts-mode--ei-get-m-matrix-row-in-line))
                  (ei-line (buffer-substring (line-beginning-position) (line-end-position)))
                  (indent-offset (string-match-p "[^ \t]+" ei-line)) ;; nil if at blank line in matrix
