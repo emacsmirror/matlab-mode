@@ -2890,55 +2890,21 @@ Example:
   "Call `treesit-indent-region' on BEG END, then do electric indent."
   ;; `treesit-indent-region' will not alter the number of lines, but it may reduce the buffer size,
   ;; thus grab the start/end lines for `matlab-ts-mode--ei-indent-elements-in-line'.
+
   (when matlab-ts-mode-electric-indent
-    (let* ((start-linenum (line-number-at-pos beg))
-           (curr-linenum start-linenum)
-           (end-linenum (save-excursion
-                          (goto-char end)
-                          (let ((linenum (line-number-at-pos)))
-                            (when (= (point) (line-beginning-position))
-                              (setq linenum (1- linenum)))
-                            linenum))))
-
-      (matlab-ts-mode--ei-workaround-143 beg end)
-
-      ;; We need to run electric indent before treesit-indent-region. Consider
-      ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
-      ;;                 ~strcmpi(x, 'fubar'));
-      ;; If we indent-region first, we'll get
-      ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
-      ;;              ~strcmpi(x, 'fubar'));
-      ;; then when we adjust spacing, we'll have the following where the 2nd line is not
-      ;; indented correctly.
-      ;;    l2 = @(x) ((ischar(x) || isstring(x) || isnumeric(x)) && ...
-      ;;              ~strcmpi(x, 'fubar'));
-      (unwind-protect
-          (progn
-            ;; Add invalid entry to matlab-ts-mode--ei-align-assign-alist as a marker to activate
-            ;; caching of computed offsets for assignment alignment.
-            (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
-                        matlab-ts-mode--ei-align-prop-alist '((-1 . 0))
-                        matlab-ts-mode--ei-align-comment-alist '((-1 . 0))
-                        matlab-ts-mode--ei-align-matrix-alist '((-1 . "")))
-
-            (save-excursion
-              (goto-char beg)
-              (while (<= curr-linenum end-linenum)
-                (beginning-of-line)
-                (matlab-ts-mode--ei-indent-elements-in-line 'indent-region)
-                (forward-line)
-                (setq curr-linenum (1+ curr-linenum)))
-              ;; Restore point accounting for whitespace adjustments in the lines
-              (goto-char (point-min))
-              (forward-line (1- start-linenum))
-              (setq beg (point))
-              (goto-char (point-min))
-              (forward-line end-linenum)
-              (setq end (point))))
-        (setq-local matlab-ts-mode--ei-align-assign-alist nil
-                    matlab-ts-mode--ei-align-prop-alist nil
-                    matlab-ts-mode--ei-align-comment-alist nil
-                    matlab-ts-mode--ei-align-matrix-alist nil))))
+    ;; We need to run electric indent before treesit-indent-region. Consider
+    ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
+    ;;                 ~strcmpi(x, 'fubar'));
+    ;; If we indent-region first, we'll get
+    ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
+    ;;              ~strcmpi(x, 'fubar'));
+    ;; then when we adjust spacing, we'll have the following where the 2nd line is not
+    ;; indented correctly.
+    ;;    l2 = @(x) ((ischar(x) || isstring(x) || isnumeric(x)) && ...
+    ;;              ~strcmpi(x, 'fubar'));
+    (let ((pair (matlab-ts-mode--ei-indent-region beg end)))
+      (setq beg (car pair)
+            end (cdr pair))))
 
   (treesit-indent-region beg end))
 
