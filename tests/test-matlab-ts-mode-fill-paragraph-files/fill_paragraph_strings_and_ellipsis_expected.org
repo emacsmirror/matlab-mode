@@ -20,7 +20,9 @@
 
 - Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  309
-  No point movement
+  Moved to point:  313
+  : 9:4:     a = c + ...
+  :          ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -60,7 +62,9 @@
 
 - Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  378
-  No point movement
+  Moved to point:  394
+  : 13:16:     a = a + 3; % foo bar goo
+  :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -89,9 +93,9 @@
 
 - Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  586
-  Moved to point:  579
-  : 25:22:     b = "a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string ";
-  :                              ^
+  Moved to point:  561
+  : 25:4:     b = "a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string a long string ";
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -127,7 +131,9 @@
 
 - Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   :  835
-  No point movement
+  Moved to point:  839
+  : 31:4:     foobar = struct( ...
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -173,9 +179,9 @@
 
 - Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   : 1007
-  Moved to point: 1008
-  : 40:0:         'field1', 1, ...
-  :       ^
+  Moved to point: 1016
+  : 40:8:         'field1', 1, ...
+  :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -228,9 +234,9 @@
 
 - Invoking      : "M-q" = matlab-ts-mode-prog-fill-reindent-defun
   Start point   : 1186
-  Moved to point: 1187
-  : 49:0:         'field1', 2);
-  :       ^
+  Moved to point: 1195
+  : 49:8:         'field1', 2);
+  :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents

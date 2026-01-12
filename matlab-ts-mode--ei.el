@@ -1195,86 +1195,159 @@ TAB>  x = 123 ./1 + 567
                      (<= (point) line-pt))
             (setq line-pt (1+ line-pt)))
           (insert " ")
-          (setq end (1+ end))))
-      (forward-char 2)))
+          (setq end (1+ end)))))
+    (forward-char 2))
   (when line-pt
     (goto-char line-pt)))
 
-(cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region)
+(cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region start-pt-offset)
   "Indent current line by adjusting spacing around elements.
-When IS-INDENT-REGION is nil, we restore the point to it's logical
-location when the line is updated.  Returns t if line was updated."
+
+When IS-INDENT-REGION is t, we return (list NEW-LINE UPDATED
+NEW-START-PT-OFFSET).  Optional START-PT-OFFSET is used only when
+IS-INDENT-REGION is t and when START-PT-OFFSET is non-nil NEW-START-PT-OFFSET
+is non-nil.  This is used to update the point location for
+`matlab-ts-mode-prog-fill-reindent-defun'.
+
+When IS-INDENT-REGION is nil, we update the line and restore the point
+to it's logical location when the line is updated."
 
   ;; If line was indented (nth 0 ei-info) is not same as current line, then update the buffer
-  (let* ((start-pair (when (not is-indent-region)
+  (let* ((start-pair (when (or (not is-indent-region)
+                               start-pt-offset)
                        (matlab-ts-mode--ei-get-start-info)))
-         (start-node (car start-pair))
+         (start-node (car start-pair)) ;; may be nil
          (start-offset (cdr start-pair))
-         (orig-line (when matlab-ts-mode--electric-indent-assert
-                      (buffer-substring (line-beginning-position) (line-end-position))))
+         (at-eol (and start-offset (looking-at "[ \t]*$")))
+         (orig-line (buffer-substring (line-beginning-position) (line-end-position)))
          (ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
-    (when ei-info
-      (when matlab-ts-mode--ei-align-enabled
-        (setq ei-info (matlab-ts-mode--ei-align ei-info)))
-      (let* ((ei-line (nth 0 ei-info))
-             (pt-offset (nth 1 ei-info))
-             (line-node-types (nth 2 ei-info))
-             (curr-line (buffer-substring (line-beginning-position) (line-end-position)))
-             (updated (not (string= curr-line ei-line))))
+    (if ei-info
+        (progn
+          (when matlab-ts-mode--ei-align-enabled
+            (setq ei-info (matlab-ts-mode--ei-align ei-info)))
+          (let* ((ei-line (or (nth 0 ei-info) orig-line))
+                 (pt-offset (nth 1 ei-info)) ;; non-nil if start-offset is non-nil
+                 (line-node-types (nth 2 ei-info))
+                 (updated (and ei-info
+                               (not (string= orig-line ei-line)))))
 
-        (when updated
-          (delete-region (line-beginning-position) (line-end-position))
-          (insert ei-line)
-          (when matlab-ts-mode--electric-indent-assert
-            (matlab-ts-mode--ei-assert-match orig-line line-node-types))
-          (when pt-offset
-            (goto-char (+ (line-beginning-position) pt-offset))))
-        ;; result
-        updated))))
+            (when (and updated
+                       pt-offset
+                       at-eol)
+              (setq pt-offset (length ei-line)))
+
+            (when (and updated
+                       matlab-ts-mode--electric-indent-assert)
+              (matlab-ts-mode--ei-assert-match orig-line line-node-types))
+
+            (if is-indent-region
+                (list ei-line updated pt-offset) ;; result
+              ;; Else updated the line if needed (TAB on a line to electric indents it).
+              (when updated
+                (delete-region (line-beginning-position) (line-end-position))
+                (insert ei-line)
+                (when pt-offset
+                  (goto-char (+ (line-beginning-position) pt-offset))))
+              nil ;; return nil for TAB indent
+              )))
+      ;; else nothing updated
+      (when is-indent-region
+        (list orig-line 0 nil))
+      )))
 
 (defun matlab-ts-mode--ei-indent-region (beg end)
-  "Indent BEG END region by adjusting spacing around elements."
-  (let* ((start-linenum (line-number-at-pos beg))
-         (curr-linenum start-linenum)
+  "Indent BEG END region by adjusting spacing around elements.
+If BEG is not at start of line, it is moved to start of the line.
+If END is not at end of line, it is moved to end of the line.
+This expansion of the region is done to simplify electric indent."
+
+  (let* ((curr-linenum (line-number-at-pos beg))
          (end-linenum (save-excursion
                         (goto-char end)
+                        (end-of-line)
                         (let ((linenum (line-number-at-pos)))
                           (when (= (point) (line-beginning-position))
                             (setq linenum (1- linenum)))
-                          linenum))))
+                          linenum)))
+         (start-pt (point))
+         (start-pt-linenum (line-number-at-pos start-pt))
+         (start-pt-offset (- start-pt (save-excursion
+                                        (goto-char start-pt)
+                                        ;; offset from beginning of start-pt-linenum
+                                        (pos-bol)))))
 
-    (matlab-ts-mode--ei-workaround-143 beg end)
+    (matlab-ts-mode--ei-workaround-143 beg end) ;; may insert spaces on lines in BEG END region
 
-    (unwind-protect
-        (progn
-          ;; Add an invalid entry to each of the following associative lists. This entry is used as
-          ;; a marker to activate caching. Each entry in the lists is a cons cell `(LINENUM . INFO)
-          ;; where -1 is not a valid line number.
-          (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
-                      matlab-ts-mode--ei-align-prop-alist '((-1 . 0))
-                      matlab-ts-mode--ei-align-comment-alist '((-1 . 0))
-                      matlab-ts-mode--ei-align-matrix-alist '((-1 . "")))
+    (save-excursion
 
-          (save-excursion
-            (goto-char beg)
+      ;; Move END to end of line. Use end-linenum to because workaround-143 could have moved END.
+      (goto-char (point-min))
+      (when (> end-linenum 1)
+        (forward-line (1- end-linenum)))
+      (end-of-line)
+      (setq end (point))
+
+      ;; Move BEG to beginning of line and leave point there.
+      (goto-char beg)
+      (beginning-of-line)
+      (setq beg (point))
+
+      (unwind-protect
+          (progn
+            ;; Add an invalid entry to each of the following associative lists. This entry is used
+            ;; as a marker to activate caching. Each entry in the lists is a cons cell `(LINENUM
+            ;; . INFO) where -1 is not a valid line number.
+            (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
+                        matlab-ts-mode--ei-align-prop-alist '((-1 . 0))
+                        matlab-ts-mode--ei-align-comment-alist '((-1 . 0))
+                        matlab-ts-mode--ei-align-matrix-alist '((-1 . "")))
+
+            (let (new-content
+                  updated)
+
               (while (<= curr-linenum end-linenum)
                 (beginning-of-line)
-                (matlab-ts-mode--ei-indent-elements-in-line 'indent-region)
+
+                (let* ((tuple (matlab-ts-mode--ei-indent-elements-in-line
+                               'indent-region
+                               (when (= curr-linenum start-pt-linenum) start-pt-offset)))
+                       (new-line (nth 0 tuple))
+                       (line-updated (nth 1 tuple))
+                       (new-start-pt-offset (nth 2 tuple)))
+
+                  (when new-start-pt-offset
+                    (setq start-pt-offset new-start-pt-offset))
+
+                  (setq new-content (concat new-content new-line
+                                            (when (< curr-linenum end-linenum) "\n")))
+                  (when line-updated
+                    (setq updated t)))
+
                 (forward-line)
                 (setq curr-linenum (1+ curr-linenum)))
-              ;; Restore point accounting for whitespace adjustments in the lines
-              (goto-char (point-min))
-              (forward-line (1- start-linenum))
-              (setq beg (point))
-              (goto-char (point-min))
-              (forward-line end-linenum)
-              (setq end (point))))
+
+              (when updated
+                (save-excursion
+                  (goto-char beg)
+                  (delete-region beg end)
+                  (insert new-content))
+
+                ;; Restore end point accounting for whitespace adjustments in the lines
+                (goto-char (point-min))
+                (forward-line end-linenum)
+                (setq end (point)))))
         (setq-local matlab-ts-mode--ei-align-assign-alist nil
                     matlab-ts-mode--ei-align-prop-alist nil
                     matlab-ts-mode--ei-align-comment-alist nil
                     matlab-ts-mode--ei-align-matrix-alist nil)))
-  ;; Return updated BEG and END region points
-  (cons beg end))
+
+    ;; Update point to keep it on the starting semantic element
+    (goto-char (point-min))
+    (forward-line (1- start-pt-linenum))
+    (forward-char start-pt-offset)
+    
+    ;; Return updated BEG and END region points
+    (cons beg end)))
 
 (provide 'matlab-ts-mode--ei)
 ;;; matlab-ts-mode--ei.el ends here

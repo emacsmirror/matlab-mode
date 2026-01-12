@@ -2880,11 +2880,8 @@ Example:
   "Call `treesit-indent', then do electric indent."
   (treesit-indent) ;; treesit-indent before electric indent to get updated point on the line
   (when matlab-ts-mode-electric-indent
-    (let ((at-eol (looking-at "[ \t]*$")))
       (matlab-ts-mode--ei-workaround-143 (line-beginning-position) (line-end-position) (point))
-      (when (and (matlab-ts-mode--ei-indent-elements-in-line)
-                 at-eol)
-        (end-of-line)))))
+      (matlab-ts-mode--ei-indent-elements-in-line)))
 
 (defun matlab-ts-mode--treesit-indent-region (beg end)
   "Call `treesit-indent-region' on BEG END, then do electric indent."
@@ -4198,31 +4195,39 @@ This exists because ellipsis line continuations cause
 `prog-fill-reindent-defun' to not behave well.  Thus, we handle
 these locally."
   (interactive "P")
-  (save-excursion
-    (let ((treesit-text-node
-           (and (treesit-available-p)
-                (treesit-parser-list)
-                (let ((node (treesit-node-at (point))))
-                  (and (treesit-node-match-p node 'text t)
-                       (not (equal (treesit-node-type node) "line_continuation")))))))
-      (if (or treesit-text-node
-              ;; We can't fill strings because doing so introduces syntax errors
-              (let ((sp (syntax-ppss)))
-                (and (nth 8 sp) ;; string or comment
-                     (not (nth 3 sp)))) ;; not string
-              (let ((comment-start-pt
-                     (save-excursion
-                       (when (and (re-search-forward "\\s-*\\s<" (line-end-position) t)
-                                  (not (equal (treesit-node-type (treesit-node-at (point)))
-                                              "line_continuation")))
-                         (point)))))
-                (when comment-start-pt
-                  (goto-char comment-start-pt))))
-          (fill-paragraph justify (region-active-p))
-        (beginning-of-defun)
-        (let ((start (point)))
-          (end-of-defun)
-          (indent-region start (point) nil))))))
+
+  (let ((treesit-text-node
+         (and (treesit-available-p)
+              (treesit-parser-list)
+              (let ((node (treesit-node-at (point))))
+                (and (treesit-node-match-p node 'text t)
+                     (not (equal (treesit-node-type node) "line_continuation")))))))
+    (if (or treesit-text-node
+            ;; We can't fill strings because doing so introduces syntax errors
+            (let ((sp (syntax-ppss)))
+              (and (nth 8 sp) ;; string or comment
+                   (not (nth 3 sp)))) ;; not string
+            (let ((comment-start-pt
+                   (save-excursion
+                     (when (and (re-search-forward "\\s-*\\s<" (line-end-position) t)
+                                (not (equal (treesit-node-type (treesit-node-at (point)))
+                                            "line_continuation")))
+                       (point)))))
+              (when comment-start-pt
+                (goto-char comment-start-pt))))
+        (save-excursion
+          (fill-paragraph justify (region-active-p)))
+
+      ;; else "prog fill reindent"
+      (let ((beg (save-excursion
+                   (beginning-of-defun)
+                   (point)))
+            (end (save-excursion
+                   (end-of-defun)
+                   (point))))
+        (indent-region beg end nil)
+        (when (looking-at "[ \t]")
+          (back-to-indentation))))))
 
 ;;; Keymap
 
