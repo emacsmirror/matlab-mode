@@ -2453,6 +2453,7 @@ Example:
             (not (string= (treesit-node-type node) "row")))
     (cl-return-from matlab-ts-mode--i-row-matcher))
 
+  ;; When electric indent AND parent node is a multi-line matrix (m-matrix)
   (when (and matlab-ts-mode-electric-indent
              (string= "matrix" (treesit-node-type parent))
              (matlab-ts-mode--ei-is-m-matrix parent))
@@ -2880,30 +2881,19 @@ Example:
   "Call `treesit-indent', then do electric indent."
   (treesit-indent) ;; treesit-indent before electric indent to get updated point on the line
   (when matlab-ts-mode-electric-indent
-      (matlab-ts-mode--ei-workaround-143 (line-beginning-position) (line-end-position) (point))
-      (matlab-ts-mode--ei-indent-elements-in-line)))
+    (matlab-ts-mode--ei-workaround-143 (line-beginning-position) (line-end-position) (point))
+    (matlab-ts-mode--ei-indent-elements-in-line)))
 
 (defun matlab-ts-mode--treesit-indent-region (beg end)
   "Call `treesit-indent-region' on BEG END, then do electric indent."
   ;; `treesit-indent-region' will not alter the number of lines, but it may reduce the buffer size,
   ;; thus grab the start/end lines for `matlab-ts-mode--ei-indent-elements-in-line'.
 
-  (when matlab-ts-mode-electric-indent
-    ;; We need to run electric indent before treesit-indent-region. Consider
-    ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
-    ;;                 ~strcmpi(x, 'fubar'));
-    ;; If we indent-region first, we'll get
-    ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
-    ;;              ~strcmpi(x, 'fubar'));
-    ;; then when we adjust spacing, we'll have the following where the 2nd line is not
-    ;; indented correctly.
-    ;;    l2 = @(x) ((ischar(x) || isstring(x) || isnumeric(x)) && ...
-    ;;              ~strcmpi(x, 'fubar'));
-    (let ((pair (matlab-ts-mode--ei-indent-region beg end)))
-      (setq beg (car pair)
-            end (cdr pair))))
-
-  (treesit-indent-region beg end))
+  (if matlab-ts-mode-electric-indent
+      ;; do electric indent, then indent-region
+      (matlab-ts-mode--ei-indent-region beg end)
+    ;; just indent-region
+    (treesit-indent-region beg end)))
 
 ;;; Thing settings for movement, etc.
 
