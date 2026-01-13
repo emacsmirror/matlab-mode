@@ -1231,8 +1231,8 @@ TAB>  x = 123 ./1 + 567
                      (<= (point) line-pt))
             (setq line-pt (1+ line-pt)))
           (insert " ")
-          (setq end (1+ end)))))
-    (forward-char 2))
+          (setq end (1+ end))))
+      (forward-char 2)))
   (when line-pt
     (goto-char line-pt)))
 
