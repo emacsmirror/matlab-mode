@@ -1,7 +1,7 @@
 % -*- matlab-ts -*- %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 % t-utils-test-indent: no-line-by-line-indent - when typing line-by-line we can't align the %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-% arguments because we don't have them all. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+% arguments because we don't have them all. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 function s = electric_indent_prop(s, NameValues) %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 

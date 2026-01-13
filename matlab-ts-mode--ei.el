@@ -111,7 +111,7 @@
               "switch"
               "try"
               "while")
-      eos))
+      ))
 
 (defvar matlab-ts-mode--ei-pad-op-re
   (rx bos (or "+" "-" "*" "/" ".*" "./" ".\\" "\\"
@@ -1120,7 +1120,25 @@ is identified as a trailing comment."
       (forward-line 0)
       (when (re-search-forward "%" (pos-eol) t)
         (let ((node (treesit-node-at (point))))
-          (when (equal (treesit-node-type node) "comment")
+          (when (and (equal (treesit-node-type node) "comment")
+                     ;; And not for a control flow or definition statement. For example,
+                     ;;    if a % comment1                  <= we shouldn't align this
+                     ;;       b = [1, 2, 3]; % comment2
+                     ;;       c = 1;         % comment3
+                     (progn
+                       (forward-line 0)
+                       (while (and (not (bobp))
+                                   (save-excursion
+                                     (backward-char)
+                                     (when (re-search-backward "[^ \t]" (pos-bol) t)
+                                       (equal (treesit-node-type (treesit-node-at (point)))
+                                              "line_continuation"))))
+                         (forward-line -1))
+                       (matlab-ts-mode--ei-fast-back-to-indentation)
+                       (let ((node (treesit-node-at (point))))
+                         (not (string-match-p matlab-ts-mode--ei-keywords-re
+                                              (treesit-node-type node))))))
+
             (let* ((new-line (nth 0 ei-info))
                    (offset (- (string-match-p "%" new-line) (string-match-p "[^ \t]" new-line))))
               (when (> offset 0)

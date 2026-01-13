@@ -3,8 +3,8 @@
 % Consecuitvie assignment alignment %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 % t-utils-test-indent: no-line-by-line-indent - when we type line-by-line, we don't see later %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-%                      assignment values, thus to fully indent, need to re-indent the file after %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-%                      typing line-by-line. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+%                      assignment values, thus to fully indent, need to re-indent the file after %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+%                      typing line-by-line. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 a             = 10; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 bLongVariable = [1, 2, 3]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>

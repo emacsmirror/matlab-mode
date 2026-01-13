@@ -1404,6 +1404,12 @@ node."
        (not (save-excursion (goto-char bol)
                             (looking-at "%" t)))))
 
+(defvar matlab-ts-mode--i-block-comment-end-matcher-anchor-val)
+
+(defun matlab-ts-mode--i-block-comment-end-anchor (&rest _)
+  "Return the anchor computed by `matlab-ts-mode--i-block-comment-end-matcher'."
+  matlab-ts-mode--i-block-comment-end-matcher-anchor-val)
+
 (defun matlab-ts-mode--i-block-comment-end-matcher (node parent bol &rest _)
   "Is NODE, PARENT, BOL last line of \"{% ... %)\"?
 Also handle single-line comment blocks, e.g.
@@ -1413,13 +1419,29 @@ but not
         function foo %#ok
    TAB> % doc comment line 1"
 
-  (and (not node)
-       (string= "comment" (treesit-node-type parent))
-       (save-excursion
-         (goto-char bol)
-         (and (looking-at "%" t)
-              (not (matlab-ts-mode--i-doc-comment-matcher node parent bol))))))
-
+  (when (and (not node)
+             (string= "comment" (treesit-node-type parent))
+             ;; AND comment only line
+             (save-excursion
+               (goto-char bol)
+               (looking-at "%" t))
+             ;; AND not a function/classdef doc comment
+             (not (matlab-ts-mode--i-doc-comment-matcher node parent bol)))
+    (let ((anchor (if (save-excursion
+                        (forward-line 0)
+                        (backward-char)
+                        (forward-line 0) ;; beginning of prior line
+                        (looking-at "^[ \t]*end[ \t]*%"))
+                      ;; Prior line isn't an end statement, e.g.
+                      ;;        if x
+                      ;;           y = 1;
+                      ;;        end % foo
+                      ;;   TAB> % this comment should be at column 1
+                      (treesit-node-parent parent)
+                    parent)))
+      (setq matlab-ts-mode--i-block-comment-end-matcher-anchor-val
+            (treesit-node-start anchor)))))
+        
 ;; `matlab-ts-mode--function-indent-level'
 ;;
 ;; It is recommended that all function statements have terminating end statements.  In some cases
@@ -2540,7 +2562,9 @@ Example:
   `((matlab
 
      ;; I-Rule: last line of code block comment "%{ ... %}"?
-     (,#'matlab-ts-mode--i-block-comment-end-matcher parent 0)
+     (,#'matlab-ts-mode--i-block-comment-end-matcher
+      ,#'matlab-ts-mode--i-block-comment-end-anchor
+      0)
 
      ;; I-Rule: within a code block comment "%{ ... %}"?
      (,#'matlab-ts-mode--i-in-block-comment-matcher parent 2)
