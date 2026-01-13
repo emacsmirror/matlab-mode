@@ -1899,21 +1899,23 @@ LANGUAGE tree-sitter that need addressing or some other issue."
     (dolist (lang-file all-lang-files)
       (with-temp-buffer
 
-        (let (ok)
-          (t-utils--log log-file (format "Reading: %s\n" lang-file))
+        (let (ok
+              n-lines)
 
           (condition-case err
               (progn
                 (with-current-buffer (find-file-noselect lang-file)
                   (when (not (eq major-mode major-mode-fun))
                     (error "Error %s has major-mode=%s which is not %s" lang-file
-                           (symbol-name major-mode) (symbol-name major-mode-fun))))
+                           (symbol-name major-mode) (symbol-name major-mode-fun)))
+                  (setq n-lines (line-number-at-pos (point-max))))
                 (t-utils--insert-file-for-test lang-file major-mode-fun)
                 (setq ok t))
             (error
              (t-utils--log log-file (format "Skipping %s, %s\n"
                                             lang-file (error-message-string err)))))
           (when ok
+            (t-utils--log log-file (format "Reading: %s (%d lines)\n" lang-file n-lines))
             ;; Check for bad tree-sitter parse
             (let ((pair (t-utils--check-parse lang-file error-nodes-regexp
                                               syntax-checker-fun check-valid-parse)))
