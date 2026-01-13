@@ -1124,8 +1124,11 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
              (cl-loop
               while (not (if (= direction -1) (bobp) (eobp))) do
               (forward-line direction)
-              (let* ((ei-l-info (matlab-ts-mode--ei-get-new-line))
-                     (l-offset (matlab-ts-mode--ei-trailing-comment-offset ei-l-info)))
+              (let ((ei-l-info (matlab-ts-mode--ei-get-new-line))
+                    l-offset)
+                (setq ei-l-info (matlab-ts-mode--ei-align-assignments ei-l-info))
+                (setq ei-l-info (matlab-ts-mode--ei-align-properties ei-l-info))
+                (setq l-offset (matlab-ts-mode--ei-trailing-comment-offset ei-l-info))
                 (if l-offset
                     (progn
                       (push (line-number-at-pos) line-nums)
