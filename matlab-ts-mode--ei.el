@@ -240,10 +240,66 @@ there are non-whitespace characters on the line, nil otherwise."
     (let ((inhibit-field-text-motion t)) (end-of-line))
     nil))
 
+(defun matlab-ts-mode--ei-get-node-to-use (node)
+  "Given NODE, adjust it for electric indent.
+
+Returns (NODE . MODIFIED-NODE-TYPE) pair.
+
+For example, when node parent is a string, we return the parent.  When
+node is a \"+\" and parent is a unary_operator, we return MODIFIED-NODE-TYPE to
+be unary-op even though the node type is \"+\"."
+
+  (let* ((node-type (treesit-node-type node))
+         (parent (treesit-node-parent node))
+         (parent-type (treesit-node-type parent)))
+
+    (cond
+     ;; Use string and not the elements of the string
+     ((equal parent-type "string")
+      (setq node parent
+            node-type parent-type))
+
+     ;; convert property identifier to property-id node-type
+     ((and (equal node-type "identifier")
+           (or
+            ;; propertyWithOutDot?
+            (and (equal parent-type "property")
+                 (equal (treesit-node-child parent 0) node))
+            ;; property.nameWithDot?
+            (and (equal parent-type "property_name")
+                 (equal (treesit-node-child (treesit-node-parent parent) 0) parent))))
+      (setq node-type "property-id"))
+
+     ;; Unary operator sign, + or -, e.g. [0 -e] or g = - e
+     ((and (equal parent-type "unary_operator")
+           (equal (treesit-node-child parent 0) node))
+      (setq node-type "unary-op"))
+
+     ;; Super-class constructor call
+     ;;  obj@myUtils.super;
+     ((and (equal node-type "@")
+           (equal parent-type "function_call"))
+      (setq node-type "@-fcn-call"))
+
+     ;; Property dimensions
+     ;;   foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+     ((and (or (equal node-type "number") (equal node-type ":"))
+           (or (equal parent-type "dimensions")
+               (and (equal parent-type "spread_operator")
+                    (equal (treesit-node-type (treesit-node-parent parent))
+                           "dimensions"))))
+      (setq node-type "prop-dim"))
+     )
+    
+    (cons node node-type)))
+
 (cl-defun matlab-ts-mode--ei-move-to-and-get-node ()
   "Move to and return node.
 Will return nil if no next node before end-of-line.
-Assumes point is at of current node or beginning of line."
+Assumes point is at of current node or beginning of line.
+
+Returns (NODE . MODIFIED-NODE-TYPE) where MODIFIED-NODE-TYPE
+is used in `matlab-ts-mode--ei-spacing'"
   ;; Move point to first non-whitespace char
   (let ((eol (pos-eol)))
     (when (looking-at "[ \t]")
@@ -251,8 +307,7 @@ Assumes point is at of current node or beginning of line."
         (cl-return-from matlab-ts-mode--ei-move-to-and-get-node))
       (backward-char))
 
-    (let ((node (treesit-node-at (point)))
-          node-type)
+    (let ((node (treesit-node-at (point))))
 
       ;; Consider [[1,2];[3,4]] when point is on semicolon, node will be the prior "]" because the
       ;; semicolon is an ignored node, so move forward to get to the "[" after the semicolon.
@@ -274,47 +329,7 @@ Assumes point is at of current node or beginning of line."
         (setq node nil))
 
       (when node
-        (setq node-type (treesit-node-type node))
-        (let* ((parent (treesit-node-parent node))
-               (parent-type (treesit-node-type parent)))
-          (cond
-           ;; Use string and not the elements of the string
-           ((equal parent-type "string")
-            (setq node parent
-                  node-type parent-type))
-
-           ;; convert property identifier to property-id node-type
-           ((and (equal node-type "identifier")
-                 (or
-                  ;; propertyWithOutDot?
-                  (and (equal parent-type "property")
-                       (equal (treesit-node-child parent 0) node))
-                  ;; property.nameWithDot?
-                  (and (equal parent-type "property_name")
-                       (equal (treesit-node-child (treesit-node-parent parent) 0) parent))))
-            (setq node-type "property-id"))
-
-           ;; Unary operator sign, + or -, e.g. [0 -e] or g = - e
-           ((and (equal parent-type "unary_operator")
-                 (equal (treesit-node-child parent 0) node))
-            (setq node-type "unary-op"))
-
-           ;; Super-class constructor call
-           ;;  obj@myUtils.super;
-           ((and (equal node-type "@")
-                 (equal parent-type "function_call"))
-            (setq node-type "@-fcn-call"))
-
-           ;; Property dimensions
-           ;;   foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
-           ((and (or (equal node-type "number") (equal node-type ":"))
-                 (or (equal parent-type "dimensions")
-                     (and (equal parent-type "spread_operator")
-                          (equal (treesit-node-type (treesit-node-parent parent))
-                                 "dimensions"))))
-            (setq node-type "prop-dim"))
-           )))
-      (cons node node-type))))
+        (matlab-ts-mode--ei-get-node-to-use node)))))
 
 (defun matlab-ts-mode--ei-assert-match (orig-line orig-line-node-types)
   "Assert new line has same code meaning as ORIG-LINE.
@@ -1152,7 +1167,8 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
 (defun matlab-ts-mode--ei-get-start-info ()
   "Get start node and start offset in line prior to electric indent.
 Returns (cons start-node start-offset) where
-- start-node is non-nil if the point is at a node
+- start-node is non-nil if the point is at a node and start-node will
+  be the modified node from `matlab-ts-mode--ei-get-node-to-use'
 - start-offset is the offset of the point from the beginning of start-node.
 Example where point is on the \"d\" in width:
   area = width * length;
@@ -1181,8 +1197,9 @@ start-node is the identifier node for width and start-offset is 2."
           (when (and node
                      (>= (point) (treesit-node-start node))
                      (<= (point) (treesit-node-end node)))
-            (setq start-node node)
+            (setq start-node (car (matlab-ts-mode--ei-get-node-to-use node)))
             (setq start-offset (- (point) (treesit-node-start node)))))))
+
     (cons start-node start-offset)))
 
 (defun matlab-ts-mode--ei-workaround-143 (beg end &optional line-pt)
