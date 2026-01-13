@@ -1,0 +1,53 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,469> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,21]
+ (class_definition<21,468> classdef[21,29] name: (identifier[30,67]@{electric_indent_classdef_prop_get_set}@) \n[67,68]
+  (properties<72,120> properties[72,82] \n[82,83]
+   (property<89,112> name: (identifier[89,100]@{inputMatrix}@)
+    (default_value<101,112> =[101,102]
+     (matrix<103,112> [[103,104]
+      (row<104,107> (number[104,105]@{1}@) ,[106,106] (number[106,107]@{0}@))
+      (row<108,111> (number[108,109]@{0}@) ,[110,110] (number[110,111]@{1}@))
+      ][111,112])))
+   \n[112,113] end[117,120])
+  \n[120,121] \n[125,126]
+  (methods<130,464> methods[130,137] \n[137,138]
+   (function_definition<146,376> function[146,154]
+    (function_output<155,160> (identifier[155,158]@{obj}@) =[159,160])
+    set.[161,165] name: (identifier[165,176]@{inputMatrix}@)
+    (function_arguments<176,186> ([176,177] arguments: (identifier[177,180]@{obj}@) ,[180,181] (identifier[182,185]@{val}@) )[185,186])
+    \n[186,187]
+    (block<199,365>
+     (try_statement<199,364> try[199,202]
+      (block<203,252>
+       (function_call<203,212> name: (identifier[203,207]@{chol}@) ([207,208]
+        (arguments<208,211> argument: (identifier[208,211]@{val}@))
+        )[211,212])
+       \n[212,213]
+       (assignment<229,250>
+        left: (field_expression<229,244> object: (identifier[229,232]@{obj}@) .[232,233] field: (identifier[233,244]@{inputMatrix}@))
+        =[245,246] right: (identifier[247,250]@{val}@))
+       ;[250,251] \n[251,252])
+      (catch_clause<267,349> catch[267,272] (identifier[273,275]@{ME}@) \n[275,276]
+       (block<289,349>
+        (function_call<289,348> name: (identifier[289,294]@{error}@) ([294,295]
+         (arguments<295,345>
+          argument: (string<295,345> "[295,296] (string_content[296,344]@{inputMatrix must be symmetric positive definite.}@) "[344,345]))
+         )[347,348])
+        \n[348,349]))
+      end[361,364])
+     \n[364,365])
+    end[373,376])
+   \n[376,378]
+   (function_definition<383,456> function[383,391]
+    (function_output<392,395> (identifier[392,393]@{m}@) =[394,395])
+    get.[396,400] name: (identifier[400,411]@{inputMatrix}@)
+    (function_arguments<411,416> ([411,412] arguments: (identifier[412,415]@{obj}@) )[415,416])
+    \n[416,417]
+    (block<426,447>
+     (assignment<426,445> left: (identifier[426,427]@{m}@) =[428,429]
+      right: (field_expression<430,445> object: (identifier[430,433]@{obj}@) .[433,434] field: (identifier[434,445]@{inputMatrix}@)))
+     ;[445,446] \n[446,447])
+    end[453,456])
+   \n[456,457] end[461,464])
+  \n[464,465] end[465,468])
+ \n[468,469])

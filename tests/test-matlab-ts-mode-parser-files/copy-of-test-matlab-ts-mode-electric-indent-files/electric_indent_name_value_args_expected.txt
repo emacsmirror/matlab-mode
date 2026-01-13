@@ -1,0 +1,31 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,258> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,53> left: (identifier[22,23]@{r}@) =[24,25]
+  right: 
+   (function_call<26,53> name: (identifier[26,36]@{myFunction}@) ([36,37]
+    (arguments<37,52> (identifier[37,42]@{Name1}@) =[42,43] (number[43,44]@{3}@) ,[44,45] (identifier[45,50]@{Name2}@) =[50,51] (number[51,52]@{7}@))
+    )[52,53]))
+ \n[53,55]
+ (function_definition<55,257> function[55,63]
+  (function_output<64,72> (identifier[64,70]@{result}@) =[71,72])
+  name: (identifier[73,83]@{myFunction}@)
+  (function_arguments<83,98> ([83,84] arguments: (identifier[84,97]@{NameValueArgs}@) )[97,98])
+  \n[98,99]
+  (arguments_statement<103,176> arguments[103,112] \n[112,113]
+   (property<121,140>
+    name: (property_name<121,140> (identifier[121,134]@{NameValueArgs}@) .[134,135] (identifier[135,140]@{Name1}@)))
+   \n[140,141]
+   (property<149,168>
+    name: (property_name<149,168> (identifier[149,162]@{NameValueArgs}@) .[162,163] (identifier[163,168]@{Name2}@)))
+   \n[168,169] end[173,176])
+  (comment[182,197]@{% Function code}@)
+  (block<202,254>
+   (assignment<202,252> left: (identifier[202,208]@{result}@) =[209,210]
+    right: 
+     (binary_operator<211,252>
+      left: (field_expression<211,230> object: (identifier[211,224]@{NameValueArgs}@) .[224,225] field: (identifier[225,230]@{Name1}@))
+      *[231,232]
+      right: (field_expression<233,252> object: (identifier[233,246]@{NameValueArgs}@) .[246,247] field: (identifier[247,252]@{Name2}@))))
+   ;[252,253] \n[253,254])
+  end[254,257])
+ \n[257,258])

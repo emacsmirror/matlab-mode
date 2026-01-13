@@ -189,6 +189,11 @@
     (,matlab-ts-mode--ei-pad-op-re    "."                                                        1)
     ("."                              ,matlab-ts-mode--ei-pad-op-re                              1)
 
+    ;; Case arguments name=value syntax, the "=" node is converted to "n=v"
+    ;; TopTester: electric_indent_name_value_args.m
+    ("."                             ,(rx bos "n=v" eos)                                         0)
+    (,(rx bos "n=v" eos)             "."                                                         0)
+
     ;; Case: string followed by anything, e.g. ["string1" foo(1)]
     (,(rx bos "string" eos)           "."                                                        1)
 
@@ -256,43 +261,47 @@ be unary-op even though the node type is \"+\"."
 
   (let* ((node-type (treesit-node-type node))
          (parent (treesit-node-parent node))
-         (parent-type (treesit-node-type parent)))
+         (parent-type (or (treesit-node-type parent) "")))
 
     (cond
      ;; Use string and not the elements of the string
-     ((equal parent-type "string")
+     ((string= parent-type "string")
       (setq node parent
             node-type parent-type))
 
+     ((and (string= node-type "=")
+           (string= parent-type "arguments"))
+      ;; arguments name=value
+      (setq node-type "n=v"))
+
      ;; convert property identifier to property-id node-type
-     ((and (equal node-type "identifier")
+     ((and (string= node-type "identifier")
            (or
             ;; propertyWithOutDot?
-            (and (equal parent-type "property")
+            (and (string= parent-type "property")
                  (equal (treesit-node-child parent 0) node))
             ;; property.nameWithDot?
-            (and (equal parent-type "property_name")
+            (and (string= parent-type "property_name")
                  (equal (treesit-node-child (treesit-node-parent parent) 0) parent))))
       (setq node-type "property-id"))
 
      ;; Unary operator sign, + or -, e.g. [0 -e] or g = - e
-     ((and (equal parent-type "unary_operator")
+     ((and (string= parent-type "unary_operator")
            (equal (treesit-node-child parent 0) node))
       (setq node-type "unary-op"))
 
      ;; Super-class constructor call
      ;;  obj@myUtils.super;
-     ((and (equal node-type "@")
-           (equal parent-type "function_call"))
+     ((and (string= node-type "@")
+           (string= parent-type "function_call"))
       (setq node-type "@-fcn-call"))
 
      ;; Property dimensions
      ;;   foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
-     ((and (or (equal node-type "number") (equal node-type ":"))
-           (or (equal parent-type "dimensions")
-               (and (equal parent-type "spread_operator")
-                    (equal (treesit-node-type (treesit-node-parent parent))
-                           "dimensions"))))
+     ((and (or (string= node-type "number") (string= node-type ":"))
+           (or (string= parent-type "dimensions")
+               (and (string= parent-type "spread_operator")
+                    (string= (treesit-node-type (treesit-node-parent parent)) "dimensions"))))
       (setq node-type "prop-dim"))
      )
 
