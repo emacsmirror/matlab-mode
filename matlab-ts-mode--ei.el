@@ -128,7 +128,8 @@
 
 (defvar matlab-ts-mode--ei-val-re (rx bos (or "identifier" "number") eos))
 
-;; TODO optimize following by grouping together, also improve comments
+;; TODO optimize following by grouping together, also improve comments.  Perhaps write an optimizer
+;; function so rows can remain.
 (defvar matlab-ts-mode--ei-spacing
   ;; In a given line, we walk across the nodes adjusting spaces between NODE and NEXT-NODE to
   ;; have N-SPACES-BETWEEN them.
@@ -147,6 +148,10 @@
     ;; TopTester: tests/test-matlab-ts-mode-electric-indent-files/electric_indent_call_super.m
     ("."                              ,(rx bos "@-fcn-call" eos)                                 0)
     (,(rx bos "@-fcn-call" eos)       "."                                                        0)
+
+    ;; Case: classdef property get/set
+    ;; TopTester: electric_indent_classdef_prop_get_set.m
+    (,(rx bos (or "get." "set.") eos) "."                                                        0)
 
     ;; Case: a.?b, M', M.'
     ("."                              ,(rx bos (or ".?" "'" ".'") eos)                           0)
