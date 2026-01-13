@@ -758,6 +758,10 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
       (forward-line n-levels))
     end-linenum))
 
+;; TODO - investigate performance improvements for m-matrix line alignment.
+;; 1. Should we improve performance by leveraging prior line when TABing lines?
+;; 2. When indent-region is active, can we speedup calculation of column widths?
+
 (cl-defun matlab-ts-mode--ei-align-line-in-m-matrix (assign-node ei-info)
   "Align current line with EI-INFO in a multi-line matrix of ASSIGN-NODE.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
