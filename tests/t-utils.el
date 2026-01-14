@@ -572,15 +572,22 @@ skipped."
 
   ;; Set major-mode using file-major-mode if specified,
   ;; else use the "-*- property-first-line -*-" to set the mode
-  (if file-major-mode
-      (funcall file-major-mode)
-    ;; Else get it from the first "property line" specifying local variables
-    (let* ((prop-major-mode (hack-local-variables-prop-line t)))
-      (when (or (not prop-major-mode))
-        (user-error
-         "First line of %s must contain \"-*- MODE-NAME -*-\" or \"-*- mode: MODE-NAME -*-\""
-         file))
-      (funcall prop-major-mode)))
+  (let (prop-major-mode)
+    (condition-case err
+        (if file-major-mode
+            (funcall file-major-mode)
+          ;; Else get it from the first "property line" specifying local variables
+          (setq prop-major-mode (hack-local-variables-prop-line t))
+          (when (or (not prop-major-mode))
+            (error "First line must contain \"-*- MODE-NAME -*-\" or \"-*- mode: MODE-NAME -*-\""))
+          (funcall prop-major-mode))
+      (error
+       (let ((err-msg (concat (error-message-string err)
+                              (if file-major-mode
+                                  " (invalid file-major-mode provided)"
+                                (when prop-major-mode
+                                  " (invalid major-mode specified on first line)")))))
+         (error "Failed to set major-mode for %s: %s" (file-name-nondirectory file) err-msg)))))
 
   (when setup-callback
     (funcall setup-callback))

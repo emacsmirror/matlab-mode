@@ -42,20 +42,21 @@
 
 (defcustom matlab-ts-mode-electric-indent t
   "*If t, indent (format) language elements within code.
+
 - Canonicalize language element spacing
-     Example                        |  Result
+     Example                        |  Indent result
      -----------------------------  |  -----------------------------
      a=b+c   *d   ;                 |  a = b + c * d;
 
 - Align consecutive assignments
-     Example                        |  Result
+     Example                        |  Indent result
      -----------------------------  |  -----------------------------
      rLength      =12354    ;       |  rLength = 12354;
        rWidth=2;                    |  rWidth  = 2;
          rArea=rLength  *rWidth;    |  rArea   = rLength * rWidth;
 
 - Align properties and arguments
-     Example                        |  Result
+     Example                        |  Indent result
      -----------------------------  |  -----------------------------
      classdef c1                    |  classdef c1
          properties                 |      properties
@@ -66,19 +67,19 @@
      end                            |  end
 
 - Align trailing comments
-     Example                        |  Result
+     Example                        |  Indent result
      -----------------------------  |  -----------------------------
      a = myFcn1(1, 2); % comment 1  |  a = myFcn1(1, 2); % comment 1
      a = a + 5; % comment 2         |  a = a + 2;        % comment 2
 
 - Add missing commas in arrays (matrices and cells)
 
-     Example                        |  Result
+     Example                        |  Indent result
      -----------------------------  |  -----------------------------
      mat1 = [1234,234  12234.24];   |  mat1 = [1234, 234, 12234.24];
 
 - Align matrix columns
-     Example                        |  Result
+     Example                        |  Indent result
      -----------------------------  |  -----------------------------
      mat2 = [1234,234  12234.24     |  mat2 = [1234, 234, 12234.24
                         1,2 3.41];  |             1,   2,     3.41];
@@ -1450,11 +1451,7 @@ This expansion of the region is done to simplify electric indent."
          (curr-linenum start-linenum)
          (end-linenum (save-excursion
                         (goto-char end)
-                        (let ((inhibit-field-text-motion t)) (end-of-line))
-                        (let ((linenum (line-number-at-pos)))
-                          (when (= (point) (pos-bol))
-                            (setq linenum (1- linenum)))
-                          linenum)))
+                        (- (line-number-at-pos) (if (= (point) (pos-bol)) 1 0))))
          (start-pt (point))
          (start-pt-linenum (line-number-at-pos start-pt))
          (start-pt-offset (- start-pt (save-excursion
@@ -1481,62 +1478,64 @@ This expansion of the region is done to simplify electric indent."
                       matlab-ts-mode--ei-orig-line-node-types-alist '((-1 . 0)))
 
           (save-excursion
+            (save-restriction
+              (widen)
 
-            ;; Move END point to end of line.
-            ;; To do this, we use end-linenum, because workaround-143 could have moved END.
-            (goto-char (point-min))
-            (when (> end-linenum 1)
-              (forward-line (1- end-linenum)))
-            (let ((inhibit-field-text-motion t)) (end-of-line))
-            (setq end (point))
+              ;; Move END point to end of line.
+              ;; To do this, we use end-linenum, because workaround-143 could have moved END.
+              (goto-char (point-min))
+              (when (> end-linenum 1)
+                (forward-line (1- end-linenum)))
+              (let ((inhibit-field-text-motion t)) (end-of-line))
+              (setq end (point))
 
-            ;; Move BEG to beginning of line and leave point there.
-            (goto-char beg)
-            (forward-line 0)
-            (setq beg (point))
+              ;; Move BEG to beginning of line and leave point there.
+              (goto-char beg)
+              (forward-line 0)
+              (setq beg (point))
 
-            (setq new-content-buf (get-buffer-create
-                                   (generate-new-buffer-name " *temp-matlab-indent-region*")))
-            (let (region-updated)
+              (setq new-content-buf (get-buffer-create
+                                     (generate-new-buffer-name " *temp-matlab-indent-region*")))
+              (let (region-updated)
 
-              (while (<= curr-linenum end-linenum)
-                (forward-line 0)
+                (while (<= curr-linenum end-linenum)
+                  (forward-line 0)
 
-                (let* ((tuple (matlab-ts-mode--ei-indent-elements-in-line
-                               'indent-region
-                               (when (= curr-linenum start-pt-linenum) start-pt-offset)))
-                       (new-line (nth 0 tuple))
-                       (line-updated (nth 1 tuple))
-                       (new-start-pt-offset (nth 2 tuple)))
+                  (let* ((tuple (matlab-ts-mode--ei-indent-elements-in-line
+                                 'indent-region
+                                 (when (= curr-linenum start-pt-linenum) start-pt-offset)))
+                         (new-line (nth 0 tuple))
+                         (line-updated (nth 1 tuple))
+                         (new-start-pt-offset (nth 2 tuple)))
 
-                  (when new-start-pt-offset
-                    (setq start-pt-offset new-start-pt-offset))
+                    (when new-start-pt-offset
+                      (setq start-pt-offset new-start-pt-offset))
 
-                  (with-current-buffer new-content-buf
-                    (insert new-line)
-                    (when (< curr-linenum end-linenum)
-                      (insert "\n")))
+                    (with-current-buffer new-content-buf
+                      (insert new-line)
+                      (when (< curr-linenum end-linenum)
+                        (insert "\n")))
 
-                  (when line-updated
-                    (setq region-updated t)))
+                    (when line-updated
+                      (setq region-updated t)))
 
-                (forward-line)
-                (setq curr-linenum (1+ curr-linenum)))
+                  (forward-line)
+                  (setq curr-linenum (1+ curr-linenum)))
 
-              (when region-updated
-                (save-excursion
-                  (goto-char beg)
-                  (delete-region beg end)
-                  (insert (with-current-buffer new-content-buf
-                            (buffer-string)))
+                (when region-updated
+                  (save-excursion
+                    (goto-char beg)
+                    (delete-region beg end)
+                    (insert (with-current-buffer new-content-buf
+                              (buffer-string)))
 
-                  (when matlab-ts-mode--indent-assert
-                    (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))
+                    (when matlab-ts-mode--indent-assert
+                      (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))
 
-                  ;; Restore end point accounting for whitespace adjustments in the lines
-                  (goto-char (point-min))
-                  (forward-line end-linenum)
-                  (setq end (point))))))
+                    ;; Restore end point accounting for whitespace adjustments in the lines
+                    (goto-char (point-min))
+                    (forward-line end-linenum)
+                    (setq end (point)))))))
 
           ;; Update point to keep it on the starting semantic element
           (goto-char (point-min))

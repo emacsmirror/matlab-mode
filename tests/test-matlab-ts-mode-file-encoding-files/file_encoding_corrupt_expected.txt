@@ -1,4 +1,4 @@
 Major mode errored with message
-Not entering matlab-ts-mode due to non-printable utf8 character "" at point 45
+Failed to set major-mode for file_encoding_corrupt.m: Not entering matlab-ts-mode due to non-printable utf8 character "" at point 45 (invalid file-major-mode provided)
 
 Entered major-mode: fundamental-mode

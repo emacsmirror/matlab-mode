@@ -2911,8 +2911,10 @@ Example:
   "Call `treesit-indent', then do electric indent."
   (treesit-indent) ;; treesit-indent before electric indent to get updated point on the line
   (when matlab-ts-mode-electric-indent
-    (matlab-ts-mode--ei-workaround-143 (pos-bol) (pos-eol) (point))
-    (matlab-ts-mode--ei-indent-elements-in-line)))
+    (save-restriction
+      (widen)
+      (matlab-ts-mode--ei-workaround-143 (pos-bol) (pos-eol) (point))
+      (matlab-ts-mode--ei-indent-elements-in-line))))
 
 (defun matlab-ts-mode--treesit-indent-region (beg end)
   "Call `treesit-indent-region' on BEG END, then do electric indent."
