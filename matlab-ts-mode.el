@@ -1594,7 +1594,7 @@ See: tests/test-matlab-ts-mode-indent-files/indent_line_cont_multiple_times.m"
       (goto-char bol)
       (when (>= (forward-line -1) 0)
         (when (looking-at "^[ \t]*\\.\\.\\.")
-          (back-to-indentation)
+          (matlab-ts-mode--ei-fast-back-to-indentation)
           (setq matlab-ts-mode--i-prior-line-anchor-point (point))
           t)))))
 
@@ -1641,7 +1641,7 @@ NODE is at BOL."
                (looking-at "^[ \t]*\\.\\.\\.")))
     (save-excursion
       (when (>= (forward-line -1) 0)
-        (back-to-indentation)
+        (matlab-ts-mode--ei-fast-back-to-indentation)
         (setq matlab-ts-mode--i-cont-incomplete-matcher-pair
               (cons (treesit-node-start (treesit-node-at (point))) 0))
         (cl-return-from matlab-ts-mode--i-cont-incomplete-matcher t))))
@@ -1707,7 +1707,7 @@ NODE is at BOL."
                            (setq id-start (treesit-node-start prev-node))
                            (goto-char id-start)
                            (forward-line 0)
-                           (back-to-indentation)
+                           (matlab-ts-mode--ei-fast-back-to-indentation)
                            (= (point) id-start)))
                 ;; Incomplete:      something.foo4 = ...
                 ;;                       someFcn2( ...
@@ -1942,7 +1942,7 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                             (setq prev-node (treesit-node-prev-sibling prev-node)))
                           (when (equal (treesit-node-type prev-node) "line_continuation")
                             (goto-char (treesit-node-start prev-node))
-                            (back-to-indentation)
+                            (matlab-ts-mode--ei-fast-back-to-indentation)
                             ;; move to first item after the if or elseif condition
                             (when (looking-at (rx (or "if" "elseif") (or " " "\t")))
                               (re-search-forward "[ \t]" nil t))
@@ -1968,7 +1968,7 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                          (save-excursion
                            (goto-char (treesit-node-start node))
                            (forward-line -1)
-                           (back-to-indentation)
+                           (matlab-ts-mode--ei-fast-back-to-indentation)
                            (equal (treesit-node-at (point)) anchor-node)))
                     ;; function doc comment
                     0
@@ -2423,7 +2423,7 @@ Example:
            (save-excursion
              (goto-char (treesit-node-start full-fcn-node))
              (forward-line 0)
-             (back-to-indentation)
+             (matlab-ts-mode--ei-fast-back-to-indentation)
              (setq matlab-ts-mode--i-assign-cont-pair ;; Matched one of two cases
                    (cons (if (= (point) (treesit-node-start full-fcn-node))
                              ;;     something.foo4 = ...
@@ -3723,7 +3723,7 @@ THERE-END MISMATCH) or nil."
 
     (save-excursion
       (forward-line -1)
-      (back-to-indentation)
+      (matlab-ts-mode--ei-fast-back-to-indentation)
       (let* ((node (treesit-node-at (point))))
         (when node
           (let ((node-type (treesit-node-type node)))
@@ -4247,7 +4247,7 @@ these locally."
                    (point))))
         (indent-region beg end nil)
         (when (looking-at "[ \t]")
-          (back-to-indentation))))))
+          (matlab-ts-mode--ei-fast-back-to-indentation))))))
 
 ;;; Keymap
 
