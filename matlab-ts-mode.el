@@ -405,7 +405,7 @@ as comments which is how they are treated by MATLAB."
     (save-excursion
       ;; Scan region, but always expand to beginning of line
       (goto-char (or start (point-min)))
-      (beginning-of-line)
+      (forward-line 0)
 
       ;; Edits can change what properties characters can have so remove ours and reapply
       (remove-text-properties (point) (save-excursion (goto-char (or end (point-max)))
@@ -597,7 +597,7 @@ Similar behavior for classdef's."
     (let ((definition-point (treesit-node-start parent)))
       (save-excursion
         (goto-char (treesit-node-start comment-node))
-        (beginning-of-line)
+        (forward-line 0)
 
         ;; result - is doc comment?
         (or (<= (point) definition-point) ;; at definition?
@@ -623,7 +623,7 @@ fontified which could be smaller or larger than the COMMENT-NODE
 start-point and end-point."
   (save-excursion
     (goto-char (treesit-node-start comment-node))
-    (beginning-of-line)
+    (forward-line 0)
     (when (looking-at matlab-ts-mode--comment-section-heading-re)
       (let ((heading-start (match-beginning 1))
             (heading-end (match-end 1)))
@@ -1591,7 +1591,6 @@ See: tests/test-matlab-ts-mode-indent-files/indent_line_cont_multiple_times.m"
     (save-excursion
       (goto-char bol)
       (when (>= (forward-line -1) 0)
-        (beginning-of-line)
         (when (looking-at "^[ \t]*\\.\\.\\.")
           (back-to-indentation)
           (setq matlab-ts-mode--i-prior-line-anchor-point (point))
@@ -1636,11 +1635,10 @@ NODE is at BOL."
   (when (and (equal (treesit-node-type node) "line_continuation")
              (save-excursion
                (goto-char bol)
-               (beginning-of-line)
+               (forward-line 0)
                (looking-at "^[ \t]*\\.\\.\\.")))
     (save-excursion
       (when (>= (forward-line -1) 0)
-        (beginning-of-line)
         (back-to-indentation)
         (setq matlab-ts-mode--i-cont-incomplete-matcher-pair
               (cons (treesit-node-start (treesit-node-at (point))) 0))
@@ -1706,7 +1704,7 @@ NODE is at BOL."
                          (save-excursion
                            (setq id-start (treesit-node-start prev-node))
                            (goto-char id-start)
-                           (beginning-of-line)
+                           (forward-line 0)
                            (back-to-indentation)
                            (= (point) id-start)))
                 ;; Incomplete:      something.foo4 = ...
@@ -1967,7 +1965,6 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                 (if (and (string= (treesit-node-type node) "comment")
                          (save-excursion
                            (goto-char (treesit-node-start node))
-                           (beginning-of-line)
                            (forward-line -1)
                            (back-to-indentation)
                            (equal (treesit-node-at (point)) anchor-node)))
@@ -2061,7 +2058,7 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
   (and (not node)
        (save-excursion
          (goto-char bol)
-         (beginning-of-line)
+         (forward-line 0)
          (looking-at "^[ \t]*$" t))))
 
 (defun matlab-ts-mode--last-child-of-error (node parent)
@@ -2423,7 +2420,7 @@ Example:
          (when full-fcn-node
            (save-excursion
              (goto-char (treesit-node-start full-fcn-node))
-             (beginning-of-line)
+             (forward-line 0)
              (back-to-indentation)
              (setq matlab-ts-mode--i-assign-cont-pair ;; Matched one of two cases
                    (cons (if (= (point) (treesit-node-start full-fcn-node))
@@ -3374,7 +3371,7 @@ Returns t if tree-sitter NODE defines an outline heading."
         (and (string= "comment" node-type)
              (save-excursion
                (goto-char (treesit-node-start node))
-               (beginning-of-line)
+               (forward-line 0)
                (looking-at matlab-ts-mode--comment-section-heading-re t))))))
 
 ;;; Save hooks
@@ -4028,7 +4025,7 @@ and this buffer is returned."
       (matlab-ts-parse-errors-mode)
       (goto-char (point-min))
       (when (re-search-forward ": error: " nil t)
-        (beginning-of-line))
+        (forward-line 0))
       (setq default-directory m-buf-dir)
       (setq-local matlab-ts-parse-errors-compilation--buffer m-buf)
       (read-only-mode 1)
