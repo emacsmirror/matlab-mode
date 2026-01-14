@@ -408,8 +408,10 @@ as comments which is how they are treated by MATLAB."
       (forward-line 0)
 
       ;; Edits can change what properties characters can have so remove ours and reapply
-      (remove-text-properties (point) (save-excursion (goto-char (or end (point-max)))
-                                                      (end-of-line) (point))
+      (remove-text-properties (point) (save-excursion
+                                        (goto-char (or end (point-max)))
+                                        (let ((inhibit-field-text-motion t)) (end-of-line))
+                                        (point))
                               '(category nil mcm nil))
 
       ;; Tell Emacs that ellipsis (...) line continuations are comments.
