@@ -2316,7 +2316,7 @@ Example:
 Note treesit column-0 moves point, fixed in Emacs 31."
   (save-excursion
     (goto-char bol)
-    (line-beginning-position)))
+    (pos-bol)))
 
 (defvar matlab-ts-mode--i-fcn-args-next-line-pair)
 
@@ -2504,7 +2504,7 @@ Example:
       (goto-char (treesit-node-start parent))
       (forward-char)
       (when (and (looking-at "[ \t]")
-                 (re-search-forward "[^ \t]" (line-end-position) t))
+                 (re-search-forward "[^ \t]" (pos-eol) t))
         (backward-char))
       ;; Have something after the "[", e.g. "[  123" or "[ ..."?
       (let ((node-at-pt (treesit-node-at (point))))
@@ -2911,7 +2911,7 @@ Example:
   "Call `treesit-indent', then do electric indent."
   (treesit-indent) ;; treesit-indent before electric indent to get updated point on the line
   (when matlab-ts-mode-electric-indent
-    (matlab-ts-mode--ei-workaround-143 (line-beginning-position) (line-end-position) (point))
+    (matlab-ts-mode--ei-workaround-143 (pos-bol) (pos-eol) (point))
     (matlab-ts-mode--ei-indent-elements-in-line)))
 
 (defun matlab-ts-mode--treesit-indent-region (beg end)
@@ -3956,14 +3956,14 @@ provided."
                ;; error line
                (buffer-substring (save-excursion
                                    (goto-char start-point)
-                                   (line-beginning-position))
+                                   (pos-bol))
                                  (save-excursion
                                    (goto-char start-point)
-                                   (line-end-position)))
+                                   (pos-eol)))
                ;; space padding for the pointer (^)
                (save-excursion
                  (goto-char start-point)
-                 (let ((n-spaces (- start-point (line-beginning-position))))
+                 (let ((n-spaces (- start-point (pos-bol))))
                    (make-string n-spaces ? ))))
               result-list)))
     (let ((errs (mapconcat #'identity (reverse result-list))))
@@ -4229,7 +4229,7 @@ these locally."
                    (not (nth 3 sp)))) ;; not string
             (let ((comment-start-pt
                    (save-excursion
-                     (when (and (re-search-forward "\\s-*\\s<" (line-end-position) t)
+                     (when (and (re-search-forward "\\s-*\\s<" (pos-eol) t)
                                 (not (equal (treesit-node-type (treesit-node-at (point)))
                                             "line_continuation")))
                        (point)))))
