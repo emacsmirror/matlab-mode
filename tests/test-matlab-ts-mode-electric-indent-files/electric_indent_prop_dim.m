@@ -1,5 +1,7 @@
 % -*- matlab-ts -*-
 
+% t-utils-test-indent: no-line-by-line-indent - line-by-line typing results in error nodes
+
 classdef electric_indent_prop_dim
     properties
         foo1 ( 1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];

@@ -1,23 +1,23 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,227> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
- (class_definition<22,226> classdef[22,30] name: (identifier[31,57]@{electric_indent_call_super}@)
-  (superclasses<58,73> <[58,59]
-   (property_name<60,73> (identifier[60,67]@{myUtils}@) .[67,68] (identifier[68,73]@{super}@)))
-  \n[73,74]
-  (methods<78,222> methods[78,85] \n[85,86]
-   (function_definition<94,211> function[94,102]
-    (function_output<103,107> (identifier[103,106]@{obj}@) =[106,107])
-    name: (identifier[107,133]@{electric_indent_call_super}@) \n[133,134]
-    (block<149,198>
-     (function_call<149,166> name: (identifier[149,152]@{obj}@) @[152,153]
-      (superclass<153,166> (identifier[153,160]@{myUtils}@) .[160,161] (identifier[161,166]@{super}@)))
-     ;[166,167]
-     (function_call<178,197> name: (identifier[178,182]@{disp}@) ([182,183]
-      (arguments<183,196>
-       argument: (string<183,196> '[183,184] (string_content[184,195]@{in SubClass}@) '[195,196]))
-      )[196,197])
-     \n[197,198])
-    end[208,211])
-   \n[211,212] end[219,222])
-  \n[222,223] end[223,226])
- \n[226,227])
+(source_file<1,319> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,318> classdef[114,122] name: (identifier[123,149]@{electric_indent_call_super}@)
+  (superclasses<150,165> <[150,151]
+   (property_name<152,165> (identifier[152,159]@{myUtils}@) .[159,160] (identifier[160,165]@{super}@)))
+  \n[165,166]
+  (methods<170,314> methods[170,177] \n[177,178]
+   (function_definition<186,303> function[186,194]
+    (function_output<195,199> (identifier[195,198]@{obj}@) =[198,199])
+    name: (identifier[199,225]@{electric_indent_call_super}@) \n[225,226]
+    (block<241,290>
+     (function_call<241,258> name: (identifier[241,244]@{obj}@) @[244,245]
+      (superclass<245,258> (identifier[245,252]@{myUtils}@) .[252,253] (identifier[253,258]@{super}@)))
+     ;[258,259]
+     (function_call<270,289> name: (identifier[270,274]@{disp}@) ([274,275]
+      (arguments<275,288>
+       argument: (string<275,288> '[275,276] (string_content[276,287]@{in SubClass}@) '[287,288]))
+      )[288,289])
+     \n[289,290])
+    end[300,303])
+   \n[303,304] end[311,314])
+  \n[314,315] end[315,318])
+ \n[318,319])

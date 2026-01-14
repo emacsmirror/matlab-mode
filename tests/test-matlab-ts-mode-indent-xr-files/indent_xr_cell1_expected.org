@@ -5,6 +5,10 @@
   Case1: (t-utils-xr
 
   (re-search-forward "%}")  "C-n"
+
+  ;; ensure final new line for tree-sitter
+  (insert "\n")                    "C-b"
+
   (insert "someVariable = {")      "C-m"
   (insert "1234")                  "C-m"
   (insert "};")                    "C-m"
@@ -14,146 +18,159 @@
   )
 
 - Invoking      : (re-search-forward "%}")
-  Start point   :  295
-  Moved to point:  298
-  : 15:2: %}
+  Start point   :  381
+  Moved to point:  384
+  : 19:2: %}
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  298
-  Moved to point:  299
-  : 16:0: 
+  Start point   :  384
+  Moved to point:  385
+  : 20:0: 
+  :       ^
+  No buffer modifications
+
+- Invoking      : (insert "
+")
+  Start point   :  385
+  Moved to point:  386
+  : 21:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,3 +17,4 @@
+ 
+   )
+ %}
++
+  #+end_src diff
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  386
+  Moved to point:  385
+  : 20:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "someVariable = {")
-  Start point   :  299
-  Moved to point:  315
-  : 16:16: someVariable = {
+  Start point   :  385
+  Moved to point:  401
+  : 20:16: someVariable = {
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -13,3 +13,4 @@
+@@ -17,4 +17,4 @@
  
    )
  %}
+-
 +someVariable = {
-\ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  315
-  Moved to point:  333
-  : 17:17:                  
+  Start point   :  401
+  Moved to point:  419
+  : 21:17:                  
   :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -13,4 +13,5 @@
- 
+@@ -18,3 +18,4 @@
    )
  %}
--someVariable = {
-\ No newline at end of file
-+someVariable = {
+ someVariable = {
 +                 
-\ No newline at end of file
   #+end_src diff
 
 - Invoking      : (insert "1234")
-  Start point   :  333
-  Moved to point:  337
-  : 17:21:                  1234
+  Start point   :  419
+  Moved to point:  423
+  : 21:21:                  1234
   :                             ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -14,4 +14,4 @@
+@@ -18,4 +18,4 @@
    )
  %}
  someVariable = {
 -                 
-\ No newline at end of file
 +                 1234
-\ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  337
-  Moved to point:  355
-  : 18:17:                  
+  Start point   :  423
+  Moved to point:  441
+  : 22:17:                  
   :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -14,4 +14,5 @@
-   )
+@@ -19,3 +19,4 @@
  %}
  someVariable = {
--                 1234
-\ No newline at end of file
-+                 1234
+                  1234
 +                 
-\ No newline at end of file
   #+end_src diff
 
 - Invoking      : (insert "};")
-  Start point   :  355
-  Moved to point:  357
-  : 18:19:                  };
+  Start point   :  441
+  Moved to point:  443
+  : 22:19:                  };
   :                           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -15,4 +15,4 @@
+@@ -19,4 +19,4 @@
  %}
  someVariable = {
                   1234
 -                 
-\ No newline at end of file
 +                 };
-\ No newline at end of file
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   :  357
-  Moved to point:  356
-  : 19:0: 
+  Start point   :  443
+  Moved to point:  442
+  : 23:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -15,4 +15,4 @@
+@@ -19,4 +19,5 @@
  %}
  someVariable = {
                   1234
 -                 };
-\ No newline at end of file
 +               };
++
   #+end_src diff
 
 - Invoking      : (re-search-backward "^someVariable")
-  Start point   :  356
-  Moved to point:  299
-  : 16:0: someVariable = {
+  Start point   :  442
+  Moved to point:  385
+  : 20:0: someVariable = {
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  299
+  Start point   :  385
   No point movement
   standard-output:
   #+begin_src matlab-ts
 someVariable = {
                  1234
                };
+
   #+end_src
   No buffer modifications

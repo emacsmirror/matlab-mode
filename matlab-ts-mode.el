@@ -1441,7 +1441,7 @@ but not
                     parent)))
       (setq matlab-ts-mode--i-block-comment-end-matcher-anchor-val
             (treesit-node-start anchor)))))
-        
+
 ;; `matlab-ts-mode--function-indent-level'
 ;;
 ;; It is recommended that all function statements have terminating end statements.  In some cases
@@ -1517,16 +1517,14 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
 (defvar matlab-ts-mode--indent-assert nil
   "Tests should set this to t to identify when we fail to find an indent rule.")
 
-(defvar matlab-ts-mode--indent-assert-rule
-  '((lambda (node parent bol)
-      (when matlab-ts-mode--indent-assert
-        (error "Assert: no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
-               node parent bol
-               (treesit-node-parent parent)
-               (treesit-node-prev-sibling node)
-               (buffer-name))))
-    nil
-    0))
+(defun matlab-ts-mode--indent-assert-no-rule (node parent bol &rest _)
+  "Report no indent rule for NODE PARENT BOL."
+  (when matlab-ts-mode--indent-assert
+    (error "Assert: no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
+           node parent bol
+           (treesit-node-parent parent)
+           (treesit-node-prev-sibling node)
+           (buffer-name))))
 
 (defvar matlab-ts-mode--i-error-switch-matcher-pair)
 
@@ -2300,10 +2298,16 @@ Example:
 
 (defun matlab-ts-mode--i-top-level (node parent _bol &rest _)
   "Is NODE with PARENT a top-level classdef, function, or code?"
-  (and node
-       (not (string-match-p (rx bos (or "line_continuation" "\n") eos)
-                            (treesit-node-type node)))
-       (equal (treesit-node-type parent) "source_file")))
+  (or (and (not node)
+           (or (let ((parent-type (treesit-node-type parent)))
+                 (or (string= parent-type "source_file")
+                     (and (string= parent-type "\n")
+                          (string= (treesit-node-type (treesit-node-parent parent))
+                                   "source_file"))))))
+      (and node
+           (not (string-match-p (rx bos (or "line_continuation" "\n") eos)
+                                (treesit-node-type node)))
+           (equal (treesit-node-type parent) "source_file"))))
 
 (defun matlab-ts-mode--column-0 (_node _parent bol &rest _)
   "Return column-0 for BOL.
@@ -2897,7 +2901,7 @@ Example:
       1)
 
      ;; I-Rule: Assert if no rule matched and asserts are enabled.
-     ,matlab-ts-mode--indent-assert-rule
+     (,#'matlab-ts-mode--indent-assert-no-rule 0 0)
      ))
   "Tree-sitter indent rules for `matlab-ts-mode'.")
 

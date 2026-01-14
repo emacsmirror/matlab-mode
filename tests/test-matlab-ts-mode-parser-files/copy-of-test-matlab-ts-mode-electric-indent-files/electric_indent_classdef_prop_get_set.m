@@ -1,4 +1,7 @@
 % -*- matlab-ts -*-
+
+% t-utils-test-indent: no-line-by-line-indent - line-by-line typing results in error nodes
+
 classdef electric_indent_classdef_prop_get_set
     properties
       inputMatrix = [1 0;0 1]

@@ -13,7 +13,7 @@ b = [[1, 3, 4]; [5, 6, 7]] %  <{Matched rule: (matlab-ts-mode--i-top-level matla
 
 c = [1, 2]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-d = [0 0]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+d = [0, 0]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 e = 0 %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
@@ -25,12 +25,12 @@ f = [e + e -e +e] %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode
 
 g = -e %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-h = [1 2; ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-     3 4]; %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+h = [1, 2; ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+     3, 4]; %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
 
 c2 = {['freq' '%'] num2str(2)}; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-c3 = {a b [c '%'] f(1)}; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+c3 = {a, b, [c, '%'] f(1)}; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 x = [ %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
       1, 2; %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
@@ -53,8 +53,8 @@ m3 = uint8([ones(20, 1); 2 * ones(8, 1); ones(8, 1); 2 * ones(8, 1); ones(7, 1)]
 
 foo123(t0, :) = tan(th(t0) / 2) .* [sx(t0)' sy(t0)' sz(t0)']; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
-c3 = {{[17.50 0] [17.50 0]} {[120 0] [120 20]}}; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+c3 = {{[17.50, 0] [17.50, 0]} {[120, 0] [120, 20]}}; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 
-c4{1} = [1 2; 3 4]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+c4{1} = [1, 2; 3, 4]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 v4    = [c4{1}(1, 1), c4{1}(1, 1)]; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>

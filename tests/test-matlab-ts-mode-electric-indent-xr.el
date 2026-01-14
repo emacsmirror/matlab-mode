@@ -55,7 +55,7 @@ after validating it, rename it to
                                      :base-regexp (rx ".m" eos)
                                      :file-to-use test-matlab-ts-mode-electric-indent-xr--file))
          (matlab-ts-mode-electric-indent t)
-         (matlab-ts-mode--electric-indent-assert t)
+         (matlab-ts-mode--indent-assert t)
          (matlab-ts-mode--electric-indent-verbose nil))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-xr test-name m-files)))

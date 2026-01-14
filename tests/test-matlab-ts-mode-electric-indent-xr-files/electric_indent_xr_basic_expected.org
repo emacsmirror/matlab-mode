@@ -13,9 +13,9 @@
 
 - Invoking      : "C-i" = indent-for-tab-command
   Start point   :  107
-  Moved to point:  102
-  : 5:17:     v1 = 1 ./ [2 42222];
-  :                        ^
+  Moved to point:  103
+  : 5:18:     v1 = 1 ./ [2, 42222];
+  :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -25,7 +25,7 @@
  if 1
      % Case1: (t-utils-xr (re-search-forward "2  ") "C-i")
 -    v1 = 1     ./ [2     42222];
-+    v1 = 1 ./ [2 42222];
++    v1 = 1 ./ [2, 42222];
  
      % Case2: (t-utils-xr (re-search-forward "42") (backward-char 2) "C-i")
      v2 = 1     ./ [2     42222];
@@ -36,34 +36,34 @@
   Case2: (t-utils-xr (re-search-forward "42") (backward-char 2) "C-i")
 
 - Invoking      : (re-search-forward "42")
-  Start point   :  185
-  Moved to point:  213
+  Start point   :  186
+  Moved to point:  214
   : 8:27:     v2 = 1     ./ [2     42222];
   :                                  ^
   No buffer modifications
 
 - Invoking      : (backward-char 2)
-  Start point   :  213
-  Moved to point:  211
+  Start point   :  214
+  Moved to point:  212
   : 8:25:     v2 = 1     ./ [2     42222];
   :                                ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  211
-  Moved to point:  203
-  : 8:17:     v2 = 1 ./ [2 42222];
-  :                        ^
+  Start point   :  212
+  Moved to point:  205
+  : 8:18:     v2 = 1 ./ [2, 42222];
+  :                         ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
 @@ -5,7 +5,7 @@
-     v1 = 1 ./ [2 42222];
+     v1 = 1 ./ [2, 42222];
  
      % Case2: (t-utils-xr (re-search-forward "42") (backward-char 2) "C-i")
 -    v2 = 1     ./ [2     42222];
-+    v2 = 1 ./ [2 42222];
++    v2 = 1 ./ [2, 42222];
  
      % Case3: (t-utils-xr (re-search-forward "v3") (backward-char 2) "C-i")
      v3 = 1     ./ [2     42222];
@@ -74,32 +74,32 @@
   Case3: (t-utils-xr (re-search-forward "v3") (backward-char 2) "C-i")
 
 - Invoking      : (re-search-forward "v3")
-  Start point   :  286
-  Moved to point:  293
+  Start point   :  288
+  Moved to point:  295
   : 11:6:     v3 = 1     ./ [2     42222];
   :             ^
   No buffer modifications
 
 - Invoking      : (backward-char 2)
-  Start point   :  293
-  Moved to point:  291
+  Start point   :  295
+  Moved to point:  293
   : 11:4:     v3 = 1     ./ [2     42222];
   :           ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  291
+  Start point   :  293
   No point movement
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
 @@ -8,7 +8,7 @@
-     v2 = 1 ./ [2 42222];
+     v2 = 1 ./ [2, 42222];
  
      % Case3: (t-utils-xr (re-search-forward "v3") (backward-char 2) "C-i")
 -    v3 = 1     ./ [2     42222];
-+    v3 = 1 ./ [2 42222];
++    v3 = 1 ./ [2, 42222];
  
      % Case4: (t-utils-xr (re-search-forward "22    ") (backward-char 2) "C-i")
      v4 = 2 *   [11 22    
@@ -110,34 +110,34 @@
   Case4: (t-utils-xr (re-search-forward "22    ") (backward-char 2) "C-i")
 
 - Invoking      : (re-search-forward "22    ")
-  Start point   :  391
-  Moved to point:  417
+  Start point   :  394
+  Moved to point:  420
   : 14:25:     v4 = 2 *   [11 22    
   :                                 ^
   No buffer modifications
 
 - Invoking      : (backward-char 2)
-  Start point   :  417
-  Moved to point:  415
+  Start point   :  420
+  Moved to point:  418
   : 14:23:     v4 = 2 *   [11 22    
   :                               ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  415
-  Moved to point:  411
-  : 14:19:     v4 = 2 * [11 22
-  :                           ^
+  Start point   :  418
+  Moved to point:  415
+  : 14:20:     v4 = 2 * [11, 22
+  :                            ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
 @@ -11,7 +11,7 @@
-     v3 = 1 ./ [2 42222];
+     v3 = 1 ./ [2, 42222];
  
      % Case4: (t-utils-xr (re-search-forward "22    ") (backward-char 2) "C-i")
 -    v4 = 2 *   [11 22    
-+    v4 = 2 * [11 22
++    v4 = 2 * [11, 22
             33  44];
  
      % Case5: (t-utils-xr (re-search-forward "33 ") (backward-char 2) "C-i")
@@ -148,23 +148,23 @@
   Case5: (t-utils-xr (re-search-forward "33 ") (backward-char 2) "C-i")
 
 - Invoking      : (re-search-forward "33 ")
-  Start point   :  508
-  Moved to point:  549
+  Start point   :  512
+  Moved to point:  553
   : 19:14:            33  44];
   :                      ^
   No buffer modifications
 
 - Invoking      : (backward-char 2)
-  Start point   :  549
-  Moved to point:  547
+  Start point   :  553
+  Moved to point:  551
   : 19:12:            33  44];
   :                    ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  547
-  Moved to point:  552
-  : 19:17:                 33 44];
+  Start point   :  551
+  Moved to point:  556
+  : 19:17:                 33, 44];
   :                         ^
   Buffer modified:
   #+begin_src diff
@@ -175,6 +175,6 @@
      % Case5: (t-utils-xr (re-search-forward "33 ") (backward-char 2) "C-i")
      v5 = 2 *   [11 22    
 -           33  44];
-+                33 44];
++                33, 44];
  end
   #+end_src diff

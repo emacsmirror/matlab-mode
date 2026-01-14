@@ -4,4 +4,4 @@
 % have a syntax error because the continued portion isn't there.
 
 dataTbl = [dataTbl(:, 1 : varColNumbers(1) - 1) ...
-           tableWithDateColumnOnly dataTbl(:, varColNumbers(1) + 1 : end)];
+           tableWithDateColumnOnly, dataTbl(:, varColNumbers(1) + 1 : end)];

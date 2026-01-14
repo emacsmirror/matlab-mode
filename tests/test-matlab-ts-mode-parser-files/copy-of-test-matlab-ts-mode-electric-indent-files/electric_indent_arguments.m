@@ -5,11 +5,11 @@
 
 function electric_indent_arguments(a, param2, varargin)
     arguments
-        a {mustBeNumeric, mustBeReal, mustBeFinite}
+        a      {mustBeNumeric, mustBeReal, mustBeFinite}
         param2 {mustBeNumeric, mustBeReal, mustBeFinite}
     end
     arguments (Repeating)
-     varargin
+        varargin
     end
     disp(a);
     disp(param2);

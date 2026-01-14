@@ -68,7 +68,7 @@ after validating them, rename them to
                                    test-matlab-ts-mode-electric-indent--current-indent-level)))
          ;; Enable electric indent
          (matlab-ts-mode-electric-indent t)
-         (matlab-ts-mode--electric-indent-assert t)
+         (matlab-ts-mode--indent-assert t)
          (matlab-ts-mode--electric-indent-verbose nil))
     (t-utils-error-if-no-treesit-for 'matlab test-name)
     (t-utils-test-indent test-name m-files

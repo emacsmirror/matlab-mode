@@ -81,7 +81,7 @@
   :type 'boolean)
 
 (defvar matlab-ts-mode--electric-indent-verbose nil)
-(defvar matlab-ts-mode--electric-indent-assert nil)
+(defvar matlab-ts-mode--indent-assert) ;; from matlab-ts-mode.el
 
 (defvar matlab-ts-mode--ei-keywords-re
   (rx bos (or "arguments" ;; not technically a keyword (can be a variable), but treat as a keyword
@@ -315,13 +315,39 @@ Assumes point is at of current node or beginning of line.
 Returns (NODE . MODIFIED-NODE-TYPE) where MODIFIED-NODE-TYPE
 is used in `matlab-ts-mode--ei-spacing'"
   ;; Move point to first non-whitespace char
-  (let ((eol (pos-eol)))
-    (when (looking-at "[ \t]")
-      (when (not (re-search-forward "[^ \t]" eol t))
-        (cl-return-from matlab-ts-mode--ei-move-to-and-get-node))
-      (backward-char))
+  (let ((pt-eol (pos-eol)))
 
     (let ((node (treesit-node-at (point))))
+
+      ;; If next node is a matrix comma node return that
+      ;; Example:
+      ;;    x1 = [(3*(2+1))   2]
+      ;;                   ^      <== point here
+      ;;    Next node is the invisible comma node having same start and end point.
+      ;; Example:
+      ;;    x2 = [1, 2]
+      ;;           ^               <== point here
+      ;;    Next node is the comma node.
+
+      (when (looking-at "[ \t]" (point))
+        (let ((candidate node))
+          (while (and (= (treesit-node-end candidate) (point))
+                      (let* ((next-node (treesit-node-next-sibling candidate))
+                             (next-type (treesit-node-type next-node)))
+                        ;; At comma node of a row in a MATLAB array (a matrix or cell)?
+                        (when (and (equal next-type ",")
+                                   (string= (treesit-node-type (treesit-node-parent next-node))
+                                            "row"))
+                          (cl-return-from matlab-ts-mode--ei-move-to-and-get-node
+                            (cons next-node next-type)))))
+            (setq candidate (treesit-node-parent candidate)))))
+
+      ;; Move to next non-whitespace character to get next node
+      (when (looking-at "[ \t]")
+        (when (not (re-search-forward "[^ \t]" pt-eol t))
+          (cl-return-from matlab-ts-mode--ei-move-to-and-get-node))
+        (backward-char)
+        (setq node (treesit-node-at (point))))
 
       ;; Consider [[1,2];[3,4]] when point is on semicolon, node will be the prior "]" because the
       ;; semicolon is an ignored node, so move forward to get to the "[" after the semicolon.
@@ -334,30 +360,33 @@ is used in `matlab-ts-mode--ei-spacing'"
 
       ;; Don't go past end-of-line point
       (when (or (equal "\n" (treesit-node-type node))
-                (> (treesit-node-start node) eol)
+                (> (treesit-node-start node) pt-eol)
                 ;; When we get to EOL and in error context, node start will be on an earlier line
                 ;;           x = [
                 ;;  TAB>           1  ,   2  ;
                 (< (treesit-node-start node) (pos-bol)))
-        (goto-char eol)
+        (goto-char pt-eol)
         (setq node nil))
 
       (when node
         (matlab-ts-mode--ei-get-node-to-use node)))))
 
-(defun matlab-ts-mode--ei-assert-match (orig-line orig-line-node-types)
-  "Assert new line has same code meaning as ORIG-LINE.
+(defun matlab-ts-mode--ei-assert-match (new-line orig-line orig-line-node-types)
+  "Assert NEW-LINE has same code meaning as ORIG-LINE.
 This is done by validating that ORIG-LINE-NODE-TYPES matches the current
 line node types.  We also validate line text matches ignoring
 whitespace."
-  (let* ((new-line (buffer-substring (pos-bol) (pos-eol)))
-         (new-line-no-spaces (replace-regexp-in-string "[ \t]" "" new-line))
-         (orig-line-no-spaces (replace-regexp-in-string "[ \t]" "" orig-line)))
-    (when (not (string= new-line-no-spaces orig-line-no-spaces))
+
+  ;; Spaces may be added or removed. Commas may be added to new-line, so ignore them.
+  (let* ((new-line-no-spaces-or-commas (replace-regexp-in-string "[ \t,]" "" new-line))
+         (orig-line-no-spaces-or-commas (replace-regexp-in-string "[ \t,]" "" orig-line)))
+
+    (when (not (string= new-line-no-spaces-or-commas orig-line-no-spaces-or-commas))
       (error "Assert: line-content-no-space-mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
-             new-line-no-spaces orig-line-no-spaces
+             new-line-no-spaces-or-commas orig-line-no-spaces-or-commas
              (line-number-at-pos (point)) (buffer-name))))
 
+  ;; xxx this needs to use new-line-node-types ... how?
   (matlab-ts-mode--ei-fast-back-to-indentation)
   (let (curr-line-node-types)
     (cl-loop
@@ -425,8 +454,9 @@ enabling caching."
              (error-end-pt (treesit-node-end error-node))
              (error-start-linenum (line-number-at-pos error-start-pt))
              (error-end-linenum (line-number-at-pos error-end-pt)))
-        (when (= error-start-linenum error-end-linenum)
-          (push `(,error-start-linenum . t) error-linenums))))
+        (cl-loop
+         for linenum from error-start-linenum to error-end-linenum do
+         (push `(,linenum . t) error-linenums))))
     error-linenums))
 
 (defun matlab-ts-mode--ei-no-elements-to-indent ()
@@ -442,32 +472,36 @@ Assumes that current point is at `back-to-indentation'."
          (curr-linenum (line-number-at-pos (point))))
      (alist-get curr-linenum error-linenums))))
 
-(defun matlab-ts-mode--ei-node-extra-chars (node-end next-node-start)
-  "Get extra chars after NODE-END and before NEXT-NODE-START."
+(defun matlab-ts-mode--ei-node-extra-chars (node node-end next-node-start)
+  "Get extra chars for NODE after NODE-END and before NEXT-NODE-START."
 
-  (let ((extra-chars ""))
-    ;; Handle ignored characters, e.g. ";" in matrices where node="]", next-node="["
-    ;;   [[1, 2]; [3, 4]]
-    ;;         ^  ^
-    (goto-char node-end)
-    (when (or ;; [[1,2];[3,4]]?
-           (and (< node-end next-node-start)
-                (looking-at "[^ \t]"))
-           ;; [[1,2] ; [3,4]]?
-           ;; or a multiline matrix:
-           ;; x = [ 1 , 2 ;
-           (save-excursion (and (when (re-search-forward "[^ \t]" next-node-start t)
-                                  (backward-char)
-                                  t)
-                                (< (point) next-node-start))))
-      (while (< (point) next-node-start)
-        (while (and (< (point) next-node-start)
-                    (looking-at "[^ \t]"))
-          (setq extra-chars (concat extra-chars (match-string 0)))
-          (forward-char)
-          (setq node-end (point)))
-        (re-search-forward "[ \t]+" next-node-start t)))
-    extra-chars))
+  (if (and (string= (treesit-node-type node) ",")
+           (= (treesit-node-start node) (treesit-node-end node)))
+      ;; Make invisible comma visible by returning it.
+      ","
+    (let ((extra-chars ""))
+      ;; Handle ignored characters, e.g. ";" in matrices where node="]", next-node="["
+      ;;   [[1, 2]; [3, 4]]
+      ;;         ^  ^
+      (goto-char node-end)
+      (when (or ;; [[1,2];[3,4]]?
+             (and (< node-end next-node-start)
+                  (looking-at "[^ \t]"))
+             ;; [[1,2] ; [3,4]]?
+             ;; or a multiline matrix:
+             ;; x = [ 1 , 2 ;
+             (save-excursion (and (when (re-search-forward "[^ \t]" next-node-start t)
+                                    (backward-char)
+                                    t)
+                                  (< (point) next-node-start))))
+        (while (< (point) next-node-start)
+          (while (and (< (point) next-node-start)
+                      (looking-at "[^ \t]"))
+            (setq extra-chars (concat extra-chars (match-string 0)))
+            (forward-char)
+            (setq node-end (point)))
+          (re-search-forward "[ \t]+" next-node-start t)))
+      extra-chars)))
 
 (defun matlab-ts-mode--ei-update-line-node-types (line-node-types node node-type)
   "Append NODE-TYPE of NODE to LINE-NODE-TYPES."
@@ -513,32 +547,36 @@ or nil."
            (first-node node)
            line-node-types
            next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
-           next2-n-spaces-between)
+           next2-n-spaces-between
+           (pt-eol (pos-eol)))
 
       (cl-loop
-       while (and (< (point) (pos-eol))
-                  (< (treesit-node-end node) (pos-eol)))
+       while (and (< (point) pt-eol)
+                  (< (treesit-node-end node) pt-eol))
        do
        (let* ((next-pair (progn
                            (goto-char (treesit-node-end node))
                            (or next2-pair
                                (matlab-ts-mode--ei-move-to-and-get-node))))
+              (next-node-type (cdr next-pair))
               (next-node (let ((candidate-node (car next-pair)))
                            (when (not candidate-node)
                              (cl-return))
-                           (when (= (treesit-node-start candidate-node)
-                                    (treesit-node-end candidate-node))
+                           (when (and (= (treesit-node-start candidate-node)
+                                         (treesit-node-end candidate-node))
+                                      ;; Comma nodes can be invisible, e.g. in matrix [1 2]
+                                      (not (string= next-node-type ",")))
                              ;; Syntax errors can result in empty nodes, so skip this line
                              ;; TopTester: electric_indent_empty_node_error.m
                              (cl-return-from matlab-ts-mode--ei-get-new-line))
                            candidate-node))
-              (next-node-type (cdr next-pair))
+
               (n-spaces-between next2-n-spaces-between))
 
          (setq next2-pair nil
                next2-n-spaces-between nil)
 
-         (when matlab-ts-mode--electric-indent-assert
+         (when matlab-ts-mode--indent-assert
            (setq line-node-types (matlab-ts-mode--ei-update-line-node-types line-node-types
                                                                             node node-type)))
 
@@ -577,7 +615,7 @@ or nil."
 
          (let* ((node-end (treesit-node-end node))
                 (next-node-start (treesit-node-start next-node))
-                (extra-chars (matlab-ts-mode--ei-node-extra-chars node-end next-node-start)))
+                (extra-chars (matlab-ts-mode--ei-node-extra-chars node node-end next-node-start)))
            ;; Update ei-line
            (when (equal start-node node)
              (setq pt-offset (+ (length ei-line) start-offset)))
@@ -591,12 +629,13 @@ or nil."
       (when node
         (when (equal start-node node)
           (setq pt-offset (+ (length ei-line) start-offset)))
-        (when matlab-ts-mode--electric-indent-assert
+        (when matlab-ts-mode--indent-assert
           (setq line-node-types (matlab-ts-mode--ei-update-line-node-types line-node-types
                                                                            node node-type)))
         (let ((extra-chars (matlab-ts-mode--ei-node-extra-chars
-                            (min (treesit-node-end node) (pos-eol))
-                            (pos-eol))))
+                            node
+                            (min (treesit-node-end node) pt-eol)
+                            pt-eol)))
           (setq ei-line (matlab-ts-mode--ei-concat-line ei-line node extra-chars))))
 
       (list ei-line pt-offset line-node-types first-node))))
@@ -1343,8 +1382,8 @@ to it's logical location when the line is updated."
               (setq pt-offset (length ei-line)))
 
             (when (and updated
-                       matlab-ts-mode--electric-indent-assert)
-              (matlab-ts-mode--ei-assert-match orig-line line-node-types))
+                       matlab-ts-mode--indent-assert)
+              (matlab-ts-mode--ei-assert-match ei-line orig-line line-node-types))
 
             (if is-indent-region
                 (list ei-line updated pt-offset) ;; result

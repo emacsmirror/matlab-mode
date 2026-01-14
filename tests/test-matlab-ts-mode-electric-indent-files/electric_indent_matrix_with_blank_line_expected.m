@@ -1,5 +1,7 @@
 % -*- matlab-ts -*-
 
-m = [123 23333
+% t-utils-test-indent: no-line-by-line-indent - line-by-line typing results in error nodes
 
-     333     4];
+m = [123, 23333
+
+     333,     4];

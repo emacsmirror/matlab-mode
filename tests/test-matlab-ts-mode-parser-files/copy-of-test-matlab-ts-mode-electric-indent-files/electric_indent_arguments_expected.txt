@@ -1,32 +1,32 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,449> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,157]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[157,159]
- (function_definition<159,448> function[159,167] name: (identifier[168,193]@{electric_indent_arguments}@)
+(source_file<1,457> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,157]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[157,159]
+ (function_definition<159,456> function[159,167] name: (identifier[168,193]@{electric_indent_arguments}@)
   (function_arguments<193,214> ([193,194] arguments: (identifier[194,195]@{a}@) ,[195,196] (identifier[197,203]@{param2}@) ,[203,204] (identifier[205,213]@{varargin}@) )[213,214])
   \n[214,215]
-  (arguments_statement<219,346> arguments[219,228] \n[228,229]
-   (property<237,280> name: (identifier[237,238]@{a}@)
-    (validation_functions<239,280> {[239,240] (identifier[240,253]@{mustBeNumeric}@) ,[253,254] (identifier[255,265]@{mustBeReal}@) ,[265,266] (identifier[267,279]@{mustBeFinite}@) }[279,280]))
-   \n[280,281]
-   (property<289,337> name: (identifier[289,295]@{param2}@)
-    (validation_functions<296,337> {[296,297] (identifier[297,310]@{mustBeNumeric}@) ,[310,311] (identifier[312,322]@{mustBeReal}@) ,[322,323] (identifier[324,336]@{mustBeFinite}@) }[336,337]))
-   \n[337,338] end[342,345] \n[345,346])
-  (arguments_statement<350,393> arguments[350,359]
-   (attributes<360,371> ([360,361] argument: (identifier[361,370]@{Repeating}@) )[370,371])
-   \n[371,372]
-   (property<377,385> name: (identifier[377,385]@{varargin}@))
-   \n[385,386] end[390,393])
-  (block<398,445>
-   (function_call<398,405> name: (identifier[398,402]@{disp}@) ([402,403]
-    (arguments<403,404> argument: (identifier[403,404]@{a}@))
-    )[404,405])
-   ;[405,406]
-   (function_call<411,423> name: (identifier[411,415]@{disp}@) ([415,416]
-    (arguments<416,422> argument: (identifier[416,422]@{param2}@))
-    )[422,423])
-   ;[423,424]
-   (function_call<429,443> name: (identifier[429,433]@{disp}@) ([433,434]
-    (arguments<434,442> argument: (identifier[434,442]@{varargin}@))
-    )[442,443])
-   ;[443,444] \n[444,445])
-  end[445,448])
- \n[448,449])
+  (arguments_statement<219,351> arguments[219,228] \n[228,229]
+   (property<237,285> name: (identifier[237,238]@{a}@)
+    (validation_functions<244,285> {[244,245] (identifier[245,258]@{mustBeNumeric}@) ,[258,259] (identifier[260,270]@{mustBeReal}@) ,[270,271] (identifier[272,284]@{mustBeFinite}@) }[284,285]))
+   \n[285,286]
+   (property<294,342> name: (identifier[294,300]@{param2}@)
+    (validation_functions<301,342> {[301,302] (identifier[302,315]@{mustBeNumeric}@) ,[315,316] (identifier[317,327]@{mustBeReal}@) ,[327,328] (identifier[329,341]@{mustBeFinite}@) }[341,342]))
+   \n[342,343] end[347,350] \n[350,351])
+  (arguments_statement<355,401> arguments[355,364]
+   (attributes<365,376> ([365,366] argument: (identifier[366,375]@{Repeating}@) )[375,376])
+   \n[376,377]
+   (property<385,393> name: (identifier[385,393]@{varargin}@))
+   \n[393,394] end[398,401])
+  (block<406,453>
+   (function_call<406,413> name: (identifier[406,410]@{disp}@) ([410,411]
+    (arguments<411,412> argument: (identifier[411,412]@{a}@))
+    )[412,413])
+   ;[413,414]
+   (function_call<419,431> name: (identifier[419,423]@{disp}@) ([423,424]
+    (arguments<424,430> argument: (identifier[424,430]@{param2}@))
+    )[430,431])
+   ;[431,432]
+   (function_call<437,451> name: (identifier[437,441]@{disp}@) ([441,442]
+    (arguments<442,450> argument: (identifier[442,450]@{varargin}@))
+    )[450,451])
+   ;[451,452] \n[452,453])
+  end[453,456])
+ \n[456,457])

@@ -1,5 +1,7 @@
 % -*- matlab-ts -*-
 
+% t-utils-test-indent: no-line-by-line-indent - line-by-line typing results in error nodes
+
 % workaround https://github.com/acristoffers/tree-sitter-matlab/issues/143
 
 if 1

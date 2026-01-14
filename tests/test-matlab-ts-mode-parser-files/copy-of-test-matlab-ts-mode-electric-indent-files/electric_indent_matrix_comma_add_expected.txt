@@ -1,0 +1,35 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,95> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,42> left: (identifier[22,24]@{x1}@) =[25,26]
+  right: 
+   (matrix<27,42> [[27,28]
+    (row<28,41>
+     (parenthesis<28,37> ([28,29]
+      (binary_operator<29,36> left: (number[29,30]@{3}@) *[30,31]
+       right: 
+        (parenthesis<31,36> ([31,32]
+         (binary_operator<32,35> left: (number[32,33]@{2}@) +[33,34] right: (number[34,35]@{1}@))
+         )[35,36]))
+      )[36,37])
+     ,[40,40] (number[40,41]@{2}@))
+    ][41,42]))
+ ;[42,43]
+ (assignment<45,56> left: (identifier[45,47]@{x2}@) =[48,49]
+  right: 
+   (matrix<50,56> [[50,51]
+    (row<51,55> (number[51,52]@{1}@) ,[52,53] (number[54,55]@{2}@))
+    ][55,56]))
+ ;[56,57]
+ (assignment<59,93> left: (identifier[59,61]@{m1}@) =[62,63]
+  right: 
+   (matrix<64,93> [[64,65]
+    (row<65,74> (number[65,66]@{1}@) ,[67,67] (number[67,68]@{2}@) ,[68,69] (number[70,74]@{3000}@))
+    (row<76,92> (number[76,77]@{3}@) ,[78,78]
+     (parenthesis<78,89> ([78,79]
+      (binary_operator<79,88> left: (number[79,80]@{4}@) +[81,82]
+       right: (binary_operator<83,88> left: (number[83,84]@{6}@) *[85,86] right: (number[87,88]@{2}@)))
+      )[88,89])
+     ,[90,90]
+     (unary_operator<90,92> +[90,91] operand: (number[91,92]@{6}@)))
+    ][92,93]))
+ ;[93,94] \n[94,95])
