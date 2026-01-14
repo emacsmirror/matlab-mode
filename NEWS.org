@@ -5,11 +5,160 @@
 
 * Release 8.0.0 TBD
 
-This release updates the indent engine for matlab-ts-mode to electric indent code (aka pretty print
-code or format code) by adjusting spacing around operators and all language elements. Electric
-indent is controlled by the custom variable, ~matlab-ts-mode-electric-indent~ which defaults to ~t~.
+This release updates matlab-ts-mode indent to /electric indent code/. This is sometimes called
+pretty printing code or formatting code. Electric indent is controlled by the custom variable,
+~matlab-ts-mode-electric-indent~ which defaults to ~t~.
 
-For example, given:
+To indent a MATLAB ~*.m~ file,
+
+: C-x h           or  M-: (mark-whole-buffer)
+: C-M-\           or  M-x indent-region
+
+Electric indent will
+
+1. *Canonicalize language element spacing*
+
+   Example:
+
+   #+begin_src matlab
+     a=b+c   *d   ;
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     a = b + c * d;
+   #+end_src
+
+2. *Align consecutive assignments*
+
+   Example:
+
+   #+begin_src matlab
+     rLength      =12354    ;
+         rWidth=2;
+             rArea=rLength  *rWidth;
+   #+end_src
+
+   Intents to:
+
+   #+begin_src matlab
+     rLength = 12354;
+     rWidth  = 2;
+     rArea   = rLength * rWidth;
+   #+end_src
+
+3. *Align properties*
+
+   Example:
+
+   #+begin_src matlab
+         classdef myClass
+         properties
+     p1 (   1,:) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+     longProperty2 (1,    3) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+     p3(1,2                )
+                            end
+         end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     classdef myClass
+         properties
+             p1            (1,:) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+             longProperty2 (1,3) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+             p3            (1,2)
+         end
+     end
+   #+end_src
+
+4. *Align arguments*
+
+   Example:
+
+   #+begin_src matlab
+     function myFcn(a, longInputVar, c)
+     arguments
+           a{                    mustBeNumeric,                        mustBeReal}
+         longInputVar {                 mustBeNumeric,mustBeReal   ,mustBeFinite}
+                       c{mustBeNumeric}
+         end
+     end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     function myFcn(a, longInputVar, c)
+         arguments
+             a            {mustBeNumeric, mustBeReal}
+             longInputVar {mustBeNumeric, mustBeReal, mustBeFinite}
+             c            {mustBeNumeric}
+         end
+     end
+   #+end_src
+
+5. *Align trailing comments*
+
+   Example:
+
+   #+begin_src matlab
+     s1      =5    ;          % Average speed of the first vehicle in miles per hour
+         timeH1=2;% Time in hours traveled of first vehicle in hours
+               distance1=     s1      * timeH1; % Distance we've traveled in miles
+                                      disp(distance1)% Report how far we've gone
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     s1        = 5;           % Average speed of the first vehicle in miles per hour
+     timeH1    = 2;           % Time in hours traveled of first vehicle in hours
+     distance1 = s1 * timeH1; % Distance we've traveled in miles
+     disp(distance1)          % Report how far we've gone
+   #+end_src
+
+6. *Add missing commas in arrays (matrices and cells)*
+
+   Example:
+
+   #+begin_src matlab
+     mat1 = [1234,234  12234.24];
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     mat1 = [1234, 234, 12234.24];
+   #+end_src
+
+7. *Align multi-line matrix columns*
+
+   Example
+
+   #+begin_src matlab
+     mat2 = [1234,234  12234.24
+                        1,2 3.41];
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     mat2 = [1234, 234, 12234.24
+                1,   2,     3.41];
+   #+end_src
+
+8. *Untabify (convert TAB Characters to spaces)*
+
+   Conversion of tab characters to spaces ensures that code looks the same when using different
+   levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab
+   stops of 4.
+
+** Indent Example
+
+Given:
 
 #+begin_src matlab
   % Calculate the Golden Ratio (phi)
@@ -27,7 +176,7 @@ For example, given:
       hold on   ;% Keep the current plot
     plot(x, yTaylor,               ...
          'r--',...
-  'LineWidth', 1.5); 
+  'LineWidth', 1.5);
   title('Exponential Function & Taylor Approximation');
       xlabel(   'x');
   ylabel('y');
@@ -39,7 +188,7 @@ For example, given:
 Running
 
 : C-x h           or  M-: (mark-whole-buffer)
-: C-M-\           or  M-x indent-reg
+: C-M-\           or  M-x indent-region
 
 will produce:
 
@@ -455,4 +604,4 @@ See older history [[https://github.com/mathworks/Emacs-MATLAB-Mode/blob/2ff6f962
 
 # LocalWords:  showall ELPA MELPA fontification fontify sexp SPC LSP builtins MLint flycheck lsp
 # LocalWords:  netshell emacsinit imenu matlabls netsell sourceforge MMM YYYY emacsrunregion libtree
-# LocalWords:  SLIB abi ce da utils fcf
+# LocalWords:  SLIB abi ce da utils fcf Untabify

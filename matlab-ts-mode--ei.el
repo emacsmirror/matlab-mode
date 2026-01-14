@@ -45,26 +45,14 @@
 - Canonicalize language element spacing
      Example                        |  Result
      -----------------------------  |  -----------------------------
-     a = b+ c *d ;                  |  a = b + c * d;
+     a=b+c   *d   ;                 |  a = b + c * d;
 
 - Align consecutive assignments
      Example                        |  Result
      -----------------------------  |  -----------------------------
-     width = 100;                   |  width  = 100;
-     length = 200;                  |  length = 200;
-     area=width * length;           |  area   = width * length;
-
-- Align trailing comments
-     Example                        |  Result
-     -----------------------------  |  -----------------------------
-     a = myFcn1(1, 2); % comment 1  |  a = myFcn1(1, 2); % comment 1
-     a = a + 5; % comment 2         |  a = a + 2;        % comment 2
-
-- Align matrix columns
-     Example                        |  Result
-     -----------------------------  |  -----------------------------
-     m = [2,4000                    |  m = [   2, 4000
-            3000,1]                 |       3000,    1]
+     rLength      =12354    ;       |  rLength = 12354;
+       rWidth=2;                    |  rWidth  = 2;
+         rArea=rLength  *rWidth;    |  rArea   = rLength * rWidth;
 
 - Align properties and arguments
      Example                        |  Result
@@ -76,6 +64,24 @@
              p1 (1,1)               |          p1     (1,1)
          end                        |      end
      end                            |  end
+
+- Align trailing comments
+     Example                        |  Result
+     -----------------------------  |  -----------------------------
+     a = myFcn1(1, 2); % comment 1  |  a = myFcn1(1, 2); % comment 1
+     a = a + 5; % comment 2         |  a = a + 2;        % comment 2
+
+- Add missing commas in arrays (matrices and cells)
+
+     Example                        |  Result
+     -----------------------------  |  -----------------------------
+     mat1 = [1234,234  12234.24];   |  mat1 = [1234, 234, 12234.24];
+
+- Align matrix columns
+     Example                        |  Result
+     -----------------------------  |  -----------------------------
+     mat2 = [1234,234  12234.24     |  mat2 = [1234, 234, 12234.24
+                        1,2 3.41];  |             1,   2,     3.41];
 
 - Untabify (convert TAB characters to spaces)"
   :type 'boolean)
