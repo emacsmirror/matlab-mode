@@ -371,12 +371,8 @@ is used in `matlab-ts-mode--ei-spacing'"
       (when node
         (matlab-ts-mode--ei-get-node-to-use node)))))
 
-(defun matlab-ts-mode--ei-assert-match (new-line orig-line orig-line-node-types)
-  "Assert NEW-LINE has same code meaning as ORIG-LINE.
-This is done by validating that ORIG-LINE-NODE-TYPES matches the current
-line node types.  We also validate line text matches ignoring
-whitespace."
-
+(defun matlab-ts-mode--ei-assert-line-match (new-line orig-line)
+  "Assert NEW-LINE matches ORIG-LINE ignoring spaces, tabs, and commas."
   ;; Spaces may be added or removed. Commas may be added to new-line, so ignore them.
   (let* ((new-line-no-spaces-or-commas (replace-regexp-in-string "[ \t,]" "" new-line))
          (orig-line-no-spaces-or-commas (replace-regexp-in-string "[ \t,]" "" orig-line)))
@@ -384,33 +380,7 @@ whitespace."
     (when (not (string= new-line-no-spaces-or-commas orig-line-no-spaces-or-commas))
       (error "Assert: line-content-no-space-mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
              new-line-no-spaces-or-commas orig-line-no-spaces-or-commas
-             (line-number-at-pos (point)) (buffer-name))))
-
-  ;; xxx this needs to use new-line-node-types ... how?
-  (matlab-ts-mode--ei-fast-back-to-indentation)
-  (let (curr-line-node-types
-        (eol-pt (pos-eol)))
-    (cl-loop
-     while (< (point) eol-pt)
-     do
-     (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node))
-            (node (or (car pair)
-                      (cl-return)))
-            (node-type (cdr pair)))
-       (setq curr-line-node-types
-             (matlab-ts-mode--ei-update-line-node-types curr-line-node-types
-                                                        node node-type))
-       (let ((node-end (treesit-node-end node)))
-         (if (< node-end eol-pt)
-             (goto-char node-end)
-           (goto-char eol-pt)))))
-
-    (when (not (string= curr-line-node-types orig-line-node-types))
-      (error "Assert: line-node-types mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
-             curr-line-node-types
-             orig-line-node-types
-             (line-number-at-pos (point))
-             (buffer-name)))))
+             (line-number-at-pos (point)) (buffer-name)))))
 
 (defun matlab-ts-mode--ei-concat-line (ei-line node extra-chars &optional n-spaces-to-append)
   "Return concat EI-LINE with NODE text.
@@ -531,10 +501,12 @@ Assumes that current point is at `back-to-indentation'."
 Optional START-NODE and START-OFFSET are used to compute new pt-offset,
 the point offset in the line used to restore point after updating line.
 Note, new line content may be same as current line.  Also computes
-line-node-types which is a string containing the line node types.
-Returns electric indent info, ei-info,
-  (list NEW-LINE-CONTENT PT-OFFSET LINE-NODE-TYPES FIRST-NODE-IN-LINE)
-or nil."
+ORIG-LINE-NODE-TYPES which is a string containing the original line node types.
+If we nave a new line, returns electric indent info, ei-info:
+
+  (list NEW-LINE-CONTENT PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-IN-LINE)
+
+otherwise returns nil."
   (save-excursion
     ;; Move to first non-whitespace character on the line
     (let ((have-non-empty-line (matlab-ts-mode--ei-fast-back-to-indentation)))
@@ -550,7 +522,7 @@ or nil."
                      (cl-return-from matlab-ts-mode--ei-get-new-line)))
            (node-type (cdr pair))
            (first-node node)
-           line-node-types
+           orig-line-node-types
            next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
            next2-n-spaces-between
            (eol-pt (pos-eol)))
@@ -582,8 +554,8 @@ or nil."
                next2-n-spaces-between nil)
 
          (when matlab-ts-mode--indent-assert
-           (setq line-node-types (matlab-ts-mode--ei-update-line-node-types line-node-types
-                                                                            node node-type)))
+           (setq orig-line-node-types
+                 (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
 
          (when (not n-spaces-between)
            (cl-loop for tuple in matlab-ts-mode--ei-spacing do
@@ -635,15 +607,15 @@ or nil."
         (when (equal start-node node)
           (setq pt-offset (+ (length ei-line) start-offset)))
         (when matlab-ts-mode--indent-assert
-          (setq line-node-types (matlab-ts-mode--ei-update-line-node-types line-node-types
-                                                                           node node-type)))
+          (setq orig-line-node-types
+                (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
         (let ((extra-chars (matlab-ts-mode--ei-node-extra-chars
                             node
                             (min (treesit-node-end node) eol-pt)
                             eol-pt)))
           (setq ei-line (matlab-ts-mode--ei-concat-line ei-line node extra-chars))))
 
-      (list ei-line pt-offset line-node-types first-node))))
+      (list ei-line pt-offset orig-line-node-types first-node))))
 
 (defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-alist nil)
 
@@ -1350,13 +1322,57 @@ TAB>  x = 123 ./1 + 567
   (when line-pt
     (goto-char line-pt)))
 
+(defvar-local matlab-ts-mode--ei-orig-line-node-types-alist nil)
+
+(defun matlab-ts-mode--ei-assert-line-nodes-match (start-linenum end-linenum)
+  "Assert that original line node types match modified line node types.
+We examine lines between START-LINENUM and END-LINENUM inclusive."
+  (save-excursion
+    (goto-char (point-min))
+    (forward-line (1- start-linenum))
+    (cl-loop
+     for linenum from start-linenum to end-linenum
+     do
+     (let ((orig-line-node-types (alist-get linenum
+                                            matlab-ts-mode--ei-orig-line-node-types-alist)))
+       (when orig-line-node-types ;; line was updated
+
+         (matlab-ts-mode--ei-fast-back-to-indentation)
+         (let (curr-line-node-types
+               (eol-pt (pos-eol)))
+           (cl-loop
+            while (< (point) eol-pt)
+            do
+            (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node))
+                   (node (or (car pair)
+                             (cl-return)))
+                   (node-type (cdr pair)))
+              (setq curr-line-node-types
+                    (matlab-ts-mode--ei-update-line-node-types curr-line-node-types
+                                                               node node-type))
+              (let ((node-end (treesit-node-end node)))
+                (if (< node-end eol-pt)
+                    (goto-char node-end)
+                  (goto-char eol-pt)))))
+
+           (when (not (string= curr-line-node-types orig-line-node-types))
+             (error "Assert: line-node-types mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
+                    curr-line-node-types
+                    orig-line-node-types
+                    linenum
+                    (buffer-name)))))
+       (forward-line)))))
+
 (cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region start-pt-offset)
   "Indent current line by adjusting spacing around elements.
 
-When IS-INDENT-REGION is t, we return (list NEW-LINE UPDATED
-NEW-START-PT-OFFSET).  Optional START-PT-OFFSET is used only when
-IS-INDENT-REGION is t and when START-PT-OFFSET is non-nil NEW-START-PT-OFFSET
-is non-nil.  This is used to update the point location for
+When IS-INDENT-REGION is t, we return tuple
+
+  (list NEW-LINE UPDATED NEW-START-PT-OFFSET)
+
+Optional START-PT-OFFSET is used only when IS-INDENT-REGION is t and
+when START-PT-OFFSET is non-nil NEW-START-PT-OFFSET is non-nil.  This is
+used to update the point location for
 `matlab-ts-mode-prog-fill-reindent-defun'.
 
 When IS-INDENT-REGION is nil, we update the line and restore the point
@@ -1377,7 +1393,7 @@ to it's logical location when the line is updated."
             (setq ei-info (matlab-ts-mode--ei-align ei-info)))
           (let* ((ei-line (or (nth 0 ei-info) orig-line))
                  (pt-offset (nth 1 ei-info)) ;; non-nil if start-offset is non-nil
-                 (line-node-types (nth 2 ei-info))
+                 (orig-line-node-types (nth 2 ei-info))
                  (updated (and ei-info
                                (not (string= orig-line ei-line)))))
 
@@ -1388,7 +1404,10 @@ to it's logical location when the line is updated."
 
             (when (and updated
                        matlab-ts-mode--indent-assert)
-              (matlab-ts-mode--ei-assert-match ei-line orig-line line-node-types))
+              (when matlab-ts-mode--ei-orig-line-node-types-alist
+                (push `(,(line-number-at-pos) . ,orig-line-node-types)
+                      matlab-ts-mode--ei-orig-line-node-types-alist))
+              (matlab-ts-mode--ei-assert-line-match ei-line orig-line))
 
             (if is-indent-region
                 (list ei-line updated pt-offset) ;; result
@@ -1421,7 +1440,8 @@ This expansion of the region is done to simplify electric indent."
   ;; indented correctly.
   ;;    l2 = @(x) ((ischar(x) || isstring(x) || isnumeric(x)) && ...
   ;;              ~strcmpi(x, 'fubar'));
-  (let* ((curr-linenum (line-number-at-pos beg))
+  (let* ((start-linenum (line-number-at-pos beg))
+         (curr-linenum start-linenum)
          (end-linenum (save-excursion
                         (goto-char end)
                         (let ((inhibit-field-text-motion t)) (end-of-line))
@@ -1451,7 +1471,8 @@ This expansion of the region is done to simplify electric indent."
                       matrix-ts-mode--ei-m-matrix-first-col-extra-alist '((-1 . 0))
                       matlab-ts-mode--ei-is-m-matrix-alist '((-1 . 0))
                       matlab-ts-mode--ei-align-matrix-alist '((-1 . ""))
-                      matlab-ts-mode--ei-errors-alist (matlab-ts-mode--ei-get-errors-alist))
+                      matlab-ts-mode--ei-errors-alist (matlab-ts-mode--ei-get-errors-alist)
+                      matlab-ts-mode--ei-orig-line-node-types-alist '((-1 . 0)))
 
           (save-excursion
 
@@ -1502,6 +1523,9 @@ This expansion of the region is done to simplify electric indent."
                   (delete-region beg end)
                   (insert (with-current-buffer new-content-buf
                             (buffer-string)))
+
+                  (when matlab-ts-mode--indent-assert
+                    (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))
 
                   ;; Restore end point accounting for whitespace adjustments in the lines
                   (goto-char (point-min))
