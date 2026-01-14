@@ -315,7 +315,7 @@ Assumes point is at of current node or beginning of line.
 Returns (NODE . MODIFIED-NODE-TYPE) where MODIFIED-NODE-TYPE
 is used in `matlab-ts-mode--ei-spacing'"
   ;; Move point to first non-whitespace char
-  (let ((pt-eol (pos-eol)))
+  (let ((eol-pt (pos-eol)))
 
     (let ((node (treesit-node-at (point))))
 
@@ -344,7 +344,7 @@ is used in `matlab-ts-mode--ei-spacing'"
 
       ;; Move to next non-whitespace character to get next node
       (when (looking-at "[ \t]")
-        (when (not (re-search-forward "[^ \t]" pt-eol t))
+        (when (not (re-search-forward "[^ \t]" eol-pt t))
           (cl-return-from matlab-ts-mode--ei-move-to-and-get-node))
         (backward-char)
         (setq node (treesit-node-at (point))))
@@ -360,12 +360,12 @@ is used in `matlab-ts-mode--ei-spacing'"
 
       ;; Don't go past end-of-line point
       (when (or (equal "\n" (treesit-node-type node))
-                (> (treesit-node-start node) pt-eol)
+                (> (treesit-node-start node) eol-pt)
                 ;; When we get to EOL and in error context, node start will be on an earlier line
                 ;;           x = [
                 ;;  TAB>           1  ,   2  ;
                 (< (treesit-node-start node) (pos-bol)))
-        (goto-char pt-eol)
+        (goto-char eol-pt)
         (setq node nil))
 
       (when node
@@ -388,9 +388,10 @@ whitespace."
 
   ;; xxx this needs to use new-line-node-types ... how?
   (matlab-ts-mode--ei-fast-back-to-indentation)
-  (let (curr-line-node-types)
+  (let (curr-line-node-types
+        (eol-pt (pos-eol)))
     (cl-loop
-     while (< (point) (pos-eol))
+     while (< (point) eol-pt)
      do
      (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node))
             (node (or (car pair)
@@ -400,13 +401,16 @@ whitespace."
              (matlab-ts-mode--ei-update-line-node-types curr-line-node-types
                                                         node node-type))
        (let ((node-end (treesit-node-end node)))
-         (if (< node-end (pos-eol))
+         (if (< node-end eol-pt)
              (goto-char node-end)
-           (goto-char (pos-eol))))))
+           (goto-char eol-pt)))))
 
     (when (not (string= curr-line-node-types orig-line-node-types))
       (error "Assert: line-node-types mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
-             curr-line-node-types orig-line-node-types (line-number-at-pos (point)) (buffer-name)))))
+             curr-line-node-types
+             orig-line-node-types
+             (line-number-at-pos (point))
+             (buffer-name)))))
 
 (defun matlab-ts-mode--ei-concat-line (ei-line node extra-chars &optional n-spaces-to-append)
   "Return concat EI-LINE with NODE text.
@@ -415,7 +419,8 @@ EXTRA-CHARS are appended to EL-LINE.
 N-SPACES-TO-APPEND is the number of spaces to append between nodes."
 
   (let* ((node-end (treesit-node-end node))
-         (last-pt (if (< node-end (pos-eol)) node-end (pos-eol))))
+         (eol-pt (pos-eol))
+         (last-pt (if (< node-end eol-pt) node-end eol-pt)))
     (concat ei-line
             (buffer-substring (treesit-node-start node) last-pt)
             extra-chars
@@ -426,7 +431,7 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
                 ;;    end
                 ;; TopTester: electric_indent_xr_switch.m
                 (when (and (treesit-parent-until node (rx bos "ERROR" eos))
-                           (< last-pt (pos-eol)))
+                           (< last-pt eol-pt))
                   (save-excursion
                     (let ((inhibit-field-text-motion t)) (end-of-line))
                     (when (re-search-backward "[^ \t]" (pos-bol) t)
@@ -548,11 +553,11 @@ or nil."
            line-node-types
            next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
            next2-n-spaces-between
-           (pt-eol (pos-eol)))
+           (eol-pt (pos-eol)))
 
       (cl-loop
-       while (and (< (point) pt-eol)
-                  (< (treesit-node-end node) pt-eol))
+       while (and (< (point) eol-pt)
+                  (< (treesit-node-end node) eol-pt))
        do
        (let* ((next-pair (progn
                            (goto-char (treesit-node-end node))
@@ -634,8 +639,8 @@ or nil."
                                                                            node node-type)))
         (let ((extra-chars (matlab-ts-mode--ei-node-extra-chars
                             node
-                            (min (treesit-node-end node) pt-eol)
-                            pt-eol)))
+                            (min (treesit-node-end node) eol-pt)
+                            eol-pt)))
           (setq ei-line (matlab-ts-mode--ei-concat-line ei-line node extra-chars))))
 
       (list ei-line pt-offset line-node-types first-node))))
