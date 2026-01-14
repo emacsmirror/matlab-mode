@@ -1771,6 +1771,23 @@ errors according to the syntax-checker-fun\n%s" lang-file check-result))))
 
     (cons parse-error invalid-successful-parse)))
 
+(defun t-utils--get-lang-file-n-lines (lang-file major-mode-fun log-file)
+  "Get number of lines in LANG-FILE when mode is MAJOR-MODE-FUN.
+If LANG-FILE mode MAJOR-MODE-FUN, return number of lines in the file,
+else return nil and write a skipping message to LOG-FILE."
+  (let (n-lines
+        lang-file-buf)
+    (condition-case err
+        (with-current-buffer (setq lang-file-buf (find-file-noselect lang-file))
+          (when (not (eq major-mode major-mode-fun))
+            (error "Error %s has major-mode=%s which is not %s" lang-file
+                   (symbol-name major-mode) (symbol-name major-mode-fun)))
+          (setq n-lines (line-number-at-pos (point-max))))
+      (error
+       (t-utils--log log-file (format "Skipping %s, %s\n" lang-file (error-message-string err)))))
+    (kill-buffer lang-file-buf)
+    n-lines))
+
 (cl-defun t-utils-sweep-test-indent (test-name
                                      directory
                                      lang-file-regexp
@@ -1889,7 +1906,8 @@ LANGUAGE tree-sitter that need addressing or some other issue."
         (parse-errors "")
         (invalid-successful-parse "")
         (indent-errors "")
-        (took-ht (make-hash-table :test 'equal)))
+        (took-ht (make-hash-table :test 'equal))
+        n-lines)
 
     (setq log-file (t-utils--log-create test-name log-file))
 
@@ -1897,48 +1915,35 @@ LANGUAGE tree-sitter that need addressing or some other issue."
                                    (length all-lang-files) (t-utils--took start-time)))
 
     (dolist (lang-file all-lang-files)
-      (with-temp-buffer
+      (when (setq n-lines (t-utils--get-lang-file-n-lines lang-file major-mode-fun log-file))
+        (with-temp-buffer
+          (t-utils--log log-file (format "Reading: %s (%d lines)\n" lang-file n-lines))
 
-        (let (ok
-              n-lines)
-
+          ;; Check indent
           (condition-case err
-              (progn
-                (with-current-buffer (find-file-noselect lang-file)
-                  (when (not (eq major-mode major-mode-fun))
-                    (error "Error %s has major-mode=%s which is not %s" lang-file
-                           (symbol-name major-mode) (symbol-name major-mode-fun)))
-                  (setq n-lines (line-number-at-pos (point-max))))
+              (let ((indent-start (current-time)))
                 (t-utils--insert-file-for-test lang-file major-mode-fun)
-                (setq ok t))
-            (error
-             (t-utils--log log-file (format "Skipping %s, %s\n"
-                                            lang-file (error-message-string err)))))
-          (when ok
-            (t-utils--log log-file (format "Reading: %s (%d lines)\n" lang-file n-lines))
-            ;; Check for bad tree-sitter parse
-            (let ((pair (t-utils--check-parse lang-file error-nodes-regexp
-                                              syntax-checker-fun check-valid-parse)))
-              (setq parse-errors (concat parse-errors (car pair))
-                    invalid-successful-parse (concat invalid-successful-parse (car pair))))
 
-            ;; Check indent
-            (condition-case err
-                (let ((indent-start (current-time)))
-                  (indent-region (point-min) (point-max))
-                  (puthash lang-file (float-time (time-subtract (current-time) indent-start))
-                           took-ht)
-                  (when save-indent-to-tilde-file
-                    (let ((lang-file-tilde (concat lang-file "~")))
-                      (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
-                      (write-region (point-min) (point-max) lang-file-tilde)))
-                  )
-              (error (progn
-                       (t-utils--log log-file (format "Failed-indent-region: %s\n" lang-file))
-                       (setq indent-errors
-                             (concat indent-errors
-                                     (format "%s:1: error: failed to indent, %s\n"
-                                             lang-file (error-message-string err)))))))))))
+                ;; Check for bad tree-sitter parse
+                (let ((pair (t-utils--check-parse lang-file error-nodes-regexp
+                                                  syntax-checker-fun check-valid-parse)))
+                  (setq parse-errors (concat parse-errors (car pair))
+                        invalid-successful-parse (concat invalid-successful-parse (car pair))))
+
+                (indent-region (point-min) (point-max))
+                (puthash lang-file (float-time (time-subtract (current-time) indent-start))
+                         took-ht)
+                (when save-indent-to-tilde-file
+                  (let ((lang-file-tilde (concat lang-file "~")))
+                    (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
+                    (write-region (point-min) (point-max) lang-file-tilde)))
+                )
+            (error (progn
+                     (t-utils--log log-file (format "Failed-indent-region: %s\n" lang-file))
+                     (setq indent-errors
+                           (concat indent-errors
+                                   (format "%s:1: error: failed to indent, %s\n"
+                                           lang-file (error-message-string err))))))))))
 
     (let* ((slow-files (let ((files '()))
                          (maphash (lambda (file _took-time)
@@ -3027,7 +3032,7 @@ NO-POP-TO-BUFFER if non-nil, will not pop open the parse tree buffer."
          (view-buf (get-buffer-create view-buf-name)))
     (with-current-buffer view-buf
       (let ((curr-pt (point)))
-        
+
         (read-only-mode -1)
         (auto-revert-mode 0) ;; no need to save history
         (buffer-disable-undo)
@@ -3239,4 +3244,4 @@ To debug a specific -parser test file
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash md
 ;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's darwin libtree
-;; LocalWords:  defface fontify keymap curr
+;; LocalWords:  defface fontify keymap curr noselect
