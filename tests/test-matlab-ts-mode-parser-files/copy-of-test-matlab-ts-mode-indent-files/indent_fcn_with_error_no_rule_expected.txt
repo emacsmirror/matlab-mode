@@ -1,0 +1,12 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,194> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,153]@{% Following is invalid syntax (e.g. when people ma...}@) \n[153,155]
+ (ERROR<155,185> function[155,163]
+  (function_output<164,169> (identifier[164,167]@{out}@) =[168,169])
+  (cell<170,184> {[170,171]
+   (row<171,183> (identifier[171,183]@{functionName}@))
+   }[183,184])
+  ([184,185])
+ (command<185,186> (command_name[185,186]@{x}@))
+ ,[186,187]
+ (ERROR<187,193> (identifier[187,188]@{y}@) )[188,189]
+  (end_keyword<190,193> end[190,193])))
