@@ -1331,6 +1331,24 @@ TAB>  x = 123 ./1 + 567
 
 (defvar-local matlab-ts-mode--ei-orig-line-node-types-alist nil)
 
+(cl-defun matlab-ts-mode--ei-assert-nodes-types-match (curr-line-node-types
+                                                       orig-line-node-types
+                                                       linenum)
+  "Validate CURR-LINE-NODE-TYPES eq ORIG-LINE-NODE-TYPES for LINENUM."
+
+  (when (not (string= curr-line-node-types orig-line-node-types))
+
+    ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/148
+    (when (and (string= curr-line-node-types "catch command_name comment")
+               (string= orig-line-node-types "catch identifier comment"))
+      (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match))
+
+    (error "Assert: line-node-types mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
+           curr-line-node-types
+           orig-line-node-types
+           linenum
+           (buffer-name))))
+
 (defun matlab-ts-mode--ei-assert-line-nodes-match (start-linenum end-linenum)
   "Assert that original line node types match modified line node types.
 We examine lines between START-LINENUM and END-LINENUM inclusive."
@@ -1362,12 +1380,9 @@ We examine lines between START-LINENUM and END-LINENUM inclusive."
                     (goto-char node-end)
                   (goto-char eol-pt)))))
 
-           (when (not (string= curr-line-node-types orig-line-node-types))
-             (error "Assert: line-node-types mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
-                    curr-line-node-types
-                    orig-line-node-types
-                    linenum
-                    (buffer-name)))))
+           (matlab-ts-mode--ei-assert-nodes-types-match curr-line-node-types
+                                                        orig-line-node-types
+                                                        linenum)))
        (forward-line)))))
 
 (cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region start-pt-offset)
