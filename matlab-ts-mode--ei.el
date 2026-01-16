@@ -133,6 +133,9 @@
 
     (,(rx bos (or "," ";" "command_argument" "command_name" "enum-id") eos)  "."                 1)
 
+    (,(rx bos "attribute-id" eos)    "="                                                         0)
+    ("="                             ,(rx bos "attribute-id" eos)                                0)
+
     (,matlab-ts-mode--ei-0-after-re   "."                                                        0)
 
     (,(rx bos "]" eos)                ,(rx bos (or "," ";") eos)                                 0)
@@ -234,7 +237,7 @@ be unary-op even though the node type is \"+\"."
       ;; arguments name=value
       (setq node-type "n=v"))
 
-     ;; (1) property identifier => property-id, (2) enum identifier => enum-id
+     ;; property-id, enum-id, attribute-id
      ((string= node-type "identifier")
       (cond ((or
               (and (string= parent-type "property") ;; propertyWithOutDot?
@@ -242,8 +245,11 @@ be unary-op even though the node type is \"+\"."
               (and (string= parent-type "property_name") ;; property.nameWithDot?
                    (equal (treesit-node-child (treesit-node-parent parent) 0) parent)))
              (setq node-type "property-id"))
-            ((and (string= node-type "identifier") (string= parent-type "enum"))
-             (setq node-type "enum-id"))))
+            ((string= parent-type "enum")
+             (setq node-type "enum-id"))
+            ((string= parent-type "attribute")
+             (setq node-type "attribute-id"))
+            ))
 
      ;; Unary operator sign, + or -, e.g. [0 -e] or g = - e
      ((and (string= parent-type "unary_operator")
