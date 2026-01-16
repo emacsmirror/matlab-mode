@@ -285,27 +285,21 @@ is used in `matlab-ts-mode--ei-spacing'"
 
     (let ((node (treesit-node-at (point))))
 
-      ;; If next node is a matrix comma node return that
-      ;; Example:
+      ;; If next node is a array comma node return that. Examples:
       ;;    x1 = [(3*(2+1))   2]
-      ;;                   ^      <== point here
-      ;;    Next node is the invisible comma node having same start and end point.
-      ;; Example:
+      ;;                   ^     <== point here (next node is invisible comma node w/start=end pt)
       ;;    x2 = [1, 2]
-      ;;           ^               <== point here
-      ;;    Next node is the comma node.
-
+      ;;           ^             <== point here (next node is comma node)
       (when (looking-at "[ \t]" (point))
-        (let ((candidate node))
-          (while (and (= (treesit-node-end candidate) (point))
-                      (let* ((next-node (treesit-node-next-sibling candidate))
-                             (next-type (treesit-node-type next-node)))
-                        ;; At comma node of a row in a MATLAB array (a matrix or cell)?
-                        (when (and (equal next-type ",")
-                                   (string= (treesit-node-type (treesit-node-parent next-node))
-                                            "row"))
-                          (cl-return-from matlab-ts-mode--ei-move-to-and-get-node
-                            (cons next-node next-type)))))
+        (let ((candidate node)) ;; candidate will be the array element
+          (while (= (treesit-node-end candidate) (point)) ;; lookup to find our array element
+            (let* ((next-node (treesit-node-next-sibling candidate))
+                   (next-type (treesit-node-type next-node)))
+              ;; At comma node of a row in an array (a matrix or cell)?
+              (when (and (equal next-type ",")
+                         (string= (treesit-node-type (treesit-node-parent next-node)) "row"))
+                (cl-return-from matlab-ts-mode--ei-move-to-and-get-node
+                  (cons next-node next-type))))
             (setq candidate (treesit-node-parent candidate)))))
 
       ;; Move to next non-whitespace character to get next node
