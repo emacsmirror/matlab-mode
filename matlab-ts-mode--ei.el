@@ -777,7 +777,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
           (matlab-ts-mode--ei-fast-back-to-indentation)
           (let* ((row-node (matlab-ts-mode--ei-get-m-matrix-row-in-line))
                  (ei-line (buffer-substring (pos-bol) (pos-eol)))
-                 (indent-offset (string-match-p "[^ \t]+" ei-line)) ;; nil if at blank line in matrix
+                 (indent-offset (string-match-p "[^ \t]+" ei-line)) ;; nil if at blank line
                  n-spaces)
             (when (and row-node indent-offset)
               (let* ((col-num (length column-widths))
@@ -806,9 +806,14 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                                      (or (= indent-start-pt (point-min))
                                          (<= (+ offset matrix-offset) pt-offset)))
                             (setq pt-offset (+ pt-offset n-spaces)))
-                          (setq content (concat (substring content 0 offset)
-                                                (make-string n-spaces ? )
-                                                (substring content offset)))))
+                          (if (string= (treesit-node-type element) "string") ;; left align strings
+                              (let ((e-len (length (treesit-node-text element))))
+                                (setq content (concat (substring content 0 (+ offset e-len))
+                                                      (make-string n-spaces ? )
+                                                      (substring content (+ offset e-len)))))
+                            (setq content (concat (substring content 0 offset) ;; else right align
+                                                  (make-string n-spaces ? )
+                                                  (substring content offset))))))
                       (setq col-num (1- col-num)))))
 
                 (setq ei-line (concat (substring ei-line 0 indent-offset) content))

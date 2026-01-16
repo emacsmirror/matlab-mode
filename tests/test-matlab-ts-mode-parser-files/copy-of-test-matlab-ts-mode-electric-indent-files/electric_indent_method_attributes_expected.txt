@@ -1,23 +1,23 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,169> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
- (class_definition<22,168> classdef[22,30] name: (identifier[31,64]@{electric_indent_method_attributes}@) \n[64,65]
-  (methods<69,164> methods[69,76]
-   (attributes<77,105> ([77,78]
-    (attribute<78,96> (identifier[78,84]@{Access}@) =[85,86] (identifier[89,96]@{private}@))
-    ,[96,97]
-    (attribute<98,104> (identifier[98,104]@{Static}@))
-    )[104,105])
-   \n[105,106]
-   (function_definition<114,156> function[114,122]
-    (function_output<123,126> (identifier[123,124]@{b}@) =[125,126])
-    name: (identifier[127,130]@{foo}@)
-    (function_arguments<130,133> ([130,131] arguments: (identifier[131,132]@{a}@) )[132,133])
-    \n[133,134]
-    (block<134,145>
-     (assignment<134,143> left: (identifier[134,135]@{b}@) =[136,137]
-      right: (binary_operator<138,143> left: (number[138,139]@{2}@) *[140,141] right: (identifier[142,143]@{a}@)))
-     ;[143,144] \n[144,145])
-    end[153,156])
-   \n[156,157] end[161,164])
-  \n[164,165] end[165,168])
- \n[168,169])
+(source_file<1,261> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,260> classdef[114,122] name: (identifier[123,156]@{electric_indent_method_attributes}@) \n[156,157]
+  (methods<161,256> methods[161,168]
+   (attributes<169,197> ([169,170]
+    (attribute<170,188> (identifier[170,176]@{Access}@) =[177,178] (identifier[181,188]@{private}@))
+    ,[188,189]
+    (attribute<190,196> (identifier[190,196]@{Static}@))
+    )[196,197])
+   \n[197,198]
+   (function_definition<206,248> function[206,214]
+    (function_output<215,218> (identifier[215,216]@{b}@) =[217,218])
+    name: (identifier[219,222]@{foo}@)
+    (function_arguments<222,225> ([222,223] arguments: (identifier[223,224]@{a}@) )[224,225])
+    \n[225,226]
+    (block<226,237>
+     (assignment<226,235> left: (identifier[226,227]@{b}@) =[228,229]
+      right: (binary_operator<230,235> left: (number[230,231]@{2}@) *[232,233] right: (identifier[234,235]@{a}@)))
+     ;[235,236] \n[236,237])
+    end[245,248])
+   \n[248,249] end[253,256])
+  \n[256,257] end[257,260])
+ \n[260,261])

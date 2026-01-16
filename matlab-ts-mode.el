@@ -2491,12 +2491,14 @@ Example:
     ;;                                              |          4444]
     (let* ((first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra parent))
            (column-widths (matlab-ts-mode--ei-m-matrix-col-widths parent first-col-extra t))
-           (el-width (save-excursion
-                       (goto-char (treesit-node-start node))
-                       (let ((el (matlab-ts-mode--i-matrix-element)))
-                         (- (treesit-node-end el) (treesit-node-start el)))))
-           (el-spaces (- (alist-get 1 column-widths) el-width)))
-      (setq matlab-ts-mode--i-row-matcher-pair (cons (treesit-node-start parent) (1+ el-spaces)))
+           (n-el-spaces (if (equal (treesit-node-type (treesit-node-child node 0)) "string")
+                            0
+                          (let ((el-width (save-excursion
+                                            (goto-char (treesit-node-start node))
+                                            (let ((el (matlab-ts-mode--i-matrix-element)))
+                                              (- (treesit-node-end el) (treesit-node-start el))))))
+                            (- (alist-get 1 column-widths) el-width)))))
+      (setq matlab-ts-mode--i-row-matcher-pair (cons (treesit-node-start parent) (1+ n-el-spaces)))
       (cl-return-from matlab-ts-mode--i-row-matcher t)))
 
   (when (string-match-p (rx bos (or "cell" "matrix") eos) (treesit-node-type parent))

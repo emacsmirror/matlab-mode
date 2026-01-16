@@ -1,0 +1,54 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,496> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@)
+ (assignment<114,259> left: (identifier[114,118]@{str1}@) =[119,120]
+  right: 
+   (matrix<121,259> [[121,122]
+    (row<128,131>
+     (string<128,131> "[128,129] (string_content[129,130]@{\{}@) "[130,131]))
+    (row<147,150>
+     (string<147,150> "[147,148] (string_content[148,149]@{2}@) "[149,150]))
+    (row<163,174>
+     (string<163,174> '[163,164] (string_content[164,173]@{linethree}@) '[173,174]))
+    (row<187,190>
+     (string<187,190> '[187,188] (string_content[188,189]@{4}@) '[189,190]))
+    (row<205,211>
+     (string<205,211> '[205,206] (string_content[206,210]@{five}@) '[210,211]))
+    (row<227,232>
+     (string<227,232> '[227,228] (string_content[228,231]@{6.1}@) '[231,232]))
+    (row<250,253>
+     (string<250,253> "[250,251] (string_content[251,252]@{\}}@) "[252,253]))
+    ][258,259]))
+ ;[259,260]
+ (assignment<263,494> left: (identifier[263,267]@{str2}@) =[268,269]
+  right: 
+   (matrix<270,494> [[270,271]
+    (row<277,293>
+     (string<277,280> "[277,278] (string_content[278,279]@{\{}@) "[279,280])
+     ,[285,286]
+     (string<288,293> "[288,289] (string_content[289,292]@{foo}@) "[292,293]))
+    (row<304,323>
+     (string<304,307> "[304,305] (string_content[305,306]@{2}@) "[306,307])
+     ,[307,308]
+     (string<320,323> "[320,321] (string_content[321,322]@{b}@) "[322,323]))
+    (row<337,360>
+     (string<337,348> '[337,338] (string_content[338,347]@{linethree}@) '[347,348])
+     ,[348,349]
+     (string<351,360> "[351,352] (string_content[352,359]@{fooboar}@) "[359,360]))
+    (row<373,391>
+     (string<373,376> '[373,374] (string_content[374,375]@{4}@) '[375,376])
+     ,[379,380]
+     (string<386,391> "[386,387] (string_content[387,390]@{goo}@) "[390,391]))
+    (row<403,425>
+     (string<403,409> '[403,404] (string_content[404,408]@{five}@) '[408,409])
+     ,[411,412]
+     (string<417,425> "[417,418] (string_content[418,424]@{tooooo}@) "[424,425]))
+    (row<439,453>
+     (string<439,444> '[439,440] (string_content[440,443]@{6.1}@) '[443,444])
+     ,[448,449]
+     (string<450,453> "[450,451] (string_content[451,452]@{x}@) "[452,453]))
+    (row<468,493>
+     (string<468,471> "[468,469] (string_content[469,470]@{\}}@) "[470,471])
+     ,[476,477]
+     (string<478,493> "[478,479] (string_content[479,492]@{zzzzzzzzzzzzz}@) "[492,493]))
+    ][493,494]))
+ ;[494,495] \n[495,496])
