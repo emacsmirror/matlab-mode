@@ -1,6 +1,6 @@
 ;;; test-matlab-ts-mode-electric-indent-xr.el --- -*- lexical-binding: t -*-
 
-;; Copyright (C) 2025 Free Software Foundation, Inc.
+;; Copyright (C) 2025-2026 Free Software Foundation, Inc.
 ;;
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
@@ -54,7 +54,7 @@ after validating it, rename it to
          (m-files (t-utils-get-files test-name
                                      :base-regexp (rx ".m" eos)
                                      :file-to-use test-matlab-ts-mode-electric-indent-xr--file))
-         (matlab-ts-mode-electric-indent t)
+         (matlab-ts-mode--electric-indent t)
          (matlab-ts-mode--indent-assert t)
          (matlab-ts-mode--electric-indent-verbose nil))
     (t-utils-error-if-no-treesit-for 'matlab test-name)

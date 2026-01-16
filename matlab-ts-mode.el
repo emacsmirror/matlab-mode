@@ -2482,7 +2482,7 @@ Example:
     (cl-return-from matlab-ts-mode--i-row-matcher))
 
   ;; When electric indent AND parent node is a multi-line matrix (m-matrix)
-  (when (and matlab-ts-mode-electric-indent
+  (when (and matlab-ts-mode--electric-indent
              (string= "matrix" (treesit-node-type parent))
              (matlab-ts-mode--ei-is-m-matrix parent))
     ;; Align to first column width
@@ -2910,7 +2910,7 @@ Example:
 (defun matlab-ts-mode--treesit-indent ()
   "Call `treesit-indent', then do electric indent."
   (treesit-indent) ;; treesit-indent before electric indent to get updated point on the line
-  (when matlab-ts-mode-electric-indent
+  (when matlab-ts-mode--electric-indent
     (save-restriction
       (widen)
       (matlab-ts-mode--ei-workaround-143 (pos-bol) (pos-eol) (point))
@@ -2921,7 +2921,7 @@ Example:
   ;; `treesit-indent-region' will not alter the number of lines, but it may reduce the buffer size,
   ;; thus grab the start/end lines for `matlab-ts-mode--ei-indent-elements-in-line'.
 
-  (if matlab-ts-mode-electric-indent
+  (if matlab-ts-mode--electric-indent
       ;; do electric indent, then indent-region
       (matlab-ts-mode--ei-indent-region beg end)
     ;; just indent-region

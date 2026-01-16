@@ -16,7 +16,7 @@ To indent a MATLAB ~*.m~ file,
 
 Electric indent will
 
-1. *Canonicalize language element spacing*
+1. *Standardize language element spacing*
 
    Example:
 
@@ -48,7 +48,18 @@ Electric indent will
      rArea   = rLength * rWidth;
    #+end_src
 
-3. *Align properties*
+   For alignment, the statements must be consecutive. For example, the following contains two
+   sections of consecutive statement alignment:
+
+   #+begin_src matlab
+     aReallyLongVariable = 10;
+     bShortVar           = 5;
+
+     c  = aReallyLongVariable + bShortVar;
+     c2 = c * 2;
+   #+end_src
+
+3. *Align consecutive properties*
 
    Example:
 
@@ -74,7 +85,7 @@ Electric indent will
      end
    #+end_src
 
-4. *Align arguments*
+4. *Align consecutive arguments*
 
    Example:
 
@@ -100,7 +111,33 @@ Electric indent will
      end
    #+end_src
 
-5. *Align trailing comments*
+5. *Align enumeration members*
+
+   Example:
+
+   #+begin_src matlab
+     classdef TrafficLightColors < double
+     enumeration
+               red      (1)
+            green(2)
+          yellow(3)
+         end
+        end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     classdef TrafficLightColors < double
+         enumeration
+             red    (1)
+             green  (2)
+             yellow (3)
+         end
+     end
+   #+end_src
+   
+6. *Align consecutive trailing comments*
 
    Example:
 
@@ -120,7 +157,7 @@ Electric indent will
      disp(distance1)          % Report how far we've gone
    #+end_src
 
-6. *Add missing commas in arrays (matrices and cells)*
+7. *Add missing commas in arrays (matrices and cells)*
 
    Example:
 
@@ -134,7 +171,7 @@ Electric indent will
      mat1 = [1234, 234, 12234.24];
    #+end_src
 
-7. *Align multi-line matrix columns*
+8. *Align multi-line matrix columns*
 
    Example
 
@@ -150,7 +187,7 @@ Electric indent will
                 1,   2,     3.41];
    #+end_src
 
-8. *Untabify (convert TAB Characters to spaces)*
+9. *Untabify (convert TAB Characters to spaces)*
 
    Conversion of tab characters to spaces ensures that code looks the same when using different
    levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab

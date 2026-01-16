@@ -1,0 +1,32 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,500> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (function_definition<114,500> function[114,122] name: (identifier[123,154]@{electric_indent_start_pt_offset}@)
+  (function_arguments<154,156> ([154,155] )[155,156])
+  (comment[158,330]@{% This exercises\n%     (when (> start-pt-offset e...}@) \n[330,332]
+  (block<332,500>
+   (function_call<332,498> name: (identifier[332,338]@{foobar}@) ([338,339]
+    (arguments<339,497>
+     argument: (string<339,351> '[339,340] (string_content[340,350]@{Parameters}@) '[350,351])
+     ,[351,352] (line_continuation[353,357]@{...\n}@)
+     (cell<364,394> {[364,365]
+      (row<365,393>
+       (string<365,368> '[365,366] (string_content[366,367]@{A}@) '[367,368])
+       ,[368,369]
+       (string<370,373> '[370,371] (string_content[371,372]@{B}@) '[372,373])
+       ,[373,374]
+       (string<375,378> '[375,376] (string_content[376,377]@{C}@) '[377,378])
+       ,[378,379]
+       (string<380,383> '[380,381] (string_content[381,382]@{D}@) '[382,383])
+       ,[383,384]
+       (string<385,388> '[385,386] (string_content[386,387]@{E}@) '[387,388])
+       ,[388,389]
+       (string<390,393> '[390,391] (string_content[391,392]@{F}@) '[392,393]))
+      }[393,394])
+     ,[394,395] (line_continuation[396,400]@{...\n}@)
+     (string<407,415> '[407,408] (string_content[408,414]@{Values}@) '[414,415])
+     ,[415,416] (line_continuation[417,421]@{...\n}@)
+     (cell<457,497> {[457,458]
+      (row<458,496> (number[458,459]@{1}@) ,[481,482] (number[483,484]@{1}@) ,[484,485] (number[486,487]@{1}@) ,[487,488] (number[489,490]@{1}@) ,[490,491] (number[492,493]@{1}@) ,[493,494] (number[495,496]@{1}@))
+      }[496,497]))
+    )[497,498])
+   ;[498,499] \n[499,500])))

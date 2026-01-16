@@ -1,6 +1,6 @@
 ;;; test-matlab-ts-mode-electric-indent.el --- -*- lexical-binding: t -*-
 
-;; Copyright (C) 2025 Free Software Foundation, Inc.
+;; Copyright (C) 2025-2026 Free Software Foundation, Inc.
 ;;
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
@@ -67,7 +67,7 @@ after validating them, rename them to
                              (setq matlab-ts-mode--function-indent-level
                                    test-matlab-ts-mode-electric-indent--current-indent-level)))
          ;; Enable electric indent
-         (matlab-ts-mode-electric-indent t)
+         (matlab-ts-mode--electric-indent t)
          (matlab-ts-mode--indent-assert t)
          (matlab-ts-mode--electric-indent-verbose nil))
     (t-utils-error-if-no-treesit-for 'matlab test-name)

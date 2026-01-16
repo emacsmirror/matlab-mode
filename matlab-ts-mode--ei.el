@@ -25,7 +25,9 @@
 
 ;;; Commentary:
 ;;
-;; Electric indent for matlab-ts-mode, see `matlab-ts-mode-electric-indent' custom variable.
+;; Electric indent: standardize language element spacing, align consecutive statements, columns,
+;; align trailing comments, add missing commas to arrays, aligns multi-line matrices columns, and
+;; remove tabs.
 
 ;;; Code:
 
@@ -40,52 +42,7 @@
   :prefix "matlab-ts-mode-"
   :group 'languages)
 
-(defcustom matlab-ts-mode-electric-indent t
-  "*If t, indent (format) language elements within code.
-
-- Canonicalize language element spacing
-     Example                        |  Indent result
-     -----------------------------  |  -----------------------------
-     a=b+c   *d   ;                 |  a = b + c * d;
-
-- Align consecutive assignments
-     Example                        |  Indent result
-     -----------------------------  |  -----------------------------
-     rLength      =12354    ;       |  rLength = 12354;
-       rWidth=2;                    |  rWidth  = 2;
-         rArea=rLength  *rWidth;    |  rArea   = rLength * rWidth;
-
-- Align properties and arguments
-     Example                        |  Indent result
-     -----------------------------  |  -----------------------------
-     classdef c1                    |  classdef c1
-         properties                 |      properties
-             foo (1,3)              |          foo    (1,3)
-             foobar (1,1)           |          foobar (1,1)
-             p1 (1,1)               |          p1     (1,1)
-         end                        |      end
-     end                            |  end
-
-- Align trailing comments
-     Example                        |  Indent result
-     -----------------------------  |  -----------------------------
-     a = myFcn1(1, 2); % comment 1  |  a = myFcn1(1, 2); % comment 1
-     a = a + 5; % comment 2         |  a = a + 2;        % comment 2
-
-- Add missing commas in arrays (matrices and cells)
-
-     Example                        |  Indent result
-     -----------------------------  |  -----------------------------
-     mat1 = [1234,234  12234.24];   |  mat1 = [1234, 234, 12234.24];
-
-- Align matrix columns
-     Example                        |  Indent result
-     -----------------------------  |  -----------------------------
-     mat2 = [1234,234  12234.24     |  mat2 = [1234, 234, 12234.24
-                        1,2 3.41];  |             1,   2,     3.41];
-
-- Untabify (convert TAB characters to spaces)"
-  :type 'boolean)
+(defvar matlab-ts-mode--electric-indent t) ;; This shouldn't be disabled - it's here for testing.
 
 (defvar matlab-ts-mode--electric-indent-verbose nil)
 (defvar matlab-ts-mode--indent-assert) ;; from matlab-ts-mode.el
@@ -117,8 +74,7 @@
               "spmd"
               "switch"
               "try"
-              "while")
-      ))
+              "while")))
 
 (defvar matlab-ts-mode--ei-pad-op-re
   (rx bos (or "+" "-" "*" "/" ".*" "./" ".\\" "\\"
@@ -145,7 +101,6 @@
   `(
 
     ("."                              ,(rx bos (or "comment" "line_continuation") eos)           1)
-
 
     ;; Case: property dimension
     ;;         foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
@@ -176,7 +131,7 @@
     ;; Case: anything after a ".", e.g. foo.bar, s.(fieldName)
     (,(rx bos "." eos)                "."                                                        0)
 
-    (,(rx bos (or "," ";" "command_argument" "command_name") eos)       "."                      1)
+    (,(rx bos (or "," ";" "command_argument" "command_name" "enum-id") eos)  "."                 1)
 
     (,matlab-ts-mode--ei-0-after-re   "."                                                        0)
 
@@ -259,9 +214,7 @@ there are non-whitespace characters on the line, nil otherwise."
 
 (defun matlab-ts-mode--ei-get-node-to-use (node)
   "Given NODE, adjust it for electric indent.
-
 Returns (NODE . MODIFIED-NODE-TYPE) pair.
-
 For example, when node parent is a string, we return the parent.  When
 node is a \"+\" and parent is a unary_operator, we return MODIFIED-NODE-TYPE to
 be unary-op even though the node type is \"+\"."
@@ -281,16 +234,16 @@ be unary-op even though the node type is \"+\"."
       ;; arguments name=value
       (setq node-type "n=v"))
 
-     ;; convert property identifier to property-id node-type
-     ((and (string= node-type "identifier")
-           (or
-            ;; propertyWithOutDot?
-            (and (string= parent-type "property")
-                 (equal (treesit-node-child parent 0) node))
-            ;; property.nameWithDot?
-            (and (string= parent-type "property_name")
-                 (equal (treesit-node-child (treesit-node-parent parent) 0) parent))))
-      (setq node-type "property-id"))
+     ;; (1) property identifier => property-id, (2) enum identifier => enum-id
+     ((string= node-type "identifier")
+      (cond ((or
+              (and (string= parent-type "property") ;; propertyWithOutDot?
+                   (equal (treesit-node-child parent 0) node))
+              (and (string= parent-type "property_name") ;; property.nameWithDot?
+                   (equal (treesit-node-child (treesit-node-parent parent) 0) parent)))
+             (setq node-type "property-id"))
+            ((and (string= node-type "identifier") (string= parent-type "enum"))
+             (setq node-type "enum-id"))))
 
      ;; Unary operator sign, + or -, e.g. [0 -e] or g = - e
      ((and (string= parent-type "unary_operator")
@@ -1064,18 +1017,18 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
 
 (defun matlab-ts-mode--ei-get-prop-node (ei-info)
   "Return property or argument node for first node in EI-INFO.
-Returns nil if not a property or argument node."
+Returns nil if not a property, enum field, or argument node."
   (let* ((first-node-in-line (nth 3 ei-info))
-         (parent (when first-node-in-line (treesit-node-parent first-node-in-line)))
-         (prop-node (pcase (treesit-node-type parent)
-                      ("property"
+         (modified-node-type (cdr (matlab-ts-mode--ei-get-node-to-use first-node-in-line)))
+         (prop-node (pcase modified-node-type
+                      ((or "property-id" "enum-id")
                        first-node-in-line)
                       ("property_name"
-                       parent))))
-    ;; properties / arguments can span multiple lines, so skip these
-    (when (= (line-number-at-pos (treesit-node-start prop-node))
-             (line-number-at-pos (treesit-node-end prop-node)))
-      prop-node)))
+                       (treesit-node-parent first-node-in-line)))))
+        ;; skip multi-line nodes for alignment (properties / arguments can span multiple lines)
+        (when (= (line-number-at-pos (treesit-node-start prop-node))
+                 (line-number-at-pos (treesit-node-end prop-node)))
+          prop-node)))
 
 (defun matlab-ts-mode--ei-prop-length (ei-info)
   "Get the property length from the electric indented line in EI-INFO."
@@ -1447,7 +1400,7 @@ to it's logical location when the line is updated."
       )))
 
 (defun matlab-ts-mode--ei-move-to-loc (start-pt-linenum start-pt-offset)
-  "Move to locatation START-PT-LINENUM at column START-PT-OFFSET."
+  "Move to location START-PT-LINENUM at column START-PT-OFFSET."
   (goto-char (point-min))
   (forward-line (1- start-pt-linenum))
   (let ((eol-col (- (pos-eol) (pos-bol))))
@@ -1455,6 +1408,20 @@ to it's logical location when the line is updated."
       ;; TopTester: electric_indent_start_pt_offset.m
       (setq start-pt-offset eol-col)))
   (forward-char start-pt-offset))
+
+(defun matlab-ts-mode--ei-set-alist-caches (init)
+  "Setup electric indent alist caches.
+If INIT is non-nil, set to initial value, otherwise set to nil"
+  (let ((value (when init '((-1 . 0))))) ;; Entries of form (LINENUM . INFO)
+    (setq-local matlab-ts-mode--ei-align-assign-alist value
+                matlab-ts-mode--ei-align-prop-alist value
+                matlab-ts-mode--ei-align-comment-alist value
+                matlab-ts-mode--ei-m-matrix-col-widths-alist value
+                matrix-ts-mode--ei-m-matrix-first-col-extra-alist value
+                matlab-ts-mode--ei-is-m-matrix-alist value
+                matlab-ts-mode--ei-align-matrix-alist value
+                matlab-ts-mode--ei-errors-alist (when init (matlab-ts-mode--ei-get-errors-alist))
+                matlab-ts-mode--ei-orig-line-node-types-alist value)))
 
 (defun matlab-ts-mode--ei-indent-region (beg end)
   "Indent BEG END region by adjusting spacing around elements.
@@ -1489,18 +1456,7 @@ This expansion of the region is done to simplify electric indent."
 
     (unwind-protect
         (progn
-          ;; Add an invalid entry to each of the following associative lists. This entry is used
-          ;; as a marker to activate caching. Each entry in the lists is a cons cell `(LINENUM
-          ;; . INFO) where -1 is not a valid line number.
-          (setq-local matlab-ts-mode--ei-align-assign-alist '((-1 . 0))
-                      matlab-ts-mode--ei-align-prop-alist '((-1 . 0))
-                      matlab-ts-mode--ei-align-comment-alist '((-1 . 0))
-                      matlab-ts-mode--ei-m-matrix-col-widths-alist '((-1 . 0))
-                      matrix-ts-mode--ei-m-matrix-first-col-extra-alist '((-1 . 0))
-                      matlab-ts-mode--ei-is-m-matrix-alist '((-1 . 0))
-                      matlab-ts-mode--ei-align-matrix-alist '((-1 . ""))
-                      matlab-ts-mode--ei-errors-alist (matlab-ts-mode--ei-get-errors-alist)
-                      matlab-ts-mode--ei-orig-line-node-types-alist '((-1 . 0)))
+          (matlab-ts-mode--ei-set-alist-caches t)
 
           (save-excursion
             (save-restriction
@@ -1552,23 +1508,14 @@ This expansion of the region is done to simplify electric indent."
                     (setq end (point)))))))
 
           (matlab-ts-mode--ei-move-to-loc start-pt-linenum start-pt-offset) ;; for indent-region
-
           (treesit-indent-region beg end))
 
-      ;; unwind-protect cleanup
-      (setq-local matlab-ts-mode--ei-align-assign-alist nil
-                  matlab-ts-mode--ei-align-prop-alist nil
-                  matlab-ts-mode--ei-align-comment-alist nil
-                  matlab-ts-mode--ei-m-matrix-col-widths-alist nil
-                  matrix-ts-mode--ei-m-matrix-first-col-extra-alist nil
-                  matlab-ts-mode--ei-is-m-matrix-alist nil
-                  matlab-ts-mode--ei-align-matrix-alist nil
-                  matlab-ts-mode--ei-errors-alist nil)
+      (matlab-ts-mode--ei-set-alist-caches nil)
       (kill-buffer new-content-buf))))
 
 (provide 'matlab-ts-mode--ei)
 ;;; matlab-ts-mode--ei.el ends here
 
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
-;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase Untabify untabify SPC
+;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC
 ;; LocalWords:  linenums reindent bol fubar
