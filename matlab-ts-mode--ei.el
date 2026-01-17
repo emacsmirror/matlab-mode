@@ -1208,11 +1208,11 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (let ((matrix-node (matlab-ts-mode--ei-point-in-m-matrix ei-info)))
     (if matrix-node
-        (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-node ei-info)))
-    ;; else do single-line alignments
-    (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
-    (setq ei-info (matlab-ts-mode--ei-align-properties ei-info))
-    (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info)))
+        (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-node ei-info))
+      ;; else do single-line alignments
+      (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
+      (setq ei-info (matlab-ts-mode--ei-align-properties ei-info))
+      (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info))))
   ei-info)
 
 (defun matlab-ts-mode--ei-get-start-info ()
