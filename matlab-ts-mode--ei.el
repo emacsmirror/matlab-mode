@@ -1294,6 +1294,10 @@ TAB>  x = 123 ./1 + 567
                                                        linenum)
   "Validate CURR-LINE-NODE-TYPES eq ORIG-LINE-NODE-TYPES for LINENUM."
 
+  ;; We insert comma's in arrays, so curr-line-node-types may be larger, thus ignore commas
+  (setq curr-line-node-types (replace-regexp-in-string " , " " " curr-line-node-types))
+  (setq orig-line-node-types (replace-regexp-in-string " , " " " orig-line-node-types))
+
   (when (not (string= curr-line-node-types orig-line-node-types))
 
     ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/148
