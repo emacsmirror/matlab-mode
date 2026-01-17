@@ -2660,7 +2660,9 @@ Example:
      ;;                 { ...
      ;;                   mustBeReal ...
      ;;                   ^                     <== TAB/RET to here
-     ((parent-is ,(rx bos "validation_functions" eos)) parent 2)
+     ((parent-is ,(rx bos "validation_functions" eos))
+      parent
+      ,(if matlab-ts-mode--electric-indent 1 2))
 
      ;; I-Rule: property after a property
      ;;         properties
