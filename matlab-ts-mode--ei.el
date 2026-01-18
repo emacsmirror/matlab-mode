@@ -847,56 +847,68 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   "Is MATRIX node a multi-line matrix?
 We define a a multi-line matrix has one row per line and more than one
 column."
+
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
          (cache-value (alist-get start-linenum matlab-ts-mode--ei-is-m-matrix-alist)))
 
     (when cache-value ;; 0 or 1
       (cl-return-from matlab-ts-mode--ei-is-m-matrix (= cache-value 1)))
 
-    (let ((end-line (line-number-at-pos (treesit-node-end matrix)))
-          (n-rows 0)
-          n-cols)
+    (let* ((end-line (line-number-at-pos (treesit-node-end matrix)))
+           (is-m-matrix (and
+                         ;; Is candidate for a multi-line matrix we can align if more than one line
+                         (> end-line start-linenum)
+                         ;; AND the "]" ends on it's own line
+                         (matlab-ts-mode--ei-matrix-ends-on-line matrix)
+                         ;; AND has no inner matrices and no ERROR nodes
+                         (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos)
+                                                               nil t)))
+                           (= (treesit-node-end s-node) (treesit-node-end matrix)))))
+           (n-rows 0)
+           n-cols)
 
-      (when (and (> end-line start-linenum) ;; multi-line matrix?
-                 (matlab-ts-mode--ei-matrix-ends-on-line matrix)
-                 (not (treesit-search-subtree matrix (rx bos "ERROR" eos) nil t)))
-        (dolist (child (treesit-node-children matrix))
-          (let ((child-type (treesit-node-type child)))
-            (cond
-             ((string= child-type "row")
-              (let ((row-start-linenum (line-number-at-pos (treesit-node-start child))))
-                ;; Return nil if row not on one line
-                (when (not (= row-start-linenum (line-number-at-pos (treesit-node-end child))))
-                  (cl-return-from matlab-ts-mode--ei-is-m-matrix))
-                ;; Return nil if more than one row one the line
-                (let ((next-node (treesit-node-next-sibling child)))
-                  (when (and (string= (treesit-node-type next-node) "row")
-                             (= row-start-linenum (line-number-at-pos
-                                                   (treesit-node-start next-node))))
-                    (cl-return-from matlab-ts-mode--ei-is-m-matrix)))
-                ;; Return nil if row contains sub-matrices
-                (when (treesit-search-subtree child (rx bos (or "[" "]") eos) nil t)
-                  (cl-return-from matlab-ts-mode--ei-is-m-matrix))
+      (when is-m-matrix
+        (cl-loop
+         for child in (treesit-node-children matrix) do
+         (let ((child-type (treesit-node-type child)))
+           (cond
+            ;; Case: row
+            ((string= child-type "row")
+             (let ((row-start-linenum (line-number-at-pos (treesit-node-start child))))
 
-                (setq n-rows (1+ n-rows))
+               ;; Not an m-matrix when row is not on one line
+               (when (not (= row-start-linenum (line-number-at-pos (treesit-node-end child))))
+                 (setq is-m-matrix nil)
+                 (cl-return))
 
-                ;; Count the columns
-                (let ((n-cols-in-row 0))
-                  (dolist (el (treesit-node-children child))
-                    (when (not (string= (treesit-node-type el) ","))
-                      (setq n-cols-in-row (1+ n-cols-in-row))))
-                  (if (not n-cols)
-                      (setq n-cols n-cols-in-row)
-                    (if (not (= n-cols n-cols-in-row))
-                        (cl-return-from matlab-ts-mode--ei-is-m-matrix))))
-                ))
-             ;; Case unexpected matrix child node
-             ((not (string-match-p (rx bos (or "[" "]" "comment" "line_continuation") eos)
-                                   child-type))
-              (error "Assert: unexpected matrix child %S" child))))))
+               ;; Not an m-matrix when more than one row is on the line
+               (let ((next-node (treesit-node-next-sibling child)))
+                 (when (and (string= (treesit-node-type next-node) "row")
+                            (= row-start-linenum (line-number-at-pos
+                                                  (treesit-node-start next-node))))
+                   (setq is-m-matrix nil)
+                   (cl-return)))
+
+               (setq n-rows (1+ n-rows))
+
+               ;; Get num cols in row. Not an m-matrix if num cols doesn't match prior row.
+               (let ((n-cols-in-row 0))
+                 (dolist (el (treesit-node-children child))
+                   (when (not (string= (treesit-node-type el) ","))
+                     (setq n-cols-in-row (1+ n-cols-in-row))))
+                 (if (not n-cols)
+                     (setq n-cols n-cols-in-row)
+                   (when (not (= n-cols n-cols-in-row))
+                     (setq is-m-matrix nil)
+                     (cl-return)))))
+             )
+            ;; Case: unexpected matrix child node
+            ((not (string-match-p (rx bos (or "[" "]" "comment" "line_continuation") eos)
+                                  child-type))
+             (error "Assert: unexpected matrix child %S" child))))))
 
       ;; Multi-line matrix (m-matrix) with each row is on its own line?
-      (let ((ans (and (> n-rows 1) (>= n-cols 1))))
+      (let ((ans (and is-m-matrix (> n-rows 1) (>= n-cols 1))))
         (when matlab-ts-mode--ei-is-m-matrix-alist
           ;; Use 1 or 0 so we can differentiate between nil and not a multi-line matrix
           (push `(,start-linenum . ,(if ans 1 0)) matlab-ts-mode--ei-is-m-matrix-alist))
