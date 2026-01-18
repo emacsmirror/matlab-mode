@@ -1,0 +1,44 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,522> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (function_definition<114,521> function[114,122] name: (identifier[123,160]@{electric_indent_arguments_constraints}@)
+  (function_arguments<160,176> ([160,161] arguments: (identifier[161,167]@{input1}@) ,[167,168] (identifier[169,175]@{params}@) )[175,176])
+  \n[176,177]
+  (arguments_statement<181,518> arguments[181,190] \n[190,191]
+   (property<199,215> name: (identifier[199,206]@{input11}@)
+    (dimensions<210,215> ([210,211]
+     (spread_operator<211,212> :[211,212])
+     ,[212,213]
+     (spread_operator<213,214> :[213,214])
+     )[214,215]))
+   \n[215,217]
+   (property<225,253>
+    name: (property_name<225,236> (identifier[225,231]@{params}@) .[231,232] (identifier[232,236]@{foo1}@))
+    (default_value<243,253> =[243,244]
+     (function_call<245,253> name: (identifier[245,250]@{lines}@) ([250,251]
+      (arguments<251,252> argument: (number[251,252]@{1}@))
+      )[252,253])))
+   \n[253,254]
+   (property<262,288>
+    name: (property_name<262,275> (identifier[262,268]@{params}@) .[268,269] (identifier[269,275]@{foobar}@))
+    (default_value<280,288> =[280,281]
+     (string<282,288> '[282,283] (string_content[283,287]@{auto}@) '[287,288])))
+   \n[288,289]
+   (property<297,323>
+    name: (property_name<297,313> (identifier[297,303]@{params}@) .[303,304] (identifier[304,313]@{fooBarZoo}@))
+    (default_value<315,323> =[315,316]
+     (string<317,323> '[317,318] (string_content[318,322]@{auto}@) '[322,323])))
+   \n[323,324]
+   (property<332,509>
+    name: (property_name<332,349> (identifier[332,338]@{params}@) .[338,339] (identifier[339,349]@{otherThing}@))
+    (line_continuation[350,354]@{...\n}@)
+    (validation_functions<366,505> {[366,367] (identifier[367,380]@{mustBeNumeric}@) ,[380,381] (identifier[382,392]@{mustBeReal}@) ,[392,393] (identifier[394,406]@{mustBeFinite}@) ,[406,407] (identifier[408,425]@{mustBeNonnegative}@) ,[425,426] (line_continuation[427,431]@{...\n}@) (identifier[444,459]@{mustBeNonsparse}@) ,[459,460]
+     (function_call<461,504> name: (identifier[461,482]@{mustBeLessThanOrEqual}@) ([482,483]
+      (arguments<483,503>
+       argument: (field_expression<483,500> object: (identifier[483,489]@{params}@) .[489,490] field: (identifier[490,500]@{otherThing}@))
+       ,[500,501] (number[502,503]@{1}@))
+      )[503,504])
+     }[504,505])
+    (default_value<506,509> =[506,507] (number[508,509]@{1}@)))
+   \n[509,510] end[514,517] \n[517,518])
+  end[518,521])
+ \n[521,522])

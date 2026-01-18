@@ -2563,8 +2563,27 @@ Example:
   (car matlab-ts-mode--i-ret-pair))
 
 (defun matlab-ts-mode--i-ret-offset (&rest _)
-  "Return anchor for `matlab-ts-mode--i-ret-matcher'."
+  "Return offset for `matlab-ts-mode--i-ret-matcher'."
   (cdr matlab-ts-mode--i-ret-pair))
+
+(defvar matlab-ts-mode--i-validation-functions-offset-value)
+
+(defun matlab-ts-mode--i-validation-functions-offset (&rest _)
+  "Return offset for `matlab-ts-mode--validation-functions-matcher'."
+  matlab-ts-mode--i-validation-functions-offset-value)
+
+(defun matlab-ts-mode--i-validation-functions-matcher (_node parent _bol &rest _)
+  "Is PARENT a validation function?"
+  (when (string= (treesit-node-type parent) "validation_functions")
+    (save-excursion
+      (goto-char (treesit-node-start parent)) ;; goto opening "{" of the validation functions cell
+      (forward-char)
+      (if (and (re-search-forward "[^ \t]" (pos-eol) t)  ;; no validation fcn on the "{" line?
+               (progn (backward-char)
+                      (not (looking-at "\\.\\.\\."))))
+          (setq matlab-ts-mode--i-validation-functions-offset-value 1)
+        (setq matlab-ts-mode--i-validation-functions-offset-value 2)))
+    t))
 
 (defvar matlab-ts-mode--indent-rules
   `((matlab
@@ -2660,9 +2679,9 @@ Example:
      ;;                 { ...
      ;;                   mustBeReal ...
      ;;                   ^                     <== TAB/RET to here
-     ((parent-is ,(rx bos "validation_functions" eos))
+     (,#'matlab-ts-mode--i-validation-functions-matcher
       parent
-      ,(if matlab-ts-mode--electric-indent 1 2))
+      ,#'matlab-ts-mode--i-validation-functions-offset)
 
      ;; I-Rule: property after a property
      ;;         properties

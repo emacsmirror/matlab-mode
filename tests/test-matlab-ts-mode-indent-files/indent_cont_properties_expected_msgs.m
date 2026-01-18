@@ -15,7 +15,7 @@ classdef indent_cont_properties %  <{Matched rule: (matlab-ts-mode--i-top-level 
                 obj    %#ok<INUSA> %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
                 a ... %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
                     { ... %  <{Matched rule: (matlab-ts-mode--i-cont-matcher parent matlab-ts-mode--i-cont-offset)}>
-                      mustBeReal ... %  <{Matched rule: ((parent-is "\\`validation_functions\\'") parent 2)}>
+                      mustBeReal ... %  <{Matched rule: (matlab-ts-mode--i-validation-functions-matcher parent matlab-ts-mode--i-validation-functions-offset)}>
                     } %  <{Matched rule: ((n-p-gp "\\`}\\'" "\\`validation_functions\\'" nil) parent 0)}>
             end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
             disp(a) %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
@@ -25,7 +25,7 @@ classdef indent_cont_properties %  <{Matched rule: (matlab-ts-mode--i-top-level 
             arguments %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
                 p1 string {mustBeScalarOrEmpty} %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
                 p2 double {... %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
-                            mustBeReal ... %  <{Matched rule: ((parent-is "\\`validation_functions\\'") parent 2)}>
+                            mustBeReal ... %  <{Matched rule: (matlab-ts-mode--i-validation-functions-matcher parent matlab-ts-mode--i-validation-functions-offset)}>
                           } = 0 %  <{Matched rule: ((n-p-gp "\\`}\\'" "\\`validation_functions\\'" nil) parent 0)}>
             end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
             disp(p1) %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
