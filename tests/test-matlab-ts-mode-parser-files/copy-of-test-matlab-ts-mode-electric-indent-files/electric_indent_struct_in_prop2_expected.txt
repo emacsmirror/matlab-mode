@@ -1,0 +1,26 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,379> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,378> classdef[114,122] name: (identifier[123,154]@{electric_indent_struct_in_prop2}@) \n[154,155]
+  (properties<159,373> properties[159,169] \n[169,170]
+   (property<178,311> name: (identifier[178,179]@{s}@)
+    (dimensions<179,184> ([179,180] (number[180,181]@{1}@) ,[181,182] (number[182,183]@{1}@) )[183,184])
+    (identifier[184,190]@{struct}@)
+    (validation_functions<190,206> {[190,191] (identifier[191,205]@{mustBeNonempty}@) }[205,206])
+    (default_value<206,311> =[206,207]
+     (function_call<207,311> name: (identifier[207,213]@{struct}@) ([213,214] (line_continuation[215,219]@{...\n}@)
+      (arguments<238,293>
+       argument: (string<238,246> '[238,239] (string_content[239,245]@{field1}@) '[245,246])
+       ,[268,269] (number[270,271]@{1}@) ,[271,272] (line_continuation[273,277]@{...\n}@)
+       (string<277,290> '[277,278] (string_content[278,289]@{otherField2}@) '[289,290])
+       ,[290,291] (number[292,293]@{2}@))
+      (line_continuation[294,298]@{...\n}@) )[310,311])))
+   ;[311,312] \n[312,313]
+   (property<321,364> name: (identifier[321,322]@{m}@)
+    (default_value<323,364> =[323,324]
+     (matrix<325,364> [[325,326]
+      (row<327,336> (number[327,333]@{100000}@) ,[333,334] (number[335,336]@{2}@))
+      (row<352,362> (number[352,353]@{3}@) ,[353,354] (number[355,362]@{4000000}@))
+      ][363,364])))
+   ;[364,365] \n[365,366] end[370,373])
+  \n[373,375] end[375,378])
+ \n[378,379])

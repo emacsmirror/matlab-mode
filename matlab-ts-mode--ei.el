@@ -1030,7 +1030,10 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
       (when (string-match-p (rx bos (0+ (or " " "\t")) "...") ei-line) ;; skip continuations
         (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info))
       (setq comma-offset (string-match-p "," ei-line)
-            new-comma-offset (+ (string-match-p "[^ \t]" ei-line) max-field-width)))
+            new-comma-offset (+ (string-match-p "[^ \t]" ei-line) max-field-width))
+      (when (not comma-offset) ;; Ending ");" by itself on a line
+        ;; TopTester: electric_indent_struct_in_prop2.m
+        (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info)))
 
     (let ((n-spaces-to-add (- new-comma-offset comma-offset)))
       (when (not (= n-spaces-to-add 0))
