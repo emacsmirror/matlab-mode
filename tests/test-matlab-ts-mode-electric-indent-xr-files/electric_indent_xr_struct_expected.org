@@ -1,0 +1,204 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_struct.m:5:2:
+
+  comma: (t-utils-xr
+
+  (re-search-forward "fiel")  ;; point left on the "d"
+  "C-i"
+  "C-n" "C-i"
+  "C-n" "C-i"
+  )
+
+- Invoking      : (re-search-forward "fiel")
+  Start point   :  162
+  Moved to point:  202
+  : 16:29:        s1 = struct(     'field1', value1 + 10, ...
+  :                                     ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  202
+  Moved to point:  194
+  : 16:21:     s1 = struct('field1'     , value1 + 10, ...
+  :                             ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -13,7 +13,7 @@
+ %}
+ 
+ if 1
+-       s1 = struct(     'field1', value1 + 10, ...
++    s1 = struct('field1'     , value1 + 10, ...
+                 ...
+   'otherfield2', value2);
+ end
+  #+end_src diff
+
+- Invoking      : "C-n" = next-line
+  Start point   :  194
+  Moved to point:  240
+  : 17:19:                 ...
+  :                           ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  240
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  240
+  Moved to point:  260
+  : 18:19:   'otherfield2', value2);
+  :                           ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  260
+  Moved to point:  274
+  : 18:33:                 'otherfield2', value2);
+  :                                         ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -15,7 +15,7 @@
+ if 1
+     s1 = struct('field1'     , value1 + 10, ...
+                 ...
+-  'otherfield2', value2);
++                'otherfield2', value2);
+ end
+ 
+ %{
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_struct.m:23:2:
+
+  comma: (t-utils-xr
+
+  (re-search-forward "value")  ;; point left on the 9
+  "C-i"
+  "C-n" "C-i"
+  "C-n" "C-i"
+  )
+
+- Invoking      : (re-search-forward "value")
+  Start point   :  424
+  Moved to point:  474
+  : 34:39:        s2 = struct(     'field1', value9 + 10, ...
+  :                                               ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  474
+  Moved to point:  471
+  : 34:36:     s2 = struct('field1'     , value9 + 10, ...
+  :                                            ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -31,7 +31,7 @@
+ %}
+ 
+ if 1
+-       s2 = struct(     'field1', value9 + 10, ...
++    s2 = struct('field1'     , value9 + 10, ...
+                 ...
+   'otherfield2', value2);
+ end
+  #+end_src diff
+
+- Invoking      : "C-n" = next-line
+  Start point   :  471
+  Moved to point:  502
+  : 35:19:                 ...
+  :                           ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  502
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  502
+  Moved to point:  522
+  : 36:19:   'otherfield2', value2);
+  :                           ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  522
+  Moved to point:  536
+  : 36:33:                 'otherfield2', value2);
+  :                                         ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -33,7 +33,7 @@
+ if 1
+     s2 = struct('field1'     , value9 + 10, ...
+                 ...
+-  'otherfield2', value2);
++                'otherfield2', value2);
+ end
+ 
+ % case3: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_struct.m:39:9:
+
+  case3: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :  617
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+%{
+  case1-point-before-comma:
+  (t-utils-xr
+
+  (re-search-forward \"fiel\")  ;; point left on the \"d\"
+  \"C-i\"
+  \"C-n\" \"C-i\"
+  \"C-n\" \"C-i\"
+  )
+
+%}
+
+if 1
+    s1 = struct('field1'     , value1 + 10, ...
+                ...
+                'otherfield2', value2);
+end
+
+%{
+  case2-point-after-comma:
+  (t-utils-xr
+
+  (re-search-forward \"value\")  ;; point left on the 9
+  \"C-i\"
+  \"C-n\" \"C-i\"
+  \"C-n\" \"C-i\"
+  )
+
+%}
+
+if 1
+    s2 = struct('field1'     , value9 + 10, ...
+                ...
+                'otherfield2', value2);
+end
+
+% case3: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src
+  No buffer modifications

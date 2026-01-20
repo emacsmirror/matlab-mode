@@ -1,0 +1,34 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,596> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22] (comment[22,166]@{%\{\n  case1-point-before-comma:\n  (t-utils-xr\n\...}@) \n[166,168]
+ (if_statement<168,273> if[168,170] condition: (number[171,172]@{1}@)
+  (block<180,270>
+   (assignment<180,268> left: (identifier[180,182]@{s1}@) =[183,184]
+    right: 
+     (function_call<185,268> name: (identifier[185,191]@{struct}@) ([191,192]
+      (arguments<197,267>
+       argument: (string<197,205> '[197,198] (string_content[198,204]@{field1}@) '[204,205])
+       ,[205,206]
+       (binary_operator<207,218> left: (identifier[207,213]@{value1}@) +[214,215] right: (number[216,218]@{10}@))
+       ,[218,219] (line_continuation[220,224]@{...\n}@) (line_continuation[240,244]@{...\n}@)
+       (string<246,259> '[246,247] (string_content[247,258]@{otherfield2}@) '[258,259])
+       ,[259,260] (identifier[261,267]@{value2}@))
+      )[267,268]))
+   ;[268,269] \n[269,270])
+  end[270,273])
+ \n[273,275] (comment[275,417]@{%\{\n  case2-point-after-comma:\n  (t-utils-xr\n\n...}@) \n[417,419]
+ (if_statement<419,524> if[419,421] condition: (number[422,423]@{1}@)
+  (block<431,521>
+   (assignment<431,519> left: (identifier[431,433]@{s2}@) =[434,435]
+    right: 
+     (function_call<436,519> name: (identifier[436,442]@{struct}@) ([442,443]
+      (arguments<448,518>
+       argument: (string<448,456> '[448,449] (string_content[449,455]@{field1}@) '[455,456])
+       ,[456,457]
+       (binary_operator<458,469> left: (identifier[458,464]@{value9}@) +[465,466] right: (number[467,469]@{10}@))
+       ,[469,470] (line_continuation[471,475]@{...\n}@) (line_continuation[491,495]@{...\n}@)
+       (string<497,510> '[497,498] (string_content[498,509]@{otherfield2}@) '[509,510])
+       ,[510,511] (identifier[512,518]@{value2}@))
+      )[518,519]))
+   ;[519,520] \n[520,521])
+  end[521,524])
+ (comment[526,595]@{% case3: (t-utils-xr (t-utils-xr-print-code (point...}@) \n[595,596])

@@ -6,8 +6,7 @@
 * Release 8.0.0 TBD
 
 This release updates matlab-ts-mode indent to /electric indent code/. This is sometimes called
-pretty printing code or formatting code. Electric indent is controlled by the custom variable,
-~matlab-ts-mode-electric-indent~ which defaults to ~t~.
+pretty printing code or formatting code.
 
 To indent a MATLAB ~*.m~ file,
 
@@ -187,11 +186,31 @@ Electric indent will
                 1,   2,     3.41];
    #+end_src
 
-9. *Untabify (convert TAB Characters to spaces)*
+9. *Align fields of multi-line structures*
 
-   Conversion of tab characters to spaces ensures that code looks the same when using different
-   levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab
-   stops of 4.
+   Example:
+
+   #+begin_src matlab
+     myStruct = struct( ...
+       'field1',              (2+3)*4, ...
+          'longField2',"foo",...
+             'f3',2);
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     myStruct = struct( ...
+         'field1'    , (2 + 3) * 4, ...
+         'longField2', "foo", ...
+         'f3'        , 2);
+   #+end_src
+   
+10. *Untabify (convert TAB Characters to spaces)*
+
+    Conversion of tab characters to spaces ensures that code looks the same when using different
+    levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab
+    stops of 4.
 
 ** Indent Example
 

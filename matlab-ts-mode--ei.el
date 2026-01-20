@@ -466,7 +466,9 @@ If we nave a new line, returns electric indent info, ei-info:
 
   (list NEW-LINE-CONTENT PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-IN-LINE)
 
-otherwise returns nil."
+where NEW-LINE-CONTENT, during `indent-region', does not contain the
+final amount of leading whitespace because we do electric indent before
+`treesit-indent-region'."
   (save-excursion
     ;; Move to first non-whitespace character on the line
     (let ((have-non-empty-line (matlab-ts-mode--ei-fast-back-to-indentation)))
@@ -850,7 +852,6 @@ column."
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
          (cache-value (alist-get start-linenum matlab-ts-mode--ei-is-m-matrix-alist)))
-
     (when cache-value ;; 0 or 1
       (cl-return-from matlab-ts-mode--ei-is-m-matrix (= cache-value 1)))
 
@@ -914,59 +915,210 @@ column."
           (push `(,start-linenum . ,(if ans 1 0)) matlab-ts-mode--ei-is-m-matrix-alist))
         ans))))
 
-(defun matlab-ts-mode--ei-is-assign (first-node type)
-  "Is FIRST-NODE of line for an assignment that matches TYPE?
-TYPE can be \\='single-line or \\='multi-line-matrix.  When
-\\='multi-line-matrix, the assignment is to a matrix with two or more
-rows and two or more columns, where each row is on its own line.  The
-assignment node is return or nil."
-  (let ((assign-node (treesit-node-parent first-node)))
-    (while (and assign-node
-                (not (string= (treesit-node-type assign-node) "assignment")))
-      (setq assign-node (treesit-node-parent assign-node)))
+(cl-defun matlab-ts-mode--ei-struct-ends-on-line (struct)
+  "Does function_call STRUCT node end on a line?"
+  (save-excursion
+    (goto-char (treesit-node-end struct))
+    (let ((pt-eol (pos-eol)))
+      (while (re-search-forward "^[ \t]" pt-eol t)
+        (backward-char)
+        (if (looking-at "%") ;; comment after end?
+            (goto-char pt-eol)
+          (if (looking-at ";") ;; semicolon okay
+              (forward-char)
+            (cl-return-from matlab-ts-mode--ei-struct-ends-on-line)))))
+    t))
+
+(defun matlab-ts-mode--ei-struct-starts-on-first-line (struct)
+  "Is function_call STRUCT node have opening paren on start line?"
+  (let ((start-linenum (line-number-at-pos (treesit-node-start struct)))
+        paren-node)
+    (cl-loop
+     for child in (treesit-node-children struct) do
+     (when (string= (treesit-node-type child) "(")
+       (setq paren-node child)
+       (cl-return)))
+    (and paren-node
+         (= start-linenum (line-number-at-pos (treesit-node-start paren-node))))))
+
+(defvar-local matlab-ts-mode--ei-is-m-struct-alist nil) ;; cache
+
+(cl-defun matlab-ts-mode--ei-is-m-struct (struct)
+  "Is function_call STRUCT node a multi-line struct that can be aligned?
+If so return the max field width of the struct."
+
+  (let* ((start-linenum (line-number-at-pos (treesit-node-start struct)))
+         (cache-value (alist-get start-linenum matlab-ts-mode--ei-is-m-struct-alist))
+         (max-field-width 0))
+
+    (when cache-value ;; 0 or max-field-width
+      (cl-return-from matlab-ts-mode--ei-is-m-struct (when (> cache-value 0) cache-value)))
+
+    (let* ((end-line (line-number-at-pos (treesit-node-end struct)))
+           arguments-node
+           (is-m-struct (and
+                         ;; Is candidate for a multi-line struct we can align if more than one line
+                         (> end-line start-linenum)
+                         ;; AND the opening "(" is on the same line as the struct
+                         (matlab-ts-mode--ei-struct-starts-on-first-line struct)
+                         ;; AND the closing ")" ends on it's own line
+                         (matlab-ts-mode--ei-struct-ends-on-line struct)
+                         ;; AND we have an arguments node struct(arg1, .....)
+                         (setq arguments-node (treesit-search-subtree struct
+                                                                      (rx bos "arguments" eos))))))
+      (when is-m-struct
+        (let (tracking-line-num ;; iterate through arguments, tracking how many args on a line
+              (n-args-on-tracking-line 0))
+          (cl-loop
+           for child in (treesit-node-children arguments-node) do
+           (when (not (string-match-p (rx bos (or "," "line_continuation" eos))
+                                      (treesit-node-type child)))
+             ;; either field or value?
+             (let ((arg-line-num (line-number-at-pos (treesit-node-start child))))
+               (if (and tracking-line-num (= tracking-line-num arg-line-num))
+                   (progn (setq n-args-on-tracking-line (1+ n-args-on-tracking-line))
+                          (when (> n-args-on-tracking-line 2)
+                            (setq is-m-struct nil)
+                            (cl-return)))
+                 ;; on new line
+                 (when (= n-args-on-tracking-line 1) ;; 0 or 2 is good, 1 is bad
+                   (setq is-m-struct nil)
+                   (cl-return))
+                 (when (not (string= (treesit-node-type child) "string"))
+                   (setq is-m-struct nil) ;; first arg on line must be the struct field string
+                   (cl-return))
+                 (when (string-match-p "," (treesit-node-text child))
+                   (setq is-m-struct nil) ;; we need the first comma to be end of the field string
+                   (cl-return))
+                 (let ((field-width (length (treesit-node-text child))))
+                   (when (> field-width max-field-width)
+                     (setq max-field-width field-width)))
+                 (setq tracking-line-num arg-line-num
+                       n-args-on-tracking-line 1)))))
+          (when (and n-args-on-tracking-line (= n-args-on-tracking-line 1)) ;; 0 or 2 is good
+            (setq is-m-struct nil))))
+
+      (when matlab-ts-mode--ei-is-m-struct-alist
+        ;; Use 1 or 0 so we can differentiate between nil and not a multi-line struct
+        (push `(,start-linenum . ,(if is-m-struct max-field-width 0))
+              matlab-ts-mode--ei-is-m-struct-alist))
+
+      (when (and is-m-struct (> max-field-width 0))
+        max-field-width))))
+
+(cl-defun matlab-ts-mode--ei-align-line-in-m-struct (struct-assign-node max-field-width ei-info)
+  "Align multi-line struct in STRUCT-ASSIGN-NODE to MAX-FIELD-WIDTH.
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
+  (let* ((ei-line (nth 0 ei-info))
+         (assign-linenum (line-number-at-pos (treesit-node-start struct-assign-node)))
+         comma-offset
+         new-comma-offset)
+
+    (if (= (line-number-at-pos) assign-linenum)
+        ;; On "var = struct(........" line?
+        (let* ((eq-offset (string-match-p "=" ei-line))
+               (open-paren-offset (string-match-p "(" ei-line eq-offset))
+               (arg (progn (string-match "\\([^ \t]+\\)" ei-line (1+ open-paren-offset))
+                           (match-string 0 ei-line))))
+          (when (string-match-p (rx bos "...") arg) ;; skip continuations
+            (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info))
+          (setq comma-offset (string-match-p "," ei-line open-paren-offset)
+                new-comma-offset (+ 1 open-paren-offset max-field-width)))
+      ;; Else on later line
+      (when (string-match-p (rx bos (0+ (or " " "\t")) "...") ei-line) ;; skip continuations
+        (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info))
+      (setq comma-offset (string-match-p "," ei-line)
+            new-comma-offset (+ (string-match-p "[^ \t]" ei-line) max-field-width)))
+
+    (let ((n-spaces-to-add (- new-comma-offset comma-offset)))
+      (when (not (= n-spaces-to-add 0))
+        (setq ei-line (concat (substring ei-line 0 comma-offset)
+                              (make-string n-spaces-to-add ? )
+                              (substring ei-line comma-offset)))
+        (let ((pt-offset (nth 1 ei-info)))
+          (when (and pt-offset (> pt-offset comma-offset))
+            (setq pt-offset (+ n-spaces-to-add pt-offset)))
+          (setq ei-info (list ei-line pt-offset (nth 2 ei-info) (nth 3 ei-info)))))))
+  ei-info)
+
+(defun matlab-ts-mode--ei-is-assign (first-node a-type &optional assign-node)
+  "Is FIRST-NODE of line for an assignment that matches A-TYPE?
+If caller knows FIRST-NODE is in an assignment, ASSIGN-NODE should be
+supplied to avoid search ancestors for the assignment node.  Returns
+assignment node when A-TYPE is met, else nil.  A-TYPE can be:
+ - \\='single-line : varName = value            % on a single line, e.g. v1 = 1
+ - \\='m-matrix    : varName = [100   2         % matrix on multiple lines
+                                  3 400];
+ - \\='m-struct    : varName = struct(...       % struct on multiple lines
+                        \\='field1\\', value1, ...
+                        \\='otherField2\\', value2);
+Note, \\='m-struct returns (cons assignment-node max-field-width) or nil."
+  (when (not assign-node)
+    (setq assign-node (treesit-parent-until first-node (rx bos "assignment" eos))))
+
+  (when assign-node
+    (save-excursion
+      (forward-line 0)
+      (when (re-search-forward "=" (pos-eol) t)
+        (backward-char)
+        (let ((eq-node (treesit-node-at (point))))
+          ;; First "=" must be an assignment (assumptions elsewhere require this).
+          (when (and (equal (treesit-node-type eq-node) "=")
+                     (equal (treesit-node-type (treesit-node-parent eq-node)) "assignment"))
+            (cond
+             ;; Single-line assignment? Example: v1 = [1, 2];
+             ((eq a-type 'single-line)
+              (when (<= (treesit-node-end assign-node) (pos-eol))
+                assign-node))
+
+             ;; Multi-line matrix or struct assignment? Examples:
+             ;;   m1 = [100   2
+             ;;          3 400];
+             ;;   s = struct('field1',      value1, ...
+             ;;              'otherField2', value2);
+             ((or (eq a-type 'm-matrix) (eq a-type 'm-struct))
+              (let ((next-node (treesit-node-next-sibling eq-node)))
+                (while (equal (treesit-node-type next-node) "line_continuation")
+                  (setq next-node (treesit-node-next-sibling next-node)))
+                (when next-node
+                  (cond
+                   ((eq a-type 'm-matrix)
+                    (when (and (string= (treesit-node-type next-node) "matrix")
+                               (matlab-ts-mode--ei-is-m-matrix next-node))
+                      assign-node))
+                   ((eq a-type 'm-struct)
+                    (when (and (string= (treesit-node-type next-node) "function_call")
+                               (string= (treesit-node-text (treesit-node-child-by-field-name
+                                                            next-node "name"))
+                                        "struct"))
+                      (let ((max-field-width (matlab-ts-mode--ei-is-m-struct next-node)))
+                        (when max-field-width
+                          (cons assign-node max-field-width)))))))))
+
+             (t
+              (error "Assert: bad a-type %S" a-type)))))))))
+
+(defun matlab-ts-mode--ei-point-in-m-type (ei-info m-type)
+  "Are we in a multi-line matrix?
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO.
+If M-TYPE is \\='m-matrix, return the assignment node else nil.
+We define an m-matrix to be an assignment where there's more than one
+line, each row is on the same line, with same number of columns:
+  m = [100   2;
+         3 400];
+If M-TYPE is \\='m-struct, return the assignment node else nil.
+We define an m-matrix to be an assignment where there's more than one
+line, each row is on the same line, with same number of columns:
+  m = [100   2;
+         3 400];"
+  (let* ((first-node-in-line (nth 3 ei-info))
+         (assign-node (treesit-parent-until first-node-in-line (rx bos "assignment" eos))))
     (when assign-node
       (save-excursion
-        (forward-line 0)
-        (when (re-search-forward "=" (pos-eol) t)
-          (backward-char)
-          (let ((eq-node (treesit-node-at (point))))
-            ;; First "=" must be an assignment (assumptions elsewhere require this).
-            (when (and (equal (treesit-node-type eq-node) "=")
-                       (equal (treesit-node-type (treesit-node-parent eq-node)) "assignment"))
-              (cond
-               ;; Single-line assignment? Example: v1 = [1, 2];
-               ((eq type 'single-line)
-                (when (<= (treesit-node-end assign-node) (pos-eol))
-                  assign-node))
-
-               ;; Multi-line matrix assignment? Example: m1 = [1 2
-               ;;                                              3 4];
-               ((eq type 'multi-line-matrix)
-                (goto-char (treesit-node-end eq-node))
-                (let ((next-node (treesit-node-next-sibling eq-node)))
-                  (while (equal (treesit-node-type next-node) "line_continuation")
-                    (setq next-node (treesit-node-next-sibling next-node)))
-                  (when (and (equal (treesit-node-type next-node) "matrix")
-                             (matlab-ts-mode--ei-is-m-matrix next-node))
-                    assign-node)))
-               (t
-                (error "Assert: bad type %S" type))))))))))
-
-(defun matlab-ts-mode--ei-point-in-m-matrix (ei-info)
-  "Are we in a multi-line matrix?
-See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents.  Returns
-mat-info a (list matrix-node n-rows n-cols) if in a multi-line matrix."
-  (let* ((first-node-in-line (nth 3 ei-info))
-         (parent (treesit-node-parent first-node-in-line)))
-    (while (and parent
-                (not (string= (treesit-node-type parent) "assignment")))
-      (setq parent (treesit-node-parent parent)))
-    (when parent ;; In an assignment?
-      (save-excursion
-        (goto-char (treesit-node-start parent))
+        (goto-char (treesit-node-start assign-node))
         (matlab-ts-mode--ei-fast-back-to-indentation)
         (let ((first-node (treesit-node-at (point))))
-          (matlab-ts-mode--ei-is-assign first-node 'multi-line-matrix))))))
+          (matlab-ts-mode--ei-is-assign first-node m-type assign-node))))))
 
 (defun matlab-ts-mode--ei-assign-offset (ei-line)
   "Get the assignment offset from the indent-level in EI-LINE."
@@ -1218,13 +1370,16 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
 (defun matlab-ts-mode--ei-align (ei-info)
   "Align elements in EI-INFO.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
-  (let ((matrix-node (matlab-ts-mode--ei-point-in-m-matrix ei-info)))
-    (if matrix-node
-        (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-node ei-info))
-      ;; else do single-line alignments
-      (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
-      (setq ei-info (matlab-ts-mode--ei-align-properties ei-info))
-      (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info))))
+  (let ((matrix-assign-node (matlab-ts-mode--ei-point-in-m-type ei-info 'm-matrix)))
+    (if matrix-assign-node
+        (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-assign-node ei-info))
+      (let ((pair (matlab-ts-mode--ei-point-in-m-type ei-info 'm-struct)))
+        (if pair
+            (setq ei-info (matlab-ts-mode--ei-align-line-in-m-struct (car pair) (cdr pair) ei-info))
+          ;; else do single-line alignments
+          (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
+          (setq ei-info (matlab-ts-mode--ei-align-properties ei-info))
+          (setq ei-info (matlab-ts-mode--ei-align-trailing-comments ei-info))))))
   ei-info)
 
 (defun matlab-ts-mode--ei-get-start-info ()
@@ -1238,31 +1393,22 @@ Example where point is on the \"d\" in width:
            ^
 start-node is the identifier node for width and start-offset is 2."
   (let (start-node
-        start-offset
-        (at-eol (looking-at "[ \t]*$")))
-
-    ;; The node when at-eol is not on the current line.
-    (when (not at-eol)
-      (let ((node (treesit-node-at (point))))
-        ;; Consider:  A = [B   C];
-        ;;                   ^
-        ;; node is the invisible "," and moving to start gives us node for C
-        (save-excursion
-          (when (< (point) (treesit-node-start node))
-            (if (re-search-forward "[^ \t]" (pos-eol) t)
-                (progn
-                  (backward-char)
-                  (setq node (treesit-node-at (point))))
-              (if (re-search-backward "[^ \t]" (pos-bol) t)
-                  (setq node (treesit-node-at (point)))
-                (setq node nil))))
+        start-offset)
+    (when (not (looking-at "[ \t]*$")) ;; when not at EOL
+      (save-excursion
+        (let ((node (car (matlab-ts-mode--ei-get-node-to-use (treesit-node-at (point))))))
+          (when (not (and node
+                          (>= (point) (treesit-node-start node))
+                          (<= (point) (treesit-node-end node))))
+            (when (re-search-forward "[^ \t]" (pos-eol) t)
+              (backward-char)
+              (setq node (car (matlab-ts-mode--ei-get-node-to-use (treesit-node-at (point)))))))
 
           (when (and node
                      (>= (point) (treesit-node-start node))
                      (<= (point) (treesit-node-end node)))
-            (setq start-node (car (matlab-ts-mode--ei-get-node-to-use node)))
+            (setq start-node node)
             (setq start-offset (- (point) (treesit-node-start node)))))))
-
     (cons start-node start-offset)))
 
 (defun matlab-ts-mode--ei-workaround-143 (beg end &optional line-pt)
@@ -1378,7 +1524,7 @@ to it's logical location when the line is updated."
   (let* ((start-pair (when (or (not is-indent-region)
                                start-pt-offset)
                        (matlab-ts-mode--ei-get-start-info)))
-         (start-node (car start-pair)) ;; may be nil
+         (start-node (car start-pair)) ;; nil if at EOL
          (start-offset (cdr start-pair))
          (at-eol (and start-offset (looking-at "[ \t]*$")))
          (orig-line (buffer-substring (pos-bol) (pos-eol)))
@@ -1441,6 +1587,7 @@ If INIT is non-nil, set to initial value, otherwise set to nil"
                 matrix-ts-mode--ei-m-matrix-first-col-extra-alist value
                 matlab-ts-mode--ei-is-m-matrix-alist value
                 matlab-ts-mode--ei-align-matrix-alist value
+                matlab-ts-mode--ei-is-m-struct-alist value
                 matlab-ts-mode--ei-errors-alist (when init (matlab-ts-mode--ei-get-errors-alist))
                 matlab-ts-mode--ei-orig-line-node-types-alist value)))
 
@@ -1502,7 +1649,9 @@ This expansion of the region is done to simplify electric indent."
 
                   (let* ((tuple (matlab-ts-mode--ei-indent-elements-in-line
                                  'indent-region
-                                 (when (= i-linenum start-pt-linenum) start-pt-offset)))
+                                 (when (= i-linenum start-pt-linenum)
+                                   (move-to-column start-pt-offset)
+                                   start-pt-offset)))
                          (new-line (nth 0 tuple))
                          (line-updated (nth 1 tuple))
                          (new-start-pt-offset (nth 2 tuple)))
@@ -1528,7 +1677,7 @@ This expansion of the region is done to simplify electric indent."
                     (forward-line end-linenum)
                     (setq end (point)))))))
 
-          (matlab-ts-mode--ei-move-to-loc start-pt-linenum start-pt-offset) ;; for indent-region
+          (matlab-ts-mode--ei-move-to-loc start-pt-linenum start-pt-offset)
           (treesit-indent-region beg end))
 
       (matlab-ts-mode--ei-set-alist-caches nil)
