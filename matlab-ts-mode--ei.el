@@ -147,8 +147,8 @@
     ;;       @(x) ((ischar(x) || isstring(x)));
     (,(rx bos ")" eos)                ,(rx bos (or "identifier" "{" "(") eos)                    1)
 
-    ;; Case: property identifier: propName (1,1) double
-    (,(rx bos "property-id" eos)      "."                                                        1)
+    ;; Case: property identifier (the prop or class): propName (1,1) double
+    (,(rx bos (or "prop-id" "prop-class-id") eos)   "."                                          1)
 
     ;; Case: padded operators, e.g.: a || b
     (,matlab-ts-mode--ei-pad-op-re    "."                                                        1)
@@ -237,14 +237,16 @@ be unary-op even though the node type is \"+\"."
       ;; arguments name=value
       (setq node-type "n=v"))
 
-     ;; property-id, enum-id, attribute-id
+     ;; prop-id, prop-class-id, enum-id, attribute-id
      ((string= node-type "identifier")
-      (cond ((or
-              (and (string= parent-type "property") ;; propertyWithOutDot?
-                   (equal (treesit-node-child parent 0) node))
-              (and (string= parent-type "property_name") ;; property.nameWithDot?
-                   (equal (treesit-node-child (treesit-node-parent parent) 0) parent)))
-             (setq node-type "property-id"))
+      (cond ((string= parent-type "property") ;; propertyWithOutDot?
+             (if (equal (treesit-node-child parent 0) node)
+                 (setq node-type "prop-id")
+               (setq node-type "prop-class-id")))
+            ((string= parent-type "property_name") ;; property.nameWithDot?
+             (if (equal (treesit-node-child (treesit-node-parent parent) 0) parent)
+                 (setq node-type "prop-id")
+               (setq node-type "prop-class-id")))
             ((string= parent-type "enum")
              (setq node-type "enum-id"))
             ((string= parent-type "attribute")
@@ -1064,7 +1066,12 @@ Note, \\='m-struct returns (cons assignment-node max-field-width) or nil."
         (let ((eq-node (treesit-node-at (point))))
           ;; First "=" must be an assignment (assumptions elsewhere require this).
           (when (and (equal (treesit-node-type eq-node) "=")
-                     (equal (treesit-node-type (treesit-node-parent eq-node)) "assignment"))
+                     (if (string= (treesit-node-type assign-node) "assignment")
+                         (equal (treesit-node-type (treesit-node-parent eq-node))
+                                "assignment")
+                       (equal (treesit-node-type (treesit-node-parent
+                                                  (treesit-node-parent eq-node)))
+                              "property")))
             (cond
              ;; Single-line assignment? Example: v1 = [1, 2];
              ((eq a-type 'single-line)
@@ -1112,7 +1119,8 @@ line, each row is on the same line, with same number of columns:
   m = [100   2;
          3 400];"
   (let* ((first-node-in-line (nth 3 ei-info))
-         (assign-node (treesit-parent-until first-node-in-line (rx bos "assignment" eos))))
+         (assign-node (treesit-parent-until first-node-in-line
+                                            (rx bos (or "property" "assignment") eos))))
     (when assign-node
       (save-excursion
         (goto-char (treesit-node-start assign-node))
@@ -1190,7 +1198,7 @@ Returns nil if not a property, enum field, or argument node."
   (let* ((first-node-in-line (nth 3 ei-info))
          (modified-node-type (cdr (matlab-ts-mode--ei-get-node-to-use first-node-in-line)))
          (prop-node (pcase modified-node-type
-                      ((or "property-id" "enum-id")
+                      ((or "prop-id" "enum-id")
                        first-node-in-line)
                       ("property_name"
                        (treesit-node-parent first-node-in-line)))))

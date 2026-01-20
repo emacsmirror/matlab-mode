@@ -1,0 +1,23 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,319> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,318> classdef[114,122] name: (identifier[123,164]@{electric_indent_struct_and_matrix_in_prop}@) \n[164,165]
+  (properties<169,313> properties[169,179] \n[179,180]
+   (property<188,260> name: (identifier[188,189]@{s}@)
+    (default_value<190,260> =[190,191]
+     (function_call<192,260> name: (identifier[192,198]@{struct}@) ([198,199] (line_continuation[200,204]@{...\n}@)
+      (arguments<213,259>
+       argument: (string<213,221> '[213,214] (string_content[214,220]@{field1}@) '[220,221])
+       ,[221,222] (number[223,224]@{1}@) ,[224,225] (line_continuation[226,230]@{...\n}@)
+       (string<243,256> '[243,244] (string_content[244,255]@{otherField2}@) '[255,256])
+       ,[256,257] (number[258,259]@{2}@))
+      )[259,260])))
+   ;[260,261] \n[261,262]
+   (property<270,304> name: (identifier[270,271]@{m}@)
+    (default_value<272,304> =[272,273]
+     (matrix<274,304> [[274,275]
+      (row<275,281> (number[275,278]@{100}@) ,[278,279] (number[280,281]@{2}@))
+      (row<297,303> (number[297,298]@{3}@) ,[298,299] (number[300,303]@{400}@))
+      ][303,304])))
+   ;[304,305] \n[305,306] end[310,313])
+  \n[313,315] end[315,318])
+ \n[318,319])
