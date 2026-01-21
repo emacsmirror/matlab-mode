@@ -1,0 +1,8 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,151> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,54]@{% tabs within string and outside}@)
+ (assignment<57,92> left: (identifier[57,59]@{s1}@) =[60,61]
+  right: (string<62,92> "[62,63] (string_content[63,91]@{string with embeeded \t\t tabs}@) "[91,92]))
+ ;[92,93] (comment[97,102]@{% foo}@)
+ (assignment<105,140> left: (identifier[105,107]@{s2}@) =[108,109]
+  right: (string<110,140> '[110,111] (string_content[111,139]@{string with embeeded \t\t tabs}@) '[139,140]))
+ ;[140,141] (comment[145,150]@{% foo}@) \n[150,151])
