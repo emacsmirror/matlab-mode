@@ -148,7 +148,8 @@
 
     ;; Case: ") identifier" as in: propName (1, 1) double
     ;;       arguments:  g (1,1) {mustBeNumeric, mustBeReal}
-    (,(rx bos ")" eos)                ,(rx bos (or "identifier" "{") eos)                        1)
+    (,(rx bos "dim-)" eos)            "."                                                        1)
+    (,(rx bos "prop-dim" eos)         ,(rx bos "dim-)" eos)                                      0)
 
     ;; Case: @(x) ((ischar(x) || isstring(x)));
     ;;          ^
@@ -291,10 +292,16 @@ be unary-op even though the node type is \"+\"."
       ;; TopTester: electric_indent_inspect_keyword_commands2.m
       (setq node-type (concat node-type "-fcn")))
 
-     ;; Case: lambda: @(x) ((ischar(x) || isstring(x)))
-     ;;                  ^
-     ((and (string= node-type ")") (string= parent-type "lambda"))
-      (setq node-type "lambda-)")))
+     ;; Case: lambda:     @(x) ((ischar(x) || isstring(x)))
+     ;;                      ^
+     ;;       properties: foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+     ;;                             ^
+     ((string= node-type ")")
+      (if (string= parent-type "lambda")
+          (setq node-type "lambda-)")
+        (if (string= parent-type "dimensions")
+            (setq node-type "dim-)"))
+        )))
 
     (cons node node-type)))
 
