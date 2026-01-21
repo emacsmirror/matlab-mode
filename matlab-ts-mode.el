@@ -1527,9 +1527,6 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
                         (treesit-parent-until (or node parent) (rx bos "ERROR" eos)))))
       ;; We shouldn't indent if we don't handle the particular error (no matched rule is okay
       (when (not in-error)
-        (message "xxx1 %S" (or node parent))
-        (message "xxx2 %S" (treesit-parent-until (or node parent) (rx bos "ERROR" eos)))
-
         (error "Assert: no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
                node parent bol
                (treesit-node-parent parent)
