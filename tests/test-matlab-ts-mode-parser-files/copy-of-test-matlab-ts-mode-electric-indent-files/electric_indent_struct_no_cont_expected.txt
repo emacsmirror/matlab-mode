@@ -1,0 +1,29 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,325> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,107]@{% The MATLAB tree-sitter doesn't require "...", th...}@) (comment[109,199]@{% t-utils-test-indent: no-line-by-line-indent - li...}@)
+ (assignment<201,323>
+  left: 
+   (field_expression<201,227> object: (identifier[201,209]@{myStruct}@) .[209,210]
+    field: 
+     (function_call<210,227> name: (identifier[210,219]@{stateInfo}@) ([219,220]
+      (arguments<220,226>
+       argument: 
+        (binary_operator<220,226>
+         left: (end_keyword<220,223> end[220,223])
+         +[224,225] right: (number[225,226]@{1}@)))
+      )[226,227]))
+  =[228,229]
+  right: 
+   (function_call<230,323> name: (identifier[230,236]@{struct}@) ([236,237]
+    (arguments<246,322>
+     argument: (string<246,256> '[246,247] (string_content[247,255]@{fieldOne}@) '[255,256])
+     ,[257,258]
+     (boolean_operator<259,285>
+      left: (_expression<259,268> (identifier[259,268]@{someThing}@))
+      ||[269,271]
+      right: (_expression<275,285> (identifier[275,285]@{otherThing}@)))
+     ,[285,286]
+     (string<291,306> '[291,292] (string_content[292,305]@{otherFieldTwo}@) '[305,306])
+     ,[310,311]
+     (string<311,322> '[311,312] (string_content[312,321]@{something}@) '[321,322]))
+    )[322,323]))
+ ;[323,324] \n[324,325])

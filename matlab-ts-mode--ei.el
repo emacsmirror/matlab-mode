@@ -119,6 +119,9 @@
     ("."                              ,(rx bos (or ".?" "'" ".'") eos)                           0)
     (,(rx bos ".?" eos)               "."                                                        0)
 
+    ;; Case 10 .^ a   (must have a space between a number an dot to avoid changing node type)
+    (,(rx bos "number" eos)           ,(rx bos ".^" eos)                                         1)
+
     ;; Case: power and transpose: a^b a.^b
     (,matlab-ts-mode--ei-val-re       (,(rx bos (or "^" ".^") eos) . ,matlab-ts-mode--ei-val-re) 0)
 
@@ -1012,6 +1015,7 @@ If so return `(max-field-width . arguments-node), else nil."
   "Align multi-line struct.
 TUPLE = (list struct-assign-node max-field-width arguments-node) where
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
+
   (let* ((ei-line (nth 0 ei-info))
          (struct-assign-node (nth 0 tuple))
          (max-field-width (nth 1 tuple))
@@ -1023,9 +1027,9 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
         ;; On "var = struct(........" line?
         (let* ((eq-offset (string-match-p "=" ei-line))
                (open-paren-offset (string-match-p "(" ei-line eq-offset))
-               (arg (progn (string-match "\\([^ \t]+\\)" ei-line (1+ open-paren-offset))
-                           (match-string 0 ei-line))))
-          (when (string-match-p (rx bos "...") arg) ;; skip continuations
+               (arg (when (string-match "\\([^ \t]+\\)" ei-line (1+ open-paren-offset))
+                      (match-string 0 ei-line))))
+          (when (or (not arg) (string-match-p (rx bos "...") arg)) ;; skip continuations
             (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info))
           (setq comma-offset (string-match-p "," ei-line open-paren-offset)
                 new-comma-offset (+ 1 open-paren-offset max-field-width)))
@@ -1040,7 +1044,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
       (let ((first-node-in-line (nth 3 ei-info))
             (arguments-node (nth 2 tuple)))
         (when (not (equal (treesit-node-parent first-node-in-line) arguments-node))
-          ;; TopTester: xxx
+          ;; TopTester: electric_indent_struct_with_multiline_field_values.m
           (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info))))
 
     (let ((n-spaces-to-add (- new-comma-offset comma-offset)))
@@ -1108,7 +1112,10 @@ Note, \\='m-struct returns (list assignment-node max-field-width arguments-node)
                     (when (and (string= (treesit-node-type next-node) "function_call")
                                (string= (treesit-node-text (treesit-node-child-by-field-name
                                                             next-node "name"))
-                                        "struct"))
+                                        "struct")
+                               ;; TopTester: electric_indent_struct_on_next_line.m
+                               (= (line-number-at-pos (treesit-node-start assign-node))
+                                  (line-number-at-pos (treesit-node-start next-node))))
                       (let ((pair (matlab-ts-mode--ei-is-m-struct next-node))) ;; cdr => arguments
                         (when (and pair (> (car pair) 0)) ;; max-field-width > 0?
                           (list assign-node (car pair) (cdr pair))))))))))
