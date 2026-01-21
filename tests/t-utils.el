@@ -552,7 +552,7 @@ the major mode in the temporary buffer.
 If optional SKIP-CORRUPT-CHECK is non-nil, the check for corrupted content is
 skipped."
 
-  (insert-file-contents-literally file)
+  (insert-file-contents file)
 
   ;; We're testing a programming language which is using utf-8-unix encoding
   (set-buffer-file-coding-system 'utf-8-unix)
