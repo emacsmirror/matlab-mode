@@ -947,14 +947,14 @@ column."
 
 (cl-defun matlab-ts-mode--ei-is-m-struct (struct)
   "Is function_call STRUCT node a multi-line struct that can be aligned?
-If so return the max field width of the struct."
+If so return `(max-field-width . arguments-node), else nil."
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start struct)))
          (cache-value (alist-get start-linenum matlab-ts-mode--ei-is-m-struct-alist))
          (max-field-width 0))
 
-    (when cache-value ;; 0 or max-field-width
-      (cl-return-from matlab-ts-mode--ei-is-m-struct (when (> cache-value 0) cache-value)))
+    (when cache-value ;; '(0 . nil) or (max-field-width . assignment-node)
+      (cl-return-from matlab-ts-mode--ei-is-m-struct (when (> (car cache-value) 0) cache-value)))
 
     (let* ((end-line (line-number-at-pos (treesit-node-end struct)))
            arguments-node
@@ -1000,18 +1000,21 @@ If so return the max field width of the struct."
           (when (and n-args-on-tracking-line (= n-args-on-tracking-line 1)) ;; 0 or 2 is good
             (setq is-m-struct nil))))
 
-      (when matlab-ts-mode--ei-is-m-struct-alist
-        ;; Use 1 or 0 so we can differentiate between nil and not a multi-line struct
-        (push `(,start-linenum . ,(if is-m-struct max-field-width 0))
-              matlab-ts-mode--ei-is-m-struct-alist))
+      (let ((ans (when (and is-m-struct (> max-field-width 0))
+                   `(,max-field-width . ,arguments-node))))
+        (when matlab-ts-mode--ei-is-m-struct-alist
+          ;; Use 1 or 0 so we can differentiate between nil and not a multi-line struct
+          (push `(,start-linenum . ,(if ans ans '(0 . nil)))
+                matlab-ts-mode--ei-is-m-struct-alist))
+        ans))))
 
-      (when (and is-m-struct (> max-field-width 0))
-        max-field-width))))
-
-(cl-defun matlab-ts-mode--ei-align-line-in-m-struct (struct-assign-node max-field-width ei-info)
-  "Align multi-line struct in STRUCT-ASSIGN-NODE to MAX-FIELD-WIDTH.
+(cl-defun matlab-ts-mode--ei-align-line-in-m-struct (tuple ei-info)
+  "Align multi-line struct.
+TUPLE = (list struct-assign-node max-field-width arguments-node) where
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
   (let* ((ei-line (nth 0 ei-info))
+         (struct-assign-node (nth 0 tuple))
+         (max-field-width (nth 1 tuple))
          (assign-linenum (line-number-at-pos (treesit-node-start struct-assign-node)))
          comma-offset
          new-comma-offset)
@@ -1033,7 +1036,12 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
             new-comma-offset (+ (string-match-p "[^ \t]" ei-line) max-field-width))
       (when (not comma-offset) ;; Ending ");" by itself on a line
         ;; TopTester: electric_indent_struct_in_prop2.m
-        (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info)))
+        (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info))
+      (let ((first-node-in-line (nth 3 ei-info))
+            (arguments-node (nth 2 tuple)))
+        (when (not (equal (treesit-node-parent first-node-in-line) arguments-node))
+          ;; TopTester: xxx
+          (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info))))
 
     (let ((n-spaces-to-add (- new-comma-offset comma-offset)))
       (when (not (= n-spaces-to-add 0))
@@ -1057,7 +1065,7 @@ assignment node when A-TYPE is met, else nil.  A-TYPE can be:
  - \\='m-struct    : varName = struct(...       % struct on multiple lines
                         \\='field1\\', value1, ...
                         \\='otherField2\\', value2);
-Note, \\='m-struct returns (cons assignment-node max-field-width) or nil."
+Note, \\='m-struct returns (list assignment-node max-field-width arguments-node) or nil."
   (when (not assign-node)
     (setq assign-node (treesit-parent-until first-node (rx bos "assignment" eos))))
 
@@ -1101,9 +1109,9 @@ Note, \\='m-struct returns (cons assignment-node max-field-width) or nil."
                                (string= (treesit-node-text (treesit-node-child-by-field-name
                                                             next-node "name"))
                                         "struct"))
-                      (let ((max-field-width (matlab-ts-mode--ei-is-m-struct next-node)))
-                        (when max-field-width
-                          (cons assign-node max-field-width)))))))))
+                      (let ((pair (matlab-ts-mode--ei-is-m-struct next-node))) ;; cdr => arguments
+                        (when (and pair (> (car pair) 0)) ;; max-field-width > 0?
+                          (list assign-node (car pair) (cdr pair))))))))))
 
              (t
               (error "Assert: bad a-type %S" a-type)))))))))
@@ -1384,9 +1392,9 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (let ((matrix-assign-node (matlab-ts-mode--ei-point-in-m-type ei-info 'm-matrix)))
     (if matrix-assign-node
         (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-assign-node ei-info))
-      (let ((pair (matlab-ts-mode--ei-point-in-m-type ei-info 'm-struct)))
-        (if pair
-            (setq ei-info (matlab-ts-mode--ei-align-line-in-m-struct (car pair) (cdr pair) ei-info))
+      (let ((tuple (matlab-ts-mode--ei-point-in-m-type ei-info 'm-struct)))
+        (if tuple
+            (setq ei-info (matlab-ts-mode--ei-align-line-in-m-struct tuple ei-info))
           ;; else do single-line alignments
           (setq ei-info (matlab-ts-mode--ei-align-assignments ei-info))
           (setq ei-info (matlab-ts-mode--ei-align-properties ei-info))
@@ -1699,4 +1707,4 @@ This expansion of the region is done to simplify electric indent."
 
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC
-;; LocalWords:  linenums reindent bol fubar
+;; LocalWords:  linenums reindent bol fubar repeat:ans
