@@ -74,7 +74,8 @@
               "spmd"
               "switch"
               "try"
-              "while")))
+              "while")
+      eos))
 
 (defvar matlab-ts-mode--ei-pad-op-re
   (rx bos (or "+" "-" "*" "/" ".*" "./" ".\\" "\\"
@@ -171,8 +172,11 @@
     ;; Case: c3 = {b [c '%']};
     ("."                              ,(rx bos "[" eos)                                          1)
 
+    ;; Case: foo(1) or foo.bar
     (,(rx bos "identifier" eos)       ,(rx bos (or "(" "{") eos)                                 0)
     (,(rx bos "identifier" eos)       "."                                                        1)
+    ;; Case: {events(thing)}, {enumeration(thing)}, {methods(thing)}
+    (,(rx "-fcn" eos)                 ,(rx bos "(" eos)                                          0)
 
     ;; Case: number in matrix: [123 456]
     (,(rx bos "number" eos)           "."                                                        1)
@@ -230,17 +234,18 @@ be unary-op even though the node type is \"+\"."
          (parent-type (or (treesit-node-type parent) "")))
 
     (cond
-     ;; Use string and not the elements of the string
+     ;; Case: Use string and not the elements of the string
      ((string= parent-type "string")
       (setq node parent
             node-type parent-type))
 
+     ;; Case: name=value argument pair
      ((and (string= node-type "=")
            (string= parent-type "arguments"))
       ;; arguments name=value
       (setq node-type "n=v"))
 
-     ;; prop-id, prop-class-id, enum-id, attribute-id
+     ;; Case: prop-id, prop-class-id, enum-id, attribute-id
      ((string= node-type "identifier")
       (cond ((string= parent-type "property") ;; propertyWithOutDot?
              (if (equal (treesit-node-child parent 0) node)
@@ -256,26 +261,32 @@ be unary-op even though the node type is \"+\"."
              (setq node-type "attribute-id"))
             ))
 
-     ;; Unary operator sign, + or -, e.g. [0 -e] or g = - e
+     ;; Case: unary operator sign, + or -, e.g. [0 -e] or g = - e
      ((and (string= parent-type "unary_operator")
            (equal (treesit-node-child parent 0) node))
       (setq node-type "unary-op"))
 
-     ;; Super-class constructor call
+     ;; Case: super-class constructor call
      ;;  obj@myUtils.super;
      ((and (string= node-type "@")
            (string= parent-type "function_call"))
       (setq node-type "@-fcn-call"))
 
-     ;; Property dimensions
+     ;; Case: property dimensions
      ;;   foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
      ((and (or (string= node-type "number") (string= node-type ":"))
            (or (string= parent-type "dimensions")
                (and (string= parent-type "spread_operator")
                     (string= (treesit-node-type (treesit-node-parent parent)) "dimensions"))))
       (setq node-type "prop-dim"))
-     )
-
+     
+     ;; Case: events, enumeration, methods
+     ((and (string-match-p (rx bos (or "events" "enumeration" "methods") eos) node-type)
+           (string= parent-type "identifier"))
+      ;; TopTester: electric_indent_inspect_keyword_commands.m
+      ;; TopTester: electric_indent_inspect_keyword_commands2.m
+      (setq node-type (concat node-type "-fcn"))))
+    
     (cons node node-type)))
 
 (cl-defun matlab-ts-mode--ei-move-to-and-get-node ()
@@ -1214,20 +1225,20 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   "Return property or argument node for first node in EI-INFO.
 Returns nil if not a property, enum field, or argument node that ends on
 same line and has items to align."
-  (let* ((first-node-in-line (nth 3 ei-info))
-         (modified-node-type (cdr (matlab-ts-mode--ei-get-node-to-use first-node-in-line)))
-         (prop-id-node (pcase modified-node-type
-                      ((or "prop-id" "enum-id")
-                       first-node-in-line)
-                      ("property_name"
-                       (treesit-node-parent first-node-in-line))))
-         (prop-node (treesit-node-parent prop-id-node)))
-    ;; skip multi-line nodes for alignment (properties / arguments can span multiple lines)
-    (when (and prop-node
-               (= (line-number-at-pos (treesit-node-start prop-node))
-                  (line-number-at-pos (treesit-node-end prop-node)))
-               (> (length (treesit-node-children prop-node)) 1))
-      prop-id-node)))
+  (if-let ((first-node-in-line (nth 3 ei-info)))
+      (let* ((modified-node-type (cdr (matlab-ts-mode--ei-get-node-to-use first-node-in-line)))
+             (prop-id-node (pcase modified-node-type
+                             ((or "prop-id" "enum-id")
+                              first-node-in-line)
+                             ("property_name"
+                              (treesit-node-parent first-node-in-line))))
+             (prop-node (treesit-node-parent prop-id-node)))
+        ;; skip multi-line nodes for alignment (properties / arguments can span multiple lines)
+        (when (and prop-node
+                   (= (line-number-at-pos (treesit-node-start prop-node))
+                      (line-number-at-pos (treesit-node-end prop-node)))
+                   (> (length (treesit-node-children prop-node)) 1))
+          prop-id-node))))
 
 (defun matlab-ts-mode--ei-prop-length (ei-info)
   "Get the property length from the electric indented line in EI-INFO."
@@ -1495,7 +1506,7 @@ TAB>  x = 123 ./1 + 567
 
     ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/149
     (let ((orig-modified (replace-regexp-in-string (rx "identifier line_continuation" eos)
-                                                   "enumeration line_continuation"
+                                                   "enumeration-fcn line_continuation"
                                                    orig-line-node-types)))
       (when (string= curr-line-node-types orig-modified)
         (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match)))
