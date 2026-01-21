@@ -234,7 +234,7 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
           'f3'        , 2);
     #+end_src
 
-11. *Removes tabs (convert TAB Characters to spaces)*
+11. *Removes tabs (convert TAB Characters to spaces) without touching strings*
 
     Conversion of tab characters to spaces ensures that code looks the same when using different
     levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab
