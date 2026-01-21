@@ -1478,28 +1478,29 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
   ;; - Otherwise, matlab-ts-mode--function-indent-level is 0, we will "upgrade" it to
   ;;   matlab-ts-mode--indent-level if function end's appear.
 
-  (let ((root (if (and parent
-                       (string= (treesit-node-type parent) "function_definition"))
-                  parent
-                (treesit-buffer-root-node))))
-    (if (treesit-search-subtree (treesit-buffer-root-node) "\\`ERROR\\'")
-        ;; If we have syntax errors, assume that functions will have ends when entering
-        ;; matlab-ts-mode, otherwise leave matlab-ts--function-indent-level unchanged.
-        (when (equal matlab-ts-mode--function-indent-level 'unset)
-          (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level))
-      (let ((first-fcn (treesit-search-subtree root (rx bos "function_definition" eos))))
-        (if (not first-fcn)
-            ;; assume that if functions are added they will have ends
-            (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level)
-          (let ((have-end (string= (treesit-node-type (treesit-node-child first-fcn -1)) "end")))
-            (if (equal matlab-ts-mode--function-indent-level 'unset)
-                (setq-local matlab-ts-mode--function-indent-level
-                            (if have-end
-                                matlab-ts-mode--indent-level
-                              0))
-              (when have-end
-                (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level))
-              ))))))
+  (when (eq matlab-ts-mode--function-indent-level 'unset)
+    (let ((root (if (and parent
+                         (string= (treesit-node-type parent) "function_definition"))
+                    parent
+                  (treesit-buffer-root-node))))
+      (if (treesit-search-subtree (treesit-buffer-root-node) "\\`ERROR\\'")
+          ;; If we have syntax errors, assume that functions will have ends when entering
+          ;; matlab-ts-mode, otherwise leave matlab-ts--function-indent-level unchanged.
+          (when (equal matlab-ts-mode--function-indent-level 'unset)
+            (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level))
+        (let ((first-fcn (treesit-search-subtree root (rx bos "function_definition" eos))))
+          (if (not first-fcn)
+              ;; assume that if functions are added they will have ends
+              (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level)
+            (let ((have-end (string= (treesit-node-type (treesit-node-child first-fcn -1)) "end")))
+              (if (equal matlab-ts-mode--function-indent-level 'unset)
+                  (setq-local matlab-ts-mode--function-indent-level
+                              (if have-end
+                                  matlab-ts-mode--indent-level
+                                0))
+                (when have-end
+                  (setq-local matlab-ts-mode--function-indent-level matlab-ts-mode--indent-level))
+                )))))))
   matlab-ts-mode--function-indent-level)
 
 (defun matlab-ts-mode--set-function-indent-level-for-gp (node parent bol &rest _)

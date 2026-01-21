@@ -1205,7 +1205,8 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
 
 (defun matlab-ts-mode--ei-get-prop-node (ei-info)
   "Return property or argument node for first node in EI-INFO.
-Returns nil if not a property, enum field, or argument node."
+Returns nil if not a property, enum field, or argument node that ends on
+same line and has items to align."
   (let* ((first-node-in-line (nth 3 ei-info))
          (modified-node-type (cdr (matlab-ts-mode--ei-get-node-to-use first-node-in-line)))
          (prop-node (pcase modified-node-type
@@ -1213,10 +1214,12 @@ Returns nil if not a property, enum field, or argument node."
                        first-node-in-line)
                       ("property_name"
                        (treesit-node-parent first-node-in-line)))))
-        ;; skip multi-line nodes for alignment (properties / arguments can span multiple lines)
-        (when (= (line-number-at-pos (treesit-node-start prop-node))
-                 (line-number-at-pos (treesit-node-end prop-node)))
-          prop-node)))
+    ;; skip multi-line nodes for alignment (properties / arguments can span multiple lines)
+    (when (and prop-node
+               (= (line-number-at-pos (treesit-node-start prop-node))
+                  (line-number-at-pos (treesit-node-end prop-node)))
+               (> (length (treesit-node-children (treesit-node-parent prop-node))) 1))
+      prop-node)))
 
 (defun matlab-ts-mode--ei-prop-length (ei-info)
   "Get the property length from the electric indented line in EI-INFO."
