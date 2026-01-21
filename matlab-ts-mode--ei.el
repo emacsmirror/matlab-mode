@@ -1493,6 +1493,13 @@ TAB>  x = 123 ./1 + 567
                (string= orig-line-node-types "catch identifier comment"))
       (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match))
 
+    ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/149
+    (let ((orig-modified (replace-regexp-in-string (rx "identifier line_continuation" eos)
+                                                   "enumeration line_continuation"
+                                                   orig-line-node-types)))
+      (when (string= curr-line-node-types orig-modified)
+        (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match)))
+
     (error "Assert: line-node-types mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
            curr-line-node-types
            orig-line-node-types
