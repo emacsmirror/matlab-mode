@@ -144,12 +144,15 @@
 
     (,(rx bos "]" eos)                ,(rx bos (or "," ";") eos)                                 0)
     (,(rx bos "]" eos)                ,(rx bos "[" eos)                                          1)
-    ("."                              ,(rx bos (or "]" ")" "}") eos)                             0)
+    ("."                              ,(rx bos (or "]" ")" "}" "lambda-)") eos)                  0)
 
     ;; Case: ") identifier" as in: propName (1, 1) double
     ;;       arguments:  g (1,1) {mustBeNumeric, mustBeReal}
-    ;;       @(x) ((ischar(x) || isstring(x)));
-    (,(rx bos ")" eos)                ,(rx bos (or "identifier" "{" "(") eos)                    1)
+    (,(rx bos ")" eos)                ,(rx bos (or "identifier" "{") eos)                        1)
+
+    ;; Case: @(x) ((ischar(x) || isstring(x)));
+    ;;          ^
+    (,(rx bos "lambda-)" eos)         "."                                                        1)
 
     ;; Case: property identifier (the prop or class): propName (1,1) double
     (,(rx bos (or "prop-id" "prop-class-id") eos)   "."                                          1)
@@ -192,7 +195,8 @@
 
     ;; Case: c4{1} = [1 2; 3 4];
     ;;       v4 = [c4{1}(1,1), c4{1}(1,1)];
-    (,(rx bos "}" eos)                ,(rx bos (or "(" "{") eos)                                 0)
+    ;;       {s.('field1')(3)}
+    (,(rx bos (or "}" ")") eos)       ,(rx bos (or "(" "{") eos)                                 0)
 
     ;; Case: ")": m3 = uint8([ones(20,1); 2*ones(8,1)]);
     ;;                                 ^  ^
@@ -279,14 +283,19 @@ be unary-op even though the node type is \"+\"."
                (and (string= parent-type "spread_operator")
                     (string= (treesit-node-type (treesit-node-parent parent)) "dimensions"))))
       (setq node-type "prop-dim"))
-     
+
      ;; Case: events, enumeration, methods
      ((and (string-match-p (rx bos (or "events" "enumeration" "methods") eos) node-type)
            (string= parent-type "identifier"))
       ;; TopTester: electric_indent_inspect_keyword_commands.m
       ;; TopTester: electric_indent_inspect_keyword_commands2.m
-      (setq node-type (concat node-type "-fcn"))))
-    
+      (setq node-type (concat node-type "-fcn")))
+
+     ;; Case: lambda: @(x) ((ischar(x) || isstring(x)))
+     ;;                  ^
+     ((and (string= node-type ")") (string= parent-type "lambda"))
+      (setq node-type "lambda-)")))
+
     (cons node node-type)))
 
 (cl-defun matlab-ts-mode--ei-move-to-and-get-node ()
