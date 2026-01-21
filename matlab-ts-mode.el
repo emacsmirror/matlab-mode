@@ -1523,14 +1523,18 @@ For optional _NODE, PARENT, and _BOL see `treesit-simple-indent-rules'."
 (defun matlab-ts-mode--indent-assert-no-rule (node parent bol &rest _)
   "Report no indent rule for NODE PARENT BOL."
   (when matlab-ts-mode--indent-assert
-    ;; Bad syntax errors shouldn't cause and assert because no rule matching means no indent will
-    ;; occur and that's okay.
-    (when (not (treesit-parent-until (or node parent) (rx bos "ERROR" eos)))
-      (error "Assert: no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
-             node parent bol
-             (treesit-node-parent parent)
-             (treesit-node-prev-sibling node)
-             (buffer-name)))))
+    (let ((in-error (or (string= (treesit-node-type (or node parent)) "ERROR")
+                        (treesit-parent-until (or node parent) (rx bos "ERROR" eos)))))
+      ;; We shouldn't indent if we don't handle the particular error (no matched rule is okay
+      (when (not in-error)
+        (message "xxx1 %S" (or node parent))
+        (message "xxx2 %S" (treesit-parent-until (or node parent) (rx bos "ERROR" eos)))
+
+        (error "Assert: no indent rule for: N:%S P:%S BOL:%S GP:%S NPS:%S BUF:%S"
+               node parent bol
+               (treesit-node-parent parent)
+               (treesit-node-prev-sibling node)
+               (buffer-name))))))
 
 (defvar matlab-ts-mode--i-error-switch-matcher-pair)
 
