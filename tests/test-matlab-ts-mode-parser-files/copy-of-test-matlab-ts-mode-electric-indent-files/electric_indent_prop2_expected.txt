@@ -1,0 +1,21 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,288> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,287> classdef[114,122] name: (identifier[123,144]@{electric_indent_prop2}@) \n[144,145]
+  (properties<149,283> properties[149,159] \n[159,160]
+   (property<168,178> name: (identifier[168,171]@{abc}@)
+    (default_value<172,178> =[172,173] (identifier[174,178]@{true}@)))
+   ;[178,179] \n[179,180]
+   (property<188,193> name: (identifier[188,193]@{fubar}@))
+   ;[193,194] \n[194,195]
+   (property<203,217> name: (identifier[203,204]@{b}@)
+    (default_value<210,217> =[210,211] (identifier[212,217]@{false}@)))
+   ;[217,218] \n[218,219]
+   (property<227,229> name: (identifier[227,229]@{p1}@))
+   \n[229,230]
+   (property<238,274> name: (identifier[238,253]@{lonPropertyName}@)
+    (dimensions<256,261> ([256,257] (number[257,258]@{1}@) ,[258,259] (number[259,260]@{1}@) )[260,261])
+    (identifier[262,268]@{double}@)
+    (default_value<269,274> =[269,270] (number[271,274]@{1.1}@)))
+   ;[274,275] \n[275,276] end[280,283])
+  \n[283,284] end[284,287])
+ \n[287,288])

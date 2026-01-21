@@ -1,0 +1,87 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,933> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,157]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[157,159]
+ (function_definition<159,932> function[159,167] name: (identifier[168,194]@{electric_indent_arguments2}@)
+  (function_arguments<194,255> ([194,195] (line_continuation[196,200]@{...\n}@) arguments: (identifier[204,218]@{firstToAnalyze}@) ,[218,219] (identifier[220,226]@{argTwo}@) ,[226,227] (identifier[228,242]@{generateFoobar}@) ,[242,243] (identifier[244,254]@{NameValues}@) )[254,255])
+  \n[255,256]
+  (arguments_statement<260,835> arguments[260,269] \n[269,270]
+   (property<278,321> name: (identifier[278,292]@{firstToAnalyze}@) (identifier[293,299]@{string}@)
+    (validation_functions<300,321> {[300,301] (identifier[301,320]@{mustBeScalarOrEmpty}@) }[320,321]))
+   \n[321,322]
+   (property<330,440> name: (identifier[330,336]@{argTwo}@)
+    (validation_functions<337,435> {[337,338] (line_continuation[339,343]@{...\n}@)
+     (field_expression<360,414> object: (identifier[360,364]@{Aero}@) .[364,365] field: (identifier[365,373]@{internal}@) .[373,374] (identifier[374,384]@{validation}@) .[384,385] (identifier[385,414]@{mustBeEmptyStringOrStateSpace}@))
+     (line_continuation[415,419]@{...\n}@) }[434,435])
+    (default_value<436,440> =[436,437]
+     (string<438,440> '[438,439] '[439,440])))
+   \n[440,441]
+   (property<449,513> name: (identifier[449,463]@{generateFoobar}@)
+    (dimensions<471,476> ([471,472] (number[472,473]@{1}@) ,[473,474] (number[474,475]@{1}@) )[475,476])
+    (property_name<477,505> (identifier[477,483]@{matlab}@) .[483,484] (identifier[484,488]@{lang}@) .[488,489] (identifier[489,505]@{OnOffSwitchState}@))
+    (default_value<506,513> =[506,507]
+     (string<508,513> "[508,509] (string_content[509,512]@{off}@) "[512,513])))
+   \n[513,514]
+   (property<522,644>
+    name: (property_name<522,547> (identifier[522,532]@{NameValues}@) .[532,533] (identifier[533,547]@{SecondDocument}@))
+    (dimensions<548,553> ([548,549] (number[549,550]@{1}@) ,[550,551] (number[551,552]@{1}@) )[552,553])
+    (identifier[554,560]@{string}@)
+    (validation_functions<561,630> {[561,562]
+     (function_call<562,629> name: (identifier[562,574]@{mustBeMember}@) ([574,575]
+      (arguments<575,628>
+       argument: (field_expression<575,600> object: (identifier[575,585]@{NameValues}@) .[585,586] field: (identifier[586,600]@{SecondDocument}@))
+       ,[600,601]
+       (matrix<602,628> [[602,603]
+        (row<603,627>
+         (string<603,614> "[603,604] (string_content[604,613]@{Document1}@) "[613,614])
+         ,[614,615]
+         (string<616,627> "[616,617] (string_content[617,626]@{Document2}@) "[626,627]))
+        ][627,628]))
+      )[628,629])
+     }[629,630])
+    (default_value<631,644> =[631,632]
+     (string<633,644> "[633,634] (string_content[634,643]@{Document1}@) "[643,644])))
+   \n[644,645]
+   (property<653,827>
+    name: (property_name<653,669> (identifier[653,663]@{NameValues}@) .[663,664] (identifier[664,669]@{Level}@))
+    (dimensions<672,677> ([672,673] (number[673,674]@{1}@) ,[674,675] (number[675,676]@{1}@) )[676,677])
+    (identifier[678,684]@{string}@)
+    (validation_functions<685,816> {[685,686]
+     (function_call<686,815> name: (identifier[686,698]@{mustBeMember}@) ([698,699]
+      (arguments<699,814>
+       argument: (field_expression<699,715> object: (identifier[699,709]@{NameValues}@) .[709,710] field: (identifier[710,715]@{Level}@))
+       ,[715,716] (line_continuation[717,721]@{...\n}@)
+       (matrix<782,814> [[782,783]
+        (row<783,813>
+         (string<783,791> "[783,784] (string_content[784,790]@{Lowest}@) "[790,791])
+         ,[791,792]
+         (string<793,798> "[793,794] (string_content[794,797]@{All}@) "[797,798])
+         ,[798,799]
+         (string<800,803> "[800,801] (string_content[801,802]@{1}@) "[802,803])
+         ,[803,804]
+         (string<805,808> "[805,806] (string_content[806,807]@{2}@) "[807,808])
+         ,[808,809]
+         (string<810,813> "[810,811] (string_content[811,812]@{3}@) "[812,813]))
+        ][813,814]))
+      )[814,815])
+     }[815,816])
+    (default_value<817,827> =[817,818]
+     (string<819,827> "[819,820] (string_content[820,826]@{Lowest}@) "[826,827])))
+   \n[827,828] end[832,835])
+  (block<841,929>
+   (function_call<841,861> name: (identifier[841,845]@{disp}@) ([845,846]
+    (arguments<846,860> argument: (identifier[846,860]@{firstToAnalyze}@))
+    )[860,861])
+   ;[861,862]
+   (function_call<867,879> name: (identifier[867,871]@{disp}@) ([871,872]
+    (arguments<872,878> argument: (identifier[872,878]@{argTwo}@))
+    )[878,879])
+   ;[879,880]
+   (function_call<885,905> name: (identifier[885,889]@{disp}@) ([889,890]
+    (arguments<890,904> argument: (identifier[890,904]@{generateFoobar}@))
+    )[904,905])
+   ;[905,906]
+   (function_call<911,927> name: (identifier[911,915]@{disp}@) ([915,916]
+    (arguments<916,926> argument: (identifier[916,926]@{NameValues}@))
+    )[926,927])
+   ;[927,928] \n[928,929])
+  end[929,932])
+ \n[932,933])
