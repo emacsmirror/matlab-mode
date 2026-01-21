@@ -238,7 +238,7 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
 
     Conversion of tab characters to spaces ensures that code looks the same when using different
     levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab
-    stops of 4.
+    stops of 4. Note, this doesn't touch TAB characters within strings.
 
 * Indent Engine Design Considerations
 
