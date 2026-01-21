@@ -188,7 +188,7 @@
 
     ;; Case: c4{1} = [1 2; 3 4];
     ;;       v4 = [c4{1}(1,1), c4{1}(1,1)];
-    (,(rx bos "}" eos)                ,(rx bos "(" eos)                                          0)
+    (,(rx bos "}" eos)                ,(rx bos (or "(" "{") eos)                                 0)
 
     ;; Case: ")": m3 = uint8([ones(20,1); 2*ones(8,1)]);
     ;;                                 ^  ^
