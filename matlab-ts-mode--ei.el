@@ -180,7 +180,7 @@
     (,(rx bos "identifier" eos)       ,(rx bos (or "(" "{") eos)                                 0)
     (,(rx bos "identifier" eos)       "."                                                        1)
     ;; Case: {events(thing)}, {enumeration(thing)}, {methods(thing)}
-    (,(rx "-fcn" eos)                 ,(rx bos "(" eos)                                          0)
+    (,(rx "-fcn" eos)                 "."                                                        0)
 
     ;; Case: number in matrix: [123 456]
     (,(rx bos "number" eos)           "."                                                        1)
