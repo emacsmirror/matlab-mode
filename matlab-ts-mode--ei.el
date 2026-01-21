@@ -101,7 +101,7 @@
   ;; NODE-RE                          NEXT-NODE-RE                                 N-SPACES-BETWEEN
   `(
 
-    ("."                              ,(rx bos (or "comment" "line_continuation") eos)           1)
+    ("."                              ,(rx bos (or "dim-(" "comment" "line_continuation") eos)   1)
 
     ;; Case: property dimension
     ;;         foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
@@ -301,7 +301,13 @@ be unary-op even though the node type is \"+\"."
           (setq node-type "lambda-)")
         (if (string= parent-type "dimensions")
             (setq node-type "dim-)"))
-        )))
+        ))
+
+     ;; Case: arguments fcn keyword: arguments (1, :) {mustBeNumeric}
+     ;;                                        ^
+     ((and (string= node-type "(")
+           (string= parent-type "dimensions"))
+      (setq node-type "dim-(")))
 
     (cons node node-type)))
 

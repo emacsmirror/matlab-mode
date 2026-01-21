@@ -1,0 +1,265 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1151> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (function_definition<22,258> function[22,30]
+  (function_output<31,39>
+   (multioutput_variable<31,37> [[31,32] (identifier[32,33]@{m}@) ,[33,34] (identifier[35,36]@{s}@) ][36,37])
+   =[38,39])
+  name: (identifier[40,69]@{electric_indent_keyword_fcns2}@)
+  (function_arguments<69,72> ([69,70] arguments: (identifier[70,71]@{x}@) )[71,72])
+  \n[72,73]
+  (arguments_statement<77,116> arguments[77,86] ,[86,87]
+   (property<88,111> name: (identifier[88,89]@{x}@)
+    (dimensions<90,95> ([90,91]
+     (spread_operator<91,92> :[91,92])
+     ,[92,93]
+     (spread_operator<93,94> :[93,94])
+     )[94,95])
+    (validation_functions<96,111> {[96,97] (identifier[97,110]@{mustBeNumeric}@) }[110,111]))
+   ,[111,112] end[113,116])
+  (block<121,255>
+   (assignment<121,141>
+    left: (multioutput_variable<121,129> [[121,122] (identifier[122,124]@{m1}@) ,[124,125] (identifier[126,128]@{s1}@) ][128,129])
+    =[130,131]
+    right: 
+     (function_call<132,141> name: (identifier[132,138]@{DoStat}@) ([138,139]
+      (arguments<139,140> argument: (identifier[139,140]@{x}@))
+      )[140,141]))
+   ;[141,142]
+   (assignment<147,168>
+    left: (multioutput_variable<147,155> [[147,148] (identifier[148,150]@{m2}@) ,[150,151] (identifier[152,154]@{s2}@) ][154,155])
+    =[156,157]
+    right: 
+     (function_call<158,168> name: (identifier[158,165]@{DoStat2}@) ([165,166]
+      (arguments<166,167> argument: (identifier[166,167]@{x}@))
+      )[167,168]))
+   ;[168,169]
+   (assignment<174,195>
+    left: (multioutput_variable<174,182> [[174,175] (identifier[175,177]@{m3}@) ,[177,178] (identifier[179,181]@{s3}@) ][181,182])
+    =[183,184]
+    right: 
+     (function_call<185,195> name: (identifier[185,192]@{DoStat3}@) ([192,193]
+      (arguments<193,194> argument: (identifier[193,194]@{x}@))
+      )[194,195]))
+   ;[195,196]
+   (assignment<201,224> left: (identifier[201,202]@{m}@) =[210,211]
+    right: 
+     (binary_operator<212,224>
+      left: (binary_operator<212,219> left: (identifier[212,214]@{m1}@) +[215,216] right: (identifier[217,219]@{m2}@))
+      -[220,221] right: (identifier[222,224]@{m3}@)))
+   ;[224,225]
+   (assignment<230,253> left: (identifier[230,231]@{s}@) =[239,240]
+    right: 
+     (binary_operator<241,253>
+      left: (binary_operator<241,248> left: (identifier[241,243]@{s1}@) +[244,245] right: (identifier[246,248]@{s2}@))
+      -[249,250] right: (identifier[251,253]@{s3}@)))
+   ;[253,254] \n[254,255])
+  end[255,258])
+ \n[258,260]
+ (function_definition<260,416> function[260,268]
+  (function_output<269,277>
+   (multioutput_variable<269,275> [[269,270] (identifier[270,271]@{m}@) ,[271,272] (identifier[273,274]@{s}@) ][274,275])
+   =[276,277])
+  name: (identifier[278,284]@{DoStat}@)
+  (function_arguments<284,295> ([284,285]
+   arguments: (identifier<285,294> arguments[285,294])
+   )[294,295])
+  \n[295,296]
+  (arguments_statement<300,346> arguments[300,309] ,[309,310]
+   (property<311,341>
+    name: (identifier<311,320> arguments[311,320])
+    (dimensions<320,325> ([320,321]
+     (spread_operator<321,322> :[321,322])
+     ,[322,323]
+     (spread_operator<323,324> :[323,324])
+     )[324,325])
+    (validation_functions<326,341> {[326,327] (identifier[327,340]@{mustBeNumeric}@) }[340,341]))
+   ,[341,342] end[343,346])
+  (block<351,413>
+   (assignment<351,377> left: (identifier[351,352]@{m}@) =[353,354]
+    right: 
+     (function_call<355,377> name: (identifier[355,359]@{mean}@) ([359,360]
+      (arguments<360,376>
+       argument: (identifier<360,369> arguments[360,369])
+       ,[369,370]
+       (string<371,376> '[371,372] (string_content[372,375]@{all}@) '[375,376]))
+      )[376,377]))
+   ;[377,378]
+   (assignment<383,411> left: (identifier[383,384]@{s}@) =[385,386]
+    right: 
+     (function_call<387,411> name: (identifier[387,390]@{std}@) ([390,391]
+      (arguments<391,410>
+       argument: (identifier<391,400> arguments[391,400])
+       ,[400,401] (number[402,403]@{1}@) ,[403,404]
+       (string<405,410> '[405,406] (string_content[406,409]@{all}@) '[409,410]))
+      )[410,411]))
+   ;[411,412] \n[412,413])
+  end[413,416])
+ \n[416,418]
+ (function_definition<418,588> function[418,426]
+  (function_output<427,435>
+   (multioutput_variable<427,433> [[427,428] (identifier[428,429]@{m}@) ,[429,430] (identifier[431,432]@{s}@) ][432,433])
+   =[434,435])
+  name: (identifier[436,443]@{DoStat2}@)
+  (function_arguments<443,454> ([443,444]
+   arguments: (identifier<444,453> arguments[444,453])
+   )[453,454])
+  \n[454,455]
+  (arguments_statement<459,517> arguments[459,468] ,[468,469] \n[469,470]
+   (property<478,508>
+    name: (identifier<478,487> arguments[478,487])
+    (dimensions<487,492> ([487,488]
+     (spread_operator<488,489> :[488,489])
+     ,[489,490]
+     (spread_operator<490,491> :[490,491])
+     )[491,492])
+    (validation_functions<493,508> {[493,494] (identifier[494,507]@{mustBeNumeric}@) }[507,508]))
+   ,[508,509] \n[509,510] end[514,517])
+  (block<523,585>
+   (assignment<523,549> left: (identifier[523,524]@{m}@) =[525,526]
+    right: 
+     (function_call<527,549> name: (identifier[527,531]@{mean}@) ([531,532]
+      (arguments<532,548>
+       argument: (identifier<532,541> arguments[532,541])
+       ,[541,542]
+       (string<543,548> '[543,544] (string_content[544,547]@{all}@) '[547,548]))
+      )[548,549]))
+   ;[549,550]
+   (assignment<555,583> left: (identifier[555,556]@{s}@) =[557,558]
+    right: 
+     (function_call<559,583> name: (identifier[559,562]@{std}@) ([562,563]
+      (arguments<563,582>
+       argument: (identifier<563,572> arguments[563,572])
+       ,[572,573] (number[574,575]@{1}@) ,[575,576]
+       (string<577,582> '[577,578] (string_content[578,581]@{all}@) '[581,582]))
+      )[582,583]))
+   ;[583,584] \n[584,585])
+  end[585,588])
+ \n[588,590]
+ (function_definition<590,831> function[590,598]
+  (function_output<599,607>
+   (multioutput_variable<599,605> [[599,600] (identifier[600,601]@{m}@) ,[601,602] (identifier[603,604]@{s}@) ][604,605])
+   =[606,607])
+  name: (identifier[608,615]@{DoStat3}@)
+  (function_arguments<615,626> ([615,616]
+   arguments: (identifier<616,625> arguments[616,625])
+   )[625,626])
+  \n[626,627]
+  (arguments_statement<631,681> arguments[631,640] ,[640,641]
+   (property<642,672>
+    name: (identifier<642,651> arguments[642,651])
+    (dimensions<651,656> ([651,652]
+     (spread_operator<652,653> :[652,653])
+     ,[653,654]
+     (spread_operator<654,655> :[654,655])
+     )[655,656])
+    (validation_functions<657,672> {[657,658] (identifier[658,671]@{mustBeNumeric}@) }[671,672]))
+   ,[672,673] \n[673,674] end[678,681])
+  (block<686,828>
+   (assignment<686,709>
+    left: 
+     (field_expression<686,697> object: (identifier[686,687]@{a}@) .[687,688]
+      field: (identifier<688,697> arguments[688,697]))
+    =[698,699]
+    right: (identifier<700,709> arguments[700,709]))
+   ;[709,710]
+   (assignment<715,753> left: (identifier[715,716]@{m}@) =[727,728]
+    right: 
+     (function_call<729,753> name: (identifier[729,733]@{mean}@) ([733,734]
+      (arguments<734,752>
+       argument: 
+        (field_expression<734,745> object: (identifier[734,735]@{a}@) .[735,736]
+         field: (identifier<736,745> arguments[736,745]))
+       ,[745,746]
+       (string<747,752> '[747,748] (string_content[748,751]@{all}@) '[751,752]))
+      )[752,753]))
+   ;[753,754]
+   (assignment<759,799> left: (identifier[759,760]@{s}@) =[771,772]
+    right: 
+     (function_call<773,799> name: (identifier[773,776]@{std}@) ([776,777]
+      (arguments<777,798>
+       argument: 
+        (field_expression<777,788> object: (identifier[777,778]@{a}@) .[778,779]
+         field: (identifier<779,788> arguments[779,788]))
+       ,[788,789] (number[790,791]@{1}@) ,[791,792]
+       (string<793,798> '[793,794] (string_content[794,797]@{all}@) '[797,798]))
+      )[798,799]))
+   ;[799,800]
+   (assignment<805,826> left: (identifier[805,806]@{s}@) =[817,818]
+    right: 
+     (function_call<819,826> name: (identifier[819,823]@{foo3}@) ([823,824]
+      (arguments<824,825> argument: (identifier[824,825]@{s}@))
+      )[825,826]))
+   ;[826,827] \n[827,828])
+  end[828,831])
+ \n[831,833]
+ (function_definition<833,909> function[833,841]
+  (function_output<842,851>
+   (identifier<842,849> methods[842,849])
+   =[850,851])
+  name: (identifier[852,856]@{foo3}@)
+  (function_arguments<856,868> ([856,857] arguments: (identifier[857,867]@{properties}@) )[867,868])
+  \n[868,869]
+  (block<873,906>
+   (assignment<873,904>
+    left: (identifier<873,880> methods[873,880])
+    =[881,882]
+    right: 
+     (function_call<883,904>
+      name: (identifier<883,892> arguments[883,892])
+      ([892,893]
+      (arguments<893,903> argument: (identifier[893,903]@{properties}@))
+      )[903,904]))
+   ;[904,905] \n[905,906])
+  end[906,909])
+ \n[909,911]
+ (function_definition<911,1150> function[911,919]
+  (function_output<920,928>
+   (identifier<920,926> events[920,926])
+   =[927,928])
+  name: (identifier<929,938> arguments[929,938])
+  (function_arguments<938,949> ([938,939]
+   arguments: (identifier<939,948> arguments[939,948])
+   )[948,949])
+  \n[949,950]
+  (arguments_statement<954,1001> arguments[954,963] ,[963,964]
+   (property<965,995>
+    name: (identifier<965,974> arguments[965,974])
+    (dimensions<974,979> ([974,975]
+     (spread_operator<975,976> :[975,976])
+     ,[976,977]
+     (spread_operator<977,978> :[977,978])
+     )[978,979])
+    (validation_functions<980,995> {[980,981] (identifier[981,994]@{mustBeNumeric}@) }[994,995]))
+   ,[995,996] end[997,1000] \n[1000,1001])
+  (block<1005,1147>
+   (assignment<1005,1040>
+    left: (identifier<1005,1016> enumeration[1005,1016])
+    (line_continuation[1017,1021]@{...\n}@) =[1029,1030]
+    right: (identifier<1031,1040> arguments[1031,1040]))
+   ;[1040,1041] \n[1041,1042]
+   (if_statement<1046,1106> if[1046,1048]
+    condition: 
+     (comparison_operator<1049,1064>
+      (identifier<1049,1060> enumeration[1049,1060])
+      >[1061,1062] (number[1063,1064]@{0}@))
+    \n[1064,1065]
+    (block<1073,1099>
+     (assignment<1073,1097>
+      left: (identifier<1073,1082> arguments[1073,1082])
+      =[1083,1084]
+      right: 
+       (unary_operator<1085,1097> -[1085,1086]
+        operand: (identifier<1086,1097> enumeration[1086,1097])))
+     ;[1097,1098] \n[1098,1099])
+    end[1103,1106])
+   \n[1106,1107]
+   (assignment<1111,1145>
+    left: (identifier<1111,1117> events[1111,1117])
+    (line_continuation[1118,1122]@{...\n}@) =[1130,1131]
+    right: 
+     (binary_operator<1132,1145>
+      left: (identifier<1132,1141> arguments[1132,1141])
+      +[1142,1143] right: (number[1144,1145]@{1}@)))
+   ;[1145,1146] \n[1146,1147])
+  end[1147,1150])
+ \n[1150,1151])
