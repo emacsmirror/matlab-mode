@@ -1,0 +1,287 @@
+# File: doc/code_indent.org
+# Copyright (C) 2025 Free Software Foundation, Inc.
+
+#+startup: showall
+#+startup: logdone
+#+startup: inlineimages
+#+startup: latexpreview
+#+options: ^:{}    # a_{b} for subscript, a^{b} for superscript, leave a_b and a^b as is.
+#+options: toc:2   # toc:nil == no toc, toc:1 == one level, toc:2 == two levels, etc.
+
+#+latex_header: \usepackage[margin=0.25in]{geometry}
+#+latex_header: \usepackage{parskip}
+#+latex_header: \usepackage{svg}
+#+latex_header: \sloppy
+
+#+title:  MATLAB Code Indent (aka Code Format)
+#+author: John Ciolfi
+
+To indent a MATLAB ~*.m~ file,
+
+: C-x h           or  Menu -> Edit -> Select All
+: C-M-\           or  Menu -> Execute Command indent-region
+
+When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
+
+1. *Adjusts the indent-level (the whitespace to the left of the code)*
+
+   Example:
+
+   #+begin_src matlab
+     function a = foo(b, c)
+             a = b + ...
+     c;
+         end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     function a = foo(b, c)
+         a = b + ...
+             c;
+     end
+   #+end_src
+
+2. *Standardizes language element spacing*
+
+   Example:
+
+   #+begin_src matlab
+     a+b * c/ d-1;
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     a + b * c / d - 1;
+   #+end_src
+
+3. *Aligns consecutive assignments*
+
+   Example:
+
+   #+begin_src matlab
+     rLength      =12354    ;
+         rWidth=2;
+             rArea=rLength  *rWidth;
+   #+end_src
+
+   Intents to:
+
+   #+begin_src matlab
+     rLength = 12354;
+     rWidth  = 2;
+     rArea   = rLength * rWidth;
+   #+end_src
+
+   For alignment, the statements must be consecutive. For example, the following contains two
+   sections of consecutive statement alignment:
+
+   #+begin_src matlab
+     aReallyLongVariable = 10;
+     bShortVar           = 5;
+
+     c  = aReallyLongVariable + bShortVar;
+     c2 = c * 2;
+   #+end_src
+
+4. *Aligns consecutive properties*
+
+   Example:
+
+   #+begin_src matlab
+         classdef myClass
+         properties
+     p1 (   1,:) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+     longProperty2 (1,    3) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+     p3(1,2                )
+                            end
+         end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     classdef myClass
+         properties
+             p1            (1,:) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+             longProperty2 (1,3) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+             p3            (1,2)
+         end
+     end
+   #+end_src
+
+5. *Aligns consecutive arguments*
+
+   Example:
+
+   #+begin_src matlab
+     function myFcn(a, longInputVar, c)
+     arguments
+           a{                    mustBeNumeric,                        mustBeReal}
+         longInputVar {                 mustBeNumeric,mustBeReal   ,mustBeFinite}
+                       c{mustBeNumeric}
+         end
+     end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     function myFcn(a, longInputVar, c)
+         arguments
+             a            {mustBeNumeric, mustBeReal}
+             longInputVar {mustBeNumeric, mustBeReal, mustBeFinite}
+             c            {mustBeNumeric}
+         end
+     end
+   #+end_src
+
+6. *Aligns enumeration members*
+
+   Example:
+
+   #+begin_src matlab
+     classdef TrafficLightColors < double
+     enumeration
+               red      (1)
+            green(2)
+          yellow(3)
+         end
+        end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     classdef TrafficLightColors < double
+         enumeration
+             red    (1)
+             green  (2)
+             yellow (3)
+         end
+     end
+   #+end_src
+
+7. *Aligns consecutive trailing comments*
+
+   Example:
+
+   #+begin_src matlab
+     s1      =5    ;          % Average speed of the first vehicle in miles per hour
+         timeH1=2;% Time in hours traveled of first vehicle in hours
+               distance1=     s1      * timeH1; % Distance we've traveled in miles
+                                      disp(distance1)% Report how far we've gone
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     s1        = 5;           % Average speed of the first vehicle in miles per hour
+     timeH1    = 2;           % Time in hours traveled of first vehicle in hours
+     distance1 = s1 * timeH1; % Distance we've traveled in miles
+     disp(distance1)          % Report how far we've gone
+   #+end_src
+
+8. *Adds missing commas in arrays (matrices and cells)*
+
+   Example:
+
+   #+begin_src matlab
+     mat1 = [1234,234  12234.24];
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     mat1 = [1234, 234, 12234.24];
+   #+end_src
+
+9. *Aligns multi-line matrix columns*
+
+   Example
+
+   #+begin_src matlab
+     mat2 = [1234,234  12234.24
+                        1,2 3.41];
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     mat2 = [1234, 234, 12234.24
+                1,   2,     3.41];
+   #+end_src
+
+10. *Aligns fields of multi-line structures*
+
+    Example:
+
+    #+begin_src matlab
+      myStruct = struct( ...
+        'field1',              (2+3)*4, ...
+           'longField2',"foo",...
+              'f3',2);
+    #+end_src
+
+    Indents to:
+
+    #+begin_src matlab
+      myStruct = struct( ...
+          'field1'    , (2 + 3) * 4, ...
+          'longField2', "foo", ...
+          'f3'        , 2);
+    #+end_src
+
+11. *Removes tabs (convert TAB Characters to spaces)*
+
+    Conversion of tab characters to spaces ensures that code looks the same when using different
+    levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab
+    stops of 4.
+
+* Indent Engine Design Considerations
+
+When creating the MATLAB indent engine, I leaned on my past experiences.
+
+_Simplicity is good_
+
+The first indent engine I wrote was a c_indent engine that shipped with the MathWorks Real-Time
+Workshop in 1997 (now called the Simulink Coder). This simple indent engine worked well. It had no
+options and indented the generated code from Simulink Coder quickly. c_indent has been updated over
+the years maintaining the goal of simplicity.
+
+_Complexity hurts_
+
+I've helped with the deployment of clang-format and other indent engines on a large code base.  A
+lesson learned is that the flexibility of clang-format causes inconsistencies, people want different
+options and that creates conflicts. Another lesson learned is that not-respecting the newlines in
+code causes negative reactions where the formatted code is less readable. The newlines are put there
+for a reason and removing or adding them changes the readability and meaning of the code in some
+(rare) cases. clang-format is also complex and we've run into a number of bugs in it over the
+years. The problem of clang-format making code less-readable also occurs with other indent
+engines. For example Linus Torvalds vented over "Completely Crazy Rust Format Checking" [[[https://www.phoronix.com/news/Linus-Torvalds-Rust-Formatting][1]]] [[[https://www.reddit.com/r/rust/comments/1nwt8nm/linus_torvalds_vents_over_completely_crazy_rust/][2]]].
+
+The benefit of these complex indent engines is significant and outweighs the drawbacks. Clang-format
+added comment directives ~// clang-format off~ and ~// clang-format on~ which are liberally used to
+work-around the drawbacks.
+
+_Design_
+
+The design of the MATLAB indent engine is based on simplicity.
+
+- Respect existing newlines,
+- Adjust the indent-level (the whitespace to the left of the code), 
+- Standardize language element spacing, aligns consecutive statements, aligns matrices and
+  structs, adds missing commas to matrices.
+
+A number of people familiar with the MATLAB language came up with a set of rules for MATLAB
+indent. This includes the indent level is 4 for each condition or scope, language elements should
+have consistent spacing, matrices should align columns, etc.
+
+We choose to have no indent options and make sure the indents works well in all cases. This
+eliminates the need for comment directives like ~%#<indent off>~ and ~%<indent on>~. By having one
+indent standard, people reading code from different projects will see consistency. Consistency helps
+with understanding and communication.
+
+# LocalWords:  showall logdone inlineimages latexpreview usepackage parskip svg

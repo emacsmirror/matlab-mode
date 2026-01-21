@@ -9,7 +9,8 @@
 
 1. MATLAB mode, *matlab-ts-mode* or *matlab-mode*, for editing ~*.m~ files.
 
-   - Edit MATLAB code with syntax highlighting and smart indentation.
+   - Edit MATLAB code with syntax highlighting, indentation (code formatting), and semantic
+     movement.
    - Lint MATLAB code with fix-it's using the MATLAB Code Analyzer.
 
    The *matlab-ts-mode* is a more capable, performant, and accurate than *matlab-mode*.
@@ -81,6 +82,68 @@
 
 8. *tlc-mode* for editing ~*.tlc~ files. The Target Language Compiler (TLC) is part of Simulink®
    Coder™.
+
+* MATLAB Indent (Code Formatting)
+
+With the optional matlab-ts-mode, you have [[file:doc/matlab_code_indent.org][MATLAB code indentation]] that
+
+ - Adjusts the indent-level (the whitespace to the left of the code), and
+ - Standardizes language element spacing, aligns consecutive statements, aligns matrices and
+   structs, adds missing commas to matrices.
+
+Example:
+
+  #+begin_src matlab
+  function out= indent_example(   in1, ...
+  input2)
+    % INDENT_EXAMPLE - an indent example
+       % which illustrates the MATLAB indent engine.
+      arguments
+          in1          = 10
+          input2= 20;
+  end
+
+        mat = [100,2
+      3 400];
+
+        s = struct(  'f1',1, ...
+  'otherField', in1+input2);
+
+   if abs(sum(in1)) > 0
+            out=s.f1/input2+ in1;
+  else
+      out = mat+in1 * 2;
+      end
+      end
+  #+end_src
+
+Is indented to the following using ~C-x h~ and then ~C-M-\~ (or ~Edit -> Select All~, then ~M-x
+indent-region~):
+
+  #+begin_src matlab
+    function out = indent_example(in1, ...
+                                  input2)
+    % INDENT_EXAMPLE - an indent example
+    % which illustrates the MATLAB indent engine.
+        arguments
+            in1    = 10
+            input2 = 20;
+        end
+
+        mat = [100,   2
+                 3, 400];
+
+        s = struct('f1'        , 1, ...
+                   'otherField', in1 + input2);
+
+        if abs(sum(in1)) > 0
+            out = s.f1 / input2 + in1;
+        else
+            out = mat + in1 * 2;
+        end
+    end
+  #+end_src
+
 
 * Installation
 

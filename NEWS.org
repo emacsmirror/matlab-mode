@@ -13,23 +13,43 @@ To indent a MATLAB ~*.m~ file,
 : C-x h           or  M-: (mark-whole-buffer)
 : C-M-\           or  M-x indent-region
 
-Electric indent will
+MATLAB indent now:
 
-1. *Standardize language element spacing*
+1. *Adjusts the indent-level (the whitespace to the left of the code)*
 
    Example:
 
    #+begin_src matlab
-     a=b+c   *d   ;
+     function a = foo(b, c)
+             a = b + ...
+     c;
+         end
    #+end_src
 
    Indents to:
 
    #+begin_src matlab
-     a = b + c * d;
+     function a = foo(b, c)
+         a = b + ...
+             c;
+     end
    #+end_src
 
-2. *Align consecutive assignments*
+2. *Standardizes language element spacing*
+
+   Example:
+
+   #+begin_src matlab
+     a+b * c/ d-1;
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     a + b * c / d - 1;
+   #+end_src
+
+3. *Aligns consecutive assignments*
 
    Example:
 
@@ -58,7 +78,7 @@ Electric indent will
      c2 = c * 2;
    #+end_src
 
-3. *Align consecutive properties*
+4. *Aligns consecutive properties*
 
    Example:
 
@@ -84,7 +104,7 @@ Electric indent will
      end
    #+end_src
 
-4. *Align consecutive arguments*
+5. *Aligns consecutive arguments*
 
    Example:
 
@@ -110,7 +130,7 @@ Electric indent will
      end
    #+end_src
 
-5. *Align enumeration members*
+6. *Aligns enumeration members*
 
    Example:
 
@@ -135,8 +155,8 @@ Electric indent will
          end
      end
    #+end_src
-   
-6. *Align consecutive trailing comments*
+
+7. *Aligns consecutive trailing comments*
 
    Example:
 
@@ -156,7 +176,7 @@ Electric indent will
      disp(distance1)          % Report how far we've gone
    #+end_src
 
-7. *Add missing commas in arrays (matrices and cells)*
+8. *Adds missing commas in arrays (matrices and cells)*
 
    Example:
 
@@ -170,7 +190,7 @@ Electric indent will
      mat1 = [1234, 234, 12234.24];
    #+end_src
 
-8. *Align multi-line matrix columns*
+9. *Aligns multi-line matrix columns*
 
    Example
 
@@ -186,27 +206,27 @@ Electric indent will
                 1,   2,     3.41];
    #+end_src
 
-9. *Align fields of multi-line structures*
+10. *Aligns fields of multi-line structures*
 
-   Example:
+    Example:
 
-   #+begin_src matlab
-     myStruct = struct( ...
-       'field1',              (2+3)*4, ...
-          'longField2',"foo",...
-             'f3',2);
-   #+end_src
+    #+begin_src matlab
+      myStruct = struct( ...
+        'field1',              (2+3)*4, ...
+           'longField2',"foo",...
+              'f3',2);
+    #+end_src
 
-   Indents to:
+    Indents to:
 
-   #+begin_src matlab
-     myStruct = struct( ...
-         'field1'    , (2 + 3) * 4, ...
-         'longField2', "foo", ...
-         'f3'        , 2);
-   #+end_src
-   
-10. *Untabify (convert TAB Characters to spaces)*
+    #+begin_src matlab
+      myStruct = struct( ...
+          'field1'    , (2 + 3) * 4, ...
+          'longField2', "foo", ...
+          'f3'        , 2);
+    #+end_src
+
+11. *Removes tabs (convert TAB Characters to spaces)*
 
     Conversion of tab characters to spaces ensures that code looks the same when using different
     levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab
@@ -214,64 +234,57 @@ Electric indent will
 
 ** Indent Example
 
-Given:
+Example:
 
-#+begin_src matlab
-  % Calculate the Golden Ratio (phi)
-                 phi=  (     1+ sqrt(    5))/   2  ;
-       disp(   [    'Golden Ratio (phi): ',        num2str( phi )  ]  );       % Display the value
+  #+begin_src matlab
+  function out= indent_example(   in1, ...
+  input2)
+    % INDENT_EXAMPLE - an indent example
+       % which illustrates the MATLAB indent engine.
+      arguments
+          in1          = 10
+          input2= 20;
+  end
 
-     % Plot the exponential function with a Taylor Series Approximation
-     x =  -2      :   0.1   :      2;
-    yExp=exp(    x  )  ;
-        yTaylor = 1+x    +  x.^   2  /  2+x.^3     /6;    % First few terms
+        mat = [100,2
+      3 400];
 
-                         % Plot the approximation
-     figure       ;% Create a new figure
-     plot(    x,yExp,           'b-','LineWidth',2);       % Plot the actual exponential
-      hold on   ;% Keep the current plot
-    plot(x, yTaylor,               ...
-         'r--',...
-  'LineWidth', 1.5);
-  title('Exponential Function & Taylor Approximation');
-      xlabel(   'x');
-  ylabel('y');
-     legend(   'exp(x)', 'Taylor Series'  );
-    grid on  ;
-   hold off  ;
-#+end_src
+        s = struct(  'f1',1, ...
+  'otherField', in1+input2);
 
-Running
+   if abs(sum(in1)) > 0
+            out=s.f1/input2+ in1;
+  else
+      out = mat+in1 * 2;
+      end
+      end
+  #+end_src
 
-: C-x h           or  M-: (mark-whole-buffer)
-: C-M-\           or  M-x indent-region
+Is indented to the following using ~C-x h~ and then ~C-M-\~:
 
-will produce:
+  #+begin_src matlab
+    function out = indent_example(in1, ...
+                                  input2)
+    % INDENT_EXAMPLE - an indent example
+    % which illustrates the MATLAB indent engine.
+        arguments
+            in1    = 10
+            input2 = 20;
+        end
 
-#+begin_src matlab
-  % Calculate the Golden Ratio (phi)
-  phi = (1 + sqrt(5)) / 2;
-  disp(['Golden Ratio (phi): ', num2str(phi)]); % Display the value
+        mat = [100,   2
+                 3, 400];
 
-  % Plot the exponential function with a Taylor Series Approximation
-  x       = -2 : 0.1 : 2;
-  yExp    = exp(x);
-  yTaylor = 1 + x + x.^2 / 2 + x.^3 / 6; % First few terms
+        s = struct('f1'        , 1, ...
+                   'otherField', in1 + input2);
 
-  % Plot the approximation
-  figure;                              % Create a new figure
-  plot(x, yExp, 'b-', 'LineWidth', 2); % Plot the actual exponential
-  hold on;                             % Keep the current plot
-  plot(x, yTaylor, ...
-       'r--', ...
-       'LineWidth', 1.5);
-  title('Exponential Function & Taylor Approximation');
-  xlabel('x');
-  ylabel('y');
-  legend('exp(x)', 'Taylor Series');
-  grid on;
-  hold off;
-#+end_src
+        if abs(sum(in1)) > 0
+            out = s.f1 / input2 + in1;
+        else
+            out = mat + in1 * 2;
+        end
+    end
+  #+end_src
 
 * Release 7.4.1 Nov 26, 2025
 
