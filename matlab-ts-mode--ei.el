@@ -286,7 +286,7 @@ be unary-op even though the node type is \"+\"."
       (setq node-type "prop-dim"))
 
      ;; Case: events, enumeration, methods
-     ((and (string-match-p (rx bos (or "events" "enumeration" "methods") eos) node-type)
+     ((and (string-match-p (rx bos (or "events" "enumeration" "methods" "arguments") eos) node-type)
            (string= parent-type "identifier"))
       ;; TopTester: electric_indent_inspect_keyword_commands.m
       ;; TopTester: electric_indent_inspect_keyword_commands2.m

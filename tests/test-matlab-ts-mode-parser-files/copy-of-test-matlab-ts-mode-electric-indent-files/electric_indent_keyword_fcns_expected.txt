@@ -1,0 +1,172 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1574> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,1573> classdef[114,122] name: (identifier[123,151]@{electric_indent_keyword_fcns}@)
+  (superclasses<152,160> <[152,153]
+   (property_name<154,160> (identifier[154,160]@{handle}@)))
+  \n[160,162]
+  (properties<166,208> properties[166,176] \n[176,177]
+   (property<185,199> name: (identifier[185,195]@{normalprop}@)
+    (default_value<196,199> =[196,197] (number[198,199]@{1}@)))
+   ;[199,200] \n[200,201] end[205,208])
+  \n[208,210]
+  (properties<214,412> properties[214,224]
+   (attributes<225,243> ([225,226]
+    (attribute<226,242> (identifier[226,232]@{Access}@) =[232,233]
+     (string<234,242> '[234,235] (string_content[235,241]@{public}@) '[241,242]))
+    )[242,243])
+   (comment[252,368]@{% See if we can create properties using keywords\n...}@) \n[368,369]
+   (property<377,386>
+    name: (identifier<377,386> arguments[377,386]))
+   \n[386,387]
+   (property<395,403> name: (identifier[395,399]@{prop}@)
+    (default_value<400,403> =[400,401] (number[402,403]@{1}@)))
+   ;[403,404] \n[404,405] end[409,412])
+  \n[412,414]
+  (events<418,523> events[418,424]
+   (attributes<425,444> ([425,426]
+    (attribute<426,443> (identifier[426,432]@{Access}@) =[432,433]
+     (string<434,443> '[434,435] (string_content[435,442]@{private}@) '[442,443]))
+    )[443,444])
+   (comment[453,497]@{%properties\n        %events\n        %methods}@) \n[497,498]
+   (identifier<506,515> arguments[506,515])
+   \n[515,516] end[520,523])
+  \n[523,525]
+  (methods<529,1568> methods[529,536] \n[536,538]
+   (function_definition<546,678> function[546,554] name: (identifier[555,568]@{simple_method}@)
+    (function_arguments<568,573> ([568,569] arguments: (identifier[569,572]@{obj}@) )[572,573])
+    \n[573,574]
+    (arguments_statement<586,631> arguments[586,595] \n[595,596]
+     (property<612,615> name: (identifier[612,615]@{obj}@))
+     \n[615,616] end[628,631])
+    (block<645,667>
+     (function_call<645,665> name: (identifier[645,649]@{disp}@) ([649,650]
+      (arguments<650,664>
+       argument: (field_expression<650,664> object: (identifier[650,653]@{obj}@) .[653,654] field: (identifier[654,664]@{normalprop}@)))
+      )[664,665])
+     ;[665,666] \n[666,667])
+    end[675,678])
+   \n[678,680]
+   (function_definition<688,1110> function[688,696]
+    (function_output<697,702> (identifier[697,700]@{obj}@) =[701,702])
+    name: (identifier[703,709]@{blocks}@)
+    (function_arguments<709,762> ([709,710]
+     arguments: (identifier<710,719> arguments[710,719])
+     ,[719,720]
+     (identifier<721,727> events[721,727])
+     ,[727,728] (identifier[729,739]@{properties}@) ,[739,740]
+     (identifier<741,748> methods[741,748])
+     ,[748,749]
+     (identifier<750,761> enumeration[750,761])
+     )[761,762])
+    \n[762,764]
+    (arguments_statement<776,929> arguments[776,785] \n[785,786]
+     (property<802,811>
+      name: (identifier<802,811> arguments[802,811]))
+     \n[811,812]
+     (property<828,834>
+      name: (identifier<828,834> events[828,834]))
+     \n[834,835]
+     (property<851,861> name: (identifier[851,861]@{properties}@))
+     \n[861,862]
+     (property<878,885>
+      name: (identifier<878,885> methods[878,885]))
+     \n[885,886]
+     (property<902,913>
+      name: (identifier<902,913> enumeration[902,913]))
+     \n[913,914] end[926,929])
+    (block<943,1099>
+     (assignment<943,963>
+      left: (field_expression<943,951> object: (identifier[943,946]@{obj}@) .[946,947] field: (identifier[947,951]@{prop}@))
+      =[952,953]
+      right: (identifier<954,963> arguments[954,963]))
+     ;[963,964]
+     (assignment<977,994>
+      left: (field_expression<977,985> object: (identifier[977,980]@{obj}@) .[980,981] field: (identifier[981,985]@{prop}@))
+      =[986,987]
+      right: (identifier<988,994> events[988,994]))
+     ;[994,995]
+     (assignment<1008,1029>
+      left: (field_expression<1008,1016> object: (identifier[1008,1011]@{obj}@) .[1011,1012] field: (identifier[1012,1016]@{prop}@))
+      =[1017,1018] right: (identifier[1019,1029]@{properties}@))
+     ;[1029,1030]
+     (assignment<1043,1061>
+      left: (field_expression<1043,1051> object: (identifier[1043,1046]@{obj}@) .[1046,1047] field: (identifier[1047,1051]@{prop}@))
+      =[1052,1053]
+      right: (identifier<1054,1061> methods[1054,1061]))
+     ;[1061,1062]
+     (assignment<1075,1097>
+      left: (field_expression<1075,1083> object: (identifier[1075,1078]@{obj}@) .[1078,1079] field: (identifier[1079,1083]@{prop}@))
+      =[1084,1085]
+      right: (identifier<1086,1097> enumeration[1086,1097]))
+     ;[1097,1098] \n[1098,1099])
+    end[1107,1110])
+   \n[1110,1112]
+   (function_definition<1120,1154> function[1120,1128] name: (identifier[1129,1139]@{properties}@)
+    (function_arguments<1139,1142> ([1139,1140]
+     arguments: (ignored_argument<1140,1141> ~[1140,1141])
+     )[1141,1142])
+    \n[1142,1143] end[1151,1154])
+   \n[1154,1156]
+   (function_definition<1164,1195> function[1164,1172]
+    name: (identifier<1173,1180> methods[1173,1180])
+    (function_arguments<1180,1183> ([1180,1181]
+     arguments: (ignored_argument<1181,1182> ~[1181,1182])
+     )[1182,1183])
+    \n[1183,1184] end[1192,1195])
+   \n[1195,1197]
+   (function_definition<1205,1235> function[1205,1213]
+    name: (identifier<1214,1220> events[1214,1220])
+    (function_arguments<1220,1223> ([1220,1221]
+     arguments: (ignored_argument<1221,1222> ~[1221,1222])
+     )[1222,1223])
+    \n[1223,1224] end[1232,1235])
+   \n[1235,1237]
+   (function_definition<1245,1279> function[1245,1253]
+    name: (identifier<1254,1263> arguments[1254,1263])
+    (function_arguments<1264,1267> ([1264,1265]
+     arguments: (ignored_argument<1265,1266> ~[1265,1266])
+     )[1266,1267])
+    \n[1267,1268] end[1276,1279])
+   \n[1279,1281]
+   (function_definition<1289,1324> function[1289,1297]
+    name: (identifier<1298,1309> enumeration[1298,1309])
+    (function_arguments<1309,1312> ([1309,1310]
+     arguments: (ignored_argument<1310,1311> ~[1310,1311])
+     )[1311,1312])
+    \n[1312,1313] end[1321,1324])
+   \n[1324,1326]
+   (function_definition<1334,1559> function[1334,1342] name: (identifier[1343,1351]@{usestuff}@)
+    (function_arguments<1351,1356> ([1351,1352] arguments: (identifier[1352,1355]@{obj}@) )[1355,1356])
+    (comment[1365,1403]@{% Try using the methods of this object}@) \n[1403,1404]
+    (block<1416,1548>
+     (field_expression<1416,1432> object: (identifier[1416,1419]@{obj}@) .[1419,1420]
+      field: (function_call<1420,1432> name: (identifier[1420,1430]@{properties}@) ([1430,1431] )[1431,1432]))
+     ;[1432,1433]
+     (field_expression<1446,1459> object: (identifier[1446,1449]@{obj}@) .[1449,1450]
+      field: 
+       (function_call<1450,1459>
+        name: (identifier<1450,1457> methods[1450,1457])
+        ([1457,1458] )[1458,1459]))
+     ;[1459,1460]
+     (field_expression<1473,1485> object: (identifier[1473,1476]@{obj}@) .[1476,1477]
+      field: 
+       (function_call<1477,1485>
+        name: (identifier<1477,1483> events[1477,1483])
+        ([1483,1484] )[1484,1485]))
+     ;[1485,1486]
+     (field_expression<1499,1515> object: (identifier[1499,1502]@{obj}@) .[1502,1503]
+      field: 
+       (function_call<1503,1515>
+        name: (identifier<1503,1512> arguments[1503,1512])
+        ([1513,1514] )[1514,1515]))
+     ;[1515,1516]
+     (field_expression<1529,1546> object: (identifier[1529,1532]@{obj}@) .[1532,1533]
+      field: 
+       (function_call<1533,1546>
+        name: (identifier<1533,1544> enumeration[1533,1544])
+        ([1544,1545] )[1545,1546]))
+     ;[1546,1547] \n[1547,1548])
+    end[1556,1559])
+   \n[1559,1561] end[1565,1568])
+  \n[1568,1570] end[1570,1573])
+ \n[1573,1574])
