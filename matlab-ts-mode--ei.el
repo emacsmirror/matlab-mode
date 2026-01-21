@@ -1500,7 +1500,10 @@ TAB>  x = 123 ./1 + 567
       (when (string= curr-line-node-types orig-modified)
         (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match)))
 
-    (error "Assert: line-node-types mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
+    (error "Assert: line-node-types mismatch
+  new:  \"%s\"
+  orig: \"%s\"
+  at line %d in %s"
            curr-line-node-types
            orig-line-node-types
            linenum
