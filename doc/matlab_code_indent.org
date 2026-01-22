@@ -23,13 +23,64 @@ To indent a MATLAB ~*.m~ file,
 
 When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
 
-1. *Adjusts the indent-level (the whitespace to the left of the code)*
+* Indent Engine Design Considerations
+
+_Simplicity is good_
+
+The first indent engine I wrote was a c_indent engine that shipped with the MathWorks Real-Time
+Workshop in 1997 (now called the Simulink Coder). This simple indent engine worked well. It had no
+options and indented the generated code from Simulink Coder quickly. c_indent has been updated over
+the years, maintaining the goal of simplicity. Gofmt is another example of a simple indent engine
+that is very successful.
+
+_Complexity hurts_
+
+I've helped with the deployment of clang-format and other indent engines on a large code base.  A
+lesson learned is that the flexibility of clang-format causes inconsistencies. People want different
+options and that creates conflicts. Another lesson learned is that not-respecting the newlines in
+code causes negative reactions where the formatted code is less readable. The newlines are put there
+for a reason and removing or adding them changes the readability and meaning of the code in some
+(rare) cases. clang-format is also complex and we've run into a number of bugs in it over the
+years. The problem of clang-format making code less-readable also occurs with other indent
+engines. For example Linus Torvalds vented over "Completely Crazy Rust Format Checking" [[[https://www.phoronix.com/news/Linus-Torvalds-Rust-Formatting][1]]] [[[https://www.reddit.com/r/rust/comments/1nwt8nm/linus_torvalds_vents_over_completely_crazy_rust/][2]]].
+
+The benefit of these complex indent engines is significant and outweighs the drawbacks. Clang-format
+added comment directives ~// clang-format off~ and ~// clang-format on~ which are liberally used to
+work-around the drawbacks.
+
+_Design_
+
+The design of the MATLAB indent engine is based on simplicity. A number of people familiar with the
+MATLAB language came up with a set of rules for MATLAB indent:
+
+- Respect existing newlines,
+- Adjust the indent-level (the whitespace to the left of the code),
+- Standardize language element spacing, aligns consecutive statements, aligns matrices and
+  structs, adds missing commas to matrices, etc.
+
+We choose to have no indent options and make sure the indents works well in all cases. This
+eliminates the need for comment directives like ~%#<indent off>~ and ~%<indent on>~. By having one
+indent standard, people reading code from different projects will see consistency. Consistency helps
+with understanding and communication.
+
+* MATLAB Indent Standard
+
+Having one-style of consistent indentation makes reading others' code easier and thus we do not
+provide indent customization.
+
+1. *Indent level of 4 spaces, no TAB characters, unicode, LF line-endings (no CRLF)*
+
+   The MATLAB indent engine will indent to a level 4 for each scope or conditional.  Tab characters
+   are converted to spaces ensures that code looks the same when using different levels of tab
+   stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab stops of 4. Note,
+   the indent engine retains TAB characters within strings because altering them would change
+   answers.
 
    Example:
 
    #+begin_src matlab
-     function a = foo(b, c)
-             a = b + ...
+     function a= foo(   b,c )
+     a=                 b+...
      c;
          end
    #+end_src
@@ -43,9 +94,86 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
      end
    #+end_src
 
-2. *Standardizes language element spacing*
+2. *Recommended line length 100*
 
-   Example:
+   Code and comments should fit within 100 columns. A line may exceed 100 characters if it improves
+   code readability.
+
+   In general, too much logic on a given line hurts readability.  Reading the first part of a
+   line should convey the operation being performed by the line.  Adding unrelated concepts on a
+   give line hurts readability. Hence the recommendation that lines are not too long.
+
+   Consider the following where the row content causes the column width to be 105.
+   Re-flowing would hurt readability.
+
+   #+begin_src matlab
+     mat = [ ...
+             <row-1>;
+             <row-2>;
+             ...
+             <row-N>;
+           ]
+   #+end_src
+
+   Consider the following where a very long model/path/to/block causes the first line to be very
+   long.  Re-flowing will hurt readability.
+
+   #+begin_src matlab
+     set_param( ...
+         'model/path/to/block', ...
+         'Parameter', 'Value')
+   #+end_src
+
+   Re-flowing code is not implemented in the indent engine because newlines help with readability and
+   programmatically adding or removing them can adversely effect the readability of code.  Adding the
+   ability to explicitly re-flowing of code in a region, similar to the way M-q or `fill-paragraph'
+   works in a comment, could be added.
+
+3. *Use 2-space offset for case labels*
+
+   The code under switch case or otherwise statements is one condition and hence should have the
+   same indent level anchored from the switch statement.  The level of complexity of the
+   following two statements is the same which is clear from the level of indent of the doIt
+   function call.
+
+   #+begin_src matlab
+   if condition1 == 1      |     switch condition1
+      doIt                 |       case 1
+   end                     |         doIt
+                           |     end
+   #+end_src
+
+4. *Cells and arrays contain data and have indent level of 2 spaces*
+
+   Indents cells and array with an inner indent level of 2 spaces for the data. Cells and arrays
+   which are structured data. Since there's no "conditionals" within structured data, we treat
+   the nesting in structured data like labels and indent by 2 spaces. Also, data is aligned with
+   the opening parenthesis or bracket. Example:
+
+   #+begin_src matlab
+     myCell = { ...
+                {1, 2, 3}, ...
+                { ...
+                  [4, 5; ...
+                   6, 7] ...
+                } ...
+              }
+   #+end_src
+
+5. *Standardize language elements spacing*
+
+   - Use a single space after (but not before) a comma.
+
+   - Use a single space on each side of binary operators (such as +), except for member
+     operators.
+
+   - Do not use any space between member operators and their operands. For example: a.b
+
+   - Do not use any space between a unary operator and its operand. For example: -10
+
+   - Language keywords should have a space after them. For example: if (cond)
+
+   Example 1:
 
    #+begin_src matlab
      a+b * c/ d-1;
@@ -57,7 +185,142 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
      a + b * c / d - 1;
    #+end_src
 
-3. *Aligns consecutive assignments*
+   Example 2:
+
+   #+begin_src matlab
+     function out2 =myFcn(in1,in2)
+         if (in1 >1&&  in2    >1)   || in2>    -10
+             out1 = in1    *in2;
+         else
+             out1            =0;
+         end
+     end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     function out2 = myFcn(in1, in2)
+         if (in1 > 1 && in2 > 1) || in2 > -10
+             out1 = in1 * in2;
+         else
+             out1 = 0;
+         end
+     end
+   #+end_src
+
+6. *Function call formats*
+
+   - On a single line:
+
+     #+begin_src matlab
+       [result1, result2] = myFunction(arg1, arg2, arg3)
+     #+end_src
+
+   - On multiple lines, aligning subsequent lines after the opening parenthesis:
+
+     #+begin_src matlab
+       [result1, result2] = myFunction(arg1, ...
+                                       arg2, ...
+                                       arg3)
+     #+end_src
+
+   - On multiple lines, aligning subsequent lines with 4 additional spaces
+
+     #+begin_src matlab
+       [result1, result2] = myFunction( ...
+           arg1, arg2, ...
+           arg3)
+      #+end_src
+
+   This is invalid:
+
+   #+begin_example
+     [result1, result2] = myFunction(arg1, ...
+         arg2)                                     % arg2 should be aligned with arg1
+   #+end_example
+
+7. *Function definition formats*
+
+   - On a single line
+
+     #+begin_src matlab
+       function [out1, out2] = myFunction(in1, in2)
+     #+end_src
+
+   - Aligned on multiple lines
+
+     #+begin_src matlab
+       function ...
+           [ ...
+            out1, ... comment about out1
+            out2 ...  comment about out2
+           ] ...
+           = myFunction ...
+           ( ...
+            in1, ... comment about in1
+            in2 ...  comment about in2
+           )
+       end
+     #+end_src
+
+8. *Expressions*
+
+   When you have long expressions, be consistent in how you break up the lines and minimize use
+   of newlines. Use newlines to help with readability. Place operators at the end of a line,
+   rather than at the beginning of a line.
+
+   Operators should never be at the start of a line in an expression which indicates that
+   the expression continues. For example the && is at the end of the 1st line
+   and not the start of the 2nd line:
+
+   #+begin_src matlab
+     if (thisOneThing > thisOtherLongLongLongLongLongLongThing && ...
+         aThirdThing == aFourthLongLongLongLongLongLongThing)
+
+         % code
+     end
+   #+end_src
+
+   You can use extra newlines when it helps with readability. For example, suppose
+   the following conditions are more readable when on separate lines.
+
+   #+begin_src matlab
+     if c > 30 && ...
+        d > 40
+
+         % code
+     end
+   #+end_src
+
+   Use parentheses to clarify the precedence of "&&" and "||", even when not strictly necessary
+   because it is common to forget that "&&" has higher precedence than "||".
+   For example:
+
+   #+begin_src matlab
+     if c > 30 || (a > 10 && b > 20)
+         % code
+     end
+   #+end_src
+
+   Do not overuse parentheses. Don't add them when they are not needed.  Overuse of parentheses
+   can clutter code and reduce its readability.  Use of parentheses is a indicator that standard
+   operator precedence rules are not in use, for example, "a = b * (c + d)" indicates to the
+   reader that standard operator precedence is not in use.
+
+   As a guideline, use the minimum number of parentheses, except for parenthesis to clarify the
+   precedence of "&&" and "||" or more generally, if in doubt about operator precedence,
+   parenthesize.
+
+   Examples:
+
+   #+begin_src matlab
+     % Good                           % Bad: too many parentheses
+     if (c > 30 && d > 40) || e       if (((c > 30) && (d > 40)) || e)
+     end                              end
+   #+end_src
+
+9. *Align consecutive statements*
 
    Example:
 
@@ -86,135 +349,138 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
      c2 = c * 2;
    #+end_src
 
-4. *Aligns consecutive properties*
+10. *Align consecutive properties alignment*
 
-   Example:
+    Example:
 
-   #+begin_src matlab
-         classdef myClass
-         properties
-     p1 (   1,:) {mustBeNumeric, mustBeReal} = [0, 0, 0];
-     longProperty2 (1,    3) {mustBeNumeric, mustBeReal} = [0, 0, 0];
-     p3(1,2                )
-                            end
+    #+begin_src matlab
+          classdef myClass
+          properties
+      p1 (   1,:) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+      longProperty2 (1,    3) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+      p3(1,2                )
+                             end
+          end
+    #+end_src
+
+    Indents to:
+
+    #+begin_src matlab
+      classdef myClass
+          properties
+              p1            (1,:) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+              longProperty2 (1,3) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+              p3            (1,2)
+          end
+      end
+    #+end_src
+
+11. *Align consecutive arguments*
+
+    #+begin_src matlab
+      function myFcn(a, longInputVar, c)
+      arguments
+            a{                    mustBeNumeric,                        mustBeReal}
+          longInputVar {                 mustBeNumeric,mustBeReal   ,mustBeFinite}
+                        c{mustBeNumeric}
+          end
+      end
+    #+end_src
+
+    Indents to:
+
+    #+begin_src matlab
+      function myFcn(a, longInputVar, c)
+          arguments
+              a            {mustBeNumeric, mustBeReal}
+              longInputVar {mustBeNumeric, mustBeReal, mustBeFinite}
+              c            {mustBeNumeric}
+          end
+      end
+    #+end_src
+
+12. *Align consecutive enumeration members*
+
+    Example:
+
+    #+begin_src matlab
+      classdef TrafficLightColors < double
+      enumeration
+                red      (1)
+             green(2)
+           yellow(3)
+          end
          end
-   #+end_src
+    #+end_src
 
-   Indents to:
+    Indents to:
 
-   #+begin_src matlab
-     classdef myClass
-         properties
-             p1            (1,:) {mustBeNumeric, mustBeReal} = [0, 0, 0];
-             longProperty2 (1,3) {mustBeNumeric, mustBeReal} = [0, 0, 0];
-             p3            (1,2)
-         end
-     end
-   #+end_src
+    #+begin_src matlab
+      classdef TrafficLightColors < double
+          enumeration
+              red    (1)
+              green  (2)
+              yellow (3)
+          end
+      end
+    #+end_src
 
-5. *Aligns consecutive arguments*
+13. *Align consecutive trailing comments*
 
-   Example:
+    Consecutive
+    Example:
 
-   #+begin_src matlab
-     function myFcn(a, longInputVar, c)
-     arguments
-           a{                    mustBeNumeric,                        mustBeReal}
-         longInputVar {                 mustBeNumeric,mustBeReal   ,mustBeFinite}
-                       c{mustBeNumeric}
-         end
-     end
-   #+end_src
+    #+begin_src matlab
+      s1      =5    ;          % Average speed of the first vehicle in miles per hour
+          timeH1=2;% Time in hours traveled of first vehicle in hours
+                distance1=     s1      * timeH1; % Distance we've traveled in miles
+                                       disp(distance1)% Report how far we've gone
+    #+end_src
 
-   Indents to:
+    Indents to:
 
-   #+begin_src matlab
-     function myFcn(a, longInputVar, c)
-         arguments
-             a            {mustBeNumeric, mustBeReal}
-             longInputVar {mustBeNumeric, mustBeReal, mustBeFinite}
-             c            {mustBeNumeric}
-         end
-     end
-   #+end_src
+    #+begin_src matlab
+      s1        = 5;           % Average speed of the first vehicle in miles per hour
+      timeH1    = 2;           % Time in hours traveled of first vehicle in hours
+      distance1 = s1 * timeH1; % Distance we've traveled in miles
+      disp(distance1)          % Report how far we've gone
+    #+end_src
 
-6. *Aligns enumeration members*
+14. *Commas in arrays (matrices and cells)*
 
-   Example:
+    The MATLAB indent engine will adds missing commas in arrays.
 
-   #+begin_src matlab
-     classdef TrafficLightColors < double
-     enumeration
-               red      (1)
-            green(2)
-          yellow(3)
-         end
-        end
-   #+end_src
+    Example:
 
-   Indents to:
+    #+begin_src matlab
+      mat1 = [123456,789  12234.24,
+              1.2              3,4];
+    #+end_src
 
-   #+begin_src matlab
-     classdef TrafficLightColors < double
-         enumeration
-             red    (1)
-             green  (2)
-             yellow (3)
-         end
-     end
-   #+end_src
+    Indents to:
 
-7. *Aligns consecutive trailing comments*
+    #+begin_src matlab
+      mat1 = [123456, 789, 12234.24,
+                 1.2,   3,        4];
+    #+end_src
 
-   Example:
+15. *Align multi-line matrix columns*
 
-   #+begin_src matlab
-     s1      =5    ;          % Average speed of the first vehicle in miles per hour
-         timeH1=2;% Time in hours traveled of first vehicle in hours
-               distance1=     s1      * timeH1; % Distance we've traveled in miles
-                                      disp(distance1)% Report how far we've gone
-   #+end_src
+    Example
 
-   Indents to:
+    #+begin_src matlab
+      mat2 = [1234,234  12234.24
+                         1,2 3.41];
+    #+end_src
 
-   #+begin_src matlab
-     s1        = 5;           % Average speed of the first vehicle in miles per hour
-     timeH1    = 2;           % Time in hours traveled of first vehicle in hours
-     distance1 = s1 * timeH1; % Distance we've traveled in miles
-     disp(distance1)          % Report how far we've gone
-   #+end_src
+    Indents to:
 
-8. *Adds missing commas in arrays (matrices and cells)*
+    #+begin_src matlab
+      mat2 = [1234, 234, 12234.24
+                 1,   2,     3.41];
+    #+end_src
 
-   Example:
-
-   #+begin_src matlab
-     mat1 = [1234,234  12234.24];
-   #+end_src
-
-   Indents to:
-
-   #+begin_src matlab
-     mat1 = [1234, 234, 12234.24];
-   #+end_src
-
-9. *Aligns multi-line matrix columns*
-
-   Example
-
-   #+begin_src matlab
-     mat2 = [1234,234  12234.24
-                        1,2 3.41];
-   #+end_src
-
-   Indents to:
-
-   #+begin_src matlab
-     mat2 = [1234, 234, 12234.24
-                1,   2,     3.41];
-   #+end_src
-
-10. *Aligns fields of multi-line structures*
+16. *Align fields of multi-line structures*
 
     Example:
 
@@ -234,54 +500,39 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
           'f3'        , 2);
     #+end_src
 
-11. *Removes tabs (convert TAB Characters to spaces) without touching strings*
+17. *Function/classdef doc help should be aligned with the function/classdef keyword*
 
-    Conversion of tab characters to spaces ensures that code looks the same when using different
-    levels of tab stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab
-    stops of 4. Note, this doesn't touch TAB characters within strings.
+    Example:
 
-* Indent Engine Design Considerations
+    #+begin_src matlab
+      function b= myFunction(a)
+          % help comment
+        % with multiple lines that is displayed when
+      % you type, at the matlab prompt,
+      %   >> help myFunction
 
-When creating the MATLAB indent engine, I leaned on my past experiences.
+          % this is an internal (non-help) comment for the following code
+      b=a    *2;
+      end
+    #+end_src
 
-_Simplicity is good_
+    Indents to:
 
-The first indent engine I wrote was a c_indent engine that shipped with the MathWorks Real-Time
-Workshop in 1997 (now called the Simulink Coder). This simple indent engine worked well. It had no
-options and indented the generated code from Simulink Coder quickly. c_indent has been updated over
-the years maintaining the goal of simplicity.
+    #+begin_src matlab
+      function b = myFunction(a)
+      % help comment
+      % with multiple lines that is displayed when
+      % you type, at the matlab prompt,
+      %   >> help myFunction
 
-_Complexity hurts_
+          % this is an internal (non-help) comment for the following code
+          b = a * 2;
+      end
+    #+end_src
 
-I've helped with the deployment of clang-format and other indent engines on a large code base.  A
-lesson learned is that the flexibility of clang-format causes inconsistencies, people want different
-options and that creates conflicts. Another lesson learned is that not-respecting the newlines in
-code causes negative reactions where the formatted code is less readable. The newlines are put there
-for a reason and removing or adding them changes the readability and meaning of the code in some
-(rare) cases. clang-format is also complex and we've run into a number of bugs in it over the
-years. The problem of clang-format making code less-readable also occurs with other indent
-engines. For example Linus Torvalds vented over "Completely Crazy Rust Format Checking" [[[https://www.phoronix.com/news/Linus-Torvalds-Rust-Formatting][1]]] [[[https://www.reddit.com/r/rust/comments/1nwt8nm/linus_torvalds_vents_over_completely_crazy_rust/][2]]].
+18. *Indent is robust to code with syntax errors.*
 
-The benefit of these complex indent engines is significant and outweighs the drawbacks. Clang-format
-added comment directives ~// clang-format off~ and ~// clang-format on~ which are liberally used to
-work-around the drawbacks.
+    Syntax errors should not cause the indent to cause major changes. For example, syntax errors in
+    a matrix, shouldn't cause the matrix to be incorrectly indented (formatted).
 
-_Design_
-
-The design of the MATLAB indent engine is based on simplicity.
-
-- Respect existing newlines,
-- Adjust the indent-level (the whitespace to the left of the code), 
-- Standardize language element spacing, aligns consecutive statements, aligns matrices and
-  structs, adds missing commas to matrices.
-
-A number of people familiar with the MATLAB language came up with a set of rules for MATLAB
-indent. This includes the indent level is 4 for each condition or scope, language elements should
-have consistent spacing, matrices should align columns, etc.
-
-We choose to have no indent options and make sure the indents works well in all cases. This
-eliminates the need for comment directives like ~%#<indent off>~ and ~%<indent on>~. By having one
-indent standard, people reading code from different projects will see consistency. Consistency helps
-with understanding and communication.
-
-# LocalWords:  showall logdone inlineimages latexpreview usepackage parskip svg
+# LocalWords:  showall logdone inlineimages latexpreview usepackage parskip svg LF CRLF Gofmt
