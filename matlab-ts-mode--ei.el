@@ -809,8 +809,14 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
     (with-temp-buffer
       (setq end-linenum (matlab-ts-mode--ei-indent-matrix-in-tmp-buf assign-node))
 
-      (let* ((matrix-node (treesit-node-parent (treesit-search-subtree
-                                                (treesit-buffer-root-node) (rx bos "[" eos) nil t)))
+      (let* ((assign-node (save-excursion
+                            (matlab-ts-mode--ei-fast-back-to-indentation)
+                            (treesit-parent-until (treesit-node-at (point)) "assignment")))
+             (matrix-node (if assign-node
+                              (treesit-node-child-by-field-name assign-node "right")
+                            ;; else property:
+                            (treesit-node-parent (treesit-search-subtree
+                                                  (treesit-buffer-root-node) (rx bos "[" eos) nil t))                            ))
              (first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra matrix-node))
              (column-widths (matlab-ts-mode--ei-m-matrix-col-widths matrix-node first-col-extra)))
 
