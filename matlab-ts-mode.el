@@ -531,11 +531,12 @@ help doc comment."
   (let ((prev-node (treesit-node-prev-sibling comment-node)))
     (when prev-node
 
-      (while (string-match-p (rx bos (or "line_continuation" "\n") eos)
-                             (treesit-node-type prev-node))
+      (while (and prev-node
+                  (string-match-p (rx bos (or "line_continuation" "\n") eos)
+                                  (treesit-node-type prev-node)))
         (setq prev-node (treesit-node-prev-sibling prev-node)))
 
-      (let ((prev-type (treesit-node-type prev-node)))
+      (let ((prev-type (or (treesit-node-type prev-node) "")))
         ;; The true (t) cases. Note line continuation ellipsis are allowed.
         ;;    function foo          function foo(a)
         ;;    % doc comment         % doc comment

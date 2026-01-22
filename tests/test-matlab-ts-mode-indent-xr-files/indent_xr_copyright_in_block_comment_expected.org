@@ -1,0 +1,37 @@
+#+startup: showall
+
+* Executing commands from indent_xr_copyright_in_block_comment.m:7:2:
+
+  Case1: (t-utils-xr
+  (goto-char (point-min))
+  "C-k"
+
+  (indent-region (point-min) (point-max))
+  )
+
+- Invoking      : (goto-char (point-min))
+  Start point   :  154
+  Moved to point:    1
+  : 1:0: % -*- matlab-ts -*-
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-k" = kill-line
+  Start point   :    1
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,4 +1,4 @@
+-% -*- matlab-ts -*-
++
+ 
+ %{
+   Copyright 2026 Testing
+  #+end_src diff
+
+- Invoking      : (indent-region (point-min) (point-max))
+  Start point   :    1
+  No point movement
+  No buffer modifications
