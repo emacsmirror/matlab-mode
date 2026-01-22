@@ -1527,11 +1527,12 @@ TAB>  x = 123 ./1 + 567
       (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match))
 
     ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/149
-    (let ((orig-modified (replace-regexp-in-string (rx "identifier line_continuation" eos)
-                                                   "enumeration-fcn line_continuation"
-                                                   orig-line-node-types)))
-      (when (string= curr-line-node-types orig-modified)
-        (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match)))
+    (dolist (keyword '("events" "enumeration" "methods" "arguments"))
+      (let ((orig-modified (replace-regexp-in-string (rx "identifier line_continuation" eos)
+                                                     (concat keyword "-fcn line_continuation")
+                                                     orig-line-node-types)))
+        (when (string= curr-line-node-types orig-modified)
+          (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match))))
 
     (error "Assert: line-node-types mismatch
   new:  \"%s\"

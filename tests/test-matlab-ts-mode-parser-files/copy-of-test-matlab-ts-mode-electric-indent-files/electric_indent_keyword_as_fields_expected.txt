@@ -1,0 +1,51 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,242> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (command<22,29> (command_name[22,27]@{clear}@) (command_argument[28,29]@{s}@))
+ \n[29,30]
+ (assignment<30,56>
+  left: (field_expression<30,52> object: (identifier[30,31]@{s}@) .[31,32] field: (identifier[32,35]@{foo}@) .[35,36] (identifier[36,42]@{events}@) (line_continuation[42,46]@{...\n}@) .[50,51] (identifier[51,52]@{x}@))
+  =[53,54] right: (number[55,56]@{1}@))
+ ;[56,57]
+ (assignment<58,89>
+  left: (field_expression<58,85> object: (identifier[58,59]@{s}@) .[59,60] field: (identifier[60,63]@{foo}@) .[63,64] (identifier[64,75]@{enumeration}@) (line_continuation[75,79]@{...\n}@) .[83,84] (identifier[84,85]@{x}@))
+  =[86,87] right: (number[88,89]@{2}@))
+ ;[89,90]
+ (assignment<91,118>
+  left: (field_expression<91,114> object: (identifier[91,92]@{s}@) .[92,93] field: (identifier[93,96]@{foo}@) .[96,97] (identifier[97,104]@{methods}@) (line_continuation[104,108]@{...\n}@) .[112,113] (identifier[113,114]@{x}@))
+  =[115,116] right: (number[117,118]@{3}@))
+ ;[118,119]
+ (assignment<120,150>
+  left: 
+   (field_expression<120,146> object: (identifier[120,121]@{s}@) .[121,122] field: (identifier[122,125]@{foo}@) .[125,126]
+    (identifier<126,135> arguments[126,135])
+    (line_continuation[136,140]@{...\n}@) .[144,145] (identifier[145,146]@{x}@))
+  =[147,148] right: (number[149,150]@{4}@))
+ ;[150,151]
+ (function_call<153,171> name: (identifier[153,157]@{disp}@) ([157,158]
+  (arguments<158,170>
+   argument: 
+    (field_expression<158,170> object: (identifier[158,159]@{s}@) .[159,160] field: (identifier[160,163]@{foo}@) .[163,164]
+     (identifier<164,170> events[164,170])))
+  )[170,171])
+ ;[171,172]
+ (function_call<173,196> name: (identifier[173,177]@{disp}@) ([177,178]
+  (arguments<178,195>
+   argument: 
+    (field_expression<178,195> object: (identifier[178,179]@{s}@) .[179,180] field: (identifier[180,183]@{foo}@) .[183,184]
+     (identifier<184,195> enumeration[184,195])))
+  )[195,196])
+ ;[196,197]
+ (function_call<198,217> name: (identifier[198,202]@{disp}@) ([202,203]
+  (arguments<203,216>
+   argument: 
+    (field_expression<203,216> object: (identifier[203,204]@{s}@) .[204,205] field: (identifier[205,208]@{foo}@) .[208,209]
+     (identifier<209,216> methods[209,216])))
+  )[216,217])
+ ;[217,218]
+ (function_call<219,240> name: (identifier[219,223]@{disp}@) ([223,224]
+  (arguments<224,239>
+   argument: 
+    (field_expression<224,239> object: (identifier[224,225]@{s}@) .[225,226] field: (identifier[226,229]@{foo}@) .[229,230]
+     (identifier<230,239> arguments[230,239])))
+  )[239,240])
+ ;[240,241] \n[241,242])
