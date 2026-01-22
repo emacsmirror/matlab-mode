@@ -33,7 +33,7 @@
 
 (defvar sweep-test-matlab-ts-mode-indent--mlint
   (or (matlab--get-mlint-exe)
-      (error "MLint not found, is matlab on your PATH?")))
+      (error "MLint not found, is /path/to/matlab/bin on your PATH?")))
 
 (defun sweep-test-matlab-ts-mode-indent--syntax-checker (file)
   "MLint FILE, return pair (VALID . CHECK-RESULT).
@@ -87,14 +87,15 @@ the results are displayed on stdout."
   (let ((test-name "sweep-test-matlab-ts-mode-indent")
         (matlab-ts-mode--indent-assert t))
 
+    (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
+
     (t-utils-sweep-test-indent
      test-name
      (or directory default-directory)
      (rx ".m" eos)
      #'matlab-ts-mode
      :syntax-checker-fun #'sweep-test-matlab-ts-mode-indent--syntax-checker
-     :check-valid-parse check-valid-parse
-     :save-indent-to-tilde-file t)))
+     :check-valid-parse check-valid-parse)))
 
 (provide 'sweep-test-matlab-ts-mode-indent)
 ;;; sweep-test-matlab-ts-mode-indent.el ends here

@@ -510,34 +510,25 @@ baseline check fails."
                test-name lang-file (t-utils--took start-time)))
     error-msg))
 
-(defun t-utils--display-result (test-name directory result &optional result-file)
+(defun t-utils--display-result (test-name directory result &optional result-file info-message)
   "Display a test RESULT.
-Save result to RESULT-FILE, defaulting to TEST-NAME.result.txt.  If
-noninteractive display message \"See: RESULT-FILE\".  If interactive
-show *TEST-NAME* result buffer with `default-directory' set to DIRECTORY
-containing RESULT."
-
-  (setq result (concat
-                "# -*- mode: fundamental; eval: (compilation-minor-mode 1) -*-\n\n"
-                result))
-  (if noninteractive
-      (let ((coding-system-for-write 'no-conversion))
-        (setq result-file (file-truename (or result-file (concat test-name ".result.txt"))))
-        (write-region result nil result-file)
-        (message "See: %s" result-file))
-    (let ((result-buf (get-buffer-create (concat "*" test-name "*"))))
+Save result to RESULT-FILE, defaulting to DIRECTORY/TEST-NAME.result.txt.
+Optional INFO-MESSAGE is placed at top of the RESULT-FILE.
+When interactive show the RESULT-FILE."
+  (let ((coding-system-for-write 'no-conversion))
+    (setq result-file (file-truename (or result-file
+                                         (concat
+                                          (file-name-as-directory (expand-file-name directory))
+                                          test-name ".result.txt"))))
+    (write-region (concat "# -*- mode: fundamental; eval: (compilation-minor-mode 1) -*-\n\n"
+                          (when info-message (concat info-message "\n\n"))
+                          result)
+                  nil result-file)
+    (message "See: %s" result-file))
+  (when (not noninteractive)
+    (let ((result-buf (find-file result-file)))
       (with-current-buffer result-buf
-        (read-only-mode -1)
-        (buffer-disable-undo)
-        (setq-local default-directory (file-truename directory))
-        (erase-buffer)
-        (insert result)
-        (goto-char (point-min))
-        (fundamental-mode)
-        (compilation-minor-mode 1) ;; this lets us navigate to errors (would be nice to disable "g")
-        (set-buffer-modified-p nil)
-        (read-only-mode 1))
-      (display-buffer result-buf))))
+        (buffer-disable-undo)))))
 
 (defun t-utils--insert-file-for-test (file
                                       &optional file-major-mode setup-callback skip-corrupt-check)
@@ -1804,8 +1795,7 @@ else return nil and write a skipping message to LOG-FILE."
                                      check-valid-parse
                                      error-nodes-regexp
                                      log-file
-                                     result-file
-                                     save-indent-to-tilde-file)
+                                     result-file)
   "Sweep test indent on files under DIRECTORY recursively.
 File base names matching LANG-FILE-REGEXP are tested.
 TEST-NAME is used in messages.
@@ -1834,10 +1824,10 @@ it is reported because the tree-sitter parser says it has errors and
 the SYNTAX-CHECKER-FUN says it does not.
 
 Next, the buffer is indented using `indent-region' and if this fails it
-is reported.  In addition, the slowest indents are reported.  If
-SAVE-INDENT-TO-TILDE-FILE is non-nil, the indent result is saved to the
-file name with a tilde suffix, e.g. indent of foo.ext is saved to
-foo.ext~.
+is reported.  In addition, the slowest indents are reported.  The result
+of indent is saved to the file name with a tilde suffix, e.g. indent of
+foo.ext is saved to foo.ext~.  Differences are saved to a *.diff file
+which the LOG-FILE with the extension replaced with .diff.
 
 Callers of this function should activate any assertions prior to calling
 this function.  For example, the last rule of the tree-sitter mode may
@@ -1914,9 +1904,12 @@ LANGUAGE tree-sitter that need addressing or some other issue."
         (invalid-successful-parse "")
         (indent-errors "")
         (took-ht (make-hash-table :test 'equal))
+        diff-file
         n-lines)
 
     (setq log-file (t-utils--log-create test-name log-file))
+    (setq diff-file (concat (file-name-sans-extension log-file) ".diff"))
+    (message "Diff: %s" diff-file)
 
     (t-utils--log log-file (format "Found %d files to indent %s\n"
                                    (length all-lang-files) (t-utils--took start-time)))
@@ -1940,11 +1933,15 @@ LANGUAGE tree-sitter that need addressing or some other issue."
                 (indent-region (point-min) (point-max))
                 (puthash lang-file (float-time (time-subtract (current-time) indent-start))
                          took-ht)
-                (when save-indent-to-tilde-file
-                  (let ((lang-file-tilde (concat lang-file "~")))
-                    (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
-                    (write-region (point-min) (point-max) lang-file-tilde)))
-                )
+
+                (let ((lang-file-tilde (concat lang-file "~")))
+                  (write-region (point-min) (point-max) lang-file-tilde)
+                  (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
+                  (with-current-buffer (diff-no-select lang-file lang-file-tilde "-u" t)
+                    ;; Remove diff summary (\nDiff Finished ...)
+                    (goto-char (point-max))
+                    (forward-line -2)
+                    (write-region (buffer-substring (point-min) (point)) nil diff-file t))))
             (error (progn
                      (t-utils--log log-file (format "Failed-indent-region: %s\n" lang-file))
                      (setq indent-errors
@@ -1987,7 +1984,9 @@ LANGUAGE tree-sitter that need addressing or some other issue."
                            "Slowest-indents:\n"
                            slow-files)))
 
-      (t-utils--display-result test-name directory result result-file))
+      (t-utils--display-result test-name directory result result-file
+                               (concat "No files modified.\n"
+                                       "Indent results for FILE are saved to FILE~")))
 
     (message "FINISHED: %s %s" test-name (t-utils--took start-time))))
 
