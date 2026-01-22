@@ -1,0 +1,41 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,322> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (function_definition<22,321> function[22,30]
+  (function_output<31,36> (identifier[31,34]@{out}@) =[35,36])
+  name: (identifier[37,67]@{electric_indent_keyword_as_var}@)
+  (function_arguments<67,83> ([67,68] arguments: (identifier[68,71]@{in1}@) ,[71,72]
+   (identifier<73,82> arguments[73,82])
+   )[82,83])
+  \n[83,84]
+  (arguments_statement<88,180> arguments[88,97] \n[97,98]
+   (property<106,128> name: (identifier[106,109]@{in1}@)
+    (validation_functions<110,128> {[110,111] (identifier[111,127]@{mustBeTextScalar}@) }[127,128]))
+   \n[128,129]
+   (property<137,172>
+    name: (identifier<137,146> arguments[137,146])
+    (identifier[151,155]@{cell}@)
+    (validation_functions<155,167> {[155,156] (identifier[156,166]@{mustBeText}@) }[166,167])
+    (default_value<167,172> =[167,168]
+     (cell<168,172> {[168,169] }[171,172])))
+   \n[172,173] end[177,180])
+  (comment[186,271]@{% following both returns the first entry of argume...}@)
+  (block<276,318>
+   (assignment<276,316> left: (identifier[276,279]@{out}@) =[280,281]
+    right: 
+     (cell<282,316> {[282,283]
+      (row<283,315> (identifier[283,286]@{in1}@) ,[287,288]
+       (function_call<289,301>
+        name: (identifier<289,298> arguments[289,298])
+        {[298,299]
+        (arguments<299,300> argument: (number[299,300]@{1}@))
+        }[300,301])
+       ,[302,302]
+       (identifier<302,311> arguments[302,311])
+       ,[312,312]
+       (cell<312,315> {[312,313]
+        (row<313,314> (number[313,314]@{1}@))
+        }[314,315]))
+      }[315,316]))
+   ;[316,317] \n[317,318])
+  end[318,321])
+ \n[321,322])

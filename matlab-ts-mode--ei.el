@@ -177,10 +177,10 @@
     ("."                              ,(rx bos "[" eos)                                          1)
 
     ;; Case: foo(1) or foo.bar
-    (,(rx bos "identifier" eos)       ,(rx bos (or "(" "{") eos)                                 0)
+    ;; Case: events(thing), enumeration(thing), methods(thing)
+    (,(rx bos (or (seq (1+ (in "a-z")) "-fcn") "identifier") eos)  ,(rx bos (or "(" "{") eos)    0)
     (,(rx bos "identifier" eos)       "."                                                        1)
-    ;; Case: {events(thing)}, {enumeration(thing)}, {methods(thing)}
-    (,(rx "-fcn" eos)                 "."                                                        0)
+    (,(rx "-fcn" eos)                 "."                                                        1)
 
     ;; Case: number in matrix: [123 456]
     (,(rx bos "number" eos)           "."                                                        1)

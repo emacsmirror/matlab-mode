@@ -990,7 +990,7 @@ Example, disp variable is overriding the disp builtin function:
    )
   "The matlab-ts-mode font-lock settings.")
 
-;;; Indent
+;;; Indent (see doc/matlab_code_indent.org)
 
 (defvar matlab-ts-mode--indent-level 4
   "Indentation level.")
