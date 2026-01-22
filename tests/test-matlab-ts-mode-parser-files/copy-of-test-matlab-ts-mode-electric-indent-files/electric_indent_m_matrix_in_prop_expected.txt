@@ -1,0 +1,22 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,516> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,515> classdef[114,122] name: (identifier[123,155]@{electric_indent_m_matrix_in_prop}@) \n[155,156]
+  (properties<157,511> properties[157,167] \n[167,168]
+   (property<173,506> name: (identifier[173,181]@{pStrings}@) (identifier[182,188]@{string}@)
+    (default_value<189,506> =[189,190]
+     (matrix<191,506> [[191,192] (line_continuation[196,214]@{... Default value\n}@) (comment[230,240]@{% comment1}@)
+      (row<257,269>
+       (string<257,269> "[257,258] (string_content[258,268]@{string one}@) "[268,269]))
+      (line_continuation[271,275]@{...\n}@) (comment[300,310]@{% comment2}@)
+      (row<327,336>
+       (string<327,336> "[327,328] (string_content[328,335]@{string2}@) "[335,336]))
+      (line_continuation[338,342]@{...\n}@) (comment[367,402]@{% comment for following two strings}@)
+      (row<419,428>
+       (string<419,428> "[419,420] (string_content[420,427]@{string3}@) "[427,428]))
+      (line_continuation[430,434]@{...\n}@)
+      (row<461,487>
+       (string<461,487> "[461,462] (string_content[462,486]@{string four that is long}@) "[486,487]))
+      (line_continuation[489,493]@{...\n}@) ][505,506])))
+   ;[506,507] \n[507,508] end[508,511])
+  \n[511,512] end[512,515])
+ \n[515,516])

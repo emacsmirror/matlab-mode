@@ -734,8 +734,11 @@ when on the 2nd continuation only line, nil is returned."
 Point is left at beginning of line containing the ASSIGN-NODE text.
 Returns the line number after the ASSIGN-NODE in the tmp-buf."
   (let (assign-str
+        assign-end-linenum
         n-levels
-        end-linenum)
+        (n-extra-levels 0)
+        (is-prop (treesit-parent-until assign-node (rx bos (or "properties" "arguments") eos))))
+
     (with-current-buffer (treesit-node-buffer assign-node)
       (let* ((assign-start-pos (save-excursion (goto-char (treesit-node-start assign-node))
                                                (pos-bol)))
@@ -748,13 +751,18 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
                          ;; else: not at a standard level so no need to add conditionals as the
                          ;; indent level will be corrected later.
                          0))))
+    (when is-prop
+      (setq n-extra-levels (max (- n-levels 2) 0)
+            n-levels 2))
 
-    (cl-loop for level from 1 to n-levels do
-             (insert "if 1\n"))
+    (if is-prop
+        (insert "classdef foo\n" "properties\n")
+      (cl-loop for level from 1 to n-levels do
+               (insert "if 1\n")))
 
     (insert assign-str "\n")
 
-    (setq end-linenum (line-number-at-pos))
+    (setq assign-end-linenum (line-number-at-pos))
 
     (cl-loop for level from 1 to n-levels do
              (insert "end\n"))
@@ -768,11 +776,16 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
           (treesit--indent-verbose nil))
       (indent-region (point-min) (point-max)))
 
-
     (goto-char (point-min))
-    (when (> n-levels 0)
-      (forward-line n-levels))
-    end-linenum))
+    (forward-line n-levels) ;; Leave point at assignment start
+    (when (> n-extra-levels 0) ;; Add additional whitespace on left?
+      (save-excursion
+        (let ((start-point (point))
+              (end-point (progn
+                           (goto-char (point-min))
+                           (forward-line assign-end-linenum))))
+          (string-rectangle start-point end-point (make-string (* n-extra-levels 4) ? )))))
+    assign-end-linenum))
 
 ;; TODO - investigate performance improvements for m-matrix line alignment.
 ;; 1. Should we improve performance by leveraging prior line when TABing lines?
