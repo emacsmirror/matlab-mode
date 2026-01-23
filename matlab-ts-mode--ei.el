@@ -321,14 +321,17 @@ is used in `matlab-ts-mode--ei-spacing'"
   ;; Move point to first non-whitespace char
   (let ((eol-pt (pos-eol)))
 
-    (let ((node (treesit-node-at (point))))
+    (let (node)
 
       ;; If next node is a array comma node return that. Examples:
       ;;    x1 = [(3*(2+1))   2]
-      ;;                   ^     <== point here (next node is invisible comma node w/start=end pt)
+      ;;                   ^      <== point here (next node is invisible comma node w/start=end pt)
       ;;    x2 = [1, 2]
-      ;;           ^             <== point here (next node is comma node)
-      (when (looking-at "[ \t]" (point))
+      ;;           ^              <== point here (next node is comma node)
+      ;;    x3 = {'one' 'two'...
+      ;;                     ^    <== point here (next node is invisible comma node w/start=end pt)
+      (when (looking-at "\\(?:[ \t]\\|\\.\\.\\.\\)" (point))
+        (setq node (treesit-node-at (point)))
         (let ((candidate node)) ;; candidate will be the array element
           (while (= (treesit-node-end candidate) (point)) ;; lookup to find our array element
             (let* ((next-node (treesit-node-next-sibling candidate))
@@ -345,6 +348,9 @@ is used in `matlab-ts-mode--ei-spacing'"
         (when (not (re-search-forward "[^ \t]" eol-pt t))
           (cl-return-from matlab-ts-mode--ei-move-to-and-get-node))
         (backward-char)
+        (setq node (treesit-node-at (point))))
+
+      (when (not node)
         (setq node (treesit-node-at (point))))
 
       ;; Consider [[1,2];[3,4]] when point is on semicolon, node will be the prior "]" because the
@@ -383,13 +389,32 @@ is used in `matlab-ts-mode--ei-spacing'"
 (defun matlab-ts-mode--ei-concat-line (ei-line node extra-chars &optional n-spaces-to-append)
   "Return concat EI-LINE with NODE text.
 NODE-END is the NODE end accounting for ignored nodes (semicolons).
-EXTRA-CHARS are appended to EL-LINE.
+EXTRA-CHARS string is appended to EL-LINE after NODE text.
+EXTRA-CHARS, when \\='(string), the string is appended to last
+non-whitspace in EL-LINE, then NODE text is appended.
 N-SPACES-TO-APPEND is the number of spaces to append between nodes."
 
   (let* ((node-end (treesit-node-end node))
          (eol-pt (pos-eol))
-         (last-pt (if (< node-end eol-pt) node-end eol-pt)))
+         (last-pt (if (< node-end eol-pt) node-end eol-pt))
+         extra-chars-before-node)
+    (when (listp extra-chars)
+      ;; Consier: foo1 = {'one', 'two' ...
+      ;;                  ...
+      ;;              'three' 'four' 'five'};
+      ;; After the 'two' node, we have two line_continuation's, then the invisible comma (",")
+      ;; This is detected and extra-chars will be '(",")
+      ;; TopTester: electric_indent_cell_no_comma_before_ellipsis.m
+      (if (string-match "\\`\\(.*[^ ]\\)\\([ ]+\\)\\'" ei-line)
+          (let ((first-part (match-string 1 ei-line))
+                (trailing-spaces (match-string 2 ei-line)))
+            (setq ei-line first-part
+                  extra-chars-before-node (concat (car extra-chars) trailing-spaces)))
+        (setq  extra-chars-before-node (car extra-chars)))
+      (setq extra-chars nil))
+
     (concat ei-line
+            extra-chars-before-node
             (buffer-substring (treesit-node-start node) last-pt)
             extra-chars
             (if (not n-spaces-to-append) ;; last node?
@@ -448,33 +473,53 @@ Assumes that current point is at `back-to-indentation'."
 (defun matlab-ts-mode--ei-node-extra-chars (node node-end next-node-start)
   "Get extra chars for NODE after NODE-END and before NEXT-NODE-START."
 
-  (if (and (string= (treesit-node-type node) ",")
+  (let ((node-type (treesit-node-type node)))
+    (cond
+
+     ;; Case: invisible comma, make it visible by returning the comma (",")
+     ((and (string= node-type ",")
            (= (treesit-node-start node) (treesit-node-end node)))
       ;; Make invisible comma visible by returning it.
-      ","
-    (let ((extra-chars ""))
-      ;; Handle ignored characters, e.g. ";" in matrices where node="]", next-node="["
-      ;;   [[1, 2]; [3, 4]]
-      ;;         ^  ^
-      (goto-char node-end)
-      (when (or ;; [[1,2];[3,4]]?
-             (and (< node-end next-node-start)
-                  (looking-at "[^ \t]"))
-             ;; [[1,2] ; [3,4]]?
-             ;; or a multiline matrix:
-             ;; x = [ 1 , 2 ;
-             (save-excursion (and (when (re-search-forward "[^ \t]" next-node-start t)
-                                    (backward-char)
-                                    t)
-                                  (< (point) next-node-start))))
-        (while (< (point) next-node-start)
-          (while (and (< (point) next-node-start)
-                      (looking-at "[^ \t]"))
-            (setq extra-chars (concat extra-chars (match-string 0)))
-            (forward-char)
-            (setq node-end (point)))
-          (re-search-forward "[ \t]+" next-node-start t)))
-      extra-chars)))
+      ",")
+
+     ;; Case: invisble at end of array row
+     ;;           foo = {'one', 'two' ...
+     ;;                              ^   missing comma, return a comma to have it inserted
+     ((string= node-type "line_continuation")
+      (let ((next-node (treesit-node-next-sibling node))
+            next-type)
+        (while (and next-node
+                    (string= (setq next-type (treesit-node-type next-node)) "line_continuation"))
+          (setq next-node (treesit-node-next-sibling next-node)))
+        (if (and (equal next-type ",")
+                 (= (treesit-node-start next-node) (treesit-node-end next-node)))
+            '(",") ;; list means prefix to NODE text
+          "")))
+
+     ;; Case: Handle ignored characters, e.g. ";" in matrices where node="]", next-node="["
+     ;;   [[1, 2]; [3, 4]]
+     ;;         ^  ^
+     (t
+      (let ((extra-chars ""))
+        (goto-char node-end)
+        (when (or ;; [[1,2];[3,4]]?
+               (and (< node-end next-node-start)
+                    (looking-at "[^ \t]"))
+               ;; [[1,2] ; [3,4]]?
+               ;; or a multiline matrix:
+               ;; x = [ 1 , 2 ;
+               (save-excursion (and (when (re-search-forward "[^ \t]" next-node-start t)
+                                      (backward-char)
+                                      t)
+                                    (< (point) next-node-start))))
+          (while (< (point) next-node-start)
+            (while (and (< (point) next-node-start)
+                        (looking-at "[^ \t]"))
+              (setq extra-chars (concat extra-chars (match-string 0)))
+              (forward-char)
+              (setq node-end (point)))
+            (re-search-forward "[ \t]+" next-node-start t)))
+        extra-chars)))))
 
 (defun matlab-ts-mode--ei-update-line-node-types (line-node-types node node-type)
   "Append NODE-TYPE of NODE to LINE-NODE-TYPES."
