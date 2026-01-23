@@ -135,7 +135,7 @@ with understanding and communication.
 
    #+begin_src matlab
    if condition1 == 1      |     switch condition1
-      doIt                 |       case 1
+       doIt                |       case 1
    end                     |         doIt
                            |     end
    #+end_src
