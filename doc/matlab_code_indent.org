@@ -65,14 +65,11 @@ with understanding and communication.
 
 * MATLAB Indent Standard
 
-Having one-style of consistent indentation makes reading others' code easier and thus we do not
-provide indent customization.
-
 1. *Indent level of 4 spaces, no TAB characters, unicode, LF line-endings (no CRLF)*
 
-   The MATLAB indent engine will indent to a level 4 for each scope or conditional.  Tab characters
-   are converted to spaces ensures that code looks the same when using different levels of tab
-   stops. For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab stops of 4. Note,
+   The MATLAB indent engine will indent to a level of 4 spaces for each scope or conditional.  Tab characters
+   are converted to spaces to ensure that code looks the same in all editors. 
+   For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab stops of 4. Note,
    the indent engine retains TAB characters within strings because altering them would change
    answers.
 
