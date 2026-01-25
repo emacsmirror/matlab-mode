@@ -208,7 +208,6 @@
     ;; We shouldn't hit the ERROR node because matlab-ts-mode--ei-no-elements-to-indent
     ;; says to skip lines with ERROR nodes, but be safe in case an ERROR node spans
     ;; multiple lines without inner ERROR nodes.
-    ;; TODO - double check this logic. Try creating a case that hits this by removing this line.
     (,(rx bos "ERROR" eos)            "."                                                        1)
 
     ))
@@ -571,7 +570,6 @@ Assumes that current point is at `back-to-indentation'."
     (with-current-buffer matlab--eilb
       (insert spaces))))
 
-;; xxx this should be using m-matrix cache
 (cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-offset)
   "Get new line content with element spacing adjusted.
 Optional START-NODE and START-OFFSET are used to compute new pt-offset,
@@ -586,14 +584,11 @@ where NEW-LINE-CONTENT, during `indent-region', does not contain the
 final amount of leading whitespace because we do electric indent before
 `treesit-indent-region'."
   (save-excursion
-
     ;; Move to first non-whitespace character on the line
     (let ((have-non-empty-line (matlab-ts-mode--ei-fast-back-to-indentation)))
       (when (or (not have-non-empty-line)
                 (matlab-ts-mode--ei-no-elements-to-indent))
         (cl-return-from matlab-ts-mode--ei-get-new-line)))
-
-    
 
     ;; Compute new electric indented line content in matlab--eilb
     (matlab--eilb-setup)
@@ -777,41 +772,37 @@ Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
     column-widths))
 
 (defun matlab-ts-mode--ei-get-m-matrix-row-in-line ()
-  "Given point within a matrix assignment statement, return row node.
-Note, nil may be returned when line is only a continuation, e.g.
-   v = [1 2; ...
-        ...
-        3 4];
-when on the 2nd continuation only line, nil is returned."
+  "Given point within a matrix assignment statement, return row node or nil.
+Example:  v = [1 2; ...
+               ...
+               3 4];
+when on the 2nd continuation only line, nil is returned otherwise a row node."
   (save-excursion
     (matlab-ts-mode--ei-fast-back-to-indentation)
-    (let (row-node
-          found-ans)
-      (cl-loop
-       while (not found-ans) do
+    (when (looking-at "[^ \t\n\r]")
+      (let (row-node
+            found-ans)
+        (cl-loop
+         while (not found-ans) do
 
-       (let* ((node-at-pt (treesit-node-at (point)))
-              (node node-at-pt))
-         (while (and node
-                     (not (string-match-p (rx bos (or "row" "matrix" "assignment") eos)
-                                          (treesit-node-type node))))
-           (setq node (treesit-node-parent node)))
+         (let* ((node-at-pt (treesit-node-at (point)))
+                (node node-at-pt))
+           (while (and node
+                       (not (string-match-p (rx bos (or "row" "matrix" "assignment") eos)
+                                            (treesit-node-type node))))
+             (setq node (treesit-node-parent node)))
 
-         (if (and node
-                  (string= (treesit-node-type node) "row"))
-             (setq found-ans t
-                   row-node node)
-           (goto-char (min (treesit-node-end node-at-pt) (pos-eol)))
-           (when (not (re-search-forward "[^ \t]" (pos-eol) t))
-             (setq found-ans t)))))
-      row-node)))
+           (if (and node
+                    (string= (treesit-node-type node) "row"))
+               (setq found-ans t
+                     row-node node)
+             (goto-char (min (treesit-node-end node-at-pt) (pos-eol)))
+             (when (not (re-search-forward "[^ \t]" (pos-eol) t))
+               (setq found-ans t)))))
+        row-node))))
 
 ;; Internal variable that shouldn't be altered. It's used to avoid infinite recursion.
 (defvar matlab-ts-mode--ei-align-enabled t)
-
-;; This is used to cache matrix alignments for indent-region
-;; It will be non-nil when called from indent-region.
-(defvar matlab-ts-mode--ei-align-matrix-alist nil)
 
 (defun matlab-ts-mode--ei-indent-matrix-in-tmp-buf (assign-node)
   "Insert ASSIGN-NODE in to current tmp-buf and indent.
@@ -872,20 +863,13 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
           (string-rectangle start-point end-point (make-string (* n-extra-levels 4) ? )))))
     assign-end-linenum))
 
-;; TODO - investigate performance improvements for m-matrix line alignment.
-;; 1. Should we improve performance by leveraging prior line when TABing lines?
-;; 2. When indent-region is active, can we speedup calculation of column widths?
+;; This is used to cache matrix alignments for indent-region
+;; It will be non-nil when called from indent-region.
+(defvar matlab-ts-mode--ei-align-matrix-alist nil)
 
 (cl-defun matlab-ts-mode--ei-align-line-in-m-matrix (assign-node ei-info)
   "Align current line with EI-INFO in a multi-line matrix of ASSIGN-NODE.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
-
-  ;; TopTester: test-matlab-ts-mode-electric-indent-files/electric_indent_matrix_cols.m
-  (when matlab-ts-mode--ei-align-matrix-alist ;; Use cached value?
-    (let ((ei-line (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-matrix-alist)))
-      (when ei-line
-        (cl-return-from matlab-ts-mode--ei-align-line-in-m-matrix (cons ei-line (cdr ei-info))))))
-
   (let* ((assign-start-linenum (line-number-at-pos (treesit-node-start assign-node)))
          (tmp-buf-ei-linenum (1+ (- (line-number-at-pos) assign-start-linenum)))
          (tmp-buf-row-linenum (if matlab-ts-mode--ei-align-matrix-alist 1 tmp-buf-ei-linenum))
@@ -915,7 +899,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               (while (< (line-number-at-pos) end-linenum) ;; Adjust column widths
                 (matlab-ts-mode--ei-fast-back-to-indentation)
                 (let* ((row-node (matlab-ts-mode--ei-get-m-matrix-row-in-line))
-                       (indent-offset (when (looking-at "[^ \t]+") (current-column)))
+                       (indent-offset (when (looking-at "[^ \t\n\r]+") (current-column)))
                        ei-line)
                   (matlab--eilb-setup)
                   (if (and row-node indent-offset)
@@ -1717,26 +1701,31 @@ to it's logical location when the line is updated."
                                start-pt-offset)
                        (matlab-ts-mode--ei-get-start-info)))
          (start-node (car start-pair)) ;; nil if at EOL
-         (start-offset (cdr start-pair))
-         (at-eol (and start-offset (looking-at "[ \t]*$")))
+         (start-offset (cdr start-pair)) ;; xxx only compute if needed
+         (at-eol (and start-offset (looking-at "[ \t]*$"))) ;; xxx only compute when needed
          (orig-line (buffer-substring (pos-bol) (pos-eol)))
-         (ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset))
+         cached-ei-line
+         ei-info
          result)
+
+    (if (and (not start-node) ;; Use cached value for m-matrix?
+             matlab-ts-mode--ei-align-matrix-alist
+             (setq cached-ei-line
+                   (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-matrix-alist)))
+        ;; TopTester: test-matlab-ts-mode-electric-indent-files/electric_indent_matrix_cols.m
+        (setq ei-info (list cached-ei-line))
+      (setq ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
 
     (if ei-info
         (setq result
               (progn
-                (when matlab-ts-mode--ei-align-enabled
+                (when (and (not cached-ei-line) matlab-ts-mode--ei-align-enabled)
                   (setq ei-info (matlab-ts-mode--ei-align ei-info)))
                 (let* ((ei-line (or (nth 0 ei-info) orig-line))
                        (pt-offset (nth 1 ei-info)) ;; non-nil if start-offset is non-nil
                        (orig-line-node-types (nth 2 ei-info))
-                       (updated (and ei-info
-                                     (not (string= orig-line ei-line)))))
-
-                  (when (and updated
-                             pt-offset
-                             at-eol)
+                       (updated (and ei-info (not (string= orig-line ei-line)))))
+                  (when (and updated pt-offset at-eol)
                     (setq pt-offset (length ei-line)))
 
                   (when (and updated
