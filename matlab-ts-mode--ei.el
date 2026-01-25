@@ -137,8 +137,10 @@
 
     (,(rx bos (or "," ";" "command_argument" "command_name" "enum-id") eos)  "."                 1)
 
-    (,(rx bos "attribute-id" eos)    "="                                                         0)
-    ("="                             ,(rx bos "attribute-id" eos)                                0)
+    ;; Case arguments name=value syntax, the "=" node is converted to "n=v"
+    ;; TopTester: electric_indent_name_value_args.m
+    ("."                             ,(rx bos "n=v" eos)                                         0)
+    (,(rx bos "n=v" eos)             "."                                                         0)
 
     (,matlab-ts-mode--ei-0-after-re   "."                                                        0)
 
@@ -161,11 +163,6 @@
     ;; Case: padded operators, e.g.: a || b
     (,matlab-ts-mode--ei-pad-op-re    "."                                                        1)
     ("."                              ,matlab-ts-mode--ei-pad-op-re                              1)
-
-    ;; Case arguments name=value syntax, the "=" node is converted to "n=v"
-    ;; TopTester: electric_indent_name_value_args.m
-    ("."                             ,(rx bos "n=v" eos)                                         0)
-    (,(rx bos "n=v" eos)             "."                                                         0)
 
     ;; Case: string followed by anything, e.g. ["string1" foo(1)]
     (,(rx bos "string" eos)           "."                                                        1)
@@ -239,20 +236,18 @@ be unary-op even though the node type is \"+\"."
 
     (cond
      ;; Case: Use string and not the elements of the string
-     ;;       Type is "string" or "attribute-id" for class properties (SetAccess='value')
      ((string= parent-type "string")
       (setq node parent
-            node-type (if (equal (treesit-node-type (treesit-node-parent parent)) "attribute")
-                          "attribute-id"
-                        parent-type)))
+            node-type parent-type))
 
      ;; Case: name=value argument pair
      ((and (string= node-type "=")
-           (string= parent-type "arguments"))
+           (or (string= parent-type "arguments")
+               (string= parent-type "attribute")))
       ;; arguments name=value
       (setq node-type "n=v"))
 
-     ;; Case: prop-id, prop-class-id, enum-id, attribute-id
+     ;; Case: prop-id, prop-class-id, enum-id
      ((string= node-type "identifier")
       (cond ((string= parent-type "property") ;; propertyWithOutDot?
              (if (equal (treesit-node-child parent 0) node)
@@ -264,8 +259,6 @@ be unary-op even though the node type is \"+\"."
                (setq node-type "prop-class-id")))
             ((string= parent-type "enum")
              (setq node-type "enum-id"))
-            ((string= parent-type "attribute")
-             (setq node-type "attribute-id"))
             ))
 
      ;; Case: unary operator sign, + or -, e.g. [0 -e] or g = - e
