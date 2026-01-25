@@ -1697,12 +1697,9 @@ When IS-INDENT-REGION is nil, we update the line and restore the point
 to it's logical location when the line is updated."
 
   ;; If line was indented (nth 0 ei-info) is not same as current line, then update the buffer
-  (let* ((start-pair (when (or (not is-indent-region)
-                               start-pt-offset)
+  (let* ((start-pair (when (or (not is-indent-region) start-pt-offset)
                        (matlab-ts-mode--ei-get-start-info)))
          (start-node (car start-pair)) ;; nil if at EOL
-         (start-offset (cdr start-pair)) ;; xxx only compute if needed
-         (at-eol (and start-offset (looking-at "[ \t]*$"))) ;; xxx only compute when needed
          (orig-line (buffer-substring (pos-bol) (pos-eol)))
          cached-ei-line
          ei-info
@@ -1714,7 +1711,7 @@ to it's logical location when the line is updated."
                    (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-matrix-alist)))
         ;; TopTester: test-matlab-ts-mode-electric-indent-files/electric_indent_matrix_cols.m
         (setq ei-info (list cached-ei-line))
-      (setq ei-info (matlab-ts-mode--ei-get-new-line start-node start-offset)))
+      (setq ei-info (matlab-ts-mode--ei-get-new-line start-node (cdr start-pair))))
 
     (if ei-info
         (setq result
@@ -1725,8 +1722,8 @@ to it's logical location when the line is updated."
                        (pt-offset (nth 1 ei-info)) ;; non-nil if start-offset is non-nil
                        (orig-line-node-types (nth 2 ei-info))
                        (updated (and ei-info (not (string= orig-line ei-line)))))
-                  (when (and updated pt-offset at-eol)
-                    (setq pt-offset (length ei-line)))
+                  (when (and updated pt-offset (and start-node (looking-at "[ \t]*$")))
+                    (setq pt-offset (length ei-line))) ;; at eol
 
                   (when (and updated
                              matlab-ts-mode--indent-assert)
