@@ -27,17 +27,22 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
 
 1. How do I shorten long code lines?
 
-   The location of the ellipsis line continuation influences the length of code lines. For exmaple,
+   The location of the ellipsis line continuation influences the length of code lines. For example,
+   the arguments of a function are aligned, therefore if you want the arguments close to the left,
+   column, put the ellipsis after the opening parenthesis of the function:
 
    #+begin_src matlab
-     longVariableNameForMatrix1 = [ 
-                                    100, 2000, 3000
-                                    4000, 5000, 6000
-                                  ];
-                                   
+     longVariableNameForMatrix1 = myFcn(arg1, ...
+                                        reallyLongArg2);
    #+end_src
 
+   v.s.
    
+   #+begin_src matlab
+     longVariableNameForMatrix1 = myFcn( ...
+         arg1, ...
+         reallyLongArg2);
+   #+end_src
 
 * Indent Engine Design Considerations
 
