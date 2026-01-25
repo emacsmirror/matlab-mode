@@ -8,7 +8,7 @@ classdef electric_indent_keyword_fcns < handle
         normalprop = 1;
     end
 
-    properties (Access= 'public')
+    properties (Access='public')
         % See if we can create properties using keywords
         %properties = 1;
         %methods = 1;
@@ -17,7 +17,7 @@ classdef electric_indent_keyword_fcns < handle
         prop = 1;
     end
 
-    events (Access= 'private')
+    events (Access='private')
         %properties
         %events
         %methods

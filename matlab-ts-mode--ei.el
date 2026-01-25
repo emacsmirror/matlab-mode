@@ -239,9 +239,12 @@ be unary-op even though the node type is \"+\"."
 
     (cond
      ;; Case: Use string and not the elements of the string
+     ;;       Type is "string" or "attribute-id" for class properties (SetAccess='value')
      ((string= parent-type "string")
       (setq node parent
-            node-type parent-type))
+            node-type (if (equal (treesit-node-type (treesit-node-parent parent)) "attribute")
+                          "attribute-id"
+                        parent-type)))
 
      ;; Case: name=value argument pair
      ((and (string= node-type "=")
