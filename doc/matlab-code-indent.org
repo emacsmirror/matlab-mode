@@ -1,5 +1,5 @@
-# File: doc/code_indent.org
-# Copyright (C) 2025 Free Software Foundation, Inc.
+# File: matlab-code-indent.org
+# Copyright (C) 2026 Free Software Foundation, Inc.
 
 #+startup: showall
 #+startup: logdone
@@ -22,6 +22,22 @@ To indent a MATLAB ~*.m~ file,
 : C-M-\           or  Menu -> Execute Command indent-region
 
 When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
+
+* Indent FAQ
+
+1. How do I shorten long code lines?
+
+   The location of the ellipsis line continuation influences the length of code lines. For exmaple,
+
+   #+begin_src matlab
+     longVariableNameForMatrix1 = [ 
+                                    100, 2000, 3000
+                                    4000, 5000, 6000
+                                  ];
+                                   
+   #+end_src
+
+   
 
 * Indent Engine Design Considerations
 

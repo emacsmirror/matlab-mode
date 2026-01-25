@@ -1044,7 +1044,7 @@ column."
                      (cl-return)))))
              )
             ;; Case: unexpected matrix child node
-            ((not (string-match-p (rx bos (or "[" "]" "comment" "line_continuation") eos)
+            ((not (string-match-p (rx bos (or "[" "]" "comment" "line_continuation" "\n") eos)
                                   child-type))
              (error "Assert: unexpected matrix child %S" child))))))
 
