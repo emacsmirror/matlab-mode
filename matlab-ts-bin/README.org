@@ -59,7 +59,7 @@ where
        cd ./matlab-ts-abiNN/YYYYMMDD-SHA1/src
        cc -fPIC -O -c -I. parser.c
        cc -fPIC -O -c -I. scanner.c
-       cc -fPIC -shared parser.o scanner.o -o ../maca64/libtree-sitter-matlab.dylib
+       cc -fPIC -shared parser.o scanner.o -o ../maci64/libtree-sitter-matlab.dylib
      #+end_src
 
    + win64 :: Microsoft Windows running on Intel/AMD (=echo %PROCESSOR_ARCHITECTURE%= is AMD64 in a

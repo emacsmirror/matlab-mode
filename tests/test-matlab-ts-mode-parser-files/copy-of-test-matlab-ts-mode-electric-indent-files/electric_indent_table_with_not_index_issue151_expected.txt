@@ -1,0 +1,36 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,171> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<91,130> left: (identifier[91,92]@{T}@) =[93,94]
+  right: 
+   (function_call<95,130> name: (identifier[95,100]@{table}@) ([100,101]
+    (arguments<101,125>
+     argument: 
+      (matrix<101,112> [[101,102]
+       (row<105,106> (number[105,106]@{1}@))
+       (row<110,111> (number[110,111]@{2}@))
+       ][111,112])
+     ,[112,113]
+     (matrix<114,125> [[114,115]
+      (row<118,119> (number[118,119]@{5}@))
+      ;[119,120]
+      (row<120,122> (number[120,122]@{10}@))
+      ][124,125]))
+    )[129,130]))
+ ;[130,131]
+ (assignment<135,142> left: (identifier[135,136]@{a}@) =[136,137] right: (number[141,142]@{1}@))
+ ;[142,143]
+ (field_expression<144,156> object: (identifier[144,145]@{T}@) .[145,146]
+  field: 
+   (indirect_access<146,156> ([146,147]
+    (binary_operator<150,155>
+     left: (not_operator<150,152> ~[150,151] (identifier[151,152]@{a}@))
+     +[152,153] right: (number[154,155]@{1}@))
+    )[155,156]))
+ \n[156,157]
+ (field_expression<160,170> object: (identifier[160,161]@{T}@) .[161,162]
+  field: 
+   (indirect_access<162,170> ([162,163]
+    (binary_operator<163,169> left: (number[163,164]@{1}@) +[166,167]
+     right: (not_operator<167,169> ~[167,168] (identifier[168,169]@{a}@)))
+    )[169,170]))
+ \n[170,171])

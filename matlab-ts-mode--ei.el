@@ -1619,11 +1619,6 @@ TAB>  x = 123 ./1 + 567
 
   (when (not (string= curr-line-node-types orig-line-node-types))
 
-    ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/148
-    (when (and (string= curr-line-node-types "catch command_name comment")
-               (string= orig-line-node-types "catch identifier comment"))
-      (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match))
-
     ;; See https://github.com/acristoffers/tree-sitter-matlab/issues/149
     (dolist (keyword '("events" "enumeration" "methods" "arguments"))
       (let ((orig-modified (replace-regexp-in-string (rx "identifier line_continuation" eos)
