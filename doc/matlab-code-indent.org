@@ -1,4 +1,4 @@
-# File: matlab-code-indent.org
+# File: doc/matlab-code-indent.org
 # Copyright (C) 2026 Free Software Foundation, Inc.
 
 #+startup: showall
@@ -44,6 +44,26 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
          reallyLongArg2);
    #+end_src
 
+2. How do I speed up a slow indent?
+
+   When there are a lot of language elements, for example a really big matrix with many columns and
+   rows, the indent can be very slow. You can wrap these in ~%-indent-mode=minimal~ and
+   ~%-indent-mode=full~ comment directives. For example:
+
+   #+begin_src matlab
+     %-indent-mode=minimal
+     mat1 = [
+              % <lots of rows and columns>
+            ];
+     %-indent-mode=full
+   #+end_src
+
+   When indent-mode=minimal is active, only the indent-level whitespace on left  is modified when
+   the code is indented, which speeds up indent.
+
+   It should be possible to speedup matlab-ts-mode electric indent if anyone is interested in trying
+   to optimize it, let us know.
+
 * Indent Engine Design Considerations
 
 _Simplicity is good_
@@ -80,9 +100,12 @@ MATLAB language came up with a set of rules for MATLAB indent:
   structs, adds missing commas to matrices, etc.
 
 We choose to have no indent options and make sure the indents works well in all cases. This
-eliminates the need for comment directives like ~%#<indent off>~ and ~%<indent on>~. By having one
+eliminates the need for comment directives like ~%#<format-off>~ and ~%<format-on>~. By having one
 indent standard, people reading code from different projects will see consistency. Consistency helps
 with understanding and communication.
+
+For performance considerations, we added ~%-indent-mode=minimal~ and ~%-indent-mode=full~ comment
+directives.
 
 * MATLAB Indent Standard
 

@@ -1,0 +1,47 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,428> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,35> left: (identifier[22,23]@{a}@) =[24,25]
+  right: 
+   (binary_operator<26,35> left: (number[26,27]@{1}@) +[27,28]
+    right: (binary_operator<28,35> left: (number[28,29]@{2}@) *[32,33] right: (number[34,35]@{3}@))))
+ ;[35,36]
+ (function_call<38,48> name: (identifier[38,42]@{disp}@) ([42,43]
+  (arguments<43,44> argument: (identifier[43,44]@{a}@))
+  )[47,48])
+ ;[48,49] (comment[51,72]@{%-indent-mode=minimal}@)
+ (assignment<74,87> left: (identifier[74,75]@{b}@) =[76,77]
+  right: 
+   (binary_operator<78,87> left: (number[78,79]@{1}@) +[79,80]
+    right: (binary_operator<80,87> left: (number[80,81]@{2}@) *[84,85] right: (number[86,87]@{3}@))))
+ ;[87,88]
+ (function_call<90,100> name: (identifier[90,94]@{disp}@) ([94,95]
+  (arguments<96,97> argument: (identifier[96,97]@{b}@))
+  )[99,100])
+ ;[100,101] (comment[104,122]@{%-indent-mode=full}@)
+ (assignment<125,138> left: (identifier[125,126]@{c}@) =[127,128]
+  right: 
+   (binary_operator<129,138> left: (number[129,130]@{1}@) +[130,131]
+    right: (binary_operator<131,138> left: (number[131,132]@{2}@) *[135,136] right: (number[137,138]@{3}@))))
+ ;[138,139]
+ (function_call<141,151> name: (identifier[141,145]@{disp}@) ([145,146]
+  (arguments<147,148> argument: (identifier[147,148]@{c}@))
+  )[150,151])
+ ;[151,152] (comment[155,246]@{% Following is misplaced (no prior minimal). This ...}@)
+ (assignment<248,261> left: (identifier[248,249]@{d}@) =[250,251]
+  right: 
+   (binary_operator<252,261> left: (number[252,253]@{1}@) +[253,254]
+    right: (binary_operator<254,261> left: (number[254,255]@{2}@) *[258,259] right: (number[260,261]@{3}@))))
+ ;[261,262]
+ (function_call<264,274> name: (identifier[264,268]@{disp}@) ([268,269]
+  (arguments<270,271> argument: (identifier[270,271]@{d}@))
+  )[273,274])
+ ;[274,275] (comment[278,299]@{%-indent-mode=minimal}@) (comment[302,398]@{% Following is misplaced (have prior minimal). Thi...}@)
+ (assignment<400,413> left: (identifier[400,401]@{e}@) =[402,403]
+  right: 
+   (binary_operator<404,413> left: (number[404,405]@{1}@) +[405,406]
+    right: (binary_operator<406,413> left: (number[406,407]@{2}@) *[410,411] right: (number[412,413]@{3}@))))
+ ;[413,414]
+ (function_call<416,426> name: (identifier[416,420]@{disp}@) ([420,421]
+  (arguments<422,423> argument: (identifier[422,423]@{e}@))
+  )[425,426])
+ ;[426,427] \n[427,428])

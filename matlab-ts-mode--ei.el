@@ -1679,6 +1679,80 @@ We examine lines between START-LINENUM and END-LINENUM inclusive."
                                                         linenum)))
        (forward-line)))))
 
+(defun matlab-ts-mode--ei-get-disabled-regions ()
+  "Return regions disabled by %-indent-mode=minimal comments.
+Electric indent can be disabled then enabled using comments:
+  %-indent-mode=minimal
+    <code and comments>
+  %-indent-mode=full
+Code in the minimal region has the indent-level (spaces to the left)
+modified as required.  The elements within the lines are not
+modified.  For example,
+
+  %-indent-mode=minimal
+  if a >    1
+  disp( \"a > 1\")
+      end
+  %-indent-mode=full
+
+is indented to the following.  Notice that thew whitespace in line
+elements are not modified.
+
+  %-indent-mode=minimal
+  if a >    1
+      disp( \"a > 1\")
+  end
+  %-indent-mode=full
+
+If we remove the %-indent-mode=* comments, indent produces:
+
+  if a > 1
+      disp(\"a > 1\")
+  end
+
+Returns:
+    \\='((START-LINE1 . END-LINE1) (START-LINE2 . END-LINE2) ...))
+where START-LINE1 corresponds to the first %-indent-mode=minimal comment,
+END-LINE1 corresponds to the first %-indent-mode=full comment and so on."
+  (let (result
+        start-line)
+    (save-excursion
+      (save-restriction
+        (goto-char (point-min))
+        (while (re-search-forward (rx bol (0+ (or " " "\t"))
+                                      (group (or "%-indent-mode=minimal" "%-indent-mode=full"))
+                                      word-end)
+                                  nil t)
+          (let ((directive (match-string 1)))
+            (pcase directive
+              ("%-indent-mode=minimal"
+               (when (not start-line)
+                 (setq start-line (line-number-at-pos))))
+              ("%-indent-mode=full"
+               (when start-line
+                 (push `(,start-line . ,(line-number-at-pos)) result)
+                 (setq start-line nil)))
+              (_
+               (error "Assert: bad directive, %s" directive)))))
+        (when start-line
+          (push `(,start-line . ,(line-number-at-pos (point-max))) result))))
+    (reverse result)))
+
+(defun matlab-ts-mode--ei-in-disabled-region (&optional linenum disabled-regions )
+  "Is LINENUM in a DISABLED-REGIONS?
+LINENUM defaults to the current line.
+Returns the region (START-LINE . END-LINE) if disabled, else nil."
+  (when (not linenum)
+    (setq linenum (line-number-at-pos)))
+  (when (not disabled-regions)
+    (setq disabled-regions (matlab-ts-mode--ei-get-disabled-regions)))
+  (cl-loop for region in disabled-regions do
+           (let ((region-start (car region))
+                 (region-end (cdr region)))
+             (when (and (>= linenum region-start)
+                        (<= linenum region-end))
+               (cl-return region)))))
+
 (cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region start-pt-offset)
   "Indent current line by adjusting spacing around elements.
 
@@ -1693,6 +1767,9 @@ used to update the point location for
 
 When IS-INDENT-REGION is nil, we update the line and restore the point
 to it's logical location when the line is updated."
+
+  (when (matlab-ts-mode--ei-in-disabled-region)
+    (cl-return-from matlab-ts-mode--ei-indent-elements-in-line))
 
   ;; If line was indented (nth 0 ei-info) is not same as current line, then update the buffer
   (let* ((start-pair (when (or (not is-indent-region) start-pt-offset)
@@ -1773,12 +1850,9 @@ If INIT is non-nil, set to initial value, otherwise set to nil"
                 matlab-ts-mode--ei-errors-alist (when init (matlab-ts-mode--ei-get-errors-alist))
                 matlab-ts-mode--ei-orig-line-node-types-alist value)))
 
-(defun matlab-ts-mode--ei-indent-region (beg end)
-  "Indent BEG END region by adjusting spacing around elements.
-If BEG is not at start of line, it is moved to start of the line.
-If END is not at end of line, it is moved to end of the line.
-This expansion of the region is done to simplify electric indent."
-
+(cl-defun matlab-ts-mode--ei-indent-region-impl (new-content-buf beg end)
+  "Implementation for `matlab-ts-mode--ei-indent-region'.
+NEW-CONTENT-BUF is used to electric indent BEG to END region."
   ;; We need to run electric indent before treesit-indent-region. Consider
   ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
   ;;                 ~strcmpi(x, 'fubar'));
@@ -1789,46 +1863,53 @@ This expansion of the region is done to simplify electric indent."
   ;; indented correctly.
   ;;    l2 = @(x) ((ischar(x) || isstring(x) || isnumeric(x)) && ...
   ;;              ~strcmpi(x, 'fubar'));
+
   (let* ((start-linenum (line-number-at-pos beg))
          (end-linenum (save-excursion (goto-char end)
                                       (- (line-number-at-pos) (if (= (point) (pos-bol)) 1 0))))
-         (max-end-linenum (= end-linenum (line-number-at-pos (point-max))))
-         (start-pt (point))
-         (start-pt-linenum (line-number-at-pos start-pt))
-         (start-pt-offset (- start-pt (save-excursion
-                                        (goto-char start-pt)
-                                        ;; offset from beginning of start-pt-linenum
-                                        (pos-bol))))
-         (new-content-buf (get-buffer-create
-                           (generate-new-buffer-name " *temp-matlab-indent-region*"))))
+         (disabled-regions (matlab-ts-mode--ei-get-disabled-regions))
+         (start-disabled (matlab-ts-mode--ei-in-disabled-region start-linenum disabled-regions))
+         (end-disabled (matlab-ts-mode--ei-in-disabled-region end-linenum disabled-regions)))
 
-    (matlab-ts-mode--ei-workaround-143 beg end) ;; may insert spaces on lines in BEG END region
+    (when (and start-disabled (equal start-disabled end-disabled))
+      (treesit-indent-region beg end)
+      (cl-return-from matlab-ts-mode--ei-indent-region-impl))
 
-    (unwind-protect
-        (progn
-          (matlab-ts-mode--ei-set-alist-caches t)
+    (let* ((max-end-linenum (= end-linenum (line-number-at-pos (point-max))))
+           (start-pt (point))
+           (start-pt-linenum (line-number-at-pos start-pt))
+           (start-pt-offset (- start-pt (save-excursion
+                                          (goto-char start-pt)
+                                          ;; offset from beginning of start-pt-linenum
+                                          (pos-bol)))))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (matlab-ts-mode--ei-workaround-143 beg end) ;; may insert spaces on BEG to END lines
 
-          (save-excursion
-            (save-restriction
-              (widen)
-              ;; Move END point to end of line.
-              ;; To do this, we use end-linenum, because workaround-143 could have moved END.
-              (goto-char (point-min))
-              (when (> end-linenum 1)
-                (forward-line (1- end-linenum)))
-              (let ((inhibit-field-text-motion t)) (end-of-line))
-              (setq end (point))
-              ;; Move BEG to beginning of line and leave point there.
-              (goto-char beg)
-              (forward-line 0)
-              (setq beg (point))
+          ;; Move END point to end of line.
+          ;; To do this, we use end-linenum, because workaround-143 could have moved END.
+          (goto-char (point-min))
+          (when (> end-linenum 1)
+            (forward-line (1- end-linenum)))
+          (let ((inhibit-field-text-motion t)) (end-of-line))
+          (setq end (point))
+          ;; Move BEG to beginning of line and leave point there.
+          (goto-char beg)
+          (forward-line 0)
+          (setq beg (point))
 
-              (let (region-updated
-                    (i-linenum start-linenum))
+          (let (region-updated
+                (i-linenum start-linenum))
 
-                (while (<= i-linenum end-linenum)
+            (while (<= i-linenum end-linenum)
+              (let ((line-ending (if (or max-end-linenum (< i-linenum end-linenum)) "\n" "")))
+                (if (matlab-ts-mode--ei-in-disabled-region i-linenum disabled-regions)
+                    (let ((curr-line (buffer-substring (pos-bol) (pos-eol))))
+                      (with-current-buffer new-content-buf
+                        (insert curr-line line-ending)))
+                  ;; else: electric indent the line
                   (forward-line 0)
-
                   (let* ((tuple (matlab-ts-mode--ei-indent-elements-in-line
                                  'indent-region
                                  (when (= i-linenum start-pt-linenum)
@@ -1838,29 +1919,41 @@ This expansion of the region is done to simplify electric indent."
                          (line-updated (nth 1 tuple))
                          (new-start-pt-offset (nth 2 tuple)))
                     (with-current-buffer new-content-buf
-                      (insert new-line (if (or max-end-linenum (< i-linenum end-linenum)) "\n" "")))
+                      (insert new-line line-ending))
                     (when new-start-pt-offset
                       (setq start-pt-offset new-start-pt-offset))
                     (when line-updated
-                      (setq region-updated t)))
+                      (setq region-updated t)))))
+              (forward-line)
+              (setq i-linenum (1+ i-linenum)))
 
-                  (forward-line)
-                  (setq i-linenum (1+ i-linenum)))
+            (when region-updated
+              (save-excursion
+                (goto-char beg)
+                (delete-region beg end)
+                (insert (with-current-buffer new-content-buf (buffer-string)))
+                (when matlab-ts-mode--indent-assert
+                  (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))
+                ;; Restore END point accounting for electric indent changes
+                (goto-char (point-min))
+                (forward-line end-linenum)
+                (setq end (point)))))))
 
-                (when region-updated
-                  (save-excursion
-                    (goto-char beg)
-                    (delete-region beg end)
-                    (insert (with-current-buffer new-content-buf (buffer-string)))
-                    (when matlab-ts-mode--indent-assert
-                      (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))
-                    ;; Restore END point accounting for electric indent changes
-                    (goto-char (point-min))
-                    (forward-line end-linenum)
-                    (setq end (point)))))))
+      (matlab-ts-mode--ei-move-to-loc start-pt-linenum start-pt-offset)
+      (treesit-indent-region beg end))))
 
-          (matlab-ts-mode--ei-move-to-loc start-pt-linenum start-pt-offset)
-          (treesit-indent-region beg end))
+(defun matlab-ts-mode--ei-indent-region (beg end)
+  "Indent BEG END region by adjusting spacing around elements.
+If BEG is not at start of line, it is moved to start of the line.
+If END is not at end of line, it is moved to end of the line.
+This expansion of the region is done to simplify electric indent."
+
+  (let ((new-content-buf (get-buffer-create
+                          (generate-new-buffer-name " *temp-matlab-indent-region*"))))
+    (unwind-protect
+        (progn
+          (matlab-ts-mode--ei-set-alist-caches t)
+          (matlab-ts-mode--ei-indent-region-impl new-content-buf beg end))
 
       (matlab--eilb-kill)
       (matlab-ts-mode--ei-set-alist-caches nil)
