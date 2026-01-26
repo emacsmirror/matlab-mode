@@ -464,14 +464,19 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
 (defvar matlab-ts-mode--ei-error-query (treesit-query-compile 'matlab '((ERROR) @e)))
 (defvar-local matlab-ts-mode--ei-errors-alist nil)
 
+;; matlab-ts-mode--ei-tmp-buf-indent is non-nil if doing m-matrix indent (in this case we know there
+;; are no ERROR nodes).
+(defvar-local matlab-ts-mode--ei-tmp-buf-indent nil)
+
 (defun matlab-ts-mode--ei-get-errors-alist ()
   "Return an alist of `(ERROR-LINENUM . t) elements.
 If an error node spans multiple lines, we ignore it assuming
 there's an inner error node.  This always returns non-nil, thus
 enabling caching."
-  (let ((capture-errors (treesit-query-capture (treesit-buffer-root-node)
-                                               matlab-ts-mode--ei-error-query))
-        (error-linenums `(-1 . nil)))
+  (let ((error-linenums '(-1 . nil))
+        (capture-errors (when (not matlab-ts-mode--ei-tmp-buf-indent)
+                          (treesit-query-capture (treesit-buffer-root-node)
+                                                 matlab-ts-mode--ei-error-query))))
     (dolist (capture-error capture-errors)
       (let* ((error-node (cdr capture-error))
              (error-start-pt (treesit-node-start error-node))
@@ -810,6 +815,8 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
         (n-extra-levels 0)
         (is-prop (treesit-parent-until assign-node (rx bos (or "properties" "arguments") eos))))
 
+    (setq matlab-ts-mode--ei-tmp-buf-indent t)
+
     (with-current-buffer (treesit-node-buffer assign-node)
       (let* ((assign-start-pos (save-excursion (goto-char (treesit-node-start assign-node))
                                                (pos-bol)))
@@ -861,7 +868,7 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
 
 ;; This is used to cache matrix alignments for indent-region
 ;; It will be non-nil when called from indent-region.
-(defvar matlab-ts-mode--ei-align-matrix-alist nil)
+(defvar-local matlab-ts-mode--ei-align-matrix-alist nil)
 
 (cl-defun matlab-ts-mode--ei-align-line-in-m-matrix (assign-node ei-info)
   "Align current line with EI-INFO in a multi-line matrix of ASSIGN-NODE.
@@ -997,7 +1004,7 @@ column."
                          (> end-line start-linenum)
                          ;; AND the "]" ends on it's own line
                          (matlab-ts-mode--ei-matrix-ends-on-line matrix)
-                         ;; AND has no inner matrices and no ERROR nodes
+                         ;; AND has no inner matrices and no ERROR nodes (xxx use capture)
                          (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos)
                                                                nil t)))
                            (= (treesit-node-end s-node) (treesit-node-end matrix)))))
