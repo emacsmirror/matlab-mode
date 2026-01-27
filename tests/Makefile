@@ -63,6 +63,8 @@ MATLAB_TS_SETUP = --eval "(setq treesit-extra-load-path '(\"$(MATLAB_TS_DIR)\"))
 
 EMACSFLAGS = --batch -Q --eval '(setq debug-on-error t)' $(MATLAB_TS_SETUP)
 
+$(error $(EMACSFLAGS))
+
 MATLAB_FILES = $(wildcard *.m)
 
 ifneq ($(RUN_T_UTILS_TEST),)

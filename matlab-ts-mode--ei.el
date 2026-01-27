@@ -988,10 +988,16 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
 
 (defvar-local matlab-ts-mode--ei-is-m-matrix-alist nil) ;; cache
 
-(cl-defun matlab-ts-mode--ei-is-m-matrix (matrix)
+(cl-defun matlab-ts-mode--ei-is-m-matrix (matrix &optional check-for-indent-mode-minimal)
   "Is MATRIX node a multi-line matrix?
 We define a a multi-line matrix has one row per line and more than one
-column."
+column.  If optional, CHECK-FOR-INDENT-MODE-MINIMAL is non-nil, this we
+check if matrix is in an %-indent-mode:minimal region and if so return
+nil."
+  (when (and check-for-indent-mode-minimal
+             (matlab-ts-mode--ei-in-disabled-region (line-number-at-pos
+                                                     (treesit-node-start matrix))))
+    (cl-return-from matlab-ts-mode--ei-is-m-matrix))
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
          (cache-value (alist-get start-linenum matlab-ts-mode--ei-is-m-matrix-alist)))
@@ -1004,7 +1010,7 @@ column."
                          (> end-line start-linenum)
                          ;; AND the "]" ends on it's own line
                          (matlab-ts-mode--ei-matrix-ends-on-line matrix)
-                         ;; AND has no inner matrices and no ERROR nodes (xxx use capture)
+                         ;; AND has no inner matrices and no ERROR nodes
                          (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos)
                                                                nil t)))
                            (= (treesit-node-end s-node) (treesit-node-end matrix)))))
@@ -1262,18 +1268,21 @@ Note, \\='m-struct returns (list assignment-node max-field-width arguments-node)
               (error "Assert: bad a-type %S" a-type)))))))))
 
 (defun matlab-ts-mode--ei-point-in-m-type (ei-info m-type)
-  "Are we in a multi-line matrix?
-See `matlab-ts-mode--ei-get-new-line' for EI-INFO.
-If M-TYPE is \\='m-matrix, return the assignment node else nil.
-We define an m-matrix to be an assignment where there's more than one
-line, each row is on the same line, with same number of columns:
+  "Are we in an M-TYPE line?
+If M-TYPE is \\='m-matrix, return the assignment node when an m-matrix
+else nil.  We define an m-matrix to be an assignment where there's more
+than one line, each row is on the same line, with same number of
+columns:
   m = [100   2;
          3 400];
-If M-TYPE is \\='m-struct, return the assignment node else nil.
-We define an m-matrix to be an assignment where there's more than one
-line, each row is on the same line, with same number of columns:
+If M-TYPE is \\='m-struct, return the assignment node if m-struct else
+nil.  We define an m-matrix to be an assignment where there's more than
+one line, each row is on the same line, with same number of columns:
   m = [100   2;
-         3 400];"
+         3 400];
+If M-TYPE is \\'single-line, return assignment node when on a single line,
+else nil.
+See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
   (let* ((first-node-in-line (nth 3 ei-info))
          (assign-node (treesit-parent-until first-node-in-line
                                             (rx bos (or "property" "assignment") eos))))
@@ -1679,6 +1688,8 @@ We examine lines between START-LINENUM and END-LINENUM inclusive."
                                                         linenum)))
        (forward-line)))))
 
+(defvar-local matlab-ts-mode--ei-get-disabled-regions-cache nil)
+
 (defun matlab-ts-mode--ei-get-disabled-regions ()
   "Return regions disabled by %-indent-mode=minimal comments.
 Electric indent can be disabled then enabled using comments:
@@ -1714,44 +1725,44 @@ Returns:
     \\='((START-LINE1 . END-LINE1) (START-LINE2 . END-LINE2) ...))
 where START-LINE1 corresponds to the first %-indent-mode=minimal comment,
 END-LINE1 corresponds to the first %-indent-mode=full comment and so on."
-  (let (result
-        start-line)
-    (save-excursion
-      (save-restriction
-        (goto-char (point-min))
-        (while (re-search-forward (rx bol (0+ (or " " "\t"))
-                                      (group (or "%-indent-mode=minimal" "%-indent-mode=full"))
-                                      word-end)
-                                  nil t)
-          (let ((directive (match-string 1)))
-            (pcase directive
-              ("%-indent-mode=minimal"
-               (when (not start-line)
-                 (setq start-line (line-number-at-pos))))
-              ("%-indent-mode=full"
-               (when start-line
-                 (push `(,start-line . ,(line-number-at-pos)) result)
-                 (setq start-line nil)))
-              (_
-               (error "Assert: bad directive, %s" directive)))))
-        (when start-line
-          (push `(,start-line . ,(line-number-at-pos (point-max))) result))))
-    (reverse result)))
+  (or matlab-ts-mode--ei-get-disabled-regions-cache
+      (let (result
+            start-line)
+        (save-excursion
+          (save-restriction
+            (goto-char (point-min))
+            (while (re-search-forward (rx bol (0+ (or " " "\t"))
+                                          (group (or "%-indent-mode=minimal" "%-indent-mode=full"))
+                                          word-end)
+                                      nil t)
+              (let ((directive (match-string 1)))
+                (pcase directive
+                  ("%-indent-mode=minimal"
+                   (when (not start-line)
+                     (setq start-line (line-number-at-pos))))
+                  ("%-indent-mode=full"
+                   (when start-line
+                     (push `(,start-line . ,(line-number-at-pos)) result)
+                     (setq start-line nil)))
+                  (_
+                   (error "Assert: bad directive, %s" directive)))))
+            (when start-line
+              (push `(,start-line . ,(line-number-at-pos (point-max))) result))))
+        (reverse result))))
 
-(defun matlab-ts-mode--ei-in-disabled-region (&optional linenum disabled-regions )
-  "Is LINENUM in a DISABLED-REGIONS?
+(defun matlab-ts-mode--ei-in-disabled-region (&optional linenum)
+  "Is LINENUM in a disabled region?
 LINENUM defaults to the current line.
 Returns the region (START-LINE . END-LINE) if disabled, else nil."
   (when (not linenum)
     (setq linenum (line-number-at-pos)))
-  (when (not disabled-regions)
-    (setq disabled-regions (matlab-ts-mode--ei-get-disabled-regions)))
-  (cl-loop for region in disabled-regions do
-           (let ((region-start (car region))
-                 (region-end (cdr region)))
-             (when (and (>= linenum region-start)
-                        (<= linenum region-end))
-               (cl-return region)))))
+  (let ((disabled-regions (matlab-ts-mode--ei-get-disabled-regions)))
+    (cl-loop for region in disabled-regions do
+             (let ((region-start (car region))
+                   (region-end (cdr region)))
+               (when (and (>= linenum region-start)
+                          (<= linenum region-end))
+                 (cl-return region))))))
 
 (cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region start-pt-offset)
   "Indent current line by adjusting spacing around elements.
@@ -1774,14 +1785,13 @@ to it's logical location when the line is updated."
   ;; If line was indented (nth 0 ei-info) is not same as current line, then update the buffer
   (let* ((start-pair (when (or (not is-indent-region) start-pt-offset)
                        (matlab-ts-mode--ei-get-start-info)))
-         (start-node (car start-pair)) ;; nil if at EOL
+         (start-node (car start-pair)) ;; may be nil
          (orig-line (buffer-substring (pos-bol) (pos-eol)))
          cached-ei-line
          ei-info
          result)
 
-    (if (and (not start-node) ;; Use cached value for m-matrix?
-             matlab-ts-mode--ei-align-matrix-alist
+    (if (and matlab-ts-mode--ei-align-matrix-alist
              (setq cached-ei-line
                    (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-matrix-alist)))
         ;; TopTester: test-matlab-ts-mode-electric-indent-files/electric_indent_matrix_cols.m
@@ -1837,18 +1847,21 @@ to it's logical location when the line is updated."
 
 (defun matlab-ts-mode--ei-set-alist-caches (init)
   "Setup electric indent alist caches.
-If INIT is non-nil, set to initial value, otherwise set to nil"
+If INIT is non-nil, set to initial value, otherwise set to nil."
   (let ((value (when init '((-1 . 0))))) ;; Entries of form (LINENUM . INFO)
-    (setq-local matlab-ts-mode--ei-align-assign-alist value
-                matlab-ts-mode--ei-align-prop-alist value
-                matlab-ts-mode--ei-align-comment-alist value
-                matlab-ts-mode--ei-m-matrix-col-widths-alist value
-                matrix-ts-mode--ei-m-matrix-first-col-extra-alist value
-                matlab-ts-mode--ei-is-m-matrix-alist value
-                matlab-ts-mode--ei-align-matrix-alist value
-                matlab-ts-mode--ei-is-m-struct-alist value
-                matlab-ts-mode--ei-errors-alist (when init (matlab-ts-mode--ei-get-errors-alist))
-                matlab-ts-mode--ei-orig-line-node-types-alist value)))
+    (setq-local
+     matlab-ts-mode--ei-align-assign-alist value
+     matlab-ts-mode--ei-align-prop-alist value
+     matlab-ts-mode--ei-align-comment-alist value
+     matlab-ts-mode--ei-m-matrix-col-widths-alist value
+     matrix-ts-mode--ei-m-matrix-first-col-extra-alist value
+     matlab-ts-mode--ei-is-m-matrix-alist value
+     matlab-ts-mode--ei-align-matrix-alist value
+     matlab-ts-mode--ei-is-m-struct-alist value
+     matlab-ts-mode--ei-errors-alist (when init (matlab-ts-mode--ei-get-errors-alist))
+     matlab-ts-mode--ei-orig-line-node-types-alist value
+     matlab-ts-mode--ei-get-disabled-regions-cache (when init
+                                                     (matlab-ts-mode--ei-get-disabled-regions)))))
 
 (cl-defun matlab-ts-mode--ei-indent-region-impl (new-content-buf beg end)
   "Implementation for `matlab-ts-mode--ei-indent-region'.
@@ -1867,9 +1880,8 @@ NEW-CONTENT-BUF is used to electric indent BEG to END region."
   (let* ((start-linenum (line-number-at-pos beg))
          (end-linenum (save-excursion (goto-char end)
                                       (- (line-number-at-pos) (if (= (point) (pos-bol)) 1 0))))
-         (disabled-regions (matlab-ts-mode--ei-get-disabled-regions))
-         (start-disabled (matlab-ts-mode--ei-in-disabled-region start-linenum disabled-regions))
-         (end-disabled (matlab-ts-mode--ei-in-disabled-region end-linenum disabled-regions)))
+         (start-disabled (matlab-ts-mode--ei-in-disabled-region start-linenum))
+         (end-disabled (matlab-ts-mode--ei-in-disabled-region end-linenum)))
 
     (when (and start-disabled (equal start-disabled end-disabled))
       (treesit-indent-region beg end)
@@ -1904,7 +1916,7 @@ NEW-CONTENT-BUF is used to electric indent BEG to END region."
 
             (while (<= i-linenum end-linenum)
               (let ((line-ending (if (or max-end-linenum (< i-linenum end-linenum)) "\n" "")))
-                (if (matlab-ts-mode--ei-in-disabled-region i-linenum disabled-regions)
+                (if (matlab-ts-mode--ei-in-disabled-region i-linenum)
                     (let ((curr-line (buffer-substring (pos-bol) (pos-eol))))
                       (with-current-buffer new-content-buf
                         (insert curr-line line-ending)))
@@ -1947,7 +1959,6 @@ NEW-CONTENT-BUF is used to electric indent BEG to END region."
 If BEG is not at start of line, it is moved to start of the line.
 If END is not at end of line, it is moved to end of the line.
 This expansion of the region is done to simplify electric indent."
-
   (let ((new-content-buf (get-buffer-create
                           (generate-new-buffer-name " *temp-matlab-indent-region*"))))
     (unwind-protect

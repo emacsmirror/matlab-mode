@@ -2264,7 +2264,7 @@ Example:
   ;; When electric indent AND parent node is a multi-line matrix (m-matrix)
   (when (and matlab-ts-mode--electric-indent
              (string= "matrix" (treesit-node-type parent))
-             (matlab-ts-mode--ei-is-m-matrix parent))
+             (matlab-ts-mode--ei-is-m-matrix parent t))
     ;; Align to first column width
     ;;       m1 = [   23      |    m2 = [45678      |    m3 = [  23
     ;; TAB>        45678]     |             23]     |           333
