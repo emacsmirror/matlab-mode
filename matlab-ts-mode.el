@@ -634,6 +634,39 @@ start-point and end-point."
                                        'matlab-ts-mode-comment-heading-face
                                        override start end)))))
 
+(defun matlab-ts-mode--comment-pragma-capture (comment-node override start end &rest _)
+  "Fontify %#pragma, %-indent-mode=minimal, %-indent=mode=full.
+COMMENT-NODE is the tree-sitter comment node from a
+treesit-font-lock-rules rule and OVERRIDE is from that rule.  START and
+END specify the region to be fontified which could be smaller or larger
+than the COMMENT-NODE start-point and end-point."
+  ;; Note comment-node can contain many single-line comments, e.g. this is one comment node:
+  ;;   %#ok
+  ;;   % some other comment
+  (save-excursion
+    (goto-char (treesit-node-start comment-node))
+    (let ((comment-end (treesit-node-end comment-node)))
+      (while (< (point) comment-end)
+        (if (re-search-forward
+             ;; String below is the efficient form of
+             ;;    (rx (group (or (seq "%" "#" (1+ (not space)))
+             ;;                   (seq "%-indent-mode=minimal" word-end)
+             ;;                   (seq "%-indent-mode=full" word-end)))
+             "\\(%\\(?:#[^ \t\n\r]+\\|\\(?:-indent-mode=\\(?:minimal\\|full\\)\\)\\>\\)\\)"
+             comment-end t)
+            (let ((pragma (match-string 1))
+                  (pragma-start (match-beginning 1))
+                  (pragma-end (match-end 1)))
+              (when (or (string-match-p "^%#" pragma) ;; %#pragma can be on any line
+                        (save-excursion            ;; %-indent-mode=* must be on line by itself
+                          (goto-char pragma-start)
+                          (forward-line 0)
+                          (= (1- (re-search-forward "[^ ]")) pragma-start)))
+                (treesit-fontify-with-override pragma-start pragma-end
+                                               'matlab-ts-mode-pragma-face
+                                               override start end)))
+          (goto-char comment-end))))))
+
 (defvar matlab-ts-mode--comment-markers
   (list (concat "XX" "X")
         (concat "FIX" "ME")
@@ -764,8 +797,7 @@ Example, disp variable is overriding the disp builtin function:
    :feature 'comment-special
    :override t
    '(;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_pragma_in_fcn.m
-     ((comment) @matlab-ts-mode-pragma-face
-      (:match "\\`%#.+\\'" @matlab-ts-mode-pragma-face)) ;; %#pragma's
+     ((comment) @matlab-ts-mode--comment-pragma-capture)
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_comment_heading.m
      ;; See: tests/test-matlab-ts-mode-font-lock-files/font_lock_sections.m
      ((comment) @matlab-ts-mode--comment-heading-capture) ;; %% comment section heading
