@@ -326,7 +326,7 @@ is used in `matlab-ts-mode--ei-spacing'"
       ;;    x3 = {'one' 'two'...
       ;;                     ^    <== point here (next node is invisible comma node w/start=end pt)
       (when (looking-at "\\(?:[ \t]\\|\\.\\.\\.\\)" (point))
-        (setq node (treesit-node-at (point)))
+        (setq node (treesit-node-at (point) 'matlab))
         (let ((candidate node)) ;; candidate will be the array element
           (while (= (treesit-node-end candidate) (point)) ;; lookup to find our array element
             (let* ((next-node (treesit-node-next-sibling candidate))
@@ -343,10 +343,10 @@ is used in `matlab-ts-mode--ei-spacing'"
         (when (not (re-search-forward "[^ \t]" eol-pt t))
           (cl-return-from matlab-ts-mode--ei-move-to-and-get-node))
         (backward-char)
-        (setq node (treesit-node-at (point))))
+        (setq node (treesit-node-at (point) 'matlab)))
 
       (when (not node)
-        (setq node (treesit-node-at (point))))
+        (setq node (treesit-node-at (point) 'matlab)))
 
       ;; Consider [[1,2];[3,4]] when point is on semicolon, node will be the prior "]" because the
       ;; semicolon is an ignored node, so move forward to get to the "[" after the semicolon.
@@ -355,7 +355,7 @@ is used in `matlab-ts-mode--ei-spacing'"
                     (and (>= node-start (pos-bol))
                          (< node-start (point)))))
         (forward-char)
-        (setq node (treesit-node-at (point))))
+        (setq node (treesit-node-at (point) 'matlab)))
 
       ;; Don't go past end-of-line point
       (when (or (equal "\n" (treesit-node-type node))
@@ -493,7 +493,7 @@ enabling caching."
 Assumes that current point is at `back-to-indentation'."
   (or
    ;; (1) Comment line? Nothing to indent in line if it's a comment line.
-   (let ((first-node-type (or (treesit-node-type (treesit-node-at (point))) "")))
+   (let ((first-node-type (or (treesit-node-type (treesit-node-at (point) 'matlab)) "")))
      (string-match-p (rx bos (or "line_continuation" "comment") eos) first-node-type))
    ;; (2) Syntax error *within* the line? If error node covers whole line, assume nodes in
    ;;     line are good, i.e. electric indent the line.
@@ -718,7 +718,7 @@ final amount of leading whitespace because we do electric indent before
                                   (while (and (not found-element)
                                               (re-search-forward "[^ \t]" (pos-eol) t))
                                     (backward-char)
-                                    (let ((node (treesit-node-at (point))))
+                                    (let ((node (treesit-node-at (point) 'matlab)))
                                       (when (not (string-match-p (rx bos (or "comment"
                                                                              "line_continuation")
                                                                      eos)
@@ -786,7 +786,7 @@ when on the 2nd continuation only line, nil is returned otherwise a row node."
         (cl-loop
          while (not found-ans) do
 
-         (let* ((node-at-pt (treesit-node-at (point)))
+         (let* ((node-at-pt (treesit-node-at (point) 'matlab))
                 (node node-at-pt))
            (while (and node
                        (not (string-match-p (rx bos (or "row" "matrix" "assignment") eos)
@@ -884,7 +884,8 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
             (setq end-linenum (matlab-ts-mode--ei-indent-matrix-in-tmp-buf assign-node))
             (let* ((assign-node (save-excursion
                                   (matlab-ts-mode--ei-fast-back-to-indentation)
-                                  (treesit-parent-until (treesit-node-at (point)) "assignment")))
+                                  (treesit-parent-until (treesit-node-at (point) 'matlab)
+                                                        "assignment")))
                    (matrix-node (if assign-node
                                     (treesit-node-child-by-field-name assign-node "right")
                                   (treesit-node-parent (treesit-search-subtree ;; else a property
@@ -979,7 +980,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
     (goto-char (treesit-node-end matrix))
     (while (re-search-forward "[^ \t]" (pos-eol) t)
       (backward-char)
-      (let ((node (treesit-node-at (point))))
+      (let ((node (treesit-node-at (point) 'matlab)))
         (when (not (string-match-p (rx bos (or "," ";" "comment" "line_continuation") eos)
                                    (treesit-node-type node)))
           (cl-return-from matlab-ts-mode--ei-matrix-ends-on-line))
@@ -1222,7 +1223,7 @@ Note, \\='m-struct returns (list assignment-node max-field-width arguments-node)
       (forward-line 0)
       (when (re-search-forward "=" (pos-eol) t)
         (backward-char)
-        (let ((eq-node (treesit-node-at (point))))
+        (let ((eq-node (treesit-node-at (point) 'matlab)))
           ;; First "=" must be an assignment (assumptions elsewhere require this).
           (when (and (equal (treesit-node-type eq-node) "=")
                      (if (string= (treesit-node-type assign-node) "assignment")
@@ -1290,7 +1291,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
       (save-excursion
         (goto-char (treesit-node-start assign-node))
         (matlab-ts-mode--ei-fast-back-to-indentation)
-        (let ((first-node (treesit-node-at (point))))
+        (let ((first-node (treesit-node-at (point) 'matlab)))
           (matlab-ts-mode--ei-is-assign first-node m-type assign-node))))))
 
 (defun matlab-ts-mode--ei-assign-offset (ei-line)
@@ -1459,7 +1460,7 @@ is identified as a trailing comment."
     (save-excursion
       (forward-line 0)
       (when (re-search-forward "%" (pos-eol) t)
-        (let ((node (treesit-node-at (point))))
+        (let ((node (treesit-node-at (point) 'matlab)))
           (when (and (equal (treesit-node-type node) "comment")
                      ;; And not for a control flow or definition statement. For example,
                      ;;    if a % comment1                  <= we shouldn't align this
@@ -1471,11 +1472,11 @@ is identified as a trailing comment."
                                    (save-excursion
                                      (backward-char)
                                      (when (re-search-backward "[^ \t]" (pos-bol) t)
-                                       (equal (treesit-node-type (treesit-node-at (point)))
+                                       (equal (treesit-node-type (treesit-node-at (point) 'matlab))
                                               "line_continuation"))))
                          (forward-line -1))
                        (matlab-ts-mode--ei-fast-back-to-indentation)
-                       (let ((node (treesit-node-at (point))))
+                       (let ((node (treesit-node-at (point) 'matlab)))
                          (not (string-match-p matlab-ts-mode--ei-keywords-re
                                               (treesit-node-type node))))))
 
@@ -1573,13 +1574,14 @@ start-node is the identifier node for width and start-offset is 2."
         start-offset)
     (when (not (looking-at "[ \t]*$")) ;; when not at EOL
       (save-excursion
-        (let ((node (car (matlab-ts-mode--ei-get-node-to-use (treesit-node-at (point))))))
+        (let ((node (car (matlab-ts-mode--ei-get-node-to-use (treesit-node-at (point) 'matlab)))))
           (when (not (and node
                           (>= (point) (treesit-node-start node))
                           (<= (point) (treesit-node-end node))))
             (when (re-search-forward "[^ \t]" (pos-eol) t)
               (backward-char)
-              (setq node (car (matlab-ts-mode--ei-get-node-to-use (treesit-node-at (point)))))))
+              (setq node (car (matlab-ts-mode--ei-get-node-to-use
+                               (treesit-node-at (point) 'matlab))))))
 
           (when (and node
                      (>= (point) (treesit-node-start node))
@@ -1611,7 +1613,7 @@ TAB>  x = 123 ./1 + 567
     (goto-char beg)
     (while (re-search-forward "[0-9]\\.[/\\*\\\\]" end t)
       (backward-char 2) ;; on the "."
-      (let ((node (treesit-node-at (point))))
+      (let ((node (treesit-node-at (point) 'matlab)))
         (when (equal (treesit-node-type node) "number")
           (when (and line-pt
                      (<= (point) line-pt))
