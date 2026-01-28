@@ -1748,7 +1748,8 @@ END-LINE1 corresponds to the first %-indent-mode=full comment and so on."
                    (error "Assert: bad directive, %s" directive)))))
             (when start-line
               (push `(,start-line . ,(line-number-at-pos (point-max))) result))))
-        (reverse result))))
+        ;; Always return non-nil for caching and (-1 . 0) will never be used.
+        (or (reverse result) '((-1 . 0))))))
 
 (defun matlab-ts-mode--ei-in-disabled-region (&optional linenum)
   "Is LINENUM in a disabled region?
