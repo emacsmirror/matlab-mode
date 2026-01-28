@@ -2061,7 +2061,7 @@ On Debian 12 Intel/AMD 64-bit, install node and gcc if not installed:
 Download and extract tree-sitter-linux-x64.gz from
 https://github.com/tree-sitter/tree-sitter/releases into some location, e.g.
 
- : ~/emacs-projects/tree-sitter-bin/tree-sitter
+ : ~/emacs-projects/tree-sitter-cli/tree-sitter
 
 Get matlab tree-sitter, e.g.
 
@@ -2074,7 +2074,7 @@ Build:
 
 #+begin_src bash
   cd ~/emacs-projects/tree-sitter-matlab
-  ~/emacs-projects/tree-sitter-bin/tree-sitter generate --abi 14
+  ~/emacs-projects/tree-sitter-cli/tree-sitter generate --abi 14
 #+end_src
 
 Install, using default branch
