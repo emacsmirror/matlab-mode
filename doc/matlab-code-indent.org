@@ -58,21 +58,18 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
      %-indent-mode=full
    #+end_src
 
-   When indent-mode=minimal is active, only the indent-level whitespace on left  is modified when
-   the code is indented, which speeds up indent.
-
-   It should be possible to speedup matlab-ts-mode electric indent if anyone is interested in trying
-   to optimize it, let us know.
+   When ~%-indent-mode=minimal~ is active, only the indent-level whitespace on left is modified as
+   needed during indent. No adjustment of whitespaces between the code elements is performed, which
+   results in faster indent.
 
 * Indent Engine Design Considerations
 
 _Simplicity is good_
 
-The first indent engine I wrote was a c_indent engine that shipped with the MathWorks Real-Time
-Workshop in 1997 (now called the Simulink Coder). This simple indent engine worked well. It had no
-options and indented the generated code from Simulink Coder quickly. c_indent has been updated over
-the years, maintaining the goal of simplicity. Gofmt is another example of a simple indent engine
-that is very successful.
+Years ago, I wrote a proprietary c_indent engine. This simple indent engine worked well and was used
+for many years on large amounts of code, mostly programmatically generated code. It had no options
+and indented code quickly. Gofmt is another example of a simple indent engine that is very
+successful. A lesson leaned from these indent engines is that they work well in nearly all cases.
 
 _Complexity hurts_
 
@@ -86,7 +83,7 @@ years. The problem of clang-format making code less-readable also occurs with ot
 engines. For example Linus Torvalds vented over "Completely Crazy Rust Format Checking" [[[https://www.phoronix.com/news/Linus-Torvalds-Rust-Formatting][1]]] [[[https://www.reddit.com/r/rust/comments/1nwt8nm/linus_torvalds_vents_over_completely_crazy_rust/][2]]].
 
 The benefit of these complex indent engines is significant and outweighs the drawbacks. Clang-format
-added comment directives ~// clang-format off~ and ~// clang-format on~ which are liberally used to
+has comment directives ~// clang-format off~ and ~// clang-format on~ which are liberally used to
 work-around the drawbacks.
 
 _Design_
