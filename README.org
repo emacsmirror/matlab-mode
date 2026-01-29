@@ -97,15 +97,15 @@ Example:
     function out= indent_example(   in1, ...
     input2)
       % INDENT_EXAMPLE - an indent example
-         % This illustrates some of the capabilities of the MATLAB indent engine.
+         % This illustrates some of the capabilities of the matlab-ts-mode indent engine.
 
         arguments
             in1          = 10
-            input2= 20;
+        input2= 20;
     end
 
-          mat = [100,2   300.2
-        3 400,4];
+          mat = [100,2 300.2
+                     3 400,4];
 
           s = struct(  'f1',1, ...
     'otherField', in1+input2);
@@ -132,7 +132,7 @@ aligned, etc.
     function out = indent_example(in1, ...
                                   input2)
     % INDENT_EXAMPLE - an indent example
-    % This illustrates some of the capabilities of the MATLAB indent engine.
+    % This illustrates some of the capabilities of the matlab-ts-mode indent engine.
 
         arguments
             in1    = 10
