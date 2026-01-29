@@ -1,0 +1,32 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,457> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,157]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[157,159]
+ (function_definition<159,456> function[159,167] name: (identifier[168,193]@{electric_indent_arguments}@)
+  (function_arguments<193,214> ([193,194] arguments: (identifier[194,195]@{a}@) ,[195,196] (identifier[197,203]@{param2}@) ,[203,204] (identifier[205,213]@{varargin}@) )[213,214])
+  \n[214,215]
+  (arguments_statement<219,351> arguments[219,228] \n[228,229]
+   (property<237,285> name: (identifier[237,238]@{a}@)
+    (validation_functions<244,285> {[244,245] (identifier[245,258]@{mustBeNumeric}@) ,[258,259] (identifier[260,270]@{mustBeReal}@) ,[270,271] (identifier[272,284]@{mustBeFinite}@) }[284,285]))
+   \n[285,286]
+   (property<294,342> name: (identifier[294,300]@{param2}@)
+    (validation_functions<301,342> {[301,302] (identifier[302,315]@{mustBeNumeric}@) ,[315,316] (identifier[317,327]@{mustBeReal}@) ,[327,328] (identifier[329,341]@{mustBeFinite}@) }[341,342]))
+   \n[342,343] end[347,350] \n[350,351])
+  (arguments_statement<355,401> arguments[355,364]
+   (attributes<365,376> ([365,366] argument: (identifier[366,375]@{Repeating}@) )[375,376])
+   \n[376,377]
+   (property<385,393> name: (identifier[385,393]@{varargin}@))
+   \n[393,394] end[398,401])
+  (block<406,453>
+   (function_call<406,413> name: (identifier[406,410]@{disp}@) ([410,411]
+    (arguments<411,412> argument: (identifier[411,412]@{a}@))
+    )[412,413])
+   ;[413,414]
+   (function_call<419,431> name: (identifier[419,423]@{disp}@) ([423,424]
+    (arguments<424,430> argument: (identifier[424,430]@{param2}@))
+    )[430,431])
+   ;[431,432]
+   (function_call<437,451> name: (identifier[437,441]@{disp}@) ([441,442]
+    (arguments<442,450> argument: (identifier[442,450]@{varargin}@))
+    )[450,451])
+   ;[451,452] \n[452,453])
+  end[453,456])
+ \n[456,457])

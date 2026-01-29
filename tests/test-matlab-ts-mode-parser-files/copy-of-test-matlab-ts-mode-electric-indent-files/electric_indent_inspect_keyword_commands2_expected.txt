@@ -1,0 +1,83 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,466> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (class_definition<22,465> classdef[22,30] name: (identifier[31,72]@{electric_indent_inspect_keyword_commands2}@) \n[72,73]
+  (methods<77,461> methods[77,84]
+   (attributes<85,93> ([85,86]
+    (attribute<86,92> (identifier[86,92]@{Static}@))
+    )[92,93])
+   \n[93,94]
+   (function_definition<102,453> function[102,110] name: (identifier[111,115]@{test}@) \n[115,117]
+    (block<129,442>
+     (function_call<129,145>
+      name: (identifier<129,135> events[129,135])
+      ([135,136]
+      (arguments<136,144>
+       argument: (string<136,144> '[136,137] (string_content[137,143]@{handle}@) '[143,144]))
+      )[144,145])
+     \n[145,146]
+     (assignment<158,183> left: (identifier[158,162]@{foo1}@) =[163,164]
+      right: 
+       (cell<165,183> {[165,166]
+        (row<166,182>
+         (function_call<166,182>
+          name: (identifier<166,172> events[166,172])
+          ([172,173]
+          (arguments<173,181>
+           argument: (string<173,181> '[173,174] (string_content[174,180]@{handle}@) '[180,181]))
+          )[181,182]))
+        }[182,183]))
+     ;[183,184]
+     (function_call<197,207> name: (identifier[197,201]@{disp}@) ([201,202]
+      (arguments<202,206> argument: (identifier[202,206]@{foo1}@))
+      )[206,207])
+     ;[207,208] \n[208,210]
+     (function_call<222,260>
+      name: (identifier<222,233> enumeration[222,233])
+      ([233,234]
+      (arguments<234,259>
+       argument: (string<234,259> '[234,235] (string_content[235,258]@{matlab.OnOffSwitchSTate}@) '[258,259]))
+      )[259,260])
+     \n[260,261]
+     (assignment<273,320> left: (identifier[273,277]@{foo2}@) =[278,279]
+      right: 
+       (cell<280,320> {[280,281]
+        (row<281,319>
+         (function_call<281,319>
+          name: (identifier<281,292> enumeration[281,292])
+          ([292,293]
+          (arguments<293,318>
+           argument: (string<293,318> '[293,294] (string_content[294,317]@{matlab.OnOffSwitchSTate}@) '[317,318]))
+          )[318,319]))
+        }[319,320]))
+     ;[320,321]
+     (function_call<334,344> name: (identifier[334,338]@{disp}@) ([338,339]
+      (arguments<339,343> argument: (identifier[339,343]@{foo2}@))
+      )[343,344])
+     ;[344,345] \n[345,347]
+     (function_call<359,376>
+      name: (identifier<359,366> methods[359,366])
+      ([366,367]
+      (arguments<367,375>
+       argument: (string<367,375> '[367,368] (string_content[368,374]@{double}@) '[374,375]))
+      )[375,376])
+     \n[376,377]
+     (assignment<389,415> left: (identifier[389,393]@{foo3}@) =[394,395]
+      right: 
+       (cell<396,415> {[396,397]
+        (row<397,414>
+         (function_call<397,414>
+          name: (identifier<397,404> methods[397,404])
+          ([404,405]
+          (arguments<405,413>
+           argument: (string<405,413> '[405,406] (string_content[406,412]@{double}@) '[412,413]))
+          )[413,414]))
+        }[414,415]))
+     ;[415,416]
+     (function_call<429,439> name: (identifier[429,433]@{disp}@) ([433,434]
+      (arguments<434,438> argument: (identifier[434,438]@{foo3}@))
+      )[438,439])
+     ;[439,440] \n[440,442])
+    end[450,453])
+   \n[453,454] end[458,461])
+  \n[461,462] end[462,465])
+ \n[465,466])

@@ -1,0 +1,15 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,209> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,57]@{% .^ operator is element-wise power}@) (comment[59,156]@{% MATLAB tree-sitter identifies 10. as a number, t...}@)
+ (assignment<158,163> left: (identifier[158,159]@{a}@) =[160,161] right: (number[162,163]@{5}@))
+ ;[163,164]
+ (assignment<165,171> left: (identifier[165,166]@{b}@) =[167,168] right: (number[169,171]@{10}@))
+ ;[171,172]
+ (assignment<174,185> left: (identifier[174,175]@{x}@) =[176,177]
+  right: (binary_operator<178,185> left: (number[178,180]@{10}@) .^[181,183] right: (number[184,185]@{5}@)))
+ \n[185,186]
+ (assignment<186,197> left: (identifier[186,187]@{y}@) =[188,189]
+  right: (binary_operator<190,197> left: (number[190,192]@{10}@) .^[193,195] right: (identifier[196,197]@{a}@)))
+ ;[197,198]
+ (assignment<199,207> left: (identifier[199,200]@{z}@) =[201,202]
+  right: (binary_operator<203,207> left: (identifier[203,204]@{a}@) .^[204,206] right: (identifier[206,207]@{b}@)))
+ ;[207,208] \n[208,209])

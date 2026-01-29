@@ -1,0 +1,21 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,285> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,284> classdef[114,122] name: (identifier[123,167]@{electric_indent_prop_attribute_id_cell_value}@) \n[167,168]
+  (properties<172,280> properties[172,182]
+   (attributes<183,247> ([183,184]
+    (attribute<184,204> (identifier[184,193]@{SetAccess}@) =[193,194]
+     (string<195,204> '[195,196] (string_content[196,203]@{private}@) '[203,204]))
+    ,[204,205]
+    (attribute<206,246> (identifier[206,215]@{GetAccess}@) =[215,216]
+     (cell<217,246> {[217,218]
+      (row<218,245>
+       (metaclass_operator<218,231> ?[218,219] (identifier[219,222]@{foo}@) .[222,223] (identifier[223,227]@{barj}@) .[227,228] (identifier[228,231]@{zoo}@))
+       ,[231,232]
+       (metaclass_operator<233,245> ?[233,234] (identifier[234,237]@{foo}@) .[237,238] (identifier[238,241]@{bar}@) .[241,242] (identifier[242,245]@{goo}@)))
+      }[245,246]))
+    )[246,247])
+   \n[247,248]
+   (property<256,272> name: (identifier[256,272]@{ConnectionHandle}@))
+   \n[272,273] end[277,280])
+  \n[280,281] end[281,284])
+ \n[284,285])

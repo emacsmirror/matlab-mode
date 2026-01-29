@@ -1,0 +1,11 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,163> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<91,161>
+  left: (multioutput_variable<91,107> [[91,92] (identifier[92,97]@{enums}@) ,[97,98] (identifier[98,106]@{enumStrs}@) ][106,107])
+  =[108,109]
+  right: 
+   (function_call<110,161> name: (identifier[110,121]@{enumeration}@) (line_continuation[121,125]@{...\n}@) ([129,130]
+    (arguments<130,160>
+     argument: (string<130,160> '[130,131] (string_content[131,159]@{matlab.lang.OnOffSwitchState}@) '[159,160]))
+    )[160,161]))
+ ;[161,162] \n[162,163])

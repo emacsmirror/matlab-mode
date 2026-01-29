@@ -1,6 +1,6 @@
 ;;; sweep-test-matlab-ts-mode-indent.el --- -*- lexical-binding: t -*-
 
-;; Copyright (C) 2025 Free Software Foundation, Inc.
+;; Copyright (C) 2025-2026 Free Software Foundation, Inc.
 ;;
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
@@ -33,7 +33,7 @@
 
 (defvar sweep-test-matlab-ts-mode-indent--mlint
   (or (matlab--get-mlint-exe)
-      (error "MLint not found, is matlab on your PATH?")))
+      (error "MLint not found, is /path/to/matlab/bin on your PATH?")))
 
 (defun sweep-test-matlab-ts-mode-indent--syntax-checker (file)
   "MLint FILE, return pair (VALID . CHECK-RESULT).
@@ -86,6 +86,8 @@ the results are displayed on stdout."
 
   (let ((test-name "sweep-test-matlab-ts-mode-indent")
         (matlab-ts-mode--indent-assert t))
+
+    (add-to-list 'major-mode-remap-alist '(matlab-mode . matlab-ts-mode))
 
     (t-utils-sweep-test-indent
      test-name

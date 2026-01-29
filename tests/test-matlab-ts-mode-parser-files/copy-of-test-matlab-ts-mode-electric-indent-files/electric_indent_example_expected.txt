@@ -1,0 +1,103 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,965> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,132]@{% t-utils-test-indent: no-line-by-line-indent - al...}@) (comment[134,168]@{% Calculate the Golden Ratio (phi)}@)
+ (assignment<184,216> left: (identifier[184,187]@{phi}@) =[187,188]
+  right: 
+   (binary_operator<190,216>
+    left: 
+     (parenthesis<190,211> ([190,191]
+      (binary_operator<196,210> left: (number[196,197]@{1}@) +[197,198]
+       right: 
+        (function_call<199,210> name: (identifier[199,203]@{sqrt}@) ([203,204]
+         (arguments<208,209> argument: (number[208,209]@{5}@))
+         )[209,210]))
+      )[210,211])
+    /[211,212] right: (number[215,216]@{2}@)))
+ ;[218,219]
+ (function_call<225,289> name: (identifier[225,229]@{disp}@) ([229,230]
+  (arguments<233,286>
+   argument: 
+    (matrix<233,286> [[233,234]
+     (row<238,283>
+      (string<238,260> '[238,239] (string_content[239,259]@{Golden Ratio (phi): }@) '[259,260])
+      ,[260,261]
+      (function_call<269,283> name: (identifier[269,276]@{num2str}@) ([276,277]
+       (arguments<278,281> argument: (identifier[278,281]@{phi}@))
+       )[282,283]))
+     ][285,286]))
+  )[288,289])
+ ;[289,290] (comment[297,316]@{% Display the value}@) (comment[321,387]@{% Plot the exponential function with a Taylor Seri...}@)
+ (assignment<391,422> left: (identifier[391,392]@{x}@) =[393,394]
+  right: 
+   (range<396,422>
+    (unary_operator<396,398> -[396,397] operand: (number[397,398]@{2}@))
+    :[404,405] (number[408,411]@{0.1}@) :[414,415] (number[421,422]@{2}@)))
+ ;[422,423]
+ (assignment<426,443> left: (identifier[426,430]@{yExp}@) =[430,431]
+  right: 
+   (function_call<431,443> name: (identifier[431,434]@{exp}@) ([434,435]
+    (arguments<439,440> argument: (identifier[439,440]@{x}@))
+    )[442,443]))
+ ;[445,446]
+ (assignment<453,498> left: (identifier[453,460]@{yTaylor}@) =[461,462]
+  right: 
+   (binary_operator<463,498>
+    left: 
+     (binary_operator<463,486>
+      left: (binary_operator<463,466> left: (number[463,464]@{1}@) +[464,465] right: (identifier[465,466]@{x}@))
+      +[470,471]
+      right: 
+       (binary_operator<473,486>
+        left: (binary_operator<473,480> left: (identifier[473,474]@{x}@) .^[474,476] right: (number[479,480]@{2}@))
+        /[482,483] right: (number[485,486]@{2}@)))
+    +[486,487]
+    right: 
+     (binary_operator<487,498>
+      left: (binary_operator<487,491> left: (identifier[487,488]@{x}@) .^[488,490] right: (number[490,491]@{3}@))
+      /[496,497] right: (number[497,498]@{6}@))))
+ ;[498,499] (comment[503,520]@{% First few terms}@) (comment[545,569]@{% Plot the approximation}@)
+ (command<573,586> (command_name[573,579]@{figure}@) (command_argument[586,586]@{}@))
+ ;[586,587] (comment[587,608]@{% Create a new figure}@)
+ (function_call<612,658> name: (identifier[612,616]@{plot}@) ([616,617]
+  (arguments<621,657> argument: (identifier[621,622]@{x}@) ,[622,623] (identifier[623,627]@{yExp}@) ,[627,628]
+   (string<639,643> '[639,640] (string_content[640,642]@{b-}@) '[642,643])
+   ,[643,644]
+   (string<644,655> '[644,645] (string_content[645,654]@{LineWidth}@) '[654,655])
+   ,[655,656] (number[656,657]@{2}@))
+  )[657,658])
+ ;[658,659] (comment[666,695]@{% Plot the actual exponential}@)
+ (command<700,707> (command_name[700,704]@{hold}@) (command_argument[705,707]@{on}@))
+ ;[710,711] (comment[711,734]@{% Keep the current plot}@)
+ (function_call<737,806> name: (identifier[737,741]@{plot}@) ([741,742]
+  (arguments<742,805> argument: (identifier[742,743]@{x}@) ,[743,744] (identifier[745,752]@{yTaylor}@) ,[752,753] (line_continuation[768,772]@{...\n}@)
+   (string<779,784> '[779,780] (string_content[780,783]@{r--}@) '[783,784])
+   ,[784,785] (line_continuation[785,789]@{...\n}@)
+   (string<789,800> '[789,790] (string_content[790,799]@{LineWidth}@) '[799,800])
+   ,[800,801] (number[802,805]@{1.5}@))
+  )[805,806])
+ ;[806,807]
+ (function_call<809,861> name: (identifier[809,814]@{title}@) ([814,815]
+  (arguments<815,860>
+   argument: (string<815,860> '[815,816] (string_content[816,859]@{Exponential Function & Taylor Approximation}@) '[859,860]))
+  )[860,861])
+ ;[861,862]
+ (function_call<867,881> name: (identifier[867,873]@{xlabel}@) ([873,874]
+  (arguments<877,880>
+   argument: (string<877,880> '[877,878] (string_content[878,879]@{x}@) '[879,880]))
+  )[880,881])
+ ;[881,882]
+ (function_call<883,894> name: (identifier[883,889]@{ylabel}@) ([889,890]
+  (arguments<890,893>
+   argument: (string<890,893> '[890,891] (string_content[891,892]@{y}@) '[892,893]))
+  )[893,894])
+ ;[894,895]
+ (function_call<899,937> name: (identifier[899,905]@{legend}@) ([905,906]
+  (arguments<909,934>
+   argument: (string<909,917> '[909,910] (string_content[910,916]@{exp(x)}@) '[916,917])
+   ,[917,918]
+   (string<919,934> '[919,920] (string_content[920,933]@{Taylor Series}@) '[933,934]))
+  )[936,937])
+ ;[937,938]
+ (command<941,948> (command_name[941,945]@{grid}@) (command_argument[946,948]@{on}@))
+ ;[950,951]
+ (command<953,961> (command_name[953,957]@{hold}@) (command_argument[958,961]@{off}@))
+ ;[963,964] \n[964,965])

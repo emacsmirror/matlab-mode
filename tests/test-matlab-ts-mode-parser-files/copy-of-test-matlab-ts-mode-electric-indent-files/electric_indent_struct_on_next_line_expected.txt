@@ -1,0 +1,24 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,305> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,103]@{% For now we require struct be on the assignment l...}@) (comment[105,195]@{% t-utils-test-indent: no-line-by-line-indent - li...}@)
+ (assignment<197,303>
+  left: 
+   (field_expression<197,224> object: (identifier[197,205]@{myStruct}@) .[205,206]
+    field: 
+     (function_call<206,224> name: (identifier[206,215]@{stateInfo}@) ([215,216]
+      (arguments<216,223>
+       argument: 
+        (binary_operator<216,223>
+         left: (end_keyword<216,219> end[216,219])
+         +[220,221] right: (number[222,223]@{1}@)))
+      )[223,224]))
+  =[225,226] (line_continuation[227,231]@{...\n}@)
+  right: 
+   (function_call<235,303> name: (identifier[235,241]@{struct}@) ([241,242]
+    (arguments<242,302>
+     argument: (string<242,247> '[242,243] (string_content[243,246]@{foo}@) '[246,247])
+     ,[247,248] (number[249,250]@{1}@) ,[250,251] (line_continuation[252,256]@{...\n}@)
+     (string<271,286> '[271,272] (string_content[272,285]@{otherFieldTwo}@) '[285,286])
+     ,[290,291]
+     (string<291,302> '[291,292] (string_content[292,301]@{something}@) '[301,302]))
+    )[302,303]))
+ ;[303,304] \n[304,305])

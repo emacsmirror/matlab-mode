@@ -1,0 +1,74 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_string.m:3:9:
+
+  case1: (t-utils-xr "C-n" "C-n" "C-a" "C-I")
+
+- Invoking      : "C-n" = next-line
+  Start point   :   67
+  Moved to point:  113
+  : 4:45:                 error(message('foo.bar.goo'  , ...
+  :                                                    ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  113
+  Moved to point:  164
+  : 5:45:                          'filed1', num2str(v1   /    2)));
+  :                                                    ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  164
+  Moved to point:  119
+  : 5:0:                          'filed1', num2str(v1   /    2)));
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-I" = indent-for-tab-command
+  Start point   :  119
+  Moved to point:  149
+  : 5:30:                               'filed1', num2str(v1 / 2)));
+  :                                     ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ 
+ % case1: (t-utils-xr "C-n" "C-n" "C-a" "C-I")
+                 error(message('foo.bar.goo'  , ...
+-                         'filed1', num2str(v1   /    2)));
++                              'filed1', num2str(v1 / 2)));
+ 
+ % case1: (t-utils-xr (re-search-forward "2)") "C-I")
+                 error(message('foo.bar.goo'  , ...
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_string.m:7:9:
+
+  case1: (t-utils-xr (re-search-forward "2)") "C-I")
+
+- Invoking      : (re-search-forward "2)")
+  Start point   :  231
+  Moved to point:  345
+  : 9:62:                                 'filed1', num2str(v1   /    2)));
+  :                                                                     ^
+  No buffer modifications
+
+- Invoking      : "C-I" = indent-for-tab-command
+  Start point   :  345
+  Moved to point:  338
+  : 9:55:                               'filed1', num2str(v1 / 2)));
+  :                                                              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -6,4 +6,4 @@
+ 
+ % case1: (t-utils-xr (re-search-forward "2)") "C-I")
+                 error(message('foo.bar.goo'  , ...
+-                                'filed1', num2str(v1   /    2)));
++                              'filed1', num2str(v1 / 2)));
+  #+end_src diff

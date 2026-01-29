@@ -1,0 +1,33 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,115> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (assignment<22,54>
+  left: (identifier<22,28> events[22,28])
+  =[29,30]
+  right: 
+   (cell<31,54> {[31,32]
+    (row<32,53>
+     (string<32,37> '[32,33] (string_content[33,36]@{one}@) '[36,37])
+     ,[37,38]
+     (string<39,44> '[39,40] (string_content[40,43]@{two}@) '[43,44])
+     ,[44,45]
+     (string<46,53> '[46,47] (string_content[47,52]@{three}@) '[52,53]))
+    }[53,54]))
+ ;[54,55] \n[55,57]
+ (for_statement<57,114> for[57,60]
+  (iterator<61,85> (identifier[61,64]@{idx}@) =[65,66]
+   (range<67,85> (number[67,68]@{1}@) :[69,70]
+    (function_call<71,85> name: (identifier[71,77]@{length}@) ([77,78]
+     (arguments<78,84>
+      argument: (identifier<78,84> events[78,84]))
+     )[84,85])))
+  (block<90,111>
+   (assignment<90,109> left: (identifier[90,95]@{event}@) =[96,97]
+    right: 
+     (function_call<98,109>
+      name: (identifier<98,104> events[98,104])
+      {[104,105]
+      (arguments<105,108> argument: (identifier[105,108]@{idx}@))
+      }[108,109]))
+   ;[109,110] \n[110,111])
+  end[111,114])
+ \n[114,115])

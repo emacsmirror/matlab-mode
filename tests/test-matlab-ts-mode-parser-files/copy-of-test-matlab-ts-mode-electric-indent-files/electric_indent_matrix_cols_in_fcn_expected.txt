@@ -1,0 +1,13 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,335> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,119]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) (comment[121,150]@{% Test missing closing paren:}@)
+ (assignment<152,333> left: (identifier[152,178]@{longVariableNameForMatrix1}@) =[179,180]
+  right: 
+   (function_call<181,333> name: (identifier[181,186]@{myFcn}@) ([186,187]
+    (arguments<187,333>
+     argument: 
+      (matrix<187,333> [[187,188] \n[188,189]
+       (row<227,242> (number[227,230]@{100}@) ,[230,231] (number[232,236]@{2000}@) ,[236,237] (number[238,242]@{3000}@))
+       (row<280,296> (number[280,284]@{4000}@) ,[284,285] (number[286,290]@{5000}@) ,[290,291] (number[292,296]@{6000}@))
+       ][332,333]))
+    )[333,333]))
+ ;[333,334] \n[334,335])

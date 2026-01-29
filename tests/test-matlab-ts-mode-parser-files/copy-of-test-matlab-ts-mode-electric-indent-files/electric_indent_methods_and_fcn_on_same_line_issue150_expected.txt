@@ -1,0 +1,17 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,342> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@) (comment[92,182]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[182,184]
+ (class_definition<184,341> classdef[184,192] name: (identifier[193,246]@{electric_indent_methods_and_fcn_on_same_line_issue...}@) \n[246,247]
+  (methods<251,337> methods[251,258]
+   (function_definition<259,321> function[259,267]
+    (function_output<268,271> (identifier[268,269]@{b}@) =[270,271])
+    name: (identifier[272,275]@{foo}@)
+    (function_arguments<275,278> ([275,276] arguments: (identifier[276,277]@{a}@) )[277,278])
+    \n[278,279]
+    (block<295,306>
+     (assignment<295,304> left: (identifier[295,296]@{b}@) =[297,298]
+      right: (binary_operator<299,304> left: (number[299,300]@{2}@) *[301,302] right: (identifier[303,304]@{a}@)))
+     ;[304,305] \n[305,306])
+    end[318,321])
+   \n[321,322] end[334,337])
+  \n[337,338] end[338,341])
+ \n[341,342])

@@ -1,0 +1,28 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1133> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,986]@{% From https://www.mathworks.com/help/matlab/matla...}@) (comment[988,1078]@{% t-utils-test-indent: no-line-by-line-indent - li...}@)
+ (assignment<1080,1131> left: (identifier[1080,1081]@{f}@) =[1082,1083]
+  right: 
+   (cell<1084,1131> {[1084,1085]
+    (row<1085,1093>
+     (lambda<1085,1093> @[1085,1086] ([1086,1087]
+      (arguments<1087,1088> (identifier[1087,1088]@{x}@))
+      )[1088,1089]
+      expression: (binary_operator<1089,1093> left: (identifier[1089,1090]@{x}@) .^[1090,1092] right: (number[1092,1093]@{2}@))))
+    (row<1100,1108>
+     (lambda<1100,1108> @[1100,1101] ([1101,1102]
+      (arguments<1102,1103> (identifier[1102,1103]@{y}@))
+      )[1103,1104]
+      expression: (binary_operator<1104,1108> left: (identifier[1104,1105]@{y}@) +[1105,1106] right: (number[1106,1108]@{10}@))))
+    (row<1115,1130>
+     (lambda<1115,1130> @[1115,1116] ([1116,1117]
+      (arguments<1117,1120> (identifier[1117,1118]@{x}@) ,[1118,1119] (identifier[1119,1120]@{y}@))
+      )[1120,1121]
+      expression: 
+       (binary_operator<1121,1130>
+        left: 
+         (binary_operator<1121,1127>
+          left: (binary_operator<1121,1125> left: (identifier[1121,1122]@{x}@) .^[1122,1124] right: (number[1124,1125]@{2}@))
+          +[1125,1126] right: (identifier[1126,1127]@{y}@))
+        +[1127,1128] right: (number[1128,1130]@{10}@))))
+    }[1130,1131]))
+ ;[1131,1132] \n[1132,1133])

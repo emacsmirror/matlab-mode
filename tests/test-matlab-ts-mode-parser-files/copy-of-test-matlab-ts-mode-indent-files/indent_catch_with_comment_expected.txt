@@ -5,10 +5,8 @@
    (assignment<30,40> left: (identifier[30,31]@{a}@) =[32,33]
     right: (function_call<34,40> name: (identifier[34,38]@{foo1}@) ([38,39] )[39,40]))
    ;[40,41] \n[41,42])
-  (catch_clause<42,76> catch[42,47]
-   (block<48,76>
-    (command<48,51> (command_name[48,51]@{err}@))
-    (comment[52,56]@{%#ok}@) \n[56,57]
+  (catch_clause<42,76> catch[42,47] (identifier[48,51]@{err}@) (comment[52,56]@{%#ok}@) \n[56,57]
+   (block<61,76>
     (function_call<61,74> name: (identifier[61,65]@{disp}@) ([65,66]
      (arguments<66,73>
       argument: (string<66,73> '[66,67] (string_content[67,72]@{catch}@) '[72,73]))

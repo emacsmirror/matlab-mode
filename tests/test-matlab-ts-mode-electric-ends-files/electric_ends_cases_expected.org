@@ -892,17 +892,19 @@
 
 - Invoking      : "C-m" = newline
   Start point   : 1539
-  Moved to point: 1556
+  Moved to point: 1560
   : 55:16:                 
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -52,6 +52,9 @@
+@@ -51,7 +51,10 @@
+             end
  
              % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
-             for idx=1:a
+-            for idx=1:a
++            for idx = 1 : a
 +                
 +            end
 +
@@ -912,8 +914,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp(idx)")
-  Start point   : 1556
-  Moved to point: 1565
+  Start point   : 1560
+  Moved to point: 1569
   : 55:25:                 disp(idx)
   :                                 ^
   Buffer modified:
@@ -923,7 +925,7 @@
 @@ -52,7 +52,7 @@
  
              % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
-             for idx=1:a
+             for idx = 1 : a
 -                
 +                disp(idx)
              end
@@ -936,15 +938,15 @@
   Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1682
-  Moved to point: 1683
+  Start point   : 1686
+  Moved to point: 1687
   : 59:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1683
-  Moved to point: 1695
+  Start point   : 1687
+  Moved to point: 1699
   : 59:12:             
   :                    ^
   Buffer modified:
@@ -963,8 +965,8 @@
   #+end_src diff
 
 - Invoking      : (insert "parfor idx=1:a")
-  Start point   : 1695
-  Moved to point: 1709
+  Start point   : 1699
+  Moved to point: 1713
   : 59:26:             parfor idx=1:a
   :                                  ^
   Buffer modified:
@@ -983,18 +985,20 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1709
-  Moved to point: 1726
+  Start point   : 1713
+  Moved to point: 1734
   : 60:16:                 
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -57,6 +57,9 @@
+@@ -56,7 +56,10 @@
+             end
  
              % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
-             parfor idx=1:a
+-            parfor idx=1:a
++            parfor idx = 1 : a
 +                
 +            end
 +
@@ -1004,8 +1008,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp(idx)")
-  Start point   : 1726
-  Moved to point: 1735
+  Start point   : 1734
+  Moved to point: 1743
   : 60:25:                 disp(idx)
   :                                 ^
   Buffer modified:
@@ -1015,7 +1019,7 @@
 @@ -57,7 +57,7 @@
  
              % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
-             parfor idx=1:a
+             parfor idx = 1 : a
 -                
 +                disp(idx)
              end
@@ -1028,15 +1032,15 @@
   Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1857
-  Moved to point: 1858
+  Start point   : 1865
+  Moved to point: 1866
   : 64:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1858
-  Moved to point: 1870
+  Start point   : 1866
+  Moved to point: 1878
   : 64:12:             
   :                    ^
   Buffer modified:
@@ -1055,8 +1059,8 @@
   #+end_src diff
 
 - Invoking      : (insert "spmd")
-  Start point   : 1870
-  Moved to point: 1874
+  Start point   : 1878
+  Moved to point: 1882
   : 64:16:             spmd
   :                        ^
   Buffer modified:
@@ -1075,8 +1079,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 1874
-  Moved to point: 1891
+  Start point   : 1882
+  Moved to point: 1899
   : 65:16:                 
   :                        ^
   Buffer modified:
@@ -1096,8 +1100,8 @@
   #+end_src diff
 
 - Invoking      : (insert "q = magic(spmdIndex + 2)")
-  Start point   : 1891
-  Moved to point: 1915
+  Start point   : 1899
+  Moved to point: 1923
   : 65:40:                 q = magic(spmdIndex + 2)
   :                                                ^
   Buffer modified:
@@ -1120,15 +1124,15 @@
   Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 2023
-  Moved to point: 2024
+  Start point   : 2031
+  Moved to point: 2032
   : 69:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 2024
-  Moved to point: 2036
+  Start point   : 2032
+  Moved to point: 2044
   : 69:12:             
   :                    ^
   Buffer modified:
@@ -1147,8 +1151,8 @@
   #+end_src diff
 
 - Invoking      : (insert "try")
-  Start point   : 2036
-  Moved to point: 2039
+  Start point   : 2044
+  Moved to point: 2047
   : 69:15:             try
   :                       ^
   Buffer modified:
@@ -1167,8 +1171,8 @@
   #+end_src diff
 
 - Invoking      : "C-m" = newline
-  Start point   : 2039
-  Moved to point: 2056
+  Start point   : 2047
+  Moved to point: 2064
   : 70:16:                 
   :                        ^
   Buffer modified:
@@ -1189,8 +1193,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp('try')")
-  Start point   : 2056
-  Moved to point: 2067
+  Start point   : 2064
+  Moved to point: 2075
   : 70:27:                 disp('try')
   :                                   ^
   Buffer modified:
@@ -1213,7 +1217,7 @@
   Case14: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
 
 - Invoking      : (t-utils-xr-print-code (point-min) (point-max))
-  Start point   : 2202
+  Start point   : 2210
   No point movement
   standard-output:
   #+begin_src matlab-ts
@@ -1270,12 +1274,12 @@ classdef electric_ends_cases
             end
 
             % Case10: (t-utils-xr \"C-n\" \"C-i\" (insert \"for idx=1:a\") \"C-m\" (insert \"disp(idx)\"))
-            for idx=1:a
+            for idx = 1 : a
                 disp(idx)
             end
 
             % Case11: (t-utils-xr \"C-n\" \"C-i\" (insert \"parfor idx=1:a\") \"C-m\" (insert \"disp(idx)\"))
-            parfor idx=1:a
+            parfor idx = 1 : a
                 disp(idx)
             end
 

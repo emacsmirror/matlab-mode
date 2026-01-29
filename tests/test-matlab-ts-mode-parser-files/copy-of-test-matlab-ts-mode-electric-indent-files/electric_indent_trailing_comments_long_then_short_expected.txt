@@ -1,0 +1,38 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,765> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,257]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) (comment[259,377]@{% When computing trailing comment location, need t...}@) \n[377,379]
+ (class_definition<379,764> classdef[379,387] name: (identifier[388,437]@{electric_indent_trailing_comments_long_then_short}@) \n[437,438]
+  (properties<442,556> properties[442,452] \n[452,453]
+   (property<461,473> name: (identifier[461,469]@{longProp}@)
+    (default_value<470,473> =[470,471] (number[472,473]@{1}@)))
+   ;[473,474] (comment[483,492]@{% comment}@) \n[492,493]
+   (property<501,536> name: (identifier[501,502]@{x}@)
+    (default_value<504,536> =[504,505]
+     (matrix<506,536> [[506,507]
+      (row<507,535> (number[507,508]@{1}@) ,[508,509] (number[510,511]@{2}@) ,[511,512] (number[513,514]@{3}@) ,[514,515] (number[515,516]@{4}@) ,[516,517] (number[518,519]@{5}@) ,[519,520] (number[521,522]@{6}@) ,[522,523] (number[524,525]@{7}@) ,[525,526] (number[527,528]@{8}@) ,[528,529] (number[530,531]@{9}@) ,[531,532] (number[533,535]@{10}@))
+      ][535,536])))
+   ;[536,537] (comment[538,548]@{% comment2}@) \n[548,549] end[553,556])
+  \n[556,558]
+  (methods<562,759> methods[562,569]
+   (attributes<570,578> ([570,571]
+    (attribute<571,577> (identifier[571,577]@{Static}@))
+    )[577,578])
+   \n[578,579]
+   (function_definition<587,750> function[587,595]
+    (function_output<596,599> (identifier[596,597]@{y}@) =[598,599])
+    name: (identifier[600,603]@{foo}@) \n[603,604]
+    (block<616,739>
+     (assignment<616,631> left: (identifier[616,627]@{longVarName}@) =[628,629] right: (number[630,631]@{1}@))
+     ;[631,632] (comment[634,644]@{% comment1}@)
+     (assignment<657,692> left: (identifier[657,658]@{x}@) =[659,660]
+      right: 
+       (matrix<661,692> [[661,662]
+        (row<662,691> (number[662,663]@{1}@) ,[663,664] (number[665,666]@{2}@) ,[666,667] (number[668,669]@{3}@) ,[669,670] (number[671,672]@{4}@) ,[672,673] (number[674,675]@{5}@) ,[675,676] (number[677,678]@{6}@) ,[678,679] (number[680,681]@{7}@) ,[681,682] (number[683,684]@{8}@) ,[684,685] (number[686,687]@{9}@) ,[687,688] (number[689,691]@{10}@))
+        ][691,692]))
+     ;[692,693] (comment[694,704]@{% comment2}@)
+     (assignment<718,737> left: (identifier[718,719]@{y}@) =[720,721]
+      right: (binary_operator<722,737> left: (identifier[722,733]@{longVarName}@) +[734,735] right: (identifier[736,737]@{x}@)))
+     ;[737,738] \n[738,739])
+    end[747,750])
+   \n[750,752] end[756,759])
+  \n[759,761] end[761,764])
+ \n[764,765])

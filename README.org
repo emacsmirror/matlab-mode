@@ -9,7 +9,8 @@
 
 1. MATLAB mode, *matlab-ts-mode* or *matlab-mode*, for editing ~*.m~ files.
 
-   - Edit MATLAB code with syntax highlighting and smart indentation.
+   - Edit MATLAB code with syntax highlighting, indentation (code formatting), and semantic
+     movement.
    - Lint MATLAB code with fix-it's using the MATLAB Code Analyzer.
 
    The *matlab-ts-mode* is a more capable, performant, and accurate than *matlab-mode*.
@@ -81,6 +82,80 @@
 
 8. *tlc-mode* for editing ~*.tlc~ files. The Target Language Compiler (TLC) is part of Simulink®
    Coder™.
+
+* MATLAB Indent (Code Formatting)
+
+With the optional matlab-ts-mode, you have [[file:doc/matlab_code_indent.org][MATLAB code indentation]] that
+
+ - Adjusts the indent-level (the whitespace to the left of the code), and
+ - Standardizes language element spacing, aligns consecutive statements, aligns matrices and
+   structs, adds missing commas to matrices.
+
+Example:
+
+  #+begin_src matlab
+    function out= indent_example(   in1, ...
+    input2)
+      % INDENT_EXAMPLE - an indent example
+         % This illustrates some of the capabilities of the matlab-ts-mode indent engine.
+
+        arguments
+            in1          = 10
+        input2= 20;
+    end
+
+          mat = [100,2 300.2
+                     3 400,4];
+
+          s = struct(  'f1',1, ...
+    'otherField', in1+input2);
+
+          a = 10; % comment for a
+          bLongVariable = [1.3   2,3 1 - 1 -1]    ;% comment for b
+          cVar = a+bLongVariable  * 2;          
+
+     if abs(sum(in1)) > 0
+              out=s.f1/input2+ in1 -cVar;
+    else
+        out = mat+in1 * 2 -cVar;
+        end
+        end
+  #+end_src
+
+Is indented to the following using ~C-x h~ and then ~C-M-\~ (or ~Edit -> Select All~, then ~M-x
+indent-region~). Notice that in addition to adjusting the indent-level (whitespace to the left),
+language element spacing has been standardized, statements have been aligned, trailing comments have
+been aligned matrices have been aligned, missing comma's are added to arrays, struct fields are
+aligned, etc.
+
+  #+begin_src matlab
+    function out = indent_example(in1, ...
+                                  input2)
+    % INDENT_EXAMPLE - an indent example
+    % This illustrates some of the capabilities of the matlab-ts-mode indent engine.
+
+        arguments
+            in1    = 10
+            input2 = 20;
+        end
+
+        mat = [100,   2, 300.2
+                 3, 400,     4];
+
+        s = struct('f1'        , 1, ...
+                   'otherField', in1 + input2);
+
+        a             = 10;                     % comment for a
+        bLongVariable = [1.3, 2, 3, 1 - 1, -1]; % comment for b
+        cVar          = a + bLongVariable * 2;
+
+        if abs(sum(in1)) > 0
+            out = s.f1 / input2 + in1 - cVar;
+        else
+            out = mat + in1 * 2 - cVar;
+        end
+    end
+  #+end_src
 
 * Installation
 

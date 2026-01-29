@@ -1,0 +1,9 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,302> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (function_definition<22,298> function[22,30]
+  (function_output<31,34> (identifier[31,32]@{y}@) =[33,34])
+  (ERROR<35,217> <[35,36] (comment[37,60]@{% function_name %>( x )}@) <[66,67] (comment[68,121]@{%- castExpression = '';  %could be uint32 for e.g....}@) (ERROR[126,127]@{x}@) (identifier[127,131]@{_idx}@) =[132,133] ,[134,134] (identifier[134,135]@{x}@) *[135,136] <[136,137] (comment[137,184]@{% coder.internal.tools.TML.tostr(deltaXInv) %>;}@) case[197,201] ,[202,202] (comment[204,206]@{%>}@) (ERROR[216,217]@{i}@))
+  name: (identifier[217,223]@{dx_bot}@)
+  (ERROR<224,227> =[224,225] <[226,227])
+  (comment[227,289]@{% castExpression %>(<% [function_name,'_round']%>(...}@) \n[289,290] \n[294,295] end[295,298])
+ \n[298,299] \n[301,302])

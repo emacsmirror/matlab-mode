@@ -1,0 +1,15 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,184> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (class_definition<22,183> classdef[22,30] name: (identifier[31,51]@{electric_indent_enum}@)
+  (superclasses<52,74> <[52,53]
+   (property_name<54,74> (identifier[54,62]@{Simulink}@) .[62,63] (identifier[63,74]@{IntEnumType}@)))
+  \n[74,75]
+  (enumeration<79,179> enumeration[79,90] \n[90,91]
+   (enum<99,117> (identifier[99,100]@{a}@) ([114,115] (number[115,116]@{1}@) )[116,117])
+   \n[117,118]
+   (enum<126,144> (identifier[126,140]@{bLongEnumField}@) ([141,142] (number[142,143]@{2}@) )[143,144])
+   \n[144,145]
+   (enum<153,171> (identifier[153,156]@{abc}@) ([168,169] (number[169,170]@{3}@) )[170,171])
+   \n[171,172] end[176,179])
+  \n[179,180] end[180,183])
+ \n[183,184])

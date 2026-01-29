@@ -1,0 +1,17 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,580> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22] (comment[22,339]@{%\{\n  Case1:\n  (t-utils-xr\n\n  (re-search-forwa...}@) \n[339,341]
+ (function_definition<341,579> function[341,349] name: (identifier[350,385]@{electric_indent_xr_narrow_to_region}@)
+  (function_arguments<385,405> ([385,386] arguments: (identifier[386,387]@{a}@) ,[387,388] (identifier[389,401]@{longInputVar}@) ,[401,402] (identifier[403,404]@{c}@) )[404,405])
+  \n[405,406]
+  (arguments_statement<406,576> arguments[406,415] \n[415,416]
+   (property<420,468> name: (identifier[420,421]@{a}@)
+    (validation_functions<421,468> {[421,422] (identifier[439,452]@{mustBeNumeric}@) ,[452,453] (identifier[454,464]@{mustBeReal}@) }[467,468]))
+   \n[468,469]
+   (property<477,532> name: (identifier[477,489]@{longInputVar}@)
+    (validation_functions<490,532> {[490,491] (identifier[492,505]@{mustBeNumeric}@) ,[505,506] (identifier[507,517]@{mustBeReal}@) ,[517,518] (identifier[519,531]@{mustBeFinite}@) }[531,532]))
+   \n[532,533]
+   (property<551,567> name: (identifier[551,552]@{c}@)
+    (validation_functions<552,567> {[552,553] (identifier[553,566]@{mustBeNumeric}@) }[566,567]))
+   \n[567,568] end[572,575] \n[575,576])
+  end[576,579])
+ \n[579,580])

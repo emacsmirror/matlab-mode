@@ -510,34 +510,25 @@ baseline check fails."
                test-name lang-file (t-utils--took start-time)))
     error-msg))
 
-(defun t-utils--display-result (test-name directory result &optional result-file)
+(defun t-utils--display-result (test-name directory result &optional result-file info-message)
   "Display a test RESULT.
-Save result to RESULT-FILE, defaulting to TEST-NAME.result.txt.  If
-noninteractive display message \"See: RESULT-FILE\".  If interactive
-show *TEST-NAME* result buffer with `default-directory' set to DIRECTORY
-containing RESULT."
-
-  (setq result (concat
-                "# -*- mode: fundamental; eval: (compilation-minor-mode 1) -*-\n\n"
-                result))
-  (if noninteractive
-      (let ((coding-system-for-write 'no-conversion))
-        (setq result-file (file-truename (or result-file (concat test-name ".result.txt"))))
-        (write-region result nil result-file)
-        (message "See: %s" result-file))
-    (let ((result-buf (get-buffer-create (concat "*" test-name "*"))))
+Save result to RESULT-FILE, defaulting to DIRECTORY/TEST-NAME.result.txt.
+Optional INFO-MESSAGE is placed at top of the RESULT-FILE.
+When interactive show the RESULT-FILE."
+  (let ((coding-system-for-write 'no-conversion))
+    (setq result-file (file-truename (or result-file
+                                         (concat
+                                          (file-name-as-directory (expand-file-name directory))
+                                          test-name ".result.txt"))))
+    (write-region (concat "# -*- mode: fundamental; eval: (compilation-minor-mode 1) -*-\n\n"
+                          (when info-message (concat info-message "\n\n"))
+                          result)
+                  nil result-file)
+    (message "See: %s" result-file))
+  (when (not noninteractive)
+    (let ((result-buf (find-file result-file)))
       (with-current-buffer result-buf
-        (read-only-mode -1)
-        (buffer-disable-undo)
-        (setq-local default-directory (file-truename directory))
-        (erase-buffer)
-        (insert result)
-        (goto-char (point-min))
-        (fundamental-mode)
-        (compilation-minor-mode 1) ;; this lets us navigate to errors (would be nice to disable "g")
-        (set-buffer-modified-p nil)
-        (read-only-mode 1))
-      (display-buffer result-buf))))
+        (buffer-disable-undo)))))
 
 (defun t-utils--insert-file-for-test (file
                                       &optional file-major-mode setup-callback skip-corrupt-check)
@@ -552,7 +543,7 @@ the major mode in the temporary buffer.
 If optional SKIP-CORRUPT-CHECK is non-nil, the check for corrupted content is
 skipped."
 
-  (insert-file-contents-literally file)
+  (insert-file-contents file)
 
   ;; We're testing a programming language which is using utf-8-unix encoding
   (set-buffer-file-coding-system 'utf-8-unix)
@@ -572,15 +563,22 @@ skipped."
 
   ;; Set major-mode using file-major-mode if specified,
   ;; else use the "-*- property-first-line -*-" to set the mode
-  (if file-major-mode
-      (funcall file-major-mode)
-    ;; Else get it from the first "property line" specifying local variables
-    (let* ((prop-major-mode (hack-local-variables-prop-line t)))
-      (when (or (not prop-major-mode))
-        (user-error
-         "First line of %s must contain \"-*- MODE-NAME -*-\" or \"-*- mode: MODE-NAME -*-\""
-         file))
-      (funcall prop-major-mode)))
+  (let (prop-major-mode)
+    (condition-case err
+        (if file-major-mode
+            (funcall file-major-mode)
+          ;; Else get it from the first "property line" specifying local variables
+          (setq prop-major-mode (hack-local-variables-prop-line t))
+          (when (or (not prop-major-mode))
+            (error "First line must contain \"-*- MODE-NAME -*-\" or \"-*- mode: MODE-NAME -*-\""))
+          (funcall prop-major-mode))
+      (error
+       (let ((err-msg (concat (error-message-string err)
+                              (if file-major-mode
+                                  " (invalid file-major-mode provided)"
+                                (when prop-major-mode
+                                  " (invalid major-mode specified on first line)")))))
+         (error "Failed to set major-mode for %s: %s" (file-name-nondirectory file) err-msg)))))
 
   (when setup-callback
     (funcall setup-callback))
@@ -1327,7 +1325,7 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
 
         (call-interactively #'indent-for-tab-command) ;; TAB on code just added
 
-        ;; While next line in our original contents is a newline insert "\n"
+        ;; While next line in our original contents is a newline, insert a newline
         (while (let ((next-line (nth (line-number-at-pos (point)) lines)))
                  (and next-line (string-match-p "^[ \t\r]*$" next-line)))
           (goto-char (line-end-position))
@@ -1336,6 +1334,7 @@ See `t-utils-test-indent' for LINE-MANIPULATOR."
           ;; TAB on the same blank line can result in different tree-sitter nodes than
           ;; the RET, so exercise that.
           (call-interactively #'indent-for-tab-command))
+
         (forward-line))
 
       ;; By design indent-for-tab-command adds whitespace up to the indent level for code insertion
@@ -1770,11 +1769,33 @@ errors according to the syntax-checker-fun\n%s" lang-file check-result))))
 
     (cons parse-error invalid-successful-parse)))
 
-(cl-defun t-utils-sweep-test-indent (test-name directory lang-file-regexp major-mode-fun
-                                               &key syntax-checker-fun check-valid-parse
-                                               error-nodes-regexp
-                                               log-file
-                                               result-file)
+(defun t-utils--get-lang-file-n-lines (lang-file major-mode-fun log-file)
+  "Get number of lines in LANG-FILE when mode is MAJOR-MODE-FUN.
+If LANG-FILE mode MAJOR-MODE-FUN, return number of lines in the file,
+else return nil and write a skipping message to LOG-FILE."
+  (let (n-lines
+        lang-file-buf)
+    (condition-case err
+        (with-current-buffer (setq lang-file-buf (find-file-noselect lang-file))
+          (when (not (eq major-mode major-mode-fun))
+            (error "Error %s has major-mode=%s which is not %s" lang-file
+                   (symbol-name major-mode) (symbol-name major-mode-fun)))
+          (setq n-lines (line-number-at-pos (point-max))))
+      (error
+       (t-utils--log log-file (format "Skipping %s, %s\n" lang-file (error-message-string err)))))
+    (kill-buffer lang-file-buf)
+    n-lines))
+
+(cl-defun t-utils-sweep-test-indent (test-name
+                                     directory
+                                     lang-file-regexp
+                                     major-mode-fun
+                                     &key
+                                     syntax-checker-fun
+                                     check-valid-parse
+                                     error-nodes-regexp
+                                     log-file
+                                     result-file)
   "Sweep test indent on files under DIRECTORY recursively.
 File base names matching LANG-FILE-REGEXP are tested.
 TEST-NAME is used in messages.
@@ -1794,7 +1815,7 @@ processed to verify that the a successful tree-sitter parse also has no
 errors according to SYNTAX-CHECKER-FUN.
 
 Progress messages are logged to LOG-FILE which defaults to
-TEST_NAME.log.  Result is written to RESULT-FILE which defaults
+TEST_NAME.log.  Result summary is written to RESULT-FILE which defaults
 to TEST_NAME.result.txt.
 
 If the tree-sitter parse tree contains a node matching ERROR-NODES-REGEXP,
@@ -1803,7 +1824,10 @@ it is reported because the tree-sitter parser says it has errors and
 the SYNTAX-CHECKER-FUN says it does not.
 
 Next, the buffer is indented using `indent-region' and if this fails it
-is reported.  In addition, the slowest indents are reported.
+is reported.  In addition, the slowest indents are reported.  The result
+of indent is saved to the file name with a tilde suffix, e.g. indent of
+foo.ext is saved to foo.ext~.  Differences are saved to a *.diff file
+which the LOG-FILE with the extension replaced with .diff.
 
 Callers of this function should activate any assertions prior to calling
 this function.  For example, the last rule of the tree-sitter mode may
@@ -1879,40 +1903,48 @@ LANGUAGE tree-sitter that need addressing or some other issue."
         (parse-errors "")
         (invalid-successful-parse "")
         (indent-errors "")
-        (took-ht (make-hash-table :test 'equal)))
+        (took-ht (make-hash-table :test 'equal))
+        diff-file
+        n-lines)
 
     (setq log-file (t-utils--log-create test-name log-file))
+    (setq diff-file (concat (file-name-sans-extension log-file) ".diff"))
+    (message "Diff: %s" diff-file)
 
     (t-utils--log log-file (format "Found %d files to indent %s\n"
                                    (length all-lang-files) (t-utils--took start-time)))
 
     (dolist (lang-file all-lang-files)
-      (with-temp-buffer
+      (when (setq n-lines (t-utils--get-lang-file-n-lines lang-file major-mode-fun log-file))
+        (with-temp-buffer
+          (t-utils--log log-file (format "Reading: %s (%d lines)\n" lang-file n-lines))
 
-        (let (ok)
-          (t-utils--log log-file (format "Reading: %s\n" lang-file))
-
+          ;; Check indent
           (condition-case err
-              (progn
+              (let ((indent-start (current-time)))
                 (t-utils--insert-file-for-test lang-file major-mode-fun)
-                (setq ok t))
-            (error
-             (t-utils--log log-file (format "Skipping %s, %s\n"
-                                            lang-file (error-message-string err)))))
-          (when ok
-            ;; Check for bad tree-sitter parse
-            (let ((pair (t-utils--check-parse lang-file error-nodes-regexp
-                                              syntax-checker-fun check-valid-parse)))
-              (setq parse-errors (concat parse-errors (car pair))
-                    invalid-successful-parse (concat invalid-successful-parse (car pair))))
 
-            ;; Check indent
-            (condition-case err
-                (let ((indent-start (current-time)))
-                  (indent-region (point-min) (point-max))
-                  (puthash lang-file (float-time (time-subtract (current-time) indent-start))
-                           took-ht))
-              (error (setq indent-errors
+                ;; Check for bad tree-sitter parse
+                (let ((pair (t-utils--check-parse lang-file error-nodes-regexp
+                                                  syntax-checker-fun check-valid-parse)))
+                  (setq parse-errors (concat parse-errors (car pair))
+                        invalid-successful-parse (concat invalid-successful-parse (car pair))))
+
+                (indent-region (point-min) (point-max))
+                (puthash lang-file (float-time (time-subtract (current-time) indent-start))
+                         took-ht)
+
+                (let ((lang-file-tilde (concat lang-file "~")))
+                  (write-region (point-min) (point-max) lang-file-tilde)
+                  (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
+                  (with-current-buffer (diff-no-select lang-file lang-file-tilde "-u" t)
+                    ;; Remove diff summary (\nDiff Finished ...)
+                    (goto-char (point-max))
+                    (forward-line -2)
+                    (write-region (buffer-substring (point-min) (point)) nil diff-file t))))
+            (error (progn
+                     (t-utils--log log-file (format "Failed-indent-region: %s\n" lang-file))
+                     (setq indent-errors
                            (concat indent-errors
                                    (format "%s:1: error: failed to indent, %s\n"
                                            lang-file (error-message-string err))))))))))
@@ -1952,7 +1984,9 @@ LANGUAGE tree-sitter that need addressing or some other issue."
                            "Slowest-indents:\n"
                            slow-files)))
 
-      (t-utils--display-result test-name directory result result-file))
+      (t-utils--display-result test-name directory result result-file
+                               (concat "No files modified.\n"
+                                       "Indent results for FILE are saved to FILE~")))
 
     (message "FINISHED: %s %s" test-name (t-utils--took start-time))))
 
@@ -3004,7 +3038,7 @@ NO-POP-TO-BUFFER if non-nil, will not pop open the parse tree buffer."
          (view-buf (get-buffer-create view-buf-name)))
     (with-current-buffer view-buf
       (let ((curr-pt (point)))
-        
+
         (read-only-mode -1)
         (auto-revert-mode 0) ;; no need to save history
         (buffer-disable-undo)
@@ -3216,4 +3250,4 @@ To debug a specific -parser test file
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash md
 ;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's darwin libtree
-;; LocalWords:  defface fontify keymap curr
+;; LocalWords:  defface fontify keymap curr noselect

@@ -1,7 +1,7 @@
 % -*- matlab-ts -*- %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 % t-utils-test-indent: no-line-by-line-indent - need to improve continued properties in %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-%                                               matlab-ts-mode--i-next-line-matcher %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+%                                               matlab-ts-mode--i-next-line-matcher %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 classdef indent_class_prop_continued %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
     properties %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>

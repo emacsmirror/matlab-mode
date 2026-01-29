@@ -1,0 +1,17 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,94> (comment[1,40]@{%-indent-mode=minimal -*- matlab-ts -*-}@)
+ (assignment<42,53> left: (identifier[42,43]@{a}@) =[44,45]
+  right: 
+   (binary_operator<46,53> left: (number[46,47]@{1}@) +[47,48]
+    right: (binary_operator<48,53> left: (number[48,49]@{2}@) *[50,51] right: (number[52,53]@{3}@))))
+ ;[53,54] \n[54,56]
+ (if_statement<56,93> if[56,58]
+  condition: (comparison_operator<59,64> (identifier[59,60]@{a}@) >[61,62] (number[63,64]@{5}@))
+  (block<74,90>
+   (function_call<74,88> name: (identifier[74,78]@{disp}@) ([78,79]
+    (arguments<79,84>
+     argument: (string<79,84> '[79,80] (string_content[80,83]@{a>5}@) '[83,84]))
+    )[87,88])
+   ;[88,89] \n[89,90])
+  end[90,93])
+ \n[93,94])

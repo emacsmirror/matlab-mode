@@ -13,13 +13,13 @@ function indent_matrix %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts
     disp(a); %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
     a = [1, 2; %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-         3, 4]; %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+         3, 4]; %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
     disp(a); %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
     a = [ ... %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
           2 + [ 3 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
-                4, %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-                5 + [ ... %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                4, %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+                5 + [ ... %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                       2 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
                     ] %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
               ] %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>

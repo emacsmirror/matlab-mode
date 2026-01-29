@@ -1,0 +1,118 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_switch.m:8:2:
+
+  case1: (t-utils-xr
+
+  (goto-char (point-max))
+
+  (insert "switch a")   "C-m"
+  "C-e"
+  (insert "1")          "C-m"
+  (insert "disp('1')")
+
+  )
+
+- Invoking      : (goto-char (point-max))
+  Start point   :  294
+  Moved to point:  301
+  : 20:0: 
+  :       ^
+  No buffer modifications
+
+- Invoking      : (insert "switch a")
+  Start point   :  301
+  Moved to point:  309
+  : 20:8: switch a
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,3 +17,4 @@
+   )
+   
+ %}
++switch a
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  309
+  Moved to point:  312
+  : 21:2:   case 
+  :         ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -17,4 +17,6 @@
+   )
+   
+ %}
+-switch a
+\ No newline at end of file
++switch a
++  case 
++end
+  #+end_src diff
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  312
+  Moved to point:  317
+  : 21:7:   case 
+  :              ^
+  No buffer modifications
+
+- Invoking      : (insert "1")
+  Start point   :  317
+  Moved to point:  318
+  : 21:8:   case 1
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -18,5 +18,5 @@
+   
+ %}
+ switch a
+-  case 
++  case 1
+ end
+  #+end_src diff
+
+- Invoking      : "C-m" = newline
+  Start point   :  318
+  Moved to point:  323
+  : 22:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -19,4 +19,5 @@
+ %}
+ switch a
+   case 1
++    
+ end
+  #+end_src diff
+
+- Invoking      : (insert "disp('1')")
+  Start point   :  323
+  Moved to point:  332
+  : 22:13:     disp('1')
+  :                     ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -19,5 +19,5 @@
+ %}
+ switch a
+   case 1
+-    
++    disp('1')
+ end
+  #+end_src diff

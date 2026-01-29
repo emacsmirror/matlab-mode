@@ -1,0 +1,178 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1829> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (class_definition<114,1828> classdef[114,122] name: (identifier[126,150]@{electric_indent_keywords}@)
+  (superclasses<154,161> <[154,155]
+   (property_name<155,161> (identifier[155,161]@{handle}@)))
+  \n[161,162]
+  (properties<166,342> properties[166,176] (comment[180,189]@{% comment}@) (comment[199,213]@{% comment here}@) \n[213,214]
+   (property<222,230> name: (identifier[222,224]@{p1}@)
+    (default_value<228,230> =[228,229] (number[229,230]@{0}@)))
+   \n[230,231]
+   (property<239,265> name: (identifier[239,241]@{p2}@)
+    (default_value<245,265> =[245,246] (line_continuation[246,250]@{...\n}@) (number[264,265]@{0}@)))
+   (comment[283,297]@{% comment here}@) \n[297,299] (comment[307,334]@{%\{\n          foo\n        %\}}@) \n[334,335] end[339,342])
+  (comment[347,366]@{% comment after end}@) \n[366,367]
+  (methods<371,1696> methods[371,378] \n[378,379]
+   (function_definition<387,1443> function[387,395] name: (identifier[398,405]@{method1}@)
+    (function_arguments<409,419> ([409,410] arguments: (identifier[414,416]@{in}@) )[418,419])
+    \n[419,420] \n[432,433]
+    (arguments_statement<445,508> arguments[445,454] \n[454,455]
+     (property<471,490> name: (identifier[471,473]@{in}@)
+      (dimensions<474,480> ([474,475] (number[475,476]@{1}@) ,[476,477] (number[478,479]@{1}@) )[479,480])
+      (identifier[484,490]@{double}@))
+     \n[490,491] end[503,506] \n[507,508])
+    \n[516,517]
+    (block<529,1432>
+     (global_operator<529,554> global[529,535] (identifier[539,544]@{gVar1}@) (identifier[549,554]@{gVar2}@))
+     \n[554,555]
+     (global_operator<567,595> global[567,573] (identifier[583,588]@{pVar1}@) (identifier[590,595]@{pVar2}@))
+     \n[595,596] \n[608,609]
+     (try_statement<621,959> try[621,624] (comment[624,637]@{% comment-try}@) \n[637,639]
+      (block<655,894>
+       (switch_statement<655,893> switch[655,661] condition: (identifier[664,666]@{in}@) \n[666,667]
+        (case_clause<685,775> case[685,689] condition: (number[690,692]@{10}@) \n[692,693]
+         (block<713,775>
+          (function_call<713,729> name: (identifier[713,717]@{disp}@) ([719,720]
+           (arguments<722,726>
+            argument: (string<722,726> '[722,723] (string_content[723,725]@{10}@) '[725,726]))
+           )[728,729])
+          ;[729,730]
+          (function_call<753,763> name: (identifier[753,757]@{disp}@) ([757,758]
+           (arguments<758,762>
+            argument: (string<758,762> '[758,759] (string_content[759,761]@{11}@) '[761,762]))
+           )[762,763])
+          ;[765,766] (comment[769,774]@{% foo}@) \n[774,775]))
+        (otherwise_clause<793,874> otherwise[793,802]
+         (block<844,874>
+          (function_call<844,855> name: (identifier[844,848]@{disp}@) ([848,849]
+           (arguments<849,854>
+            argument: (string<849,854> '[849,850] (string_content[850,853]@{~10}@) '[853,854]))
+           )[854,855])
+          ;[855,856] \n[856,857] \n[873,874]))
+        end[890,893])
+       \n[893,894])
+      (catch_clause<906,944> catch[906,911] (identifier[912,914]@{me}@) \n[914,915]
+       (block<931,944>
+        (function_call<931,943> name: (identifier[931,938]@{rethrow}@) ([939,940]
+         (arguments<940,942> argument: (identifier[940,942]@{me}@))
+         )[942,943])
+        \n[943,944]))
+      end[956,959])
+     \n[959,960]
+     (assignment<985,992> left: (identifier[985,986]@{j}@) =[989,990] right: (number[991,992]@{0}@))
+     ;[992,993] \n[993,994]
+     (for_statement<1006,1327> for[1006,1009]
+      (iterator<1010,1022> (identifier[1010,1011]@{n}@) =[1012,1013]
+       (range<1014,1022> (number[1014,1015]@{1}@) :[1017,1018] (identifier[1020,1022]@{in}@)))
+      \n[1022,1023]
+      (block<1039,1312>
+       (if_statement<1039,1246> if[1039,1041]
+        condition: 
+         (function_call<1042,1055> name: (identifier[1042,1045]@{mod}@) ([1045,1046]
+          (arguments<1048,1052> argument: (identifier[1048,1049]@{n}@) ,[1049,1050] (number[1051,1052]@{5}@))
+          )[1054,1055])
+        (block<1076,1112>
+         (assignment<1076,1081> left: (identifier[1076,1077]@{x}@) =[1078,1079] right: (number[1080,1081]@{1}@))
+         ;[1081,1082] \n[1082,1083]
+         (continue_statement<1103,1111> continue[1103,1111])
+         \n[1111,1112])
+        (elseif_clause<1128,1177> elseif[1128,1134]
+         condition: 
+          (function_call<1138,1147> name: (identifier[1138,1141]@{mod}@) ([1141,1142]
+           (arguments<1142,1146> argument: (identifier[1142,1143]@{n}@) ,[1143,1144] (number[1145,1146]@{7}@))
+           )[1146,1147])
+         \n[1147,1148]
+         (block<1168,1177>
+          (continue_statement<1168,1176> continue[1168,1176])
+          \n[1176,1177]))
+        (else_clause<1193,1227> else[1193,1197]
+         (block<1218,1227>
+          (assignment<1218,1225> left: (identifier[1218,1219]@{j}@) =[1220,1221]
+           right: (binary_operator<1222,1225> left: (identifier[1222,1223]@{j}@) +[1223,1224] right: (number[1224,1225]@{1}@)))
+          ;[1225,1226] \n[1226,1227]))
+        end[1243,1246])
+       \n[1246,1247]
+       (function_call<1263,1311> name: (identifier[1263,1267]@{disp}@) ([1267,1268]
+        (arguments<1268,1310>
+         argument: 
+          (matrix<1268,1310> [[1268,1269]
+           (row<1269,1309>
+            (string<1269,1293> '[1269,1270] (string_content[1270,1292]@{Divisible by 5 or 7 : }@) '[1292,1293])
+            ,[1294,1295]
+            (function_call<1299,1309> name: (identifier[1299,1306]@{num2str}@) ([1306,1307]
+             (arguments<1307,1308> argument: (identifier[1307,1308]@{n}@))
+             )[1308,1309]))
+           ][1309,1310]))
+        )[1310,1311])
+       \n[1311,1312])
+      end[1324,1327])
+     \n[1327,1328]
+     (assignment<1353,1360> left: (identifier[1353,1354]@{x}@) =[1357,1358] right: (number[1359,1360]@{0}@))
+     \n[1360,1361]
+     (while_statement<1373,1431> while[1373,1378]
+      condition: (comparison_operator<1379,1388> (identifier[1379,1380]@{x}@) <[1385,1386] (number[1386,1388]@{10}@))
+      (block<1405,1416>
+       (assignment<1405,1414> left: (identifier[1405,1406]@{x}@) =[1407,1408]
+        right: (binary_operator<1409,1414> left: (identifier[1409,1410]@{x}@) +[1411,1412] right: (number[1413,1414]@{1}@)))
+       ;[1414,1415] \n[1415,1416])
+      end[1428,1431])
+     \n[1431,1432])
+    end[1440,1443])
+   \n[1443,1445]
+   (function_definition<1453,1688> function[1453,1461] name: (identifier[1462,1469]@{method2}@)
+    (function_arguments<1469,1471> ([1469,1470] )[1470,1471])
+    \n[1471,1472]
+    (block<1484,1677>
+     (assignment<1484,1491> left: (identifier[1484,1485]@{n}@) =[1486,1487] right: (number[1488,1491]@{200}@))
+     ;[1491,1492]
+     (assignment<1505,1515> left: (identifier[1505,1506]@{A}@) =[1510,1511] right: (number[1512,1515]@{500}@))
+     ;[1515,1516]
+     (assignment<1529,1546> left: (identifier[1529,1530]@{a}@) =[1531,1532]
+      right: 
+       (function_call<1533,1546> name: (identifier[1533,1538]@{zeros}@) ([1538,1539]
+        (arguments<1539,1545> argument: (number[1539,1540]@{1}@) ,[1540,1541] (identifier[1544,1545]@{n}@))
+        )[1545,1546]))
+     ;[1546,1547] \n[1547,1548]
+     (for_statement<1560,1644> parfor[1560,1566]
+      (iterator<1567,1574> (identifier[1567,1568]@{i}@) =[1569,1570]
+       (range<1571,1574> (number[1571,1572]@{1}@) :[1572,1573] (identifier[1573,1574]@{n}@)))
+      (block<1591,1629>
+       (assignment<1591,1627>
+        left: 
+         (function_call<1591,1596> name: (identifier[1591,1592]@{a}@) ([1592,1593]
+          (arguments<1593,1594> argument: (identifier[1593,1594]@{i}@))
+          )[1595,1596])
+        =[1600,1601]
+        right: 
+         (function_call<1602,1627> name: (identifier[1602,1605]@{max}@) ([1605,1606]
+          (arguments<1606,1626>
+           argument: 
+            (function_call<1606,1626> name: (identifier[1606,1609]@{abs}@) ([1612,1613]
+             (arguments<1613,1625>
+              argument: 
+               (function_call<1613,1625> name: (identifier[1613,1616]@{eig}@) ([1616,1617]
+                (arguments<1617,1624>
+                 argument: 
+                  (function_call<1617,1624> name: (identifier[1617,1621]@{rand}@) ([1621,1622]
+                   (arguments<1622,1623> argument: (identifier[1622,1623]@{A}@))
+                   )[1623,1624]))
+                )[1624,1625]))
+             )[1625,1626]))
+          )[1626,1627]))
+       ;[1627,1628] \n[1628,1629])
+      end[1641,1644])
+     \n[1644,1645] \n[1657,1658]
+     (return_statement<1670,1676> return[1670,1676])
+     \n[1676,1677])
+    end[1685,1688])
+   \n[1688,1689] end[1693,1696])
+  \n[1696,1698]
+  (events<1702,1756> events[1702,1708] \n[1708,1709] (identifier[1717,1719]@{e1}@) \n[1719,1720] (identifier[1728,1730]@{e2}@) (comment[1739,1748]@{% comment}@) \n[1748,1749] end[1753,1756])
+  \n[1756,1758]
+  (enumeration<1762,1823> enumeration[1762,1773] \n[1773,1774]
+   (enum<1782,1785> (identifier[1782,1785]@{one}@))
+   \n[1785,1786]
+   (enum<1794,1797> (identifier[1794,1797]@{two}@))
+   (comment[1806,1815]@{% comment}@) \n[1815,1816] end[1820,1823])
+  \n[1824,1825] end[1825,1828])
+ \n[1828,1829])

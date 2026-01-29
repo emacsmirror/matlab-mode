@@ -1,4 +1,4 @@
 Major mode errored with message
-Not activating matlab-ts-mode because this is MATLAB Compiler Runtime content
+Failed to set major-mode for file_encoding_mcr.m: Not activating matlab-ts-mode because this is MATLAB Compiler Runtime content (invalid file-major-mode provided)
 
 Entered major-mode: fundamental-mode

@@ -1,0 +1,20 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,328> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,158]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[158,160]
+ (class_definition<160,327> classdef[160,168] name: (identifier[169,201]@{electric_indent_class_properties}@) \n[201,202]
+  (properties<206,323> properties[206,216] \n[216,217]
+   (property<225,233> name: (identifier[225,228]@{foo}@)
+    (dimensions<228,233> ([228,229] (number[229,230]@{1}@) ,[230,231] (number[231,232]@{3}@) )[232,233]))
+   \n[233,234]
+   (property<242,258> name: (identifier[242,248]@{foobar}@)
+    (dimensions<252,258> ([252,253] (number[253,254]@{1}@) ,[254,255] (number[256,257]@{1}@) )[257,258]))
+   \n[258,259]
+   (property<267,278> name: (identifier[267,269]@{p1}@)
+    (dimensions<271,278> ([271,272] (number[273,274]@{1}@) ,[274,275] (number[276,277]@{1}@) )[277,278]))
+   \n[278,279]
+   (property<287,304> name: (identifier[287,288]@{x}@)
+    (validation_functions<290,304> {[290,291] (identifier[293,303]@{mustBeReal}@) }[303,304]))
+   \n[304,305]
+   (property<313,314> name: (identifier[313,314]@{y}@))
+   ;[314,315] \n[315,316] end[320,323])
+  \n[323,324] end[324,327])
+ \n[327,328])

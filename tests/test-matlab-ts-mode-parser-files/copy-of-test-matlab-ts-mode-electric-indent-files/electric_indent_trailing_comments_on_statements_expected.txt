@@ -1,0 +1,54 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,632> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,166]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
+ (assignment<168,181> left: (identifier[168,169]@{x}@) =[170,171]
+  right: 
+   (matrix<172,181> [[172,173]
+    (row<173,180> (number[173,174]@{1}@) ,[174,175] (number[176,177]@{2}@) ,[177,178] (number[179,180]@{3}@))
+    ][180,181]))
+ ;[181,182] (comment[183,204]@{% comment 1 (aligned)}@)
+ (assignment<205,212> left: (identifier[205,208]@{xyz}@) =[209,210] right: (number[211,212]@{2}@))
+ ;[212,213] (comment[214,235]@{% comment 2 (aligned)}@) \n[235,238]
+ (if_statement<238,256> if[238,240] condition: (identifier[241,242]@{x}@)
+  (block<247,253>
+   (assignment<247,252> left: (identifier[247,248]@{y}@) =[249,250] right: (number[251,252]@{1}@))
+   \n[252,253])
+  end[253,256])
+ (comment[257,296]@{% end if x\n             % other comment}@) \n[296,297]
+ (assignment<297,302> left: (identifier[297,298]@{z}@) =[299,300] right: (identifier[301,302]@{y}@))
+ ;[302,303] \n[303,305]
+ (if_statement<305,319> if[305,307] condition: (identifier[308,309]@{x}@)
+  (block<310,316>
+   (assignment<310,315> left: (identifier[310,311]@{y}@) =[312,313] right: (number[314,315]@{1}@))
+   \n[315,316])
+  end[316,319])
+ (comment[324,334]@{% end if x}@) \n[334,335]
+ (assignment<335,340> left: (identifier[335,336]@{x}@) =[337,338] right: (number[339,340]@{1}@))
+ (comment[352,390]@{% this shouldn't be aligned with prior}@) \n[390,392]
+ (if_statement<392,447> if[392,394] condition: (identifier[395,396]@{z}@) (comment[400,414]@{% some comment}@)
+  (block<419,444>
+   (assignment<419,428> left: (identifier[419,420]@{y}@) =[421,422]
+    right: 
+     (matrix<423,428> [[423,424]
+      (row<424,427> (number[424,425]@{1}@) ,[425,426] (number[426,427]@{2}@))
+      ][427,428]))
+   (comment[429,443]@{% some comment}@) \n[443,444])
+  end[444,447])
+ \n[447,449]
+ (command<449,458> (command_name[449,453]@{foo1}@) (command_argument[454,458]@{blah}@))
+ (comment[459,478]@{% comment (aligned)}@) \n[478,479]
+ (assignment<479,484> left: (identifier[479,480]@{c}@) =[481,482] right: (number[483,484]@{1}@))
+ ;[484,485] (comment[486,505]@{% comment (aligned)}@) \n[505,507] ;[507,508] (comment[509,528]@{% comment (aligned)}@)
+ (command<529,534> (command_name[529,534]@{cfooo}@))
+ (comment[535,554]@{% comment (aligned)}@) \n[554,556]
+ (if_statement<556,631> if[556,558]
+  condition: (boolean_operator<559,572> left: (identifier[559,560]@{a}@) &&[561,563] (line_continuation[564,568]@{...\n}@) right: (identifier[571,572]@{b}@))
+  (comment[573,582]@{% comment}@)
+  (block<587,628>
+   (assignment<587,603> left: (identifier[587,588]@{z}@) =[589,590]
+    right: 
+     (matrix<591,603> [[591,592]
+      (row<592,602> (number[592,593]@{1}@) ,[593,594] (number[595,596]@{2}@) ,[596,597] (number[598,599]@{2}@) ,[599,600] (number[601,602]@{4}@))
+      ][602,603]))
+   (comment[604,627]@{% comment (not aligned)}@) \n[627,628])
+  end[628,631])
+ \n[631,632])

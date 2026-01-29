@@ -62,7 +62,7 @@ function result = goo(b) %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-
 
     result=1; %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
     % see xyz function %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    % foobar %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % foobar %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
     for x = 1:length(b) %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
         result = x + result; %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
     end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>

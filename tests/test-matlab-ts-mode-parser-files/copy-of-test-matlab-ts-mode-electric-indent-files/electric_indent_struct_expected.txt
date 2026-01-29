@@ -1,0 +1,178 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1619> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (if_statement<114,220> if[114,116] condition: (number[117,118]@{1}@)
+  (block<123,217>
+   (assignment<123,215> left: (identifier[123,125]@{s1}@) =[126,127]
+    right: 
+     (function_call<128,215> name: (identifier[128,134]@{struct}@) ([136,137]
+      (arguments<142,214>
+       argument: (string<142,150> '[142,143] (string_content[143,149]@{field1}@) '[149,150])
+       ,[152,153]
+       (binary_operator<154,165> left: (identifier[154,160]@{value1}@) +[161,162] right: (number[163,165]@{10}@))
+       ,[165,166] (line_continuation[167,171]@{...\n}@) (line_continuation[187,191]@{...\n}@)
+       (string<193,206> '[193,194] (string_content[194,205]@{otherfield2}@) '[205,206])
+       ,[206,207] (identifier[208,214]@{value2}@))
+      )[214,215]))
+   ;[215,216] \n[216,217])
+  end[217,220])
+ \n[220,222]
+ (assignment<222,297> left: (identifier[222,224]@{s2}@) =[225,226]
+  right: 
+   (function_call<227,297> name: (identifier[227,233]@{struct}@) ([233,234]
+    (arguments<237,296>
+     argument: (string<237,245> '[237,238] (string_content[238,244]@{field1}@) '[244,245])
+     ,[245,246] (identifier[247,253]@{value1}@) ,[253,254] (line_continuation[255,259]@{...\n}@)
+     (string<275,288> '[275,276] (string_content[276,287]@{otherfield2}@) '[287,288])
+     ,[288,289] (identifier[290,296]@{value2}@))
+    )[296,297]))
+ \n[297,299]
+ (assignment<299,379>
+  left: 
+   (function_call<299,305> name: (identifier[299,300]@{a}@) ([300,301]
+    (arguments<301,304> argument: (number[301,302]@{1}@) ,[302,303] (number[303,304]@{1}@))
+    )[304,305])
+  =[308,309]
+  right: 
+   (function_call<310,379> name: (identifier[310,316]@{struct}@) ([316,317]
+    (arguments<319,378>
+     argument: (string<319,327> '[319,320] (string_content[320,326]@{field1}@) '[326,327])
+     ,[331,332] (identifier[333,339]@{value1}@) ,[339,340] (line_continuation[341,345]@{...\n}@)
+     (string<357,370> '[357,358] (string_content[358,369]@{otherfield2}@) '[369,370])
+     ,[370,371] (identifier[372,378]@{value2}@))
+    )[378,379]))
+ \n[379,381]
+ (assignment<381,494>
+  left: 
+   (function_call<381,388> name: (identifier[381,382]@{a}@) ([382,383]
+    (arguments<383,387> argument: (number[383,384]@{1}@) ,[384,385] (number[386,387]@{2}@))
+    )[387,388])
+  =[389,390]
+  right: 
+   (function_call<391,494> name: (identifier[391,397]@{struct}@) ([397,398] (line_continuation[399,403]@{...\n}@)
+    (arguments<407,493>
+     argument: (string<407,415> '[407,408] (string_content[408,414]@{field1}@) '[414,415])
+     ,[420,421] (identifier[422,428]@{value1}@) ,[428,429] (line_continuation[430,434]@{...\n}@)
+     (string<438,451> '[438,439] (string_content[439,450]@{otherfield2}@) '[450,451])
+     ,[451,452] (identifier[453,459]@{value2}@) ,[459,460] (line_continuation[461,465]@{...\n}@)
+     (string<469,474> '[469,470] (string_content[470,473]@{foo}@) '[473,474])
+     ,[482,483]
+     (binary_operator<484,493> left: (number[484,485]@{1}@) +[486,487]
+      right: (binary_operator<488,493> left: (number[488,489]@{2}@) *[490,491] right: (number[492,493]@{3}@))))
+    )[493,494]))
+ \n[494,496]
+ (assignment<496,565> left: (identifier[496,498]@{s3}@) =[499,500]
+  right: 
+   (function_call<501,565> name: (identifier[501,507]@{struct}@) ([507,508] (line_continuation[509,513]@{...\n}@)
+    (arguments<517,564>
+     argument: (string<517,525> '[517,518] (string_content[518,524]@{field1}@) '[524,525])
+     ,[525,526] (identifier[527,533]@{value1}@) ,[533,534] (line_continuation[535,539]@{...\n}@)
+     (string<543,556> '[543,544] (string_content[544,555]@{otherfield2}@) '[555,556])
+     ,[556,557] (identifier[558,564]@{value2}@))
+    )[564,565]))
+ ;[565,566]
+ (assignment<568,636> left: (identifier[568,570]@{s4}@) =[571,572]
+  right: 
+   (function_call<573,636> name: (identifier[573,579]@{struct}@) ([579,580] (line_continuation[581,585]@{...\n}@)
+    (arguments<589,635>
+     argument: (string<589,601> '[589,590] (string_content[590,600]@{longField1}@) '[600,601])
+     ,[601,602] (identifier[603,609]@{value1}@) ,[609,610] (line_continuation[611,615]@{...\n}@)
+     (string<619,627> '[619,620] (string_content[620,626]@{field2}@) '[626,627])
+     ,[627,628] (identifier[629,635]@{value2}@))
+    )[635,636]))
+ \n[636,638]
+ (assignment<638,746> left: (identifier[638,640]@{s5}@) =[641,642]
+  right: 
+   (function_call<643,746> name: (identifier[643,649]@{struct}@) ([649,650]
+    (arguments<662,745>
+     argument: (string<662,665> "[662,663] (string_content[663,664]@{a}@) "[664,665])
+     ,[665,666] (number[667,668]@{1}@) ,[668,669] (line_continuation[670,674]@{...\n}@) (line_continuation[689,693]@{...\n}@)
+     (string<702,710> "[702,703] (string_content[703,709]@{foobar}@) "[709,710])
+     ,[710,711]
+     (binary_operator<712,721>
+      left: 
+       (binary_operator<712,719>
+        left: 
+         (parenthesis<712,717> ([712,713]
+          (binary_operator<713,716> left: (number[713,714]@{2}@) +[714,715] right: (number[715,716]@{3}@))
+          )[716,717])
+        *[717,718] right: (number[718,719]@{4}@))
+      +[719,720] right: (number[720,721]@{5}@))
+     ,[721,722] (line_continuation[723,727]@{...\n}@)
+     (string<739,742> "[739,740] (string_content[740,741]@{g}@) "[741,742])
+     ,[742,743] (number[744,745]@{3}@))
+    )[745,746]))
+ ;[746,747]
+ (assignment<749,827> left: (identifier[749,753]@{not1}@) =[754,755]
+  right: 
+   (function_call<756,827> name: (identifier[756,762]@{struct}@) ([762,763]
+    (arguments<763,826>
+     argument: (string<763,768> '[763,764] (string_content[764,767]@{one}@) '[767,768])
+     ,[768,769] (identifier[770,776]@{value1}@) ,[776,777]
+     (string<778,783> '[778,779] (string_content[779,782]@{two}@) '[782,783])
+     ,[783,784] (identifier[785,791]@{value2}@) ,[791,792] (line_continuation[793,797]@{...\n}@)
+     (string<811,818> '[811,812] (string_content[812,817]@{three}@) '[817,818])
+     ,[818,819] (identifier[820,826]@{value3}@))
+    )[826,827]))
+ ;[827,828]
+ (assignment<830,934> left: (identifier[830,834]@{not2}@) =[835,836]
+  right: 
+   (function_call<837,934> name: (identifier[837,843]@{struct}@) ([843,844]
+    (arguments<844,933>
+     argument: 
+      (matrix<844,861> [[844,845]
+       (row<845,860>
+        (string<845,853> '[845,846] (string_content[846,852]@{field1}@) '[852,853])
+        ,[853,854]
+        (string<855,860> '[855,856] (string_content[856,859]@{foo}@) '[859,860]))
+       ][860,861])
+     ,[861,862]
+     (binary_operator<863,874> left: (identifier[863,869]@{value1}@) +[870,871] right: (number[872,874]@{10}@))
+     ,[874,875] (line_continuation[876,880]@{...\n}@) (line_continuation[894,898]@{...\n}@)
+     (string<912,925> '[912,913] (string_content[913,924]@{otherfield2}@) '[924,925])
+     ,[925,926] (identifier[927,933]@{value2}@))
+    )[933,934]))
+ ;[934,935] (comment[937,1263]@{% Comma in field name not allowed because that isn...}@)
+ (assignment<1264,1367> left: (identifier[1264,1268]@{not3}@) =[1269,1270]
+  right: 
+   (function_call<1271,1367> name: (identifier[1271,1277]@{struct}@) ([1277,1278]
+    (arguments<1278,1366>
+     argument: (string<1278,1290> '[1278,1279] (string_content[1279,1289]@{field1,foo}@) '[1289,1290])
+     ,[1290,1291]
+     (binary_operator<1292,1303> left: (identifier[1292,1298]@{value1}@) +[1299,1300] right: (number[1301,1303]@{10}@))
+     ,[1303,1304] (line_continuation[1305,1309]@{...\n}@) (line_continuation[1323,1327]@{...\n}@)
+     (string<1341,1358> '[1341,1342] (string_content[1342,1357]@{otherLongField2}@) '[1357,1358])
+     ,[1358,1359] (identifier[1360,1366]@{value2}@))
+    )[1366,1367]))
+ ;[1367,1368]
+ (assignment<1370,1431> left: (identifier[1370,1374]@{not5}@) =[1375,1376]
+  right: 
+   (function_call<1377,1431> name: (identifier[1377,1383]@{struct}@) (line_continuation[1384,1388]@{...\n}@) ([1392,1393]
+    (arguments<1393,1430>
+     argument: (string<1393,1401> '[1393,1394] (string_content[1394,1400]@{field1}@) '[1400,1401])
+     ,[1401,1402] (number[1403,1404]@{1}@) ,[1404,1405] (line_continuation[1406,1410]@{...\n}@)
+     (string<1415,1427> '[1415,1416] (string_content[1416,1426]@{longField2}@) '[1426,1427])
+     ,[1427,1428] (number[1429,1430]@{2}@))
+    )[1430,1431]))
+ ;[1431,1432]
+ (assignment<1434,1499> left: (identifier[1434,1438]@{not6}@) =[1439,1440] (line_continuation[1441,1445]@{...\n}@)
+  right: 
+   (function_call<1445,1499> name: (identifier[1445,1451]@{struct}@) (line_continuation[1452,1456]@{...\n}@) ([1460,1461]
+    (arguments<1461,1498>
+     argument: (string<1461,1469> '[1461,1462] (string_content[1462,1468]@{field1}@) '[1468,1469])
+     ,[1469,1470] (number[1471,1472]@{1}@) ,[1472,1473] (line_continuation[1474,1478]@{...\n}@)
+     (string<1483,1495> '[1483,1484] (string_content[1484,1494]@{lognField2}@) '[1494,1495])
+     ,[1495,1496] (number[1497,1498]@{2}@))
+    )[1498,1499]))
+ ;[1499,1500]
+ (assignment<1502,1571> left: (identifier[1502,1506]@{not7}@) (line_continuation[1507,1511]@{...\n}@) =[1511,1512] (line_continuation[1513,1517]@{...\n}@)
+  right: 
+   (function_call<1517,1571> name: (identifier[1517,1523]@{struct}@) (line_continuation[1524,1528]@{...\n}@) ([1532,1533]
+    (arguments<1533,1570>
+     argument: (string<1533,1541> '[1533,1534] (string_content[1534,1540]@{field1}@) '[1540,1541])
+     ,[1541,1542] (number[1543,1544]@{1}@) ,[1544,1545] (line_continuation[1546,1550]@{...\n}@)
+     (string<1555,1567> '[1555,1556] (string_content[1556,1566]@{longField2}@) '[1566,1567])
+     ,[1567,1568] (number[1569,1570]@{2}@))
+    )[1570,1571]))
+ ;[1571,1572]
+ (assignment<1574,1587> left: (identifier[1574,1578]@{not8}@) =[1579,1580] right: (identifier[1581,1587]@{struct}@))
+ ;[1587,1588] (comment[1589,1618]@{% (this shouldn't be aligned!}@) \n[1618,1619])

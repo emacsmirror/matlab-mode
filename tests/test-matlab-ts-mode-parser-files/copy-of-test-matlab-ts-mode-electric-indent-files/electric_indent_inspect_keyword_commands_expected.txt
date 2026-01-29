@@ -1,0 +1,38 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,128> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,47> left: (identifier[22,26]@{foo1}@) =[27,28]
+  right: 
+   (cell<29,47> {[29,30]
+    (row<30,46>
+     (function_call<30,46>
+      name: (identifier<30,36> events[30,36])
+      ([36,37]
+      (arguments<37,45>
+       argument: (string<37,45> '[37,38] (string_content[38,44]@{handle}@) '[44,45]))
+      )[45,46]))
+    }[46,47]))
+ ;[47,48]
+ (assignment<50,97> left: (identifier[50,54]@{foo2}@) =[55,56]
+  right: 
+   (cell<57,97> {[57,58]
+    (row<58,96>
+     (function_call<58,96>
+      name: (identifier<58,69> enumeration[58,69])
+      ([69,70]
+      (arguments<70,95>
+       argument: (string<70,95> '[70,71] (string_content[71,94]@{matlab.OnOffSwitchSTate}@) '[94,95]))
+      )[95,96]))
+    }[96,97]))
+ ;[97,98]
+ (assignment<100,126> left: (identifier[100,104]@{foo3}@) =[105,106]
+  right: 
+   (cell<107,126> {[107,108]
+    (row<108,125>
+     (function_call<108,125>
+      name: (identifier<108,115> methods[108,115])
+      ([115,116]
+      (arguments<116,124>
+       argument: (string<116,124> '[116,117] (string_content[117,123]@{double}@) '[123,124]))
+      )[124,125]))
+    }[125,126]))
+ ;[126,127] \n[127,128])

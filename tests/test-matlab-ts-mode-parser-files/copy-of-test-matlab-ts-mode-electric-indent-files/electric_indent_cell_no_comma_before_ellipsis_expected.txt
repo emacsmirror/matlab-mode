@@ -1,0 +1,17 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,177> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,122]@{% t-utils-test-indent: no-line-by-line-indent - ne...}@)
+ (assignment<124,175> left: (identifier[124,128]@{foo1}@) =[129,130]
+  right: 
+   (cell<131,175> {[131,132]
+    (row<132,174>
+     (string<132,137> '[132,133] (string_content[133,136]@{one}@) '[136,137])
+     ,[137,138]
+     (string<139,144> '[139,140] (string_content[140,143]@{two}@) '[143,144])
+     (line_continuation[145,149]@{...\n}@) (line_continuation[149,153]@{...\n}@) ,[153,153]
+     (string<153,160> '[153,154] (string_content[154,159]@{three}@) '[159,160])
+     ,[161,161]
+     (string<161,167> '[161,162] (string_content[162,166]@{four}@) '[166,167])
+     ,[168,168]
+     (string<168,174> '[168,169] (string_content[169,173]@{five}@) '[173,174]))
+    }[174,175]))
+ ;[175,176] \n[176,177])

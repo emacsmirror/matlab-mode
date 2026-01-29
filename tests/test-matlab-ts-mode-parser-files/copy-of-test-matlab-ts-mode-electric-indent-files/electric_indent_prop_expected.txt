@@ -1,0 +1,31 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,377> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,157]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[157,159]
+ (function_definition<159,376> function[159,167]
+  (function_output<168,170> (identifier[168,169]@{s}@) =[169,170])
+  name: (identifier[171,191]@{electric_indent_prop}@)
+  (function_arguments<191,210> ([191,192] arguments: (identifier[194,195]@{s}@) ,[197,198] (identifier[199,209]@{NameValues}@) )[209,210])
+  \n[210,212]
+  (arguments_statement<216,332> arguments[216,225] \n[225,226]
+   (property<234,249> name: (identifier[234,235]@{s}@)
+    (dimensions<236,242> ([236,237] (number[237,238]@{1}@) ,[238,239] (number[240,241]@{1}@) )[241,242])
+    (identifier[243,249]@{double}@))
+   \n[249,250]
+   (property<258,324>
+    name: (property_name<258,278> (identifier[258,268]@{NameValues}@) .[268,269] (identifier[272,278]@{Rename}@))
+    (dimensions<278,284> ([278,279] (number[279,280]@{1}@) ,[280,281] (number[282,283]@{1}@) )[283,284])
+    (property_name<285,313> (identifier[285,291]@{matlab}@) .[291,292] (identifier[292,296]@{lang}@) .[296,297] (identifier[297,313]@{OnOffSwitchState}@))
+    (default_value<314,324> =[314,315]
+     (string<320,324> "[320,321] (string_content[321,323]@{on}@) "[323,324])))
+   \n[324,325] end[329,332])
+  (block<338,373>
+   (assignment<338,371> left: (identifier[338,339]@{s}@) =[340,341]
+    right: 
+     (function_call<342,371> name: (identifier[342,345]@{foo}@) ([345,346]
+      (arguments<346,370> argument: (identifier[346,347]@{s}@) ,[347,348]
+       (matrix<348,352> [[348,349] ][351,352])
+       ,[352,353]
+       (field_expression<353,370> object: (identifier[353,363]@{NameValues}@) .[363,364] field: (identifier[364,370]@{Rename}@)))
+      )[370,371]))
+   ;[371,372] \n[372,373])
+  end[373,376])
+ \n[376,377])

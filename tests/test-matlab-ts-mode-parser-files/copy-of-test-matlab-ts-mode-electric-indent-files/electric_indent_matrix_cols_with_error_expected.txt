@@ -1,0 +1,13 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,56> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,54> left: (identifier[22,26]@{not6}@) =[27,28]
+  right: 
+   (matrix<29,54> [[29,30]
+    (row<30,33> (number[30,31]@{1}@) ,[32,32] (number[32,33]@{2}@))
+    (row<43,53>
+     (binary_operator<43,50> left: (identifier[43,44]@{a}@)
+      (ERROR<45,47> *[45,46] *[46,47])
+      *[47,48] right: (identifier[49,50]@{b}@))
+     ,[50,51] (identifier[52,53]@{d}@))
+    ][53,54]))
+ ;[54,55] \n[55,56])

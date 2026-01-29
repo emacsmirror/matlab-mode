@@ -1,0 +1,21 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,171> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@)
+ (assignment<116,169>
+  left: 
+   (function_call<116,128> name: (identifier[116,117]@{a}@) ([117,118]
+    (arguments<118,127>
+     argument: 
+      (matrix<118,124> [[118,119]
+       (row<119,123> (number[119,120]@{1}@) ,[120,121] (number[122,123]@{2}@))
+       ][123,124])
+     ,[124,125]
+     (spread_operator<126,127> :[126,127]))
+    )[127,128])
+  =[129,130] (line_continuation[131,135]@{...\n}@)
+  right: 
+   (matrix<137,169> [[137,138]
+    (row<138,145> (number[138,139]@{1}@) ,[139,140] (number[141,142]@{2}@) ,[142,143] (number[144,145]@{3}@))
+    (line_continuation[147,151]@{...\n}@)
+    (row<157,168> (number[157,160]@{100}@) ,[161,161] (number[161,164]@{200}@) ,[165,165] (number[165,168]@{300}@))
+    ][168,169]))
+ ;[169,170] \n[170,171])

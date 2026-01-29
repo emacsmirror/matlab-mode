@@ -237,4 +237,34 @@ You can view the annotated parse tree of a =*.m= file using:
    You can click with mouse or type RET on the =[START,END]= ranges to highlight the text in
    =NAME.m=.
 
-#  LocalWords:  showall backports libtree SLIB dylib ABI abi MFILES utils VC vcvars
+* Test: sweep-test-matlab-ts-mode-indent.sh
+
+Check matlab tree-sitter indent by /sweeping/ over the =*.m= files in a directory tree and indenting
+them. The indent sweep test can find issues in matlab-ts-mode *OR* in the tree sitter grammar.
+
+To use sweep-test-matlab-ts-mode-indent.sh
+
+1. Run sweep test
+
+   #+begin_src bash
+     cd /PATH/TO/DIRECTORY/CONTAINING/MFILES
+     /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/sweep-test-matlab-ts-mode-indent.sh
+   #+end_src
+
+   or if mlint (which mlint) isn't on the path
+
+   #+begin_src matlab
+     env PATH=/matlab-install/bin:$PATH \
+         /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/sweep-test-matlab-ts-mode-indent.sh
+   #+end_src
+
+2. Results
+
+   - *sweep-test-matlab-ts-mode-indent.log*
+
+     This lists the files parsed and whether or not they have syntax errors.
+
+   - *sweep-test-matlab-ts-mode-indent.result.txt*
+
+# LocalWords:  showall backports libtree SLIB dylib ABI abi MFILES utils VC vcvars logdone env
+# LocalWords:  inlineimages latexpreview usepackage parskip svg

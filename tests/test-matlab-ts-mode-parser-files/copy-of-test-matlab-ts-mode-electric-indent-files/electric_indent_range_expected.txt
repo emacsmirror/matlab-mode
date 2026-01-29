@@ -1,0 +1,35 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,309> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,184]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
+ (assignment<186,307> left: (identifier[186,193]@{dataTbl}@) =[194,195]
+  right: 
+   (matrix<196,307> [[196,197]
+    (row<197,306>
+     (function_call<197,229> name: (identifier[197,204]@{dataTbl}@) ([204,205]
+      (arguments<205,228>
+       argument: (spread_operator<205,206> :[205,206])
+       ,[206,207]
+       (range<208,228> (number[208,209]@{1}@) :[209,210]
+        (binary_operator<210,228>
+         left: 
+          (function_call<210,226> name: (identifier[210,223]@{varColNumbers}@) ([223,224]
+           (arguments<224,225> argument: (number[224,225]@{1}@))
+           )[225,226])
+         -[226,227] right: (number[227,228]@{1}@))))
+      )[228,229])
+     (line_continuation[229,244]@{...\n           }@) ,[244,244] (identifier[244,267]@{tableWithDateColumnOnly}@) ,[268,268]
+     (function_call<268,306> name: (identifier[268,275]@{dataTbl}@) ([275,276]
+      (arguments<276,305>
+       argument: (spread_operator<276,277> :[276,277])
+       ,[277,278]
+       (range<279,305>
+        (binary_operator<279,299>
+         left: 
+          (function_call<279,295> name: (identifier[279,292]@{varColNumbers}@) ([292,293]
+           (arguments<293,294> argument: (number[293,294]@{1}@))
+           )[294,295])
+         +[296,297] right: (number[298,299]@{1}@))
+        :[300,301]
+        (end_keyword<302,305> end[302,305])))
+      )[305,306]))
+    ][306,307]))
+ ;[307,308] \n[308,309])

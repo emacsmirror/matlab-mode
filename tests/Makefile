@@ -27,7 +27,41 @@
 #
 
 EMACS ?= emacs
-EMACSFLAGS = --batch -Q --eval '(setq debug-on-error t)'
+
+ifeq ($(OS),Windows_NT)
+    MATLAB_ARCH = win64
+    SLIB_EXT = dll
+else
+    UNAME = /usr/bin/uname
+    UNAME_OUT=$(shell $(UNAME))
+    UNAME_M_OUT = $(shell $(UNAME) -m)
+    ifeq ($(UNAME_OUT),Linux)
+        ifeq ($(UNAME_M_OUT),x86_64)
+            MATLAB_ARCH = glnxa64
+            SLIB_EXT    = so
+        endif
+    else ifeq ($(UNAME_OUT),Darwin)
+        UNAME_M_OUT = $(shell $(UNAME) -m)
+        ifeq ($(UNAME_M_OUT),x86_64)
+	    MATLAB_ARCH = maci64
+            SLIB_EXT    = dylib
+        else ifeq ($(UNAME_M_OUT),arm64)
+	    MATLAB_ARCH = maca64
+            SLIB_EXT    = dylib
+        endif
+    endif
+    ifeq ($(MATLAB_ARCH),)
+        $(error "Unhandled system, $(UNAME_OUT) $(UNAME_M_OUT)")
+    endif
+endif
+
+
+MATLAB_TS_SLIB = $(lastword $(sort $(wildcard ../matlab-ts-bin/*/$(MATLAB_ARCH)/*.$(SLIB_EXT))))
+MATLAB_TS_DIR = $(patsubst %/,%,$(dir $(abspath $(MATLAB_TS_SLIB))))
+
+MATLAB_TS_SETUP = --eval "(setq treesit-extra-load-path '(\"$(MATLAB_TS_DIR)\"))"
+
+EMACSFLAGS = --batch -Q --eval '(setq debug-on-error t)' $(MATLAB_TS_SETUP)
 
 MATLAB_FILES = $(wildcard *.m)
 

@@ -1,7 +1,7 @@
 % -*- matlab-ts -*- %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 % t-utils-test-indent: no-line-by-line-indent - can't indent typing line-by-line %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-% because on start, we assume an empty file has function indent level of 4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+% because on start, we assume an empty file has function indent level of 4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 function indent_endless_function(a) %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 % function without a terminating end %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>

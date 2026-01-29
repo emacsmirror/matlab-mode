@@ -1,0 +1,10 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,146> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) \n[112,114]
+ (try_statement<114,145> try[114,117]
+  (block<118,124>
+   (function_call<118,123> name: (identifier[118,121]@{foo}@) ([121,122] )[122,123])
+   \n[123,124])
+  (catch_clause<124,142> catch[124,129]
+   (block<130,142> (identifier[130,133]@{err}@) (comment[133,141]@{%comment}@) \n[141,142]))
+  end[142,145])
+ \n[145,146])

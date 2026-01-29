@@ -1,0 +1,70 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,350> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,184]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
+ (assignment<187,235> left: (identifier[187,189]@{l1}@) =[190,191]
+  right: 
+   (lambda<192,235> @[192,193] ([193,194]
+    (arguments<194,195> (identifier[194,195]@{x}@))
+    )[195,196]
+    expression: 
+     (parenthesis<207,235> ([207,208]
+      (parenthesis<208,234> ([208,209]
+       (boolean_operator<209,233>
+        left: 
+         (function_call<209,218> name: (identifier[209,215]@{ischar}@) ([215,216]
+          (arguments<216,217> argument: (identifier[216,217]@{x}@))
+          )[217,218])
+        ||[219,221]
+        right: 
+         (function_call<222,233> name: (identifier[222,230]@{isstring}@) ([230,231]
+          (arguments<231,232> argument: (identifier[231,232]@{x}@))
+          )[232,233]))
+       )[233,234])
+      )[234,235])))
+ ;[235,236]
+ (assignment<238,329> left: (identifier[238,240]@{l2}@) =[241,242]
+  right: 
+   (lambda<243,329> @[243,244] ([244,245]
+    (arguments<245,246> (identifier[245,246]@{x}@))
+    )[246,247]
+    expression: 
+     (parenthesis<247,329> ([247,248]
+      (boolean_operator<248,328>
+       left: 
+        (parenthesis<248,290> ([248,249]
+         (boolean_operator<249,289>
+          left: 
+           (boolean_operator<249,273>
+            left: 
+             (function_call<249,258> name: (identifier[249,255]@{ischar}@) ([255,256]
+              (arguments<256,257> argument: (identifier[256,257]@{x}@))
+              )[257,258])
+            ||[259,261]
+            right: 
+             (function_call<262,273> name: (identifier[262,270]@{isstring}@) ([270,271]
+              (arguments<271,272> argument: (identifier[271,272]@{x}@))
+              )[272,273]))
+          ||[274,276]
+          right: 
+           (function_call<277,289> name: (identifier[277,286]@{isnumeric}@) ([286,287]
+            (arguments<287,288> argument: (identifier[287,288]@{x}@))
+            )[288,289]))
+         )[289,290])
+       &&[291,293] (line_continuation[294,298]@{...\n}@)
+       right: 
+        (not_operator<308,328> ~[308,309]
+         (function_call<309,328> name: (identifier[309,316]@{strcmpi}@) ([316,317]
+          (arguments<317,327> argument: (identifier[317,318]@{x}@) ,[318,319]
+           (string<320,327> '[320,321] (string_content[321,326]@{fubar}@) '[326,327]))
+          )[327,328])))
+      )[328,329])))
+ ;[329,330]
+ (assignment<332,348> left: (identifier[332,334]@{l3}@) =[335,336]
+  right: 
+   (lambda<337,348> @[337,338] ([338,339]
+    (arguments<339,340> (identifier[339,340]@{x}@))
+    )[340,341]
+    expression: 
+     (function_call<341,348> name: (identifier[341,345]@{disp}@) ([345,346]
+      (arguments<346,347> argument: (identifier[346,347]@{x}@))
+      )[347,348])))
+ ;[348,349] \n[349,350])

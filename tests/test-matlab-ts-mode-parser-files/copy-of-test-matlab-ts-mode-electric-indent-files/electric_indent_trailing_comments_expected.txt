@@ -1,0 +1,56 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,534> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,111]@{% t-utils-test-indent: no-line-by-line-indent - ne...}@)
+ (assignment<116,121> left: (identifier[116,117]@{x}@) =[118,119] right: (number[120,121]@{1}@))
+ ;[121,122] (comment[123,132]@{% comment}@)
+ (assignment<135,153> left: (identifier[135,138]@{foo}@) =[139,140]
+  right: 
+   (matrix<141,153> [[141,142]
+    (row<142,152> (number[142,143]@{1}@) ,[143,144] (number[145,146]@{2}@) ,[146,147] (number[148,149]@{3}@) ,[149,150] (number[151,152]@{4}@))
+    ][152,153]))
+ ;[153,154] (comment[155,164]@{% comment}@)
+ (assignment<174,179> left: (identifier[174,175]@{b}@) =[176,177] right: (number[178,179]@{3}@))
+ ;[179,180] (comment[181,190]@{% comment}@) (comment[192,211]@{% separator comment}@)
+ (assignment<215,233>
+  left: 
+   (function_call<215,221> name: (identifier[215,216]@{a}@) ([216,217]
+    (arguments<217,220> argument: (number[217,218]@{1}@) ,[218,219] (number[219,220]@{2}@))
+    )[220,221])
+  =[222,223]
+  right: 
+   (matrix<224,233> [[224,225]
+    (row<225,232> (number[225,226]@{1}@) ,[226,227] (number[228,229]@{2}@) ,[229,230] (number[231,232]@{3}@))
+    ][232,233]))
+ ;[233,234] (comment[235,244]@{% comment}@)
+ (assignment<248,258>
+  left: 
+   (function_call<248,254> name: (identifier[248,249]@{b}@) ([249,250]
+    (arguments<250,253> argument: (number[250,251]@{1}@) ,[251,252] (number[252,253]@{2}@))
+    )[253,254])
+  =[255,256] right: (number[257,258]@{1}@))
+ ;[258,259] (comment[260,269]@{% commnet}@) (comment[271,435]@{% We don't align the trailing comments in the foll...}@)
+ (assignment<439,446> left: (identifier[439,442]@{foo}@) =[443,444] right: (number[445,446]@{1}@))
+ ;[446,447] (comment[448,459]@{% comment 1}@)
+ (assignment<463,485> left: (identifier[463,464]@{d}@) =[465,466]
+  right: 
+   (function_call<467,485> name: (identifier[467,477]@{dictionary}@) ([477,478]
+    (arguments<478,484>
+     argument: (string<478,481> "[478,479] (string_content[479,480]@{%}@) "[480,481])
+     ,[481,482] (number[483,484]@{1}@))
+    )[484,485]))
+ ;[485,486] (comment[487,498]@{% comment 2}@)
+ (assignment<499,520>
+  left: 
+   (function_call<499,508> name: (identifier[499,500]@{a}@) ([500,501]
+    (arguments<501,507>
+     argument: 
+      (function_call<501,507> name: (identifier[501,502]@{d}@) ([502,503]
+       (arguments<503,506>
+        argument: (string<503,506> "[503,504] (string_content[504,505]@{%}@) "[505,506]))
+       )[506,507]))
+    )[507,508])
+  =[509,510]
+  right: 
+   (matrix<511,520> [[511,512]
+    (row<512,519> (number[512,513]@{1}@) ,[513,514] (number[515,516]@{2}@) ,[516,517] (number[518,519]@{3}@))
+    ][519,520]))
+ ;[520,521] (comment[522,533]@{% comment 3}@) \n[533,534])

@@ -3,11 +3,11 @@
 % t-utils-test-indent: no-line-by-line-indent - if conditions don't require a terminator %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 % The following produces %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-%    ans = %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-% %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-%         2 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-% %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-%    here %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+%    ans = %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+% %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+%         2 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+% %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+%    here %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 a=1; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 b=2; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
@@ -17,11 +17,11 @@ if a'b' %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
 
 % MATLAB does not require a statement terminator after the if-condition, so, for example, you can %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-% write: %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-% %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-%  if 1 < 2 a = 3; end %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-% %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-% Thus above is equivalent to: %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+% write: %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+% %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+%  if 1 < 2 a = 3; end %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+% %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+% Thus above is equivalent to: %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 a=1; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 b=2; %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
@@ -34,7 +34,7 @@ end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\
 % Note, the Code Analyzer suggests that a line terminator should be added. %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 % Information on tree-sitter handling from %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-% https://github.com/acristoffers/tree-sitter-matlab/issues/93 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+% https://github.com/acristoffers/tree-sitter-matlab/issues/93 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 %{ %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
@@ -110,4 +110,4 @@ end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\
 
   So, that's my not 100% accurate but hopefully comprehensible enough explanation of how it works. I hope I made things clearer instead of more confusing :) %  <{Matched rule: (matlab-ts-mode--i-in-block-comment-matcher parent 2)}>
 
-%} %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+%} %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>

@@ -1,0 +1,38 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,369> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@)
+ (assignment<114,367> left: (identifier[114,120]@{foobar}@) =[121,122]
+  right: 
+   (function_call<123,367> name: (identifier[123,129]@{struct}@) ([129,130]
+    (arguments<130,366>
+     argument: (string<130,136> '[130,131] (string_content[131,135]@{type}@) '[135,136])
+     ,[139,140]
+     (cell<141,176> {[141,142]
+      (row<142,175>
+       (string<142,147> '[142,143] (string_content[143,146]@{one}@) '[146,147])
+       ,[147,148]
+       (string<149,154> '[149,150] (string_content[150,153]@{two}@) '[153,154])
+       ,[154,155] (line_continuation[156,160]@{...\n}@)
+       (string<160,167> '[160,161] (string_content[161,166]@{three}@) '[166,167])
+       ,[167,168]
+       (string<169,175> '[169,170] (string_content[170,174]@{four}@) '[174,175]))
+      }[175,176])
+     ,[176,177] (line_continuation[178,182]@{...\n}@)
+     (string<201,210> '[201,202] (string_content[202,209]@{fooport}@) '[209,210])
+     ,[210,211]
+     (cell<212,245> {[212,213]
+      (row<213,244> (number[213,214]@{1}@) ,[214,215] (number[216,217]@{2}@) ,[217,218] (number[219,220]@{3}@) ,[220,221] (number[222,223]@{4}@) ,[223,224] (number[225,226]@{4}@) ,[226,227] (number[228,229]@{4}@) ,[229,230] (number[231,232]@{4}@) ,[232,233] (number[234,235]@{4}@) ,[235,236] (number[237,238]@{4}@) ,[238,239] (number[240,241]@{1}@) ,[241,242] (number[243,244]@{2}@))
+      }[244,245])
+     ,[245,246] (line_continuation[247,251]@{...\n}@)
+     (string<260,263> '[260,261] (string_content[261,262]@{t}@) '[262,263])
+     ,[263,264] (number[264,265]@{1}@) ,[283,284] (line_continuation[285,289]@{...\n}@)
+     (string<290,293> '[290,291] (string_content[291,292]@{x}@) '[292,293])
+     ,[299,300]
+     (function_call<304,366> name: (identifier[304,310]@{struct}@) ([310,311]
+      (arguments<311,365>
+       argument: (string<311,314> '[311,312] (string_content[312,313]@{a}@) '[313,314])
+       ,[314,315] (number[316,317]@{1}@) ,[317,318] (line_continuation[319,323]@{...\n}@)
+       (string<356,361> '[356,357] (string_content[357,360]@{foo}@) '[360,361])
+       ,[361,362] (number[363,365]@{10}@))
+      )[365,366]))
+    )[366,367]))
+ ;[367,368] \n[368,369])

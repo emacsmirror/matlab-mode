@@ -1,7 +1,7 @@
 % -*- matlab-ts -*- %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 %  To be used for "typing" line-by-line. Same as ./indent_old_indents.m, but no %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-%  %{ block comments %} and no nested functions. These do not support indenting line-by-line. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+%  %{ block comments %} and no nested functions. These do not support indenting line-by-line. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 function indent_old_indents_for_typing(a,b,stuff,cmddual1fake,cmddual2fake) %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 % Help text %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
@@ -10,7 +10,7 @@ function indent_old_indents_for_typing(a,b,stuff,cmddual1fake,cmddual2fake) %  <
 % !!0 %  <{Matched rule: (matlab-ts-mode--i-doc-comment-matcher matlab-ts-mode--i-doc-comment-anchor matlab-ts-mode--i-doc-comment-offset)}>
 
     % including a gap - comment for following code %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
-    % !!4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % !!4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
     arguments (Repeating) % !!4 %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
         a (1,1) {mustBeNumeric}                                 % !!8 %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
@@ -44,7 +44,7 @@ function indent_old_indents_for_typing(a,b,stuff,cmddual1fake,cmddual2fake) %  <
     continuations_and_block_comments(); %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
     % $$$ !!0 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    % $$$ special ignore comments %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % $$$ special ignore comments %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
     has_nested_fcn(); % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
@@ -103,7 +103,7 @@ function B = ends_in_comments_and_strings() %  <{Matched rule: (matlab-ts-mode--
         A = E; %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
 
     end % the other end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
-        % !! 4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % !! 4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
     B = [ B A ]; % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
@@ -114,7 +114,7 @@ function B = ends_in_comments_and_strings() %  <{Matched rule: (matlab-ts-mode--
     1; % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
     % Multi- end s %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    % >>8 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % >>8 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
     if foo %#ok %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
         if bar %#ok %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
             if baz %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
@@ -135,7 +135,7 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
     A = [ 1 2 3 ]; %!!4 %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
 
     Blong = [ 1 2; %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-              3 4; %!!14 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+              3 4; %!!14 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
             ]; %!!12 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     Csep = [ %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
@@ -144,14 +144,14 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
            ]; %!!11 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     multinest = { [ 1 2               %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-                    3 4 ];            %!!20 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-                  { 5 6 7 ...         %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                    3 4 ];            %!!20 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+                  { 5 6 7 ...         %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                     8 9 10 ...        %!!20 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
                   };                  %!!18 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
-                  fcncall(10, ...     %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                  fcncall(10, ...     %!!18 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                           12, ...     %!!26 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
                           [ 13 14;    %!!26 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
-                            15 16 ])  %!!28 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                            15 16 ])  %!!28 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                 } ;  %!!16 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     nest = { ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
@@ -169,12 +169,12 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
         };                  %!!8 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     % TODO %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    % I don't know why the below indents this way. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
-    % It should either do all max indent, or all lined up with parens. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % I don't know why the below indents this way. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+    % It should either do all max indent, or all lined up with parens. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
     thing.thing.long.long.longname({ 'str' %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+                                     'str' %!!37 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
                                    });   %!!35 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     thing.thing.long.long.longname('str', ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
@@ -188,7 +188,7 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
               end));   %!!14 %  <{Matched rule: ((parent-is "\\`range\\'") parent 0)}>
 
     % This array has bad syntactic expression parsing due to the %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    % apostrophy %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % apostrophy %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
     Closures = [ %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
                  755009 ; ... % 21-Feb-2067 Washington's Birthday (Mon) %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
                  755010 ;     % !!8 %  <{Matched rule: ((parent-is "\\`\\(?:cell\\|matrix\\)\\'") parent 2)}>
@@ -200,7 +200,7 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
           ]; %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
     % This long fcn name last symbol starts with 'get' which %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    % used to confuse and move to indent past 1st arg. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % used to confuse and move to indent past 1st arg. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
     if qesimcheck.utils.GetYesNoAnswer('Do ',... !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
                                        'n',...  !!39 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
                                        'once') %!!39 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
@@ -211,13 +211,13 @@ function out = array_constant_decls() %  <{Matched rule: (matlab-ts-mode--i-top-
 
     % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
     out = { A     %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-            Blong %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            Csep  %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            nest  %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            multinest%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            cascade_long_name%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            Closures%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
-            dep %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+            Blong %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            Csep  %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            nest  %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            multinest%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            cascade_long_name%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            Closures%!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
+            dep %!!12 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
           };      %!!10 %  <{Matched rule: ((node-is "\\`[])}]\\'") parent 0)}>
 
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
@@ -237,14 +237,14 @@ function C = block_starts_in_comments_and_strings(varargin) %  <{Matched rule: (
 
 
     % see previous function %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    % !!4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % !!4 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
     for x=1:length(C) % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
         if varargin{2}  % !!8 %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
             continue    % !!12 %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
         end   % !!8 %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
 
         break % !!8 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-              % !!14 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+              % !!14 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
         %!!8 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
     end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
@@ -276,7 +276,7 @@ function B = continuations_and_block_comments %  <{Matched rule: (matlab-ts-mode
 
 
     % Block comment indicators MUST be on a line by themselves. %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    %{ Not a block comment } %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    %{ Not a block comment } %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
     foo(1); % !!4   - don't indent this special %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
 
@@ -289,7 +289,7 @@ function B = continuations_and_block_comments %  <{Matched rule: (matlab-ts-mode
                  arg2); %!!17 %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
     A = [ 1 2  % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-          3 4 ]; % !!10 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-anchor 0)}>
+          3 4 ]; % !!10 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
 
     foo(['this is a very long string', ... %!!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
          'with a continution to do something very exciting']);%!!9 %  <{Matched rule: ((parent-is "\\`\\(?:function_output\\|row\\)\\'") parent 0)}>
@@ -301,10 +301,10 @@ function B = continuations_and_block_comments %  <{Matched rule: (matlab-ts-mode
         + 6; % !!8 %  <{Matched rule: ((parent-is "\\`binary_operator\\'") parent 0)}>
 
     foo_code();  % eol-comment !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-                 % continuation-comment !!17 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+                 % continuation-comment !!17 %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
     % !!4 -blank between this & continuation comment %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
-    % !!4 - more comments %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+    % !!4 - more comments %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
     if condition1 || ...  % !!4 %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
        fcn_call(arg1, ... % !!12 %  <{Matched rule: ((parent-is "\\`\\(?:\\(?:boolea\\|compariso\\)n_operator\\)\\'") parent 0)}>

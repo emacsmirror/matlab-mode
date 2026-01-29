@@ -1,7 +1,7 @@
 % -*- matlab-ts -*- %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 % t-utils-test-indent: no-line-by-line-indent - continued "fcn_call(arg1, ..." %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-% isn't identified as a function call, so indenting line by line fails on this. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher parent 0)}>
+% isn't identified as a function call, so indenting line by line fails on this. %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 function indent_if_continued %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 

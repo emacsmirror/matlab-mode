@@ -1,0 +1,29 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,393> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,78]@{% Exercise matrix indentation with varying indent ...}@) (comment[80,228]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[228,230]
+ (if_statement<230,281> if[230,232] condition: (identifier[233,237]@{foo1}@)
+  (block<242,278>
+   (assignment<242,276> left: (identifier[242,244]@{m1}@) =[245,246]
+    right: 
+     (matrix<247,276> [[247,248]
+      (row<248,253> (number[248,250]@{23}@) ,[250,251] (number[252,253]@{2}@))
+      (row<267,275> (number[267,270]@{233}@) ,[270,271] (number[274,275]@{4}@))
+      ][275,276]))
+   ;[276,277] \n[277,278])
+  end[278,281])
+ \n[281,284]
+ (if_statement<284,392> if[284,286] condition: (identifier[287,291]@{foo1}@) \n[291,292]
+  (block<296,389>
+   (if_statement<296,388> if[296,298] condition: (identifier[299,303]@{foo2}@)
+    (block<312,381>
+     (assignment<312,379> left: (identifier[312,314]@{m2}@) =[315,316]
+      right: 
+       (matrix<317,379> [[317,318]
+        (row<319,327> (number[319,321]@{23}@) ,[321,322] (number[326,327]@{2}@))
+        (row<345,354> (number[345,348]@{233}@) ,[348,349] (number[353,354]@{4}@))
+        (row<365,375> (number[365,366]@{1}@) ,[369,370] (number[371,375]@{3344}@))
+        ][378,379]))
+     ;[379,380] \n[380,381])
+    end[385,388])
+   \n[388,389])
+  end[389,392])
+ \n[392,393])

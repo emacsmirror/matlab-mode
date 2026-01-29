@@ -1,0 +1,187 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_narrow_to_region.m:5:2:
+
+  Case1: (t-utils-xr
+
+  (re-search-forward "a{") "C-a"
+  "C-a"
+  "C-@"
+  "C-n"
+  "C-n"
+  (narrow-to-region (mark) (point))
+  "C-@" ;; unset mark
+  "C-x h"  ;; select all
+  (indent-region (point-min) (point-max))
+  (widen)
+
+  (re-search-backward "^fun")
+  (t-utils-xr-print-code (point) (point-max))
+      
+  )
+
+- Invoking      : (re-search-forward "a{")
+  Start point   :  336
+  Moved to point:  422
+  : 26:6:     a{                 mustBeNumeric, mustBeReal   }
+  :             ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  422
+  Moved to point:  416
+  : 26:0:     a{                 mustBeNumeric, mustBeReal   }
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  416
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-@" = set-mark-command
+  Start point   :  416
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  416
+  Moved to point:  469
+  : 27:0:         longInputVar { mustBeNumeric, mustBeReal, mustBeFinite}
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-n" = next-line
+  Start point   :  469
+  Moved to point:  533
+  : 28:0:                   c{mustBeNumeric}
+  :       ^
+  No buffer modifications
+
+- Invoking      : (narrow-to-region (mark) (point))
+  Start point   :  533
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,30 +1,2 @@
+-% -*- matlab-ts -*-
+-
+-%{
+-  Case1:
+-  (t-utils-xr
+-
+-  (re-search-forward "a{") "C-a"
+-  "C-a"
+-  "C-@"
+-  "C-n"
+-  "C-n"
+-  (narrow-to-region (mark) (point))
+-  "C-@" ;; unset mark
+-  "C-x h"  ;; select all
+-  (indent-region (point-min) (point-max))
+-  (widen)
+-
+-  (re-search-backward "^fun")
+-  (t-utils-xr-print-code (point) (point-max))
+-      
+-  )
+-%}
+-
+-function electric_indent_xr_narrow_to_region(a, longInputVar, c)
+-arguments
+     a{                 mustBeNumeric, mustBeReal   }
+         longInputVar { mustBeNumeric, mustBeReal, mustBeFinite}
+-                  c{mustBeNumeric}
+-    end
+-end
+  #+end_src diff
+
+- Invoking      : "C-@" = set-mark-command
+  Start point   :  533
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-x h" = mark-whole-buffer
+  Start point   :  533
+  Moved to point:  416
+  : 1:0:     a{                 mustBeNumeric, mustBeReal   }
+  :      ^
+  No buffer modifications
+
+- Invoking      : (indent-region (point-min) (point-max))
+  Start point   :  416
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,2 +1,2 @@
+-    a{                 mustBeNumeric, mustBeReal   }
+-        longInputVar { mustBeNumeric, mustBeReal, mustBeFinite}
++    a            {mustBeNumeric, mustBeReal}
++    longInputVar {mustBeNumeric, mustBeReal, mustBeFinite}
+  #+end_src diff
+
+- Invoking      : (widen)
+  Start point   :  416
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,2 +1,30 @@
++% -*- matlab-ts -*-
++
++%{
++  Case1:
++  (t-utils-xr
++
++  (re-search-forward "a{") "C-a"
++  "C-a"
++  "C-@"
++  "C-n"
++  "C-n"
++  (narrow-to-region (mark) (point))
++  "C-@" ;; unset mark
++  "C-x h"  ;; select all
++  (indent-region (point-min) (point-max))
++  (widen)
++
++  (re-search-backward "^fun")
++  (t-utils-xr-print-code (point) (point-max))
++      
++  )
++%}
++
++function electric_indent_xr_narrow_to_region(a, longInputVar, c)
++arguments
+     a            {mustBeNumeric, mustBeReal}
+     longInputVar {mustBeNumeric, mustBeReal, mustBeFinite}
++                  c{mustBeNumeric}
++    end
++end
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^fun")
+  Start point   :  416
+  Moved to point:  341
+  : 24:0: function electric_indent_xr_narrow_to_region(a, longInputVar, c)
+  :       ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (point-max))
+  Start point   :  341
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+function electric_indent_xr_narrow_to_region(a, longInputVar, c)
+arguments
+    a            {mustBeNumeric, mustBeReal}
+    longInputVar {mustBeNumeric, mustBeReal, mustBeFinite}
+                  c{mustBeNumeric}
+    end
+end
+  #+end_src
+  No buffer modifications
