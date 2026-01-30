@@ -3,34 +3,34 @@
 % t-utils-test-indent: no-line-by-line-indent - line-by-line typing results in error nodes %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 if 1 %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-    s1 = struct('field1'     , value1 + 10, ... %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+    s1 = struct('field1',      value1 + 10, ... %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
                 ... %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
                 'otherfield2', value2); %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
 
-s2 = struct('field1'     , value1, ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+s2 = struct('field1',      value1, ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
             'otherfield2', value2) %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
-a(1, 1) = struct('field1'     , value1, ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+a(1, 1) = struct('field1',      value1, ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
                  'otherfield2', value2) %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
 a(1, 2) = struct( ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-    'field1'     , value1, ... %  <{Matched rule: (matlab-ts-mode--i-assign-cont-matcher matlab-ts-mode--i-assign-cont-anchor matlab-ts-mode--i-assign-cont-offset)}>
+    'field1',      value1, ... %  <{Matched rule: (matlab-ts-mode--i-assign-cont-matcher matlab-ts-mode--i-assign-cont-anchor matlab-ts-mode--i-assign-cont-offset)}>
     'otherfield2', value2, ... %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
-    'foo'        , 1 + 2 * 3) %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
+    'foo',         1 + 2 * 3) %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
 s3 = struct( ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-    'field1'     , value1, ... %  <{Matched rule: (matlab-ts-mode--i-assign-cont-matcher matlab-ts-mode--i-assign-cont-anchor matlab-ts-mode--i-assign-cont-offset)}>
+    'field1',      value1, ... %  <{Matched rule: (matlab-ts-mode--i-assign-cont-matcher matlab-ts-mode--i-assign-cont-anchor matlab-ts-mode--i-assign-cont-offset)}>
     'otherfield2', value2); %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
 s4 = struct( ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
     'longField1', value1, ... %  <{Matched rule: (matlab-ts-mode--i-assign-cont-matcher matlab-ts-mode--i-assign-cont-anchor matlab-ts-mode--i-assign-cont-offset)}>
-    'field2'    , value2) %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
+    'field2',     value2) %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
-s5 = struct("a"     , 1, ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+s5 = struct("a",      1, ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
             ... %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
             "foobar", (2 + 3) * 4 + 5, ... %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
-            "g"     , 3); %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
+            "g",      3); %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>
 
 not1 = struct('one', value1, 'two', value2, ... %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
               'three', value3); %  <{Matched rule: ((parent-is "\\`arguments\\'") parent 0)}>

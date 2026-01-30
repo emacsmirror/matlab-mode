@@ -6,5 +6,5 @@
 
 myStruct.stateInfo(end + 1) = struct(
 
-    'fieldOne'     , someThing || otherThing,
+    'fieldOne',      someThing || otherThing,
     'otherFieldTwo', 'something');
