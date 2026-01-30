@@ -3,6 +3,11 @@
 
 # Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
+* Release 8.0.1 Jan-30-2026
+
+Minor /electric indent/ fix to correct comma placement in struct field alignment and also to fix
+non-positional name = value arguments and attributes.
+
 * Release 8.0.0 Jan-29-2026
 
 This release updates matlab-ts-mode indent to /electric indent code/. This is sometimes called
