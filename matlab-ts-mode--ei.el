@@ -137,11 +137,6 @@
 
     (,(rx bos (or "," ";" "command_argument" "command_name" "enum-id") eos)  "."                 1)
 
-    ;; Case arguments name=value syntax, the "=" node is converted to "n=v"
-    ;; TopTester: electric_indent_name_value_args.m
-    ("."                             ,(rx bos "n=v" eos)                                         0)
-    (,(rx bos "n=v" eos)             "."                                                         0)
-
     (,matlab-ts-mode--ei-0-after-re   "."                                                        0)
 
     (,(rx bos "]" eos)                ,(rx bos (or "," ";") eos)                                 0)
@@ -239,13 +234,6 @@ be unary-op even though the node type is \"+\"."
      ((string= parent-type "string")
       (setq node parent
             node-type parent-type))
-
-     ;; Case: name=value argument pair
-     ((and (string= node-type "=")
-           (or (string= parent-type "arguments")
-               (string= parent-type "attribute")))
-      ;; arguments name=value
-      (setq node-type "n=v"))
 
      ;; Case: prop-id, prop-class-id, enum-id
      ((string= node-type "identifier")

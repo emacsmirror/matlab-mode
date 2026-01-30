@@ -247,6 +247,36 @@ directives.
      end
    #+end_src
 
+   Example 3 (name = value non-positional arguments):
+
+   #+begin_src matlab
+     r = myFunction(Name1=3+3 * 4,Name2=7-1 / 2)
+
+     function result = myFunction(NameValueArgs)
+         arguments
+     NameValueArgs.Name1
+         NameValueArgs.Name2
+         end
+
+         result = NameValueArgs.Name1* NameValueArgs.Name2;
+     end
+   #+end_src
+
+   Indents to:
+
+   #+begin_src matlab
+     r = myFunction(Name1 = 3 + 3 * 4, Name2 = 7 - 1 / 2)
+
+     function result = myFunction(NameValueArgs)
+         arguments
+             NameValueArgs.Name1
+             NameValueArgs.Name2
+         end
+
+         result = NameValueArgs.Name1 * NameValueArgs.Name2;
+     end
+   #+end_src
+
 6. *Function call formats*
 
    - On a single line:

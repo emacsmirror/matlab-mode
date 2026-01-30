@@ -1,15 +1,15 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,164> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
- (class_definition<22,163> classdef[22,30] name: (identifier[31,71]@{electric_indent_prop_attribute_id_string}@) \n[71,72]
-  (properties<76,159> properties[76,86]
-   (attributes<87,110> ([87,88]
-    (attribute<88,109> (identifier[88,97]@{SetAccess}@) =[97,98]
-     (string<98,109> '[98,99] (string_content[99,108]@{protected}@) '[108,109]))
-    )[109,110])
-   \n[110,111]
-   (property<119,129> name: (identifier[119,121]@{p1}@) (identifier[125,129]@{char}@))
-   \n[129,130]
-   (property<138,151> name: (identifier[138,143]@{prop2}@) (identifier[144,151]@{logical}@))
-   \n[151,152] end[156,159])
-  \n[159,160] end[160,163])
- \n[163,164])
+(source_file<1,166> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (class_definition<22,165> classdef[22,30] name: (identifier[31,71]@{electric_indent_prop_attribute_id_string}@) \n[71,72]
+  (properties<76,161> properties[76,86]
+   (attributes<87,112> ([87,88]
+    (attribute<88,111> (identifier[88,97]@{SetAccess}@) =[98,99]
+     (string<100,111> '[100,101] (string_content[101,110]@{protected}@) '[110,111]))
+    )[111,112])
+   \n[112,113]
+   (property<121,131> name: (identifier[121,123]@{p1}@) (identifier[127,131]@{char}@))
+   \n[131,132]
+   (property<140,153> name: (identifier[140,145]@{prop2}@) (identifier[146,153]@{logical}@))
+   \n[153,154] end[158,161])
+  \n[161,162] end[162,165])
+ \n[165,166])

@@ -1,6 +1,6 @@
 % -*- matlab-ts -*-
 
-r = myFunction(Name1=3, Name2=7)
+r = myFunction(Name1 = 3, Name2 = 7)
 
 function result = myFunction(NameValueArgs)
     arguments
