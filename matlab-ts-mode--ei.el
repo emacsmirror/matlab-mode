@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode--ei.el --- MATLAB electric indent -*- lexical-binding: t -*-
 
-;; Version: 8.0.1
+;; Version: 8.0.2
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -321,7 +321,7 @@ is used in `matlab-ts-mode--ei-spacing'"
                    (next-type (treesit-node-type next-node)))
               ;; At comma node of a row in an array (a matrix or cell)?
               (when (and (equal next-type ",")
-                         (string= (treesit-node-type (treesit-node-parent next-node)) "row"))
+                         (string= (treesit-node-type (treesit-node-parent candidate)) "row"))
                 (cl-return-from matlab-ts-mode--ei-move-to-and-get-node
                   (cons next-node next-type))))
             (setq candidate (treesit-node-parent candidate)))))
@@ -461,7 +461,7 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
 If an error node spans multiple lines, we ignore it assuming
 there's an inner error node.  This always returns non-nil, thus
 enabling caching."
-  (let ((error-linenums '(-1 . nil))
+  (let (error-linenums
         (capture-errors (when (not matlab-ts-mode--ei-tmp-buf-indent)
                           (treesit-query-capture (treesit-buffer-root-node)
                                                  matlab-ts-mode--ei-error-query))))
@@ -473,8 +473,11 @@ enabling caching."
              (error-end-linenum (line-number-at-pos error-end-pt)))
         (cl-loop
          for linenum from error-start-linenum to error-end-linenum do
-         (push `(,linenum . t) error-linenums))))
-    error-linenums))
+         (when (not (alist-get linenum error-linenums))
+           (push `(,linenum . t) error-linenums)))))
+    (if error-linenums
+        (reverse error-linenums)
+      '(-1 . nil))))
 
 (defun matlab-ts-mode--ei-no-elements-to-indent ()
   "Return t if no elements in the current line to indent.
@@ -504,16 +507,35 @@ Assumes that current point is at `back-to-indentation'."
      ;; Case: invisible at end of array row
      ;;           foo = {'one', 'two' ...
      ;;                              ^   missing comma, return a comma to have it inserted
-     ((string= node-type "line_continuation")
-      (let ((next-node (treesit-node-next-sibling node))
-            next-type)
+     ((and (string= node-type "line_continuation")
+           (string= (treesit-node-type (treesit-node-parent node)) "row"))
+      (let ((next-node (treesit-node-next-sibling node))  ;; after the line continuation
+            (ans ""))
         (while (and next-node
-                    (string= (setq next-type (treesit-node-type next-node)) "line_continuation"))
+                    (string= (treesit-node-type next-node) "line_continuation"))
           (setq next-node (treesit-node-next-sibling next-node)))
-        (if (and (equal next-type ",")
-                 (= (treesit-node-start next-node) (treesit-node-end next-node)))
-            '(",") ;; list means prefix to NODE text
-          "")))
+
+        (when next-node
+          (let ((row-item next-node)
+                (next-parent (treesit-node-parent next-node)))
+            (while (and next-parent
+                        (not (string= (treesit-node-type next-parent) "row")))
+              (setq row-item next-parent
+                    next-parent (treesit-node-parent next-parent)))
+
+            (when next-parent ;; next parent is a row
+              ;; Emacs 30.1 build 1 returns the hidden comma when using
+              ;; treesit-node-next-sibling. Emacs 30.1 build 2 doesn't, but does for
+              ;; treesit-node-prev-sibling.
+              (let ((row-item-type (treesit-node-type row-item)))
+                (when (not (string= row-item-type ","))
+                  (setq row-item (treesit-node-prev-sibling row-item))
+                  (setq row-item-type (treesit-node-type row-item)))
+                (if (and (equal row-item-type ",")
+                         (= (treesit-node-start row-item) (treesit-node-end row-item)))
+                    (setq ans '(","))  ;; list means prefix to NODE text
+                  )))))
+        ans))
 
      ;; Case: Handle ignored characters, e.g. ";" in matrices where node="]", next-node="["
      ;;   [[1, 2]; [3, 4]]
@@ -667,9 +689,9 @@ final amount of leading whitespace because we do electric indent before
 
            (matlab--eilb-add-node-text node extra-chars n-spaces-between))
 
-           (setq node next-node
-                 node-type next-node-type)
-           ))
+         (setq node next-node
+               node-type next-node-type)
+         ))
 
       (when node ;; last node in line
         (when (equal start-node node)
@@ -1966,5 +1988,5 @@ This expansion of the region is done to simplify electric indent."
 ;;; matlab-ts-mode--ei.el ends here
 
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
-;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb
-;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn
+;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
+;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl

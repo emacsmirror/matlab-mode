@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 8.0.1
+;; Version: 8.0.2
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -1769,7 +1769,13 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                     ;;           ^                           <== TAB to here
                     matlab-ts-mode--indent-level)))
 
-               ((rx (seq bos (or "switch" "case" "otherwise") eos))
+               ((rx bos (or "case" "otherwise"))
+                (if (and node
+                         (string-match-p (rx bos (or "case" "otherwise")) (treesit-node-type node)))
+                    0
+                  matlab-ts-mode--switch-indent-level))
+
+               ("switch"
                 matlab-ts-mode--switch-indent-level)
 
                ("end"
@@ -1817,7 +1823,9 @@ Sets `matlab-ts-mode--i-next-line-pair' to (ANCHOR-NODE . OFFSET)"
                                                                 "elseif"
                                                                 "switch"
                                                                 "case"
+                                                                "case_clause"
                                                                 "otherwise"
+                                                                "otherwise_clause"
                                                                 "for"
                                                                 "parfor"
                                                                 "while"

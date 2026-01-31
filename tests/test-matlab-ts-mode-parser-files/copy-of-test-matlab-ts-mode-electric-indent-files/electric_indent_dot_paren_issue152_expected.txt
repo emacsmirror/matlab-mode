@@ -1,0 +1,26 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,772> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% See: https://github.com/acristoffers/tree-sitter...}@)
+ (assignment<92,105> left: (identifier[92,95]@{obj}@) =[96,97] right: (identifier[98,105]@{myClass}@))
+ ;[105,106]
+ (assignment<108,113> left: (identifier[108,109]@{a}@) =[110,111] right: (number[112,113]@{1}@))
+ ;[113,114]
+ (field_expression<116,127> object: (identifier[116,119]@{obj}@) .[119,120]
+  field: 
+   (indirect_access<120,127> ([120,121]
+    (not_operator<123,125> ~[123,124] (identifier[124,125]@{a}@))
+    )[126,127]))
+ ;[127,128]
+ (function_call<130,140> name: (identifier[130,133]@{obj}@) ([133,134]
+  (arguments<136,138>
+   argument: 
+    (not_operator<136,138> ~[136,137]
+     (_expression<137,138> (identifier[137,138]@{a}@))))
+  )[139,140])
+ ;[140,141]
+ (function_call<143,152> name: (identifier[143,146]@{obj}@) {[146,147]
+  (arguments<148,150>
+   argument: 
+    (not_operator<148,150> ~[148,149]
+     (_expression<149,150> (identifier[149,150]@{a}@))))
+  }[151,152])
+ ;[152,153] (comment[155,771]@{%  classdef myClass\n%      methods\n%          % ...}@) \n[771,772])

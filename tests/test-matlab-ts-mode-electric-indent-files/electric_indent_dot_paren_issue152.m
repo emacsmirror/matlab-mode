@@ -6,11 +6,11 @@ obj = myClass;
 
 a = 1;
 
-obj.(~a);
+obj.(  ~a );
 
-obj(~a);
+obj(  ~a );
 
-obj{~a};
+obj{ ~a };
 
 %  classdef myClass
 %      methods

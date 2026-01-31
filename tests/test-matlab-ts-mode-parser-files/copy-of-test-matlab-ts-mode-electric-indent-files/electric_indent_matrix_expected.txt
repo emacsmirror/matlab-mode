@@ -191,6 +191,7 @@
           argument: (spread_operator<756,757> :[756,757])
           ,[757,758] (number[759,760]@{1}@))
          )[760,761]))
+       ;[761,762]
        (row<763,787>
         (function_call<763,787> name: (identifier[763,781]@{propertyStateArray}@) ([781,782]
          (arguments<782,786>
@@ -206,6 +207,7 @@
          argument: (spread_operator<828,829> :[828,829])
          ,[829,830] (number[831,832]@{2}@))
         )[832,833]))
+      ;[833,834]
       (row<835,859>
        (function_call<835,859> name: (identifier[835,853]@{propertyStateArray}@) ([853,854]
         (arguments<854,858>
@@ -225,22 +227,26 @@
         (function_call<880,890> name: (identifier[880,884]@{ones}@) ([884,885]
          (arguments<885,889> argument: (number[885,887]@{20}@) ,[887,888] (number[888,889]@{1}@))
          )[889,890]))
+       ;[890,891]
        (row<894,905>
         (binary_operator<894,905> left: (number[894,895]@{2}@) *[895,896]
          right: 
           (function_call<896,905> name: (identifier[896,900]@{ones}@) ([900,901]
            (arguments<901,904> argument: (number[901,902]@{8}@) ,[902,903] (number[903,904]@{1}@))
            )[904,905])))
+       ;[905,906]
        (row<906,915>
         (function_call<906,915> name: (identifier[906,910]@{ones}@) ([910,911]
          (arguments<911,914> argument: (number[911,912]@{8}@) ,[912,913] (number[913,914]@{1}@))
          )[914,915]))
+       ;[915,916]
        (row<920,931>
         (binary_operator<920,931> left: (number[920,921]@{2}@) *[921,922]
          right: 
           (function_call<922,931> name: (identifier[922,926]@{ones}@) ([926,927]
            (arguments<927,930> argument: (number[927,928]@{8}@) ,[928,929] (number[929,930]@{1}@))
            )[930,931])))
+       ;[931,932]
        (row<933,942>
         (function_call<933,942> name: (identifier[933,937]@{ones}@) ([937,938]
          (arguments<938,941> argument: (number[938,939]@{7}@) ,[939,940] (number[940,941]@{1}@))
