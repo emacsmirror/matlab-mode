@@ -3,9 +3,18 @@
 # Abstract:
 #   Argument parsing for matlab tree-sitter testing which run Emacs and accept argument:
 #
-#   testName.sh -libtree-sitter-matlab /PATH/TO/libtree-sitter-matlab.SLIB_EXT
+#   Caller script should:
 #
-# Copyright (C) 2025 Free Software Foundation, Inc.
+#     SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+#     . "$SCRIPT_DIR/test-tree-sitter-utils.sh"
+#     emacs --batch -q --eval "(setq treesit-extra-load-path (list \"$TS_EXTRA_LOAD_DIR\"))" \
+#        -L "$EmacsMATLABModeDir" \
+#        .....
+#
+#
+# Copyright (C) 2025-2026 Free Software Foundation, Inc.
+
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 #----------------------------------------------#
 # Get shared library extension: so, dylib, dll #
@@ -77,15 +86,16 @@ done
 #-------------------------------------------------------------------------#
 # -libtree-sitter-matlab /PATH/TO/libtree-sitter-matlab.SLIB_EXT handling #
 #-------------------------------------------------------------------------#
-declare -a tsExtraLoadPath
-if [ "$libTreeSitterMatlab" != "" ]; then
-    p=$(dirname "$libTreeSitterMatlab")
-    tsExtraLoadPath=("--eval"
-                     "(setq treesit-extra-load-path (list \"$p\"))")
+if [ "$libTreeSitterMatlab" = "" ]; then
+    TS_EXTRA_LOAD_DIR=$(make -s -C "$SCRIPT_DIR" disp-matlab-ts-dir)
 else
-    tsExtraLoadPath=()
+    TS_EXTRA_LOAD_DIR=$(dirname "$libTreeSitterMatlab")
 fi
-export tsExtraLoadPath
+
+#--------------------------#
+# Results for parent shell #
+#--------------------------#
+export TS_EXTRA_LOAD_DIR
 
 EmacsMATLABModeDir=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && cd .. && pwd)
 export EmacsMATLABModeDir

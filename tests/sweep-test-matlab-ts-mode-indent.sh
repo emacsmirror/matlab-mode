@@ -12,7 +12,7 @@ SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 set -x
 
-emacs --batch -q "${tsExtraLoadPath[@]}" \
+emacs --batch -q --eval "(setq treesit-extra-load-path (list \"$TS_EXTRA_LOAD_DIR\"))" \
         -L "$EmacsMATLABModeDir" \
         -l "$EmacsMATLABModeDir/matlab-autoload.el" \
         -L "$EmacsMATLABModeDir/tests" \

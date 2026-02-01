@@ -101,6 +101,10 @@ $(RUN_T_UTILS_TEST):
 	  -eval '(t-utils-run "$(RUN_T_UTILS_TEST).el")'
 endif
 
+.PHONY: disp-matlab-ts-dir
+disp-matlab-ts-dir:
+	@echo $(MATLAB_TS_DIR)
+
 # [eof] tests/Makefile
 
 # LocalWords:  EMACSFLAGS setq ifneq modetests shelltests metest mstest eof utils treesit ifeq env
