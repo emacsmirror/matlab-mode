@@ -1,0 +1,22 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,135> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,89]@{% See https://github.com/acristoffers/tree-sitter-...}@)
+ (assignment<91,110> left: (identifier[91,93]@{x1}@) =[94,95]
+  right: 
+   (matrix<96,110> [[96,97]
+    (row<97,102> (number[97,98]@{1}@) ,[101,101] (number[101,102]@{2}@))
+    (row<106,109> (number[106,107]@{3}@) ,[108,108] (number[108,109]@{4}@))
+    ][109,110]))
+ ;[110,111]
+ (assignment<112,134> left: (identifier[112,114]@{x2}@) =[115,116]
+  right: 
+   (function_call<117,134> name: (identifier[117,119]@{x1}@) ([119,120]
+    (arguments<121,133>
+     argument: 
+      (matrix<121,133> [[121,122]
+       (row<122,123> (number[122,123]@{1}@))
+       ;[126,127]
+       (row<127,130>
+        (end_keyword<127,130> end[127,130]))
+       ][132,133]))
+    )[133,134]))
+ \n[134,135])
