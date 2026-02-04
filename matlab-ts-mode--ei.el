@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode--ei.el --- MATLAB electric indent -*- lexical-binding: t -*-
 
-;; Version: 8.0.2
+;; Version: 8.0.3
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -204,6 +204,10 @@
 
     ))
 
+(defun matlab-ts-mode--assert-msg (msg)
+  "Call error with MSG for code that shouldn't be hit."
+  (error "Assert: %s" msg))
+
 (defun matlab-ts-mode--ei-fast-back-to-indentation ()
   "Fast back to indentation.
 The `back-to-indentation' function uses the syntax table causes
@@ -365,9 +369,10 @@ is used in `matlab-ts-mode--ei-spacing'"
          (orig-line-no-spaces-or-commas (replace-regexp-in-string "[ \t,]" "" orig-line)))
 
     (when (not (string= new-line-no-spaces-or-commas orig-line-no-spaces-or-commas))
-      (error "Assert: line-content-no-space-mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
-             new-line-no-spaces-or-commas orig-line-no-spaces-or-commas
-             (line-number-at-pos (point)) (buffer-name)))))
+      (matlab-ts-mode--assert-msg
+       (format "line-content-no-space-mismatch new: \"%s\" !EQ orig: \"%s\" at line %d in %s"
+               new-line-no-spaces-or-commas orig-line-no-spaces-or-commas
+               (line-number-at-pos (point)) (buffer-name))))))
 
 (defvar-local matlab--eilb nil) ;; Buffer used to create new electric indent line, ei-line
 
@@ -677,8 +682,9 @@ final amount of leading whitespace because we do electric indent before
                         (cl-return)))))
 
          (when (not n-spaces-between)
-           (error "Assert: ei, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
-                  node-type node next-node-type next-node))
+           (matlab-ts-mode--assert-msg
+            (format "ei, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
+                    node-type node next-node-type next-node)))
 
          (let* ((node-end (treesit-node-end node))
                 (next-node-start (treesit-node-start next-node))
@@ -782,35 +788,49 @@ Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
 
     column-widths))
 
-(defun matlab-ts-mode--ei-get-m-matrix-row-in-line ()
+(defun matlab-ts-mode--ei-get-m-matrix-row-in-line (use-matrix-node)
   "Given point within a matrix assignment statement, return row node or nil.
 Example:  v = [1 2; ...
                ...
                3 4];
-when on the 2nd continuation only line, nil is returned otherwise a row node."
+when on the 2nd continuation only line, nil is returned otherwise a row node.
+If USE-MATRIX-NODE is non-nil, we use that to locate the first row."
   (save-excursion
-    (matlab-ts-mode--ei-fast-back-to-indentation)
-    (when (looking-at "[^ \t\n\r]")
-      (let (row-node
-            found-ans)
-        (cl-loop
-         while (not found-ans) do
+    (if use-matrix-node
+        ;; [1, 2, 3;      // child 0 is the '[', child 1 is the first row
+        ;;  4, 5, 6]
+        ;; [ ...          // child 0 is the '[', child 1 is line_continuation
+        ;;  1, 2, 3;      
+        ;;  4, 5, 6]
+        (let ((child1 (treesit-node-child use-matrix-node 1)))
+          (when (and (string= (treesit-node-type child1) "row")
+                     (= (line-number-at-pos (treesit-node-start use-matrix-node))
+                        (line-number-at-pos (treesit-node-start child1))))
+            ;; row-now on same line as use-matrix-node
+            child1))
+      ;; else on 2nd or later line, find the row
+      (matlab-ts-mode--ei-fast-back-to-indentation)
+      (when (looking-at "[^ \t\n\r]")
+        (let (row-node
+              found-ans)
+          (cl-loop
+           while (not found-ans) do
 
-         (let* ((node-at-pt (treesit-node-at (point) 'matlab))
-                (node node-at-pt))
-           (while (and node
-                       (not (string-match-p (rx bos (or "row" "matrix" "assignment") eos)
-                                            (treesit-node-type node))))
-             (setq node (treesit-node-parent node)))
+           (let* ((node-at-pt (treesit-node-at (point) 'matlab))
+                  (node node-at-pt))
+             (while (and node
+                         (not (string-match-p (rx bos (or "row" "matrix" "assignment") eos)
+                                              (treesit-node-type node))))
+               (setq node (treesit-node-parent node)))
 
-           (if (and node
-                    (string= (treesit-node-type node) "row"))
-               (setq found-ans t
-                     row-node node)
-             (goto-char (min (treesit-node-end node-at-pt) (pos-eol)))
-             (when (not (re-search-forward "[^ \t]" (pos-eol) t))
-               (setq found-ans t)))))
-        row-node))))
+             (if (and node
+                      (string= (treesit-node-type node) "row"))
+                 (setq found-ans t
+                       row-node node)
+               (goto-char (min (treesit-node-end node-at-pt) (pos-eol)))
+               (when (not (re-search-forward "[^ \t]" (pos-eol) t))
+                 (setq found-ans t)))))
+          row-node)))))
 
 ;; Internal variable that shouldn't be altered. It's used to avoid infinite recursion.
 (defvar matlab-ts-mode--ei-align-enabled t)
@@ -901,6 +921,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                                   (treesit-node-parent (treesit-search-subtree ;; else a property
                                                         (treesit-buffer-root-node)
                                                         (rx bos "[" eos) nil t))))
+                   (use-matrix-node matrix-node) ;; used when current line is matrix-node start
                    (first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra matrix-node))
                    (col-widths (matlab-ts-mode--ei-m-matrix-col-widths matrix-node
                                                                        first-col-extra)))
@@ -908,13 +929,15 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               ;; otherwise calculate all matrix rows for indent-region.
               (when (and (not matrix-alist)
                          (> tmp-buf-ei-linenum 1))
+                (setq use-matrix-node nil) ;; TAB on a later line in a matrix
                 (forward-line (1- tmp-buf-ei-linenum)))
 
               (while (< (line-number-at-pos) end-linenum) ;; Adjust column widths
                 (matlab-ts-mode--ei-fast-back-to-indentation)
-                (let* ((row-node (matlab-ts-mode--ei-get-m-matrix-row-in-line))
+                (let* ((row-node (matlab-ts-mode--ei-get-m-matrix-row-in-line use-matrix-node))
                        (indent-offset (when (looking-at "[^ \t\n\r]+") (current-column)))
                        ei-line)
+                  (setq use-matrix-node nil)
                   (matlab--eilb-setup)
                   (if (and row-node indent-offset)
                       (let* ((col-num (length col-widths)) ;; Iterate last col down to first col
@@ -933,9 +956,11 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                           (setq indent-offset matrix-offset))
 
                         (dolist (row-el (reverse (treesit-node-children row-node)))
-                          (when (not (string= (treesit-node-type row-el) ",")) ;; at a column?
+                          (when (not (string-match-p ;; at a column?
+                                      (rx bos (or "," "line_continuation" "comment") eos)
+                                      (treesit-node-type row-el)))
                             (let ((width (or (alist-get col-num col-widths)
-                                             (error "Assert: no col width")))
+                                             (matlab-ts-mode--assert-msg "no col width")))
                                   (curr-width (- (treesit-node-end row-el)
                                                  (treesit-node-start row-el))))
                               (when (< curr-width width)
@@ -1066,7 +1091,7 @@ nil."
             ;; Case: unexpected matrix child node
             ((not (string-match-p (rx bos (or "[" "]" "comment" "line_continuation" "\n") eos)
                                   child-type))
-             (error "Assert: unexpected matrix child %S" child))))))
+             (matlab-ts-mode--assert-msg (format "unexpected matrix child %S" child)))))))
 
       ;; Multi-line matrix (m-matrix) with each row is on its own line?
       (let ((ans (and is-m-matrix (> n-rows 1) (>= n-cols 1))))
@@ -1277,7 +1302,7 @@ Note, \\='m-struct returns (list assignment-node max-field-width arguments-node)
                           (list assign-node (car pair) (cdr pair))))))))))
 
              (t
-              (error "Assert: bad a-type %S" a-type)))))))))
+              (matlab-ts-mode--assert-msg (format "bad a-type %S" a-type))))))))))
 
 (defun matlab-ts-mode--ei-point-in-m-type (ei-info m-type)
   "Are we in an M-TYPE line?
@@ -1307,8 +1332,10 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
 
 (defun matlab-ts-mode--ei-assign-offset (ei-line)
   "Get the assignment offset from the indent-level in EI-LINE."
-  (let* ((first-char-offset (or (string-match-p "[^ \t]" ei-line) (error "Assert: no first char")))
-         (offset (- (or (string-match-p "=" ei-line) (error "Assert: no ="))
+  (let* ((first-char-offset (or (string-match-p "[^ \t]" ei-line)
+                                (matlab-ts-mode--assert-msg "no first char")))
+         (offset (- (or (string-match-p "=" ei-line)
+                        (matlab-ts-mode--assert-msg "no ="))
                     first-char-offset)))
     offset))
 
@@ -1398,7 +1425,7 @@ same line and has items to align."
   ;; becomes "nameValueArgs.foo (1,1)" in EI-LINE.
   (let ((ei-line (nth 0 ei-info)))
     (when (not (string-match "[^ \t]+" ei-line))
-      (error "Assert: no property in ei-line %s" ei-line))
+      (matlab-ts-mode--assert-msg (format "no property in ei-line %s" ei-line)))
     (- (match-end 0) (match-beginning 0))))
 
 ;; This is used to cache aligned properties/arguments for indent-region, and contains
@@ -1656,14 +1683,14 @@ TAB>  x = 123 ./1 + 567
         (when (string= curr-line-node-types orig-modified)
           (cl-return-from matlab-ts-mode--ei-assert-nodes-types-match))))
 
-    (error "Assert: line-node-types mismatch
+    (matlab-ts-mode--assert-msg (format "line-node-types mismatch
   new:  \"%s\"
   orig: \"%s\"
   at line %d in %s"
            curr-line-node-types
            orig-line-node-types
            linenum
-           (buffer-name))))
+           (buffer-name)))))
 
 (defun matlab-ts-mode--ei-assert-line-nodes-match (start-linenum end-linenum)
   "Assert that original line node types match modified line node types.
@@ -1758,7 +1785,7 @@ END-LINE1 corresponds to the first %-indent-mode=full comment and so on."
                      (push `(,start-line . ,(line-number-at-pos)) result)
                      (setq start-line nil)))
                   (_
-                   (error "Assert: bad directive, %s" directive)))))
+                   (matlab-ts-mode--assert-msg (format "bad directive, %s" directive))))))
             (when start-line
               (push `(,start-line . ,(line-number-at-pos (point-max))) result))))
         ;; Always return non-nil for caching and (-1 . 0) will never be used.

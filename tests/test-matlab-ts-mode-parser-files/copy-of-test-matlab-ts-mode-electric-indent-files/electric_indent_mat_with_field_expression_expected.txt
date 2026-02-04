@@ -1,0 +1,43 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,192> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,190> left: (identifier[22,25]@{mat}@) =[26,27]
+  right: 
+   (matrix<28,190> [[28,29]
+    (row<45,79>
+     (field_expression<45,79> object: (identifier[45,46]@{a}@) .[46,47]
+      field: 
+       (function_call<47,79>
+        name: 
+         (field_expression<47,52> object: (identifier[47,48]@{b}@) .[48,49]
+          field: (function_call<49,52> name: (identifier[49,50]@{c}@) ([50,51] )[51,52]))
+        {[68,69]
+        (arguments<69,78>
+         argument: (string<69,78> '[69,70] (string_content[70,77]@{logical}@) '[77,78]))
+        }[78,79])))
+    (row<95,129>
+     (field_expression<95,129> object: (identifier[95,96]@{a}@) .[96,97]
+      field: 
+       (function_call<97,129>
+        name: 
+         (field_expression<97,104> object: (identifier[97,98]@{b}@) .[98,99] field: (identifier[99,100]@{c}@) .[100,101]
+          (indirect_access<101,104> ([101,102] (identifier[102,103]@{d}@) )[103,104]))
+        {[120,121]
+        (arguments<121,128>
+         argument: (string<121,128> '[121,122] (string_content[122,127]@{other}@) '[127,128]))
+        }[128,129])))
+    (row<145,178>
+     (field_expression<145,178> object: (identifier[145,146]@{a}@) .[146,147]
+      field: 
+       (function_call<147,178>
+        name: 
+         (field_expression<147,153> object: (identifier[147,148]@{b}@) .[148,149]
+          field: 
+           (function_call<149,153> name: (identifier[149,150]@{c}@) {[150,151]
+            (arguments<151,152> argument: (identifier[151,152]@{d}@))
+            }[152,153]))
+        {[169,170]
+        (arguments<170,177>
+         argument: (string<170,177> '[170,171] (string_content[171,176]@{other}@) '[176,177]))
+        }[177,178])))
+    ][189,190]))
+ ;[190,191] \n[191,192])

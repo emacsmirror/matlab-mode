@@ -1,0 +1,85 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,411> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% https://github.com/acristoffers/tree-sitter-matl...}@)
+ (assignment<87,95> left: (identifier[87,88]@{a}@) =[89,90] right: (identifier[91,95]@{true}@))
+ ;[95,96]
+ (assignment<97,106> left: (identifier[97,98]@{b}@) =[99,100] right: (identifier[101,106]@{false}@))
+ ;[106,107]
+ (field_expression<108,140> object: (identifier[108,119]@{myNamespace}@) .[119,120]
+  field: 
+   (function_call<120,140> name: (identifier[120,125]@{myFcn}@) ([125,126]
+    (arguments<126,139>
+     argument: 
+      (boolean_operator<126,139>
+       left: (_expression<126,127> (identifier[126,127]@{a}@))
+       &&[128,130]
+       right: 
+        (_expression<133,139>
+         (parenthesis<133,139> ([133,134]
+          (not_operator<136,138> ~[136,137]
+           (_expression<137,138> (identifier[137,138]@{b}@)))
+          )[138,139]))))
+    )[139,140]))
+ ;[140,141] (comment[143,254]@{% Where we have file ./+myNamespace/myFcn.m which ...}@)
+ (function_call<256,285> name: (identifier[256,262]@{assert}@) ([262,263]
+  (arguments<263,284>
+   argument: 
+    (parenthesis<263,273> ([263,264]
+     (not_operator<266,272> ~[266,267]
+      (_expression<267,272> (identifier[267,272]@{expr1}@)))
+     )[272,273])
+   ,[273,274]
+   (string<275,284> '[275,276] (string_content[276,283]@{message}@) '[283,284]))
+  )[284,285])
+ ;[285,286]
+ (assignment<288,293> left: (identifier[288,289]@{a}@) =[290,291] right: (number[292,293]@{1}@))
+ ;[293,294]
+ (assignment<295,300> left: (identifier[295,296]@{b}@) =[297,298] right: (number[299,300]@{1}@))
+ ;[300,301]
+ (assignment<302,307> left: (identifier[302,303]@{c}@) =[304,305] right: (number[306,307]@{1}@))
+ ;[307,308]
+ (function_call<309,345> name: (identifier[309,315]@{assert}@) ([315,316]
+  (arguments<316,344>
+   argument: 
+    (boolean_operator<316,333>
+     left: 
+      (_expression<316,328>
+       (parenthesis<316,328> ([316,317]
+        (boolean_operator<320,327>
+         left: 
+          (_expression<320,322>
+           (not_operator<320,322> ~[320,321]
+            (_expression<321,322> (identifier[321,322]@{a}@))))
+         ||[323,325]
+         right: (_expression<326,327> (identifier[326,327]@{b}@)))
+        )[327,328]))
+     &&[329,331]
+     right: (_expression<332,333> (identifier[332,333]@{c}@)))
+   ,[333,334]
+   (string<335,344> '[335,336] (string_content[336,343]@{message}@) '[343,344]))
+  )[344,345])
+ ;[345,346]
+ (function_call<348,410> name: (identifier[348,354]@{assert}@) ([354,355]
+  (arguments<355,409>
+   argument: 
+    (not_operator<355,409> ~[355,356]
+     (_expression<358,409>
+      (parenthesis<358,409> ([358,359]
+       (boolean_operator<359,408>
+        left: 
+         (_expression<359,380>
+          (not_operator<359,380> ~[359,360]
+           (_expression<360,380>
+            (function_call<360,380> name: (identifier[360,367]@{isempty}@) ([367,368]
+             (arguments<368,379> argument: (identifier[368,379]@{aConstraint}@))
+             )[379,380]))))
+        &&[381,383]
+        right: 
+         (_expression<386,408>
+          (not_operator<386,408> ~[386,387]
+           (_expression<387,408>
+            (function_call<387,408> name: (identifier[387,394]@{isempty}@) ([396,397]
+             (arguments<397,407> argument: (identifier[397,407]@{aCondition}@))
+             )[407,408])))))
+       )[408,409]))))
+  )[409,410])
+ \n[410,411])

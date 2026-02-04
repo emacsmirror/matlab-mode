@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 8.0.2
+;; Version: 8.0.3
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -698,16 +698,10 @@ than the COMMENT-NODE start-point and end-point."
                                                override start end))
             (goto-char comment-end)))))))
 
-(defun matlab-ts-mode--namespace-builtins-capture (namespace-node override start end &rest _)
-  "Fontify foo.bar.goo when it is a builtin function.
-NAMESPACE-NODE is the tree-sitter field_expression or a superclass
-property_name node.  These nodes have children that for a PATH,
-e.g. \"foo.bar.goo\".  This is connected to the namespace-builtins
-treesit-font-lock-rules rule and OVERRIDE is from that rule.  START and
-END specify the region to be fontified which could be smaller or larger
-than the FILED-EXPRESSION-NODE start-point and end-point."
+(defun matlab-ts-mode--namespace-path (namespace-node)
+  "Get the a.b.c path of NAMESPACE-NODE."
   (let ((children (treesit-node-children namespace-node))
-        (path "")) ;; The "path" of NAMESPACE, e.g. foo.bar.goo
+        path)
     (cl-loop for child in children do
              (let ((child-type (treesit-node-type child)))
                (cond
@@ -717,11 +711,29 @@ than the FILED-EXPRESSION-NODE start-point and end-point."
                  (setq path (concat path (treesit-node-text child))))
                 ;; Case: (function_call)
                 ((string= child-type "function_call")
+                 ;; Consider: a.b.c{1}{2} or a.b.c{1}(1)
                  (let ((fcn-name-node (treesit-node-child-by-field-name child "name")))
-                   (setq path (concat path (treesit-node-text fcn-name-node)))))
+                   (let ((fcn-name-type (treesit-node-type fcn-name-node)))
+                     (while (string= fcn-name-type "function_call")
+                       (setq fcn-name-node (treesit-node-child-by-field-name fcn-name-node "name")
+                             fcn-name-type (treesit-node-type fcn-name-node)))
+                     (if (string= fcn-name-type "field_expression")
+                         (setq path (concat path (matlab-ts-mode--namespace-path fcn-name-node)))
+                       (setq path (concat path (treesit-node-text fcn-name-node)))))))
                 ;; Case: other - shouldn't be able to get here, but be safe.
                 (t
                  (cl-return)))))
+    path))
+
+(defun matlab-ts-mode--namespace-builtins-capture (namespace-node override start end &rest _)
+  "Fontify foo.bar.goo when it is a builtin function.
+NAMESPACE-NODE is the tree-sitter field_expression or a superclass
+property_name node.  These nodes have children that for a PATH,
+e.g. \"foo.bar.goo\".  This is connected to the namespace-builtins
+treesit-font-lock-rules rule and OVERRIDE is from that rule.  START and
+END specify the region to be fontified which could be smaller or larger
+than the FILED-EXPRESSION-NODE start-point and end-point."
+  (let ((path (matlab-ts-mode--namespace-path namespace-node))) ;; The "path" e.g. foo.bar.goo
     (let ((builtin-type (gethash path matlab-ts-mode--builtins-ht)))
       (when builtin-type
         (let ((builtin-start (treesit-node-start namespace-node))
@@ -2664,6 +2676,13 @@ Example:
               ,(rx bos "function_call" eos)
               ,(rx bos "field_expression" eos))
       grand-parent ,matlab-ts-mode--indent-level)
+
+     ;; I-Rule:    mat = [
+     ;;                    a.b.c.(d)
+     ;;        TAB>        {'other'}
+     ;; See: test-matlab-ts-mode-electric-indent-files/electric_indent_mat_with_field_expression.m
+     ((n-p-gp ,(rx bos (or "(" "{") eos) nil ,(rx bos "field_expression" eos))
+      grand-parent 0)
 
      ;; I-Rule:  my_function( ...
      ;; <TAB>        1, ...

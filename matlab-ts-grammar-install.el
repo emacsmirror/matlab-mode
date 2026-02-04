@@ -28,7 +28,7 @@
 (require 'org-src)
 (require 'url)
 
-(defvar matlab--ts-grammar-release "matlab-ts-abi14-20260131-efc8f30")
+(defvar matlab--ts-grammar-release "matlab-ts-abi14-20260204-397dc8e")
 
 (defun matlab--ts-grammar-check-version ()
   "Validate Emacs and grammar version are okay, error if not."

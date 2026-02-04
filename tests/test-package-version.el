@@ -20,9 +20,6 @@
 
 ;;; Code:
 
-(require 't-utils)
-(require 'matlab-ts-mode)
-
 (ert-deftest test-package-version ()
   "Validate the package version numbers in ../*.el are the same.
 Emacs MATLAB mode package consists of several major and minor modes and

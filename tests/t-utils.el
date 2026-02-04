@@ -420,10 +420,14 @@ name as the test file.  These test names are then run using `ert'."
 (defvar-local t-utils--buf-file nil
   "Name of file associated with t-utils temporary buffers.")
 
+(defun t-utils--took-nsec (start-time)
+  "Return number of seconds from START-TIME till now."
+  (float-time (time-subtract (current-time) start-time)))
+
 (defun t-utils--took (start-time)
   "Return \"- took N seconds\".
 N is `current-time' minus START-TIME."
-  (format "- took %.2f seconds" (float-time (time-subtract (current-time) start-time))))
+  (format "- took %.2f seconds" (t-utils--took-nsec start-time)))
 
 (defun t-utils--log (log-file string &optional create)
   "Append STRING to LOG-FILE.
@@ -1786,6 +1790,51 @@ else return nil and write a skipping message to LOG-FILE."
     (kill-buffer lang-file-buf)
     n-lines))
 
+(defun t-utils--indent-save-result (lang-file log-file diff-file)
+  "Save indent result to LANG-FILE~ and diff to DIFF-FILE.
+Log activity to LOG-FILE."
+  (let ((lang-file-tilde (concat lang-file "~")))
+    (write-region (point-min) (point-max) lang-file-tilde)
+    (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
+    (with-current-buffer (diff-no-select lang-file lang-file-tilde "-u" t)
+      ;; Remove diff summary (\nDiff Finished ...)
+      (goto-char (point-max))
+      (forward-line -2)
+      (let ((diff-str (buffer-substring (point-min) (point)))
+            (coding-system-for-write 'utf-8))
+        ;; Force utf-8 on write to handle case of non-utf8 characters in diff.
+        (write-region diff-str nil diff-file t)))))
+
+(defun t-utils--indent-err (err lang-file indent-phase log-file indent-errors)
+  "Log ERR for LANG-FILE in INDENT-PHASE in LOG-FILE.
+Returns update INDENT-ERRORS string."
+  (let ((err-msg (format "failed to indent at phase, %s, error: %s"
+                         indent-phase (error-message-string err))))
+    (t-utils--log log-file (format "Failed-indent-region: %s (%s)\n" lang-file err-msg))
+    ;; result
+    (concat indent-errors (format "%s:1: error: %s\n" lang-file err-msg))))
+
+(defun t-utils--indent-slow-files (took-ht)
+  "Using TOOK-HT(lang-file=>seconds), return top 100 slow-files string."
+  (let ((files '()))
+    (maphash (lambda (file _took-time)
+               (push file files))
+             took-ht)
+    (sort files
+          :lessp (lambda (f1 f2)
+                   (> (gethash f1 took-ht)
+                      (gethash f2 took-ht)))
+          :in-place t)
+    (let* ((max-to-show 100)
+           (n-entries-to-rm (- (length files) max-to-show)))
+      (when (> n-entries-to-rm 0)
+        (nbutlast files n-entries-to-rm)))
+    (mapconcat #'identity
+               (mapcar (lambda (file)
+                         (format "%s:1: note: indent took %.3f seconds\n"
+                                 file (gethash file took-ht)))
+                       files))))
+
 (cl-defun t-utils-sweep-test-indent (test-name
                                      directory
                                      lang-file-regexp
@@ -1905,12 +1954,11 @@ LANGUAGE tree-sitter that need addressing or some other issue."
         (indent-errors "")
         (took-ht (make-hash-table :test 'equal))
         diff-file
-        n-lines)
-
+        n-lines
+        indent-phase)
     (setq log-file (t-utils--log-create test-name log-file))
     (setq diff-file (concat (file-name-sans-extension log-file) ".diff"))
     (message "Diff: %s" diff-file)
-
     (t-utils--log log-file (format "Found %d files to indent %s\n"
                                    (length all-lang-files) (t-utils--took start-time)))
 
@@ -1922,72 +1970,38 @@ LANGUAGE tree-sitter that need addressing or some other issue."
           ;; Check indent
           (condition-case err
               (let ((indent-start (current-time)))
+                (setq indent-phase "insert")
                 (t-utils--insert-file-for-test lang-file major-mode-fun)
 
                 ;; Check for bad tree-sitter parse
+                (setq indent-phase "parse-error-check")
                 (let ((pair (t-utils--check-parse lang-file error-nodes-regexp
                                                   syntax-checker-fun check-valid-parse)))
                   (setq parse-errors (concat parse-errors (car pair))
                         invalid-successful-parse (concat invalid-successful-parse (car pair))))
 
+                (setq indent-phase "indent-region")
                 (indent-region (point-min) (point-max))
-                (puthash lang-file (float-time (time-subtract (current-time) indent-start))
-                         took-ht)
+                (puthash lang-file (t-utils--took-nsec indent-start) took-ht)
 
-                (let ((lang-file-tilde (concat lang-file "~")))
-                  (write-region (point-min) (point-max) lang-file-tilde)
-                  (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
-                  (with-current-buffer (diff-no-select lang-file lang-file-tilde "-u" t)
-                    ;; Remove diff summary (\nDiff Finished ...)
-                    (goto-char (point-max))
-                    (forward-line -2)
-                    (write-region (buffer-substring (point-min) (point)) nil diff-file t))))
-            (error (progn
-                     (t-utils--log log-file (format "Failed-indent-region: %s\n" lang-file))
-                     (setq indent-errors
-                           (concat indent-errors
-                                   (format "%s:1: error: failed to indent, %s\n"
-                                           lang-file (error-message-string err))))))))))
+                (setq indent-phase "save-results")
+                (t-utils--indent-save-result lang-file log-file diff-file))
+            (error (setq indent-errors (t-utils--indent-err err lang-file indent-phase
+                                                            log-file indent-errors)))))))
 
-    (let* ((slow-files (let ((files '()))
-                         (maphash (lambda (file _took-time)
-                                    (push file files))
-                                  took-ht)
-                         (sort files
-                               :lessp (lambda (f1 f2)
-                                        (> (gethash f1 took-ht)
-                                           (gethash f2 took-ht)))
-                               :in-place t)
-                         (let* ((max-to-show 100)
-                                (n-entries-to-rm (- (length files) max-to-show)))
-                           (when (> n-entries-to-rm 0)
-                             (nbutlast files n-entries-to-rm)))
-                         (mapconcat #'identity
-                                    (mapcar (lambda (file)
-                                              (format "%s:1: note: indent took %.3f seconds\n"
-                                                      file (gethash file took-ht)))
-                                            files))))
+    (let* ((slow-files (t-utils--indent-slow-files took-ht))
            (result (concat (format "Files-with-parse-error-nodes%s:\n"
-                                   (if syntax-checker-fun
-                                       "-but-pass-syntax-checker-fun"
-                                     ""))
-                           parse-errors
-                           "\n"
+                                   (if syntax-checker-fun "-but-pass-syntax-checker-fun" ""))
+                           parse-errors "\n"
                            (when check-valid-parse
                              (concat
                               "Files-that-parsed-successfully-but-failed-syntax-checker-fun:\n"
-                              invalid-successful-parse
-                              "\n"))
-                           "Indent-errors:\n"
-                           indent-errors
-                           "\n"
-                           "Slowest-indents:\n"
-                           slow-files)))
-
+                              invalid-successful-parse "\n"))
+                           "Indent-errors:\n" indent-errors "\n"
+                           "Slowest-indents:\n" slow-files)))
       (t-utils--display-result test-name directory result result-file
                                (concat "No files modified.\n"
                                        "Indent results for FILE are saved to FILE~")))
-
     (message "FINISHED: %s %s" test-name (t-utils--took start-time))))
 
 (defun t-utils-test-syntax-table (test-name lang-files)

@@ -9,16 +9,16 @@
   right: 
    (cell<129,146> {[129,130]
     (row<130,145>
-     (field_expression<130,145> object: (identifier[130,131]@{s}@) .[131,132]
-      field: 
-       (function_call<132,145>
-        name: 
+     (function_call<130,145>
+      name: 
+       (field_expression<130,142> object: (identifier[130,131]@{s}@) .[131,132]
+        field: 
          (indirect_access<132,142> ([132,133]
           (string<133,141> '[133,134] (string_content[134,140]@{field1}@) '[140,141])
-          )[141,142])
-        ([142,143]
-        (arguments<143,144> argument: (number[143,144]@{3}@))
-        )[144,145])))
+          )[141,142]))
+      ([142,143]
+      (arguments<143,144> argument: (number[143,144]@{3}@))
+      )[144,145]))
     }[145,146]))
  ;[146,147]
  (assignment<149,162> left: (identifier[149,151]@{c2}@) =[152,153]

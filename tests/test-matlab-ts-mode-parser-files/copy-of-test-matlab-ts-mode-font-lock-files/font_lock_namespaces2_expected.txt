@@ -1,0 +1,39 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,320> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,224]@{% Pretend xcp.a2l.Project.Warnings builtin is a "r...}@)
+ (field_expression<226,253> object: (identifier[226,229]@{xcp}@) .[229,230] field: (identifier[230,233]@{a2l}@) .[233,234] (identifier[234,241]@{Project}@) .[241,242]
+  (function_call<242,253> name: (identifier[242,250]@{Warnings}@) {[250,251]
+   (arguments<251,252> argument: (number[251,252]@{1}@))
+   }[252,253]))
+ \n[253,254]
+ (field_expression<254,284> object: (identifier[254,257]@{xcp}@) .[257,258]
+  field: 
+   (function_call<258,284>
+    name: 
+     (field_expression<258,281> object: (identifier[258,261]@{a2l}@) .[261,262] field: (identifier[262,269]@{Project}@) .[269,270]
+      (function_call<270,281> name: (identifier[270,278]@{Warnings}@) {[278,279]
+       (arguments<279,280> argument: (number[279,280]@{1}@))
+       }[280,281]))
+    {[281,282]
+    (arguments<282,283> argument: (number[282,283]@{2}@))
+    }[283,284]))
+ \n[284,285]
+ (field_expression<285,318> object: (identifier[285,288]@{xcp}@) .[288,289]
+  field: 
+   (function_call<289,318>
+    name: 
+     (field_expression<289,315> object: (identifier[289,292]@{a2l}@) .[292,293]
+      field: 
+       (function_call<293,315>
+        name: 
+         (field_expression<293,312> object: (identifier[293,300]@{Project}@) .[300,301]
+          field: 
+           (function_call<301,312> name: (identifier[301,309]@{Warnings}@) {[309,310]
+            (arguments<310,311> argument: (number[310,311]@{1}@))
+            }[311,312]))
+        {[312,313]
+        (arguments<313,314> argument: (number[313,314]@{2}@))
+        }[314,315]))
+    ([315,316]
+    (arguments<316,317> argument: (number[316,317]@{3}@))
+    )[317,318]))
+ \n[318,320])

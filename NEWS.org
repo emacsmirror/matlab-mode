@@ -3,6 +3,11 @@
 
 # Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
+* Release 8.0.3 Feb-5-2026
+
+This release updates to the latest tree-sitter-matlab grammar which addresses a couple issues in
+matlab-ts-mode related to indent and font-lock.
+
 * Release 8.0.2 Jan-31-2026
 
 This release:

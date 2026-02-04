@@ -1,0 +1,181 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,620> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,112]@{% t-utils-test-indent: no-line-by-line-indent - li...}@) (comment[114,182]@{% Notic on the left there is a matrix. We align th...}@)
+ (assignment<184,288>
+  left: 
+   (field_expression<184,198> object: (identifier[184,185]@{a}@) .[185,186]
+    field: 
+     (function_call<186,198> name: (identifier[186,187]@{b}@) ([187,188]
+      (arguments<188,197>
+       argument: 
+        (matrix<188,194> [[188,189]
+         (row<189,193> (identifier[189,190]@{c}@) ,[190,191] (identifier[192,193]@{d}@))
+         ][193,194])
+       ,[194,195]
+       (spread_operator<196,197> :[196,197]))
+      )[197,198]))
+  =[199,200]
+  right: 
+   (matrix<201,288> [[201,202]
+    (row<202,249>
+     (binary_operator<202,249>
+      left: 
+       (function_call<202,221> name: (identifier[202,206]@{foo1}@) ([206,207]
+        (arguments<207,220> argument: (identifier[207,217]@{overlapIdx}@) ,[217,218]
+         (spread_operator<219,220> :[219,220]))
+        )[220,221])
+      +[222,223]
+      right: 
+       (function_call<224,249> name: (identifier[224,226]@{in}@) ([226,227]
+        (arguments<227,248>
+         argument: (range<227,245> (identifier[227,235]@{oneStart}@) :[236,237] (identifier[238,245]@{overlap}@))
+         ,[245,246]
+         (spread_operator<247,248> :[247,248]))
+        )[248,249])))
+    (line_continuation[251,255]@{...\n}@)
+    (row<255,287>
+     (function_call<255,287> name: (identifier[255,257]@{in}@) ([257,258]
+      (arguments<259,286>
+       argument: 
+        (range<259,283>
+         (binary_operator<259,277> left: (identifier[259,266]@{overlap}@) +[267,268] right: (identifier[269,277]@{oneStart}@))
+         :[278,279]
+         (end_keyword<280,283> end[280,283]))
+       ,[283,284]
+       (spread_operator<285,286> :[285,286]))
+      )[286,287]))
+    ][287,288]))
+ ;[288,289]
+ (assignment<291,390>
+  left: 
+   (field_expression<291,305> object: (identifier[291,292]@{a}@) .[292,293]
+    field: 
+     (function_call<293,305> name: (identifier[293,294]@{b}@) ([294,295]
+      (arguments<295,304>
+       argument: 
+        (matrix<295,301> [[295,296]
+         (row<296,300> (identifier[296,297]@{c}@) ,[297,298] (identifier[299,300]@{d}@))
+         ][300,301])
+       ,[301,302]
+       (spread_operator<303,304> :[303,304]))
+      )[304,305]))
+  =[306,307]
+  right: 
+   (matrix<308,390> [[308,309]
+    (row<309,356>
+     (binary_operator<309,356>
+      left: 
+       (function_call<309,328> name: (identifier[309,313]@{foo1}@) ([313,314]
+        (arguments<314,327> argument: (identifier[314,324]@{overlapIdx}@) ,[324,325]
+         (spread_operator<326,327> :[326,327]))
+        )[327,328])
+      +[329,330]
+      right: 
+       (function_call<331,356> name: (identifier[331,333]@{in}@) ([333,334]
+        (arguments<334,355>
+         argument: (range<334,352> (identifier[334,342]@{oneStart}@) :[343,344] (identifier[345,352]@{overlap}@))
+         ,[352,353]
+         (spread_operator<354,355> :[354,355]))
+        )[355,356])))
+    (row<358,389>
+     (function_call<358,389> name: (identifier[358,360]@{in}@) ([360,361]
+      (arguments<361,388>
+       argument: 
+        (range<361,385>
+         (binary_operator<361,379> left: (identifier[361,368]@{overlap}@) +[369,370] right: (identifier[371,379]@{oneStart}@))
+         :[380,381]
+         (end_keyword<382,385> end[382,385]))
+       ,[385,386]
+       (spread_operator<387,388> :[387,388]))
+      )[388,389]))
+    ][389,390]))
+ ;[390,391]
+ (assignment<393,502>
+  left: 
+   (field_expression<393,407> object: (identifier[393,394]@{a}@) .[394,395]
+    field: 
+     (function_call<395,407> name: (identifier[395,396]@{b}@) ([396,397]
+      (arguments<397,406>
+       argument: 
+        (matrix<397,403> [[397,398]
+         (row<398,402> (identifier[398,399]@{c}@) ,[399,400] (identifier[401,402]@{d}@))
+         ][402,403])
+       ,[403,404]
+       (spread_operator<405,406> :[405,406]))
+      )[406,407]))
+  =[408,409]
+  right: 
+   (matrix<410,502> [[410,411]
+    (row<411,458>
+     (binary_operator<411,458>
+      left: 
+       (function_call<411,430> name: (identifier[411,415]@{foo1}@) ([415,416]
+        (arguments<416,429> argument: (identifier[416,426]@{overlapIdx}@) ,[426,427]
+         (spread_operator<428,429> :[428,429]))
+        )[429,430])
+      +[431,432]
+      right: 
+       (function_call<433,458> name: (identifier[433,435]@{in}@) ([435,436]
+        (arguments<436,457>
+         argument: (range<436,454> (identifier[436,444]@{oneStart}@) :[445,446] (identifier[447,454]@{overlap}@))
+         ,[454,455]
+         (spread_operator<456,457> :[456,457]))
+        )[457,458])))
+    (comment[460,469]@{% comment}@)
+    (row<470,501>
+     (function_call<470,501> name: (identifier[470,472]@{in}@) ([472,473]
+      (arguments<473,500>
+       argument: 
+        (range<473,497>
+         (binary_operator<473,491> left: (identifier[473,480]@{overlap}@) +[481,482] right: (identifier[483,491]@{oneStart}@))
+         :[492,493]
+         (end_keyword<494,497> end[494,497]))
+       ,[497,498]
+       (spread_operator<499,500> :[499,500]))
+      )[500,501]))
+    ][501,502]))
+ ;[502,503]
+ (assignment<505,618>
+  left: 
+   (field_expression<505,519> object: (identifier[505,506]@{a}@) .[506,507]
+    field: 
+     (function_call<507,519> name: (identifier[507,508]@{b}@) ([508,509]
+      (arguments<509,518>
+       argument: 
+        (matrix<509,515> [[509,510]
+         (row<510,514> (identifier[510,511]@{c}@) ,[511,512] (identifier[513,514]@{d}@))
+         ][514,515])
+       ,[515,516]
+       (spread_operator<517,518> :[517,518]))
+      )[518,519]))
+  =[520,521]
+  right: 
+   (matrix<522,618> [[522,523]
+    (row<523,570>
+     (binary_operator<523,570>
+      left: 
+       (function_call<523,542> name: (identifier[523,527]@{foo1}@) ([527,528]
+        (arguments<528,541> argument: (identifier[528,538]@{overlapIdx}@) ,[538,539]
+         (spread_operator<540,541> :[540,541]))
+        )[541,542])
+      +[543,544]
+      right: 
+       (function_call<545,570> name: (identifier[545,547]@{in}@) ([547,548]
+        (arguments<548,569>
+         argument: (range<548,566> (identifier[548,556]@{oneStart}@) :[557,558] (identifier[559,566]@{overlap}@))
+         ,[566,567]
+         (spread_operator<568,569> :[568,569]))
+        )[569,570])))
+    (line_continuation[572,576]@{...\n}@) (comment[576,585]@{% comment}@)
+    (row<586,617>
+     (function_call<586,617> name: (identifier[586,588]@{in}@) ([588,589]
+      (arguments<589,616>
+       argument: 
+        (range<589,613>
+         (binary_operator<589,607> left: (identifier[589,596]@{overlap}@) +[597,598] right: (identifier[599,607]@{oneStart}@))
+         :[608,609]
+         (end_keyword<610,613> end[610,613]))
+       ,[613,614]
+       (spread_operator<615,616> :[615,616]))
+      )[616,617]))
+    ][617,618]))
+ ;[618,619] \n[619,620])

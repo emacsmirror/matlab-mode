@@ -6,16 +6,18 @@
     (row<32,61>
      (string<32,35> '[32,33] (string_content[33,34]@{[}@) '[34,35])
      ,[36,36]
-     (field_expression<36,61> object: (identifier[36,44]@{myStruct}@) .[44,45]
-      field: 
-       (function_call<45,56>
+     (field_expression<36,61>
+      object: 
+       (function_call<36,56>
         name: 
-         (function_call<45,53> name: (identifier[45,50]@{field}@) {[50,51]
-          (arguments<51,52> argument: (number[51,52]@{1}@))
-          }[52,53])
+         (field_expression<36,53> object: (identifier[36,44]@{myStruct}@) .[44,45]
+          field: 
+           (function_call<45,53> name: (identifier[45,50]@{field}@) {[50,51]
+            (arguments<51,52> argument: (number[51,52]@{1}@))
+            }[52,53]))
         {[53,54]
         (arguments<54,55> argument: (number[54,55]@{1}@))
         }[55,56])
-      .[56,57] (identifier[57,61]@{Name}@)))
+      .[56,57] field: (identifier[57,61]@{Name}@)))
     ][61,62]))
  ;[62,63] \n[63,64])
