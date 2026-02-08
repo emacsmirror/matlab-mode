@@ -3,6 +3,26 @@
 
 # Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
+* Release 8.0.4 Feb-7-2026
+
+This release fixes a minor issue when using matlab-ts-mode with point location when indenting
+(TAB) a multi-output variable line of the form:
+
+#+begin_src matlab
+  a([   1, 2], :) = ...
+      [  3,   4,   5; ...
+       300, 400, 500];
+#+end_src
+
+If point is on the ~1~ and we indent the line (TAB), the point will remain on the ~1~ and the result
+will be:
+
+#+begin_src matlab
+  a([1, 2], :) = ...
+      [  3,   4,   5; ...
+       300, 400, 500];
+#+end_src
+
 * Release 8.0.3 Feb-5-2026
 
 This release updates to the latest tree-sitter-matlab grammar which addresses a couple issues in

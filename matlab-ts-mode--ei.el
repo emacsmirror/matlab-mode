@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode--ei.el --- MATLAB electric indent -*- lexical-binding: t -*-
 
-;; Version: 8.0.3
+;; Version: 8.0.4
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -509,7 +509,7 @@ Assumes that current point is at `back-to-indentation'."
       ;; Make invisible comma visible by returning it.
       ",")
 
-     ;; Case: invisible at end of array row
+     ;; Case: invisible comma to insert at at end of array row
      ;;           foo = {'one', 'two' ...
      ;;                              ^   missing comma, return a comma to have it inserted
      ((and (string= node-type "line_continuation")
@@ -788,23 +788,23 @@ Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
 
     column-widths))
 
-(defun matlab-ts-mode--ei-get-m-matrix-row-in-line (use-matrix-node)
+(defun matlab-ts-mode--ei-get-m-matrix-row-in-line (t-matrix-node)
   "Given point within a matrix assignment statement, return row node or nil.
 Example:  v = [1 2; ...
                ...
                3 4];
 when on the 2nd continuation only line, nil is returned otherwise a row node.
-If USE-MATRIX-NODE is non-nil, we use that to locate the first row."
+If tmp T-MATRIX-NODE is non-nil, we use that to locate the first row."
   (save-excursion
-    (if use-matrix-node
+    (if t-matrix-node
         ;; [1, 2, 3;      // child 0 is the '[', child 1 is the first row
         ;;  4, 5, 6]
         ;; [ ...          // child 0 is the '[', child 1 is line_continuation
         ;;  1, 2, 3;      
         ;;  4, 5, 6]
-        (let ((child1 (treesit-node-child use-matrix-node 1)))
+        (let ((child1 (treesit-node-child t-matrix-node 1)))
           (when (and (string= (treesit-node-type child1) "row")
-                     (= (line-number-at-pos (treesit-node-start use-matrix-node))
+                     (= (line-number-at-pos (treesit-node-start t-matrix-node))
                         (line-number-at-pos (treesit-node-start child1))))
             ;; row-now on same line as use-matrix-node
             child1))
@@ -903,41 +903,42 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
 (cl-defun matlab-ts-mode--ei-align-line-in-m-matrix (assign-node ei-info)
   "Align current line with EI-INFO in a multi-line matrix of ASSIGN-NODE.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
-  (let* ((assign-start-linenum (line-number-at-pos (treesit-node-start assign-node)))
-         (tmp-buf-ei-linenum (1+ (- (line-number-at-pos) assign-start-linenum)))
-         (tmp-buf-row-linenum (if matlab-ts-mode--ei-align-matrix-alist 1 tmp-buf-ei-linenum))
-         (matrix-alist matlab-ts-mode--ei-align-matrix-alist)
-         end-linenum)
+  (let* ((matrix-alist matlab-ts-mode--ei-align-matrix-alist)
+         (assign-start-linenum (line-number-at-pos (treesit-node-start assign-node)))
+         (t-buf-ei-linenum (1+ (- (line-number-at-pos) assign-start-linenum)))
+         (t-buf-row-linenum (if matlab-ts-mode--ei-align-matrix-alist 1 t-buf-ei-linenum)))
     (with-temp-buffer
       (unwind-protect
           (progn
-            (setq end-linenum (matlab-ts-mode--ei-indent-matrix-in-tmp-buf assign-node))
-            (let* ((assign-node (save-excursion
-                                  (matlab-ts-mode--ei-fast-back-to-indentation)
-                                  (treesit-parent-until (treesit-node-at (point) 'matlab)
-                                                        "assignment")))
-                   (matrix-node (if assign-node
-                                    (treesit-node-child-by-field-name assign-node "right")
-                                  (treesit-node-parent (treesit-search-subtree ;; else a property
+            (let* (t-curr-linenum
+                   (t-end-linenum (matlab-ts-mode--ei-indent-matrix-in-tmp-buf assign-node))
+                   (t-assign-node (save-excursion
+                                    (matlab-ts-mode--ei-fast-back-to-indentation)
+                                    (treesit-parent-until (treesit-node-at (point) 'matlab)
+                                                          "assignment")))
+                   (t-matrix-node (if t-assign-node
+                                      (treesit-node-child-by-field-name t-assign-node "right")
+                                    (treesit-node-parent (treesit-search-subtree ;; else a property
                                                         (treesit-buffer-root-node)
                                                         (rx bos "[" eos) nil t))))
-                   (use-matrix-node matrix-node) ;; used when current line is matrix-node start
-                   (first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra matrix-node))
-                   (col-widths (matlab-ts-mode--ei-m-matrix-col-widths matrix-node
+                   (t-matrix-node-linenum (line-number-at-pos (treesit-node-start t-matrix-node)))
+                   (first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra t-matrix-node))
+                   (col-widths (matlab-ts-mode--ei-m-matrix-col-widths t-matrix-node
                                                                        first-col-extra)))
               ;; Move to the line of interest when we called from matlab-ts-mode--treesit-indent,
               ;; otherwise calculate all matrix rows for indent-region.
               (when (and (not matrix-alist)
-                         (> tmp-buf-ei-linenum 1))
-                (setq use-matrix-node nil) ;; TAB on a later line in a matrix
-                (forward-line (1- tmp-buf-ei-linenum)))
+                         (> t-buf-ei-linenum 1))
+                (forward-line (1- t-buf-ei-linenum)))
 
-              (while (< (line-number-at-pos) end-linenum) ;; Adjust column widths
+              ;; Adjust column widths
+              (while (< (setq t-curr-linenum (line-number-at-pos)) t-end-linenum)
                 (matlab-ts-mode--ei-fast-back-to-indentation)
-                (let* ((row-node (matlab-ts-mode--ei-get-m-matrix-row-in-line use-matrix-node))
+                (let* ((row-node (when (>= t-curr-linenum t-matrix-node-linenum)
+                                   (matlab-ts-mode--ei-get-m-matrix-row-in-line
+                                    (when (= t-curr-linenum t-matrix-node-linenum) t-matrix-node))))
                        (indent-offset (when (looking-at "[^ \t\n\r]+") (current-column)))
                        ei-line)
-                  (setq use-matrix-node nil)
                   (matlab--eilb-setup)
                   (if (and row-node indent-offset)
                       (let* ((col-num (length col-widths)) ;; Iterate last col down to first col
@@ -945,7 +946,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                              (r-content (buffer-substring indent-start-pt (pos-eol)))
                              (pt-offset (nth 1 ei-info))
                              (matrix-offset (save-excursion
-                                              (goto-char (treesit-node-start matrix-node))
+                                              (goto-char (treesit-node-start t-matrix-node))
                                               (1+ (- (point) (pos-bol))))))
                         ;; Adjust matrix row in eilb using r-content w/o leading indent-level spaces
                         (with-current-buffer matlab--eilb
@@ -987,20 +988,20 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                           (goto-char (point-max)))
 
                         (setq ei-line (matlab--eilb-content))
-                        (when (= tmp-buf-row-linenum tmp-buf-ei-linenum)
+                        (when (= t-buf-row-linenum t-buf-ei-linenum)
                           (setq ei-info (list ei-line pt-offset (nth 2 ei-info) (nth 3 ei-info)))))
 
                     ;; Else a blank or continuation line w/o matrix content
                     (setq ei-line (buffer-substring (pos-bol) (pos-eol))))
 
                   (when matrix-alist
-                    (let* ((buf-linenum (1- (+ assign-start-linenum tmp-buf-row-linenum))))
+                    (let* ((buf-linenum (1- (+ assign-start-linenum t-buf-row-linenum))))
                       (push `(,buf-linenum . ,ei-line) matrix-alist)))
 
                   (if (not matrix-alist)
                       (goto-char (point-max))
                     (forward-line)
-                    (setq tmp-buf-row-linenum (1+ tmp-buf-row-linenum)))))))
+                    (setq t-buf-row-linenum (1+ t-buf-row-linenum)))))))
         ;; unwind forms
         (matlab--eilb-kill)))
 

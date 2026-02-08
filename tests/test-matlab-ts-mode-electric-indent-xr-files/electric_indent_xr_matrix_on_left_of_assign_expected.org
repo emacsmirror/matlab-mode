@@ -1,0 +1,36 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_matrix_on_left_of_assign.m:5:2:
+
+  Case1: (t-utils-xr
+
+  (re-search-forward "1,")
+  "C-i"
+  )
+
+- Invoking      : (re-search-forward "1,")
+  Start point   :   87
+  Moved to point:  109
+  : 13:12:     a(   [1,    2], :) = ...                                                                  
+  :                    ^
+  No buffer modifications
+
+- Invoking      : "C-i" = indent-for-tab-command
+  Start point   :  109
+  Moved to point:  106
+  : 13:9:     a([1, 2], :) = ...                                                                  
+  :                ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -10,7 +10,7 @@
+ %}
+ 
+ if a
+-    a(   [1,    2], :) = ...                                                                  
++    a([1, 2], :) = ...                                                                  
+         [1,          2,   3; ...
+          100, 200, 300];
+ end
+  #+end_src diff
