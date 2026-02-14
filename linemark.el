@@ -33,10 +33,9 @@
 ;; management can be a pain, and overlays are certainly needed for use
 ;; with font-lock.
 
-(eval-and-compile
-  (require 'matlab-compat))
-
+(require 'matlab-compat)
 (require 'eieio)
+(require 'eieio-base)
 
 ;;; Code:
 
@@ -45,39 +44,29 @@
   :group 'tools
   )
 
-(eval-and-compile
-  ;; These faces need to exist to show up as valid default
-  ;; entries in the classes defined below.
-
-  (defface linemark-stop-face '((((class color) (background light))
-                                 (:background "#ff8888"))
-                                (((class color) (background dark))
-                                 (:background "red3")))
-    "*Face used to indicate a STOP type line."
-    :group 'linemark)
-
-  (defface linemark-caution-face '((((class color) (background light))
-                                    (:background "yellow"))
-                                   (((class color) (background dark))
-                                    (:background "yellow4")))
-    "*Face used to indicate a CAUTION type line."
-    :group 'linemark)
-
-  (defface linemark-go-face '((((class color) (background light))
-                               (:background "#88ff88"))
+(defface linemark-stop-face '((((class color) (background light))
+                               (:background "#ff8888"))
                               (((class color) (background dark))
-                               (:background "green4")))
-    "*Face used to indicate a GO, or OK type line."
-    :group 'linemark)
+                               (:background "red3")))
+  "Face used to indicate a STOP type line.")
 
-  (defface linemark-funny-face '((((class color) (background light))
+(defface linemark-caution-face '((((class color) (background light))
+                                  (:background "yellow"))
+                                 (((class color) (background dark))
+                                  (:background "yellow4")))
+  "Face used to indicate a CAUTION type line.")
+
+(defface linemark-go-face '((((class color) (background light))
+                             (:background "#88ff88"))
+                            (((class color) (background dark))
+                             (:background "green4")))
+  "Face used to indicate a GO, or OK type line.")
+
+(defface linemark-funny-face '((((class color) (background light))
                                   (:background "cyan"))
                                  (((class color) (background dark))
                                   (:background "blue3")))
-    "*Face used for elements with no particular criticality."
-    :group 'linemark)
-
-  )
+    "Face used for elements with no particular criticality.")
 
 (defclass linemark-entry ()
   ((filename :initarg :filename
@@ -97,7 +86,7 @@
              :protection protected))
   "Track a file/line associations with overlays used for display.")
 
-(defclass linemark-group ()
+(defclass linemark-group (eieio-named)
   ((marks :initarg :marks
           :type list
           :initform nil
@@ -133,7 +122,7 @@ the new instantiation."
         (lmg linemark-groups))
     ;; Find an old group.
     (while (and (not foundgroup) lmg)
-      (if (string= name (eieio-object-name-string (car lmg)))
+      (if (string= name (slot-value (car lmg) 'object-name))
           (setq foundgroup (car lmg)))
       (setq lmg (cdr lmg)))
     ;; Which group to use.
@@ -141,7 +130,7 @@ the new instantiation."
         ;; Recycle the old group
         (setq newgroup foundgroup)
       ;; Create a new group
-      (setq newgroup (apply 'make-instance class name args))
+      (setq newgroup (apply #'make-instance class :object-name name args))
       (setq linemark-groups (cons newgroup linemark-groups)))
     ;; Return the group
     newgroup))
@@ -220,7 +209,7 @@ Call the new entries activate method."
       (if (bolp) (setq line (1+ line))))
     (setq args (plist-put args :filename file))
     (setq args (plist-put args :line line))
-    (let ((new-entry (apply 'linemark-new-entry g args)))
+    (let ((new-entry (apply #'linemark-new-entry g args)))
       (oset new-entry parent g)
       (oset new-entry face (or face (oref g face)))
       (oset g marks (cons new-entry (oref g marks)))
@@ -239,7 +228,7 @@ Call the new entries activate method."
   (ignore g)
   (let ((f (plist-get args :filename))
         (l (plist-get args :line)))
-    (apply 'linemark-entry (format "%s %d" f l)
+    (apply #'linemark-entry (format "%s %d" f l)
            args)))
 
 (cl-defmethod linemark-display ((g linemark-group) active-p)
@@ -284,7 +273,7 @@ Call the new entries activate method."
 
 (cl-defmethod linemark-delete ((g linemark-group))
   "Remove group G from linemark tracking."
-  (mapc 'linemark-delete (oref g marks))
+  (mapc #'linemark-delete (oref g marks))
   (setq linemark-groups (delete g linemark-groups)))
 
 (cl-defmethod linemark-delete ((e linemark-entry))
@@ -329,8 +318,8 @@ Call the new entries activate method."
           (linemark-display to nil))
       (setq o (cdr o)))))
 
-(add-hook 'find-file-hook 'linemark-find-file-hook)
-(add-hook 'kill-buffer-hook 'linemark-kill-buffer-hook)
+(add-hook 'find-file-hook #'linemark-find-file-hook)
+(add-hook 'kill-buffer-hook #'linemark-kill-buffer-hook)
 
 ;;; Demo mark tool: Emulate MS Visual Studio bookmarks
 ;;
@@ -420,10 +409,10 @@ Call the new entries activate method."
 \\[viss-bookmark-prev-buffer]   - Move to the previous bookmark.
 \\[viss-bookmark-clear-all-buffer] - Clear all bookmarks."
   (interactive)
-  (define-key global-map [(f2)] 'viss-bookmark-toggle)
-  (define-key global-map [(shift f2)] 'viss-bookmark-prev-buffer)
-  (define-key global-map [(control f2)] 'viss-bookmark-next-buffer)
-  (define-key global-map [(control shift f2)] 'viss-bookmark-clear-all-buffer)
+  (define-key global-map [(f2)] #'viss-bookmark-toggle)
+  (define-key global-map [(shift f2)] #'viss-bookmark-prev-buffer)
+  (define-key global-map [(control f2)] #'viss-bookmark-next-buffer)
+  (define-key global-map [(control shift f2)] #'viss-bookmark-clear-all-buffer)
   )
 
 (provide 'linemark)

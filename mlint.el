@@ -33,6 +33,7 @@
 (require 'matlab)
 (require 'matlab--access)
 
+(require 'eieio-base)
 (require 'linemark)
 
 (eval-when-compile
@@ -287,7 +288,7 @@ Warning ID's won't change between releases, unlike the warning messages.")
   "Create a group object for tracking linemark entries.
 Do not permit multiple groups with the same name."
   (let* ((name "mlint")
-         (newgroup (mlint-lm-group name :face 'linemark-go-face))
+         (newgroup (mlint-lm-group :face 'linemark-go-face))
          (foundgroup nil)
          (lmg linemark-groups))
     (while (and (not foundgroup) lmg)
@@ -345,7 +346,7 @@ ACTIVE-P if it should be made visible."
   ;; A bug in linemark prevents individual entry colors.
   ;; Fix the color here.
   (let ((wc (oref e warningcode)))
-    (oset e :face
+    (oset e face
           (cond ((eq wc 'major) 'linemark-stop-face)
                 ((eq wc 'medium) 'linemark-caution-face)
                 (t 'linemark-go-face))))
