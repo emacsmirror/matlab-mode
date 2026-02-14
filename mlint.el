@@ -856,11 +856,13 @@ With prefix ARG, turn mlint minor mode on iff ARG is positive.
       ;; else use global mlint-program for all *.m files
       (when (not mlint-program)
         (setq mlint-program (matlab--get-mlint-exe))
-        (when (y-or-n-p "No MLINT program available.  Configure it? ")
+        (when (and (not mlint-program)
+                   (y-or-n-p "No MLINT program available.  Configure it? "))
           (customize-variable 'mlint-programs))))
 
     (if mlint-program
         (progn
+          (setq matlab-show-mlint-warnings t)
           (add-hook 'after-save-hook #'mlint-buffer nil t)
           (mlint-buffer))
       ;; Remove the mlint menu. set mlint-minor-mode variable to nil, disable mlint keybindings
