@@ -372,7 +372,7 @@ skipping all *_expected.lang files."
     ;; File each NAME.LANG in files, remove it when a corresponding FILE.skip.txt exists.
     (let ((files-not-skipped '()))
       (dolist (file files)
-        (let ((skip-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.txt" file)))
+        (let ((skip-file (replace-regexp-in-string "\\.[^.]+\\'" ".skip.txt" file)))
           (if (and (file-exists-p skip-file)
                    (t-utils--skip-test-case skip-file))
               (t-utils--skip-message file skip-file)
@@ -1708,7 +1708,7 @@ To debug a specific indent test file
             ;;  2) LANG-FILE-NO-EXT.skip.typing.txt does not exist
             ;;     where LANG-FILE-NO-EXT is the lang-file without the extension.
             (when do-line-by-line-indent
-              (let ((skip-typing-file (replace-regexp-in-string "\\.[^.]\\'" ".skip.typing.txt"
+              (let ((skip-typing-file (replace-regexp-in-string "\\.[^.]+\\'" ".skip.typing.txt"
                                                                 lang-file)))
                 (if (file-exists-p skip-typing-file)
                     (t-utils--skip-message lang-file skip-typing-file
