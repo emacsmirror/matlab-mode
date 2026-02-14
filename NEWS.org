@@ -3,6 +3,11 @@
 
 # Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
+* Release 8.0.5 Feb-14-2026
+
+This release fixes a build issue when using matlab-mode with Emacs that doesn't have tree-sitter. In
+addition, several lisp cleanups were performed (no behavior changes).
+
 * Release 8.0.4 Feb-7-2026
 
 This release fixes a minor issue when using matlab-ts-mode with point location when indenting
