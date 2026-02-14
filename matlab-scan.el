@@ -163,7 +163,7 @@ return the cache if it finds it."
 	       (matlab-scan-cache-put ctxt))
 	     ctxt))
 	  ((= level 2)
-	   (apply 'matlab-compute-line-context-lvl-2 context))
+	   (apply #'matlab-compute-line-context-lvl-2 context))
 	  (t
 	   nil)))
   )
@@ -1375,13 +1375,13 @@ Options: START END LENGTH."
 (defun matlab-scan-setup ()
   "Setup use of the indent cache for the current buffer."
   (interactive)
-  (add-hook 'before-change-functions 'matlab-scan-before-change-fcn t)
+  (add-hook 'before-change-functions #'matlab-scan-before-change-fcn t)
   (setq matlab-scan-temporal-cache nil))
 
 (defun matlab-scan-disable ()
   "Setup use of the indent cache for the current buffer."
   (interactive)
-  (remove-hook 'before-change-functions 'matlab-scan-before-change-fcn t)
+  (remove-hook 'before-change-functions #'matlab-scan-before-change-fcn t)
   (setq matlab-scan-temporal-cache nil))
 
 

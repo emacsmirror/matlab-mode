@@ -26,7 +26,7 @@
     (require 'company)
   (error nil))
 
-(require 'cl-macs)
+(eval-when-compile (require 'cl-lib))
 
 (require 'matlab)
 (require 'matlab-shell)

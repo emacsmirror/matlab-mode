@@ -51,8 +51,7 @@
        :overline t
        :height 1.25))
   "Face for \"%% code section\" headings in `matlab-sections-minor-mode'.
-This is the face used when demarcating code sections in MATLAB script files."
-  :group 'matlab-sections)
+This is the face used when demarcating code sections in MATLAB script files.")
 
 (defface matlab-sections-highlight-face
   '((t :weight extra-bold))
@@ -62,7 +61,6 @@ This is the face used when demarcating code sections in MATLAB script files."
 (defcustom matlab-sections-highlight-section t
   "Non-nil tells matlab-sections-minor-mode to highlight the current section."
   :type 'boolean
-  :group 'matlab-sections
   :safe 'booleanp)
 
 (defcustom matlab-sections-use-super-key nil
@@ -72,7 +70,6 @@ on all systems and optionally a set of keybindings using the super
 \"Windows\" logo key.  The super key may not be available or work, hence
 the reason for it being optional."
   :type 'boolean
-  :group 'matlab-sections
   :safe 'booleanp)
 
 (defcustom matlab-sections-section-break-regexp
@@ -102,19 +99,16 @@ We do not want to match comment \"blocks\" like:
 Therefore, we require that the section starts with \"%%\" optionally
 followed by a description that doesn't end with \"%\"."
   :type 'string
-  :group 'matlab-sections
   :safe 'stringp)
 
 (defvar matlab-sections-minor-mode)
 
-(defvar matlab-sections-overlay nil
+(defvar-local matlab-sections-overlay nil
   "Overlay used by matlab-sections mode to highlight the current section.")
-(make-variable-buffer-local 'matlab-sections-overlay)
 
 (defcustom matlab-sections-highlight-face 'matlab-sections-highlight-face
   "Face with which to highlight the current section in matlab-sections mode."
   :type 'face
-  :group 'matlab-sections
   :set (lambda (symbol value)
          (set symbol value)
          (dolist (buffer (buffer-list))
@@ -127,8 +121,7 @@ followed by a description that doesn't end with \"%\"."
 Otherwise matlab-sections mode will highlight only in the selected
 window.  Setting this variable takes effect the next time you use
 the command `matlab-sections-minor-mode' to turn matlab-sections mode on."
-  :type 'boolean
-  :group 'matlab-sections)
+  :type 'boolean)
 
 ;; Function to obtain range of current code section
 
@@ -431,7 +424,7 @@ This is a noop if SKIP-NONINTERACTIVE is nil and `noninteractive' is t."
   "Move the matlab-sections overlay given as OVERLAY."
   (if-let ((start-end (matlab-sections-range-function)))
       (move-overlay overlay (car start-end) (cdr start-end))
-    (move-overlay overlay 1 1)))
+    (move-overlay overlay (point-min) (point-min))))
 
 (defun matlab-sections-setup-section-highlight ()
   "Setup section highlighting."

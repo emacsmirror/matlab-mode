@@ -171,7 +171,7 @@ Argument STRING is the text to interpret."
 
           (setq default-directory dd)
 
-          (apply 'call-process buffer-mlint-program nil (current-buffer) nil
+          (apply #'call-process buffer-mlint-program nil (current-buffer) nil
                  (append flags (list fn)))
 
           (when mlint-verbose (message "Running mlint...done"))
@@ -769,15 +769,15 @@ Highlight problems and/or cross-function variables."
 ;;
 (defvar mlint-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\C-c,n" 'mlint-next-buffer)
-    (define-key map "\C-c,p" 'mlint-prev-buffer)
-    (define-key map "\C-c,N" 'mlint-next-buffer-new)
-    (define-key map "\C-c,P" 'mlint-prev-buffer-new)
-    (define-key map "\C-c,g" 'mlint-buffer)
-    (define-key map "\C-c,c" 'mlint-clear-warnings)
-    (define-key map "\C-c, " 'mlint-show-warning)
-    (define-key map "\C-c,f" 'mlint-fix-warning)
-    (define-key map "\C-c,o" 'mlint-mark-ok)
+    (define-key map "\C-c,n" #'mlint-next-buffer)
+    (define-key map "\C-c,p" #'mlint-prev-buffer)
+    (define-key map "\C-c,N" #'mlint-next-buffer-new)
+    (define-key map "\C-c,P" #'mlint-prev-buffer-new)
+    (define-key map "\C-c,g" #'mlint-buffer)
+    (define-key map "\C-c,c" #'mlint-clear-warnings)
+    (define-key map "\C-c, " #'mlint-show-warning)
+    (define-key map "\C-c,f" #'mlint-fix-warning)
+    (define-key map "\C-c,o" #'mlint-mark-ok)
     map)
   "Minor mode keymap used when mlinting a buffer.")
 
@@ -804,11 +804,12 @@ Highlight problems and/or cross-function variables."
 
 (defvar mlint-overlay-map
   (let ((map (make-sparse-keymap )))
-    (define-key map [down-mouse-3] 'mlint-emacs-popup-kludge)
-    (define-key map [(meta n)] 'mlint-next-buffer)
-    (define-key map [(meta p)] 'mlint-prev-buffer)
-    (define-key map [(control meta n)] 'mlint-next-buffer-new)
-    (define-key map [(control meta p)] 'mlint-prev-buffer-new)
+    ;; FIXME: Use `context-menu-functions' instead?
+    (define-key map [down-mouse-3] #'mlint-emacs-popup-kludge)
+    (define-key map [(meta n)] #'mlint-next-buffer)
+    (define-key map [(meta p)] #'mlint-prev-buffer)
+    (define-key map [(control meta n)] #'mlint-next-buffer-new)
+    (define-key map [(control meta p)] #'mlint-prev-buffer-new)
     (set-keymap-parent map matlab-mode-map)
     map)
   "Map used in overlays marking mlint warnings.")
@@ -844,7 +845,7 @@ With prefix ARG, turn mlint minor mode on iff ARG is positive.
       (progn
         (mlint-clear-nested-function-info-overlays)
         (mlint-clear-warnings)
-        (remove-hook 'after-save-hook 'mlint-buffer t))
+        (remove-hook 'after-save-hook #'mlint-buffer t))
 
     ;; activate mlint if possible
     (if mlint-program-selection-fcn
@@ -859,7 +860,7 @@ With prefix ARG, turn mlint minor mode on iff ARG is positive.
 
     (if mlint-program
         (progn
-          (add-hook 'after-save-hook 'mlint-buffer nil t)
+          (add-hook 'after-save-hook #'mlint-buffer nil t)
           (mlint-buffer))
       ;; Remove the mlint menu. set mlint-minor-mode variable to nil, disable mlint keybindings
       (mlint-minor-mode -1))))
@@ -877,7 +878,7 @@ That buffer will be current."
     (mlint-minor-mode -1)
     ))
 
-(add-hook 'ediff-prepare-buffer-hook 'mlint-ediff-metabuffer-setup-hook)
+(add-hook 'ediff-prepare-buffer-hook #'mlint-ediff-metabuffer-setup-hook)
 
 (defun mlint-ediff-cleanup-hook ()
   "Re-enable mlint for buffers being ediffed.
@@ -892,7 +893,7 @@ find it."
                 (setq mlint-minor-mode-was-enabled-before nil))))
           (buffer-list)))
 
-(add-hook 'ediff-cleanup-hook 'mlint-ediff-cleanup-hook)
+(add-hook 'ediff-cleanup-hook #'mlint-ediff-cleanup-hook)
 
 (provide 'mlint)
 ;;; mlint.el ends here

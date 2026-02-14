@@ -464,7 +464,7 @@ Each tag returned is a semantic FUNCTION tag.  See
   (let ((chil (semantic-tag-components-with-overlays tag)))
     (if chil
         (semantic-tag-put-attribute
-         tag :members (mapcar 'semantic-matlab-expand-tag chil)))
+         tag :members (mapcar #'semantic-matlab-expand-tag chil)))
     (car (semantic--tag-expand tag))))
 
 (defun semantic-matlab-parse-class (&optional limit)
@@ -844,7 +844,7 @@ This will include a list of type/field names when applicable."
   (setq semantic-parser-name "MATLAB"
         ;; Setup a dummy parser table to enable parsing!
         semantic--parse-table t
-        imenu-create-index-function 'semantic-create-imenu-index
+        imenu-create-index-function #'semantic-create-imenu-index
         ;; semantic-command-separation-character "."
         semantic-type-relation-separator-character '(".")
         semantic-symbol->name-assoc-list '((function . "Function")

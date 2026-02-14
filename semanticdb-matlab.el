@@ -212,7 +212,7 @@ to be called in local `after-save-hook'."
 	    ;; add buffer-local after-save-hook
 	    (add-hook
 	     'after-save-hook
-	     'semanticdb-matlab-possibly-add-buffer-to-cache t t)))
+	     #'semanticdb-matlab-possibly-add-buffer-to-cache t t)))
 
 ;; Helper functions
 

@@ -63,6 +63,13 @@
 (eval-when-compile
   (require 'elec-pair))
 
+(declare-function matlab-shell-find-file-click "matlab-shell.el")
+(declare-function matlab-show-matlab-shell-buffer "matlab-shell.el")
+(declare-function matlab-shell-locate-fcn "matlab-shell.el")
+(declare-function matlab-shell-run-region-or-line "matlab-shell.el")
+(declare-function matlab-shell-run-region "matlab-shell.el")
+(declare-function matlab-shell-save-and-go "matlab-shell.el")
+
 
 ;;; User-changeable variables =================================================
 ;;
@@ -75,25 +82,21 @@
 
 (defcustom matlab-indent-level 4
   "*The basic indentation amount in `matlab-mode'."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-continuation-indent-level 4
   "*Basic indentation after continuation if no other methods are found."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-array-continuation-indent-level 2
   "*Basic indentation after continuation within an array.
 Applies when no other methods are found."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-cont-requires-ellipsis t
   "*Specify if ellipses are required at the end of a line for continuation.
 Future versions of MATLAB may not require ellipses ... , so a heuristic
 determining if there is to be continuation is used instead."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-case-indent-level '(2 . 2)
@@ -110,7 +113,6 @@ Note: Currently a bug exists if:
   CASE-INDENT + COMMAND-INDENT != `matlab-indent-level'
 so if you customize these variables, follow the above rule, and you
 should be ok."
-  :group 'matlab
   :type 'sexp)
 
 (defcustom matlab-indent-past-arg1-functions
@@ -119,14 +121,12 @@ should be ok."
 This specialness means that all following parameters which appear on
 continued lines should appear indented to line up with the second
 argument, not the first argument."
-  :group 'matlab
   :type 'string)
 
 (defcustom matlab-arg1-max-indent-length 15
   "*The maximum length to indent when indenting past arg1.
 If arg1 is exceptionally long, then only this number of characters
 will be indented beyond the open paren starting the parameter list."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-maximum-indents '(;; = is a convenience. Don't go too far
@@ -142,7 +142,6 @@ the indent engine is using, and INDENT is the maximum indentation
 allowed.  Indent could be of the form (MAXIMUM . INDENT), where
 MAXIMUM is the maximum allowed calculated indent, and INDENT is the
 amount to use if MAXIMUM is reached."
-  :group 'matlab
   :type '(repeat (cons (character :tag "Open List Character")
                        (sexp :tag "Number (max) or cons (max indent)"))))
 
@@ -151,7 +150,6 @@ amount to use if MAXIMUM is reached."
 When non-nil, continuation lines are aligned to the opening parenthesis if the
 opening is not followed by only spaces and ellipses.  When nil, continued lines
 are simply indented by `matlab-continuation-indent-level'."
-  :group 'matlab
   :type 'boolean
   )
 
@@ -164,7 +162,6 @@ either nil or t when the MATLAB mode is started in a buffer based on the
 file's current indentation.
 If the global value is \\='MathWorks-Standard, then the local value is not
 changed, and functions are indented based on `matlab-functions-have-end'."
-  :group 'matlab
   :type '(choice (const :tag "Always" t)
                  (const :tag "Never" nil)
                  (const :tag "Guess" guess)
@@ -178,7 +175,6 @@ changed, and functions are indented based on `matlab-functions-have-end'."
   "*If non-nil, functions-have-end minor mode is on by default.
 If the value is \\='guess, then we guess if a file has end when
 `matlab-mode' is initialized."
-  :group 'matlab
   :type 'boolean)
 
 (make-variable-buffer-local 'matlab-functions-have-end)
@@ -415,71 +411,59 @@ If they occur within this fudge factor, we will use them.
 Also, if none of the above occur, and we find a symbol to break at,
 but an open paren (group) starts or ends within this fudge factor,
 move there to boost the amount of fill leverage we can get."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-fill-fudge-hard-maximum 79
   "The longest line allowed when auto-filling code.
 This overcomes situations where the `fill-column' plus the
 `matlab-fill-fudge' is greater than some hard desired limit."
-  :group 'matlab
   :type 'integer)
 
 ;; TODO - matlab-ellipsis-string shouldn't be a defcustom because it cannot be changed.
 (defcustom matlab-ellipsis-string "..."
   "Text used to perform continuation on code lines.
 This is used to generate and identify continuation lines."
-  :group 'matlab
   :type 'string)
 
 (defcustom matlab-fill-code nil
   "*If true, `auto-fill-mode' causes code lines to be automatically continued."
-  :group 'matlab
   :type 'boolean)
 
 (defcustom matlab-fill-count-ellipsis-flag t
   "*Non-nil means to count the ellipsis when auto filling.
 This effectively shortens the `fill-column' by the length of
 `matlab-ellipsis-string'."
-  :group 'matlab
   :type 'boolean)
 
 (defcustom matlab-fill-strings-flag t
   "*Non-nil means that when auto-fill is on, strings are broken across lines.
 If `matlab-fill-count-ellipsis-flag' is non nil, this shortens the
 `fill-column' by the length of `matlab-ellipsis-string'."
-  :group 'matlab
   :type 'boolean)
 
 (defcustom matlab-comment-column 40
   "*The goal comment column in `matlab-mode' buffers."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-comment-anti-indent 0
   "*Amount of anti-indentation to use for comments in relation to code."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-comment-line-s "% "
   "*String to start comment on line by itself."
-  :group 'matlab
   :type 'string)
 
 (defcustom matlab-comment-on-line-s "% "
   "*String to start comment on line with code."
-  :group 'matlab
   :type 'string)
 
 (defcustom matlab-comment-region-s "% $$$ "
   "*String inserted by \\[matlab-comment-region] at start of each line in \
 region."
-  :group 'matlab
   :type 'string)
 
 (defcustom matlab-verify-on-save-flag t
   "*Non-nil means to verify M whenever we save a file."
-  :group 'matlab
   :type 'boolean)
 
 (defcustom matlab-mode-verify-fix-functions
@@ -487,7 +471,6 @@ region."
   "List of function symbols which perform a verification and fix to M code.
 Each function gets no arguments, and returns nothing.  They can move
 point, but it will be restored for them."
-  :group 'matlab
   :type '(repeat (choice :tag "Function: "
                          (matlab-mode-vf-functionname
                           matlab-mode-vf-classname
@@ -496,31 +479,26 @@ point, but it will be restored for them."
 
 (defcustom matlab-block-verify-max-buffer-size 50000
   "*Largest buffer size allowed for block verification during save."
-  :group 'matlab
   :type 'integer)
 
 (defcustom matlab-mode-hook nil
   "*List of functions to call on entry to MATLAB mode."
-  :group 'matlab
   :type 'hook)
 
 (defcustom matlab-show-mlint-warnings nil
   "*If non-nil, show mlint warnings."
-  :group 'matlab
   :type 'boolean)
 (make-variable-buffer-local 'matlab-show-mlint-warnings)
 (put 'matlab-show-mlint-warnings 'safe-local-variable #'booleanp)
 
 (defcustom matlab-highlight-cross-function-variables nil
   "*If non-nil, highlight cross-function variables."
-  :group 'matlab
   :type 'boolean)
 (make-variable-buffer-local 'matlab-highlight-cross-function-variables)
 (put 'matlab-highlight-cross-function-variables 'safe-local-variable #'booleanp)
 
 (defcustom matlab-return-add-semicolon nil
   "*If non nil, check to see a semicolon is needed when RET is pressed."
-  :group 'matlab
   :type 'boolean)
 
 (make-variable-buffer-local 'matlab-return-add-semicolon)
@@ -532,39 +510,42 @@ point, but it will be restored for them."
 
 ;;; Keybindings ===============================================================
 
+(declare-function matlab-insert-map-fcn "matlab-cgen.el")
+(declare-function matlab-complete-symbol "matlab-complete.el")
+
 (defvar matlab-mode-map
   (let ((km (make-sparse-keymap)))
     ;; Navigation Commands
-    (define-key km [(meta a)] 'matlab-beginning-of-command)
-    (define-key km [(meta e)] 'matlab-end-of-command)
+    (define-key km [(meta a)] #'matlab-beginning-of-command)
+    (define-key km [(meta e)] #'matlab-end-of-command)
     ;; Insert, Fill stuff
-    (define-key km [(control c) (control c)] 'matlab-insert-map-fcn)
-    (define-key km [(control c) (control j)] 'matlab-justify-line)
+    (define-key km [(control c) (control c)] #'matlab-insert-map-fcn)
+    (define-key km [(control c) (control j)] #'matlab-justify-line)
     ;; Comment Stuff
-    (define-key km "%" 'matlab-electric-comment)
-    (define-key km "^" 'matlab-electric-comment)
-    (define-key km "}" 'matlab-electric-block-comment)
-    (define-key km "{" 'matlab-electric-block-comment)
-    (define-key km "\C-c;" 'matlab-comment-region)
-    (define-key km "\C-c:" 'matlab-uncomment-region)
-    (define-key km [(meta \;)] 'matlab-comment)
-    (define-key km [(meta j)] 'matlab-comment-line-break-function)
-    (define-key km [(control c) return] 'matlab-comment-return)
-    (substitute-key-definition 'comment-region 'matlab-comment-region
+    (define-key km "%" #'matlab-electric-comment)
+    (define-key km "^" #'matlab-electric-comment)
+    (define-key km "}" #'matlab-electric-block-comment)
+    (define-key km "{" #'matlab-electric-block-comment)
+    (define-key km "\C-c;" #'matlab-comment-region)
+    (define-key km "\C-c:" #'matlab-uncomment-region)
+    (define-key km [(meta \;)] #'matlab-comment)
+    (define-key km [(meta j)] #'matlab-comment-line-break-function)
+    (define-key km [(control c) return] #'matlab-comment-return)
+    (substitute-key-definition #'comment-region #'matlab-comment-region
                                km global-map) ;torkel
     ;; Completion
-    (define-key km "\M-\t" 'matlab-complete-symbol)
+    (define-key km "\M-\t" #'matlab-complete-symbol) ;;FIXME: Use CAPF!
     ;; Connecting to MATLAB Shell
-    (define-key km [(control c) (control s)] 'matlab-shell-save-and-go)
-    (define-key km [(control c) (control r)] 'matlab-shell-run-region)
-    (define-key km [(control return)] 'matlab-shell-run-region-or-line)
-    (define-key km [(control c) (control t)] 'matlab-show-line-info)
-    (define-key km [(control c) ?. ] 'matlab-shell-locate-fcn)
+    (define-key km [(control c) (control s)] #'matlab-shell-save-and-go)
+    (define-key km [(control c) (control r)] #'matlab-shell-run-region)
+    (define-key km [(control return)] #'matlab-shell-run-region-or-line)
+    (define-key km [(control c) (control t)] #'matlab-show-line-info)
+    (define-key km [(control c) ?. ] #'matlab-shell-locate-fcn)
     (define-key km [(control h) (control m)] matlab--shell-help-map)
-    (define-key km [(meta s)] 'matlab-show-matlab-shell-buffer)
-    (define-key km [(control meta mouse-2)] 'matlab-shell-find-file-click)
+    (define-key km [(meta s)] #'matlab-show-matlab-shell-buffer)
+    (define-key km [(control meta mouse-2)] #'matlab-shell-find-file-click)
     ;; Debugger interconnect
-    (substitute-key-definition 'read-only-mode 'matlab-toggle-read-only
+    (substitute-key-definition #'read-only-mode #'matlab-toggle-read-only
                                km global-map)
 
     km)
@@ -730,8 +711,7 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
 ;; because it's just too complex for a regular expression.
 (defface matlab-region-face
   '((t :inherit region))
-  "*Face used to highlight a matlab region."
-  :group 'matlab)
+  "*Face used to highlight a matlab region.")
 
 (defvar matlab-unterminated-string-face 'matlab-unterminated-string-face
   "Self reference for unterminated string face.")
@@ -754,20 +734,17 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
 (defface matlab-unterminated-string-face
   '((t :inherit font-lock-string-face
        :underline t))
-  "*Face used to highlight unterminated strings."
-  :group 'matlab)
+  "*Face used to highlight unterminated strings.")
 
 (defface matlab-commanddual-string-face
   '((t :inherit font-lock-string-face
        :slant italic))
-  "*Face used to highlight command dual string equivalent."
-  :group 'matlab)
+  "*Face used to highlight command dual string equivalent.")
 
 (defface matlab-simulink-keyword-face
   '((t :inherit font-lock-builtin-face
        :underline t))
-  "*Face used to highlight simulink specific functions."
-  :group 'matlab)
+  "*Face used to highlight simulink specific functions.")
 
 (defface matlab-nested-function-keyword-face
   '((t :inherit font-lock-keyword-face
@@ -777,8 +754,7 @@ mark at the beginning of the \"%% section\" and point at the end of the section"
 (defface matlab-cross-function-variable-face
   '((t :weight bold
        :slant  italic))
-  "*Face to use for cross-function variables."
-  :group 'matlab)
+  "*Face to use for cross-function variables.")
 
 (defface matlab-ignored-comment-face
   '((t :inherit font-lock-comment-face
@@ -888,14 +864,12 @@ Argument LIMIT is the maximum distance to search."
 
   "List of handle graphics functions used in highlighting.
 Customizing this variable is only useful if `regexp-opt' is available."
-  :group 'matlab
   :type '(repeat (string :tag "HG Keyword: ")))
 
 (defcustom matlab-debug-list '("dbstop" "dbclear" "dbcont" "dbdown" "dbmex"
                                "dbstack" "dbstatus" "dbstep" "dbtype" "dbup"
                                "dbquit")
   "List of debug commands used in highlighting."
-  :group 'matlab
   :type '(repeat (string :tag "Debug Keyword: ")))
 
 (defcustom matlab-simulink-keywords
@@ -906,14 +880,12 @@ Customizing this variable is only useful if `regexp-opt' is available."
     "bdroot" "bdclose" )
   ;; Missing this regex "\\(mld\\|ss\\)[A-Z]\\w+\\)"
   "List of keywords to highlight for simulink."
-  :group 'matlab
   :type '(repeat (string :tag "Debug Keyword: ")))
 
 
 (defcustom matlab-constants-keyword-list
   '("eps" "pi" "flintmax" "inf" "Inf" "nan" "NaN" "ans" "i" "j" "NaT" "true" "false")
   "List of constants and special variables in MATLAB."
-  :group 'matlab
   :type '(repeat (string :tag "Debug Keyword: ")))
 
 (defun matlab-font-lock-regexp-opt (keywordlist)
@@ -1273,18 +1245,11 @@ Variables:
   `matlab-fill-strings'         Non-nil, auto-fill strings in `auto-fill-mode'.
   `matlab-verify-on-save-flag'  Non-nil, enable code checks on save.
   `matlab-vers-on-startup'      If t, show version on start-up.
-  `matlab-handle-simulink'      If t, enable simulink keyword highlighting.
-
-All Key Bindings:
-\\{matlab-mode-map}"
+  `matlab-handle-simulink'      If t, enable simulink keyword highlighting."
   :after-hook (matlab-mode-init-mlint-if-needed)
 
-  (use-local-map matlab-mode-map)
-  (setq major-mode 'matlab-mode)
-  (setq mode-name "MATLAB")
   (if (boundp 'whitespace-modes)
       (add-to-list 'whitespace-modes 'matlab-mode))
-  (setq local-abbrev-table matlab-mode-abbrev-table)
 
   ;; Syntax tables and related features are in matlab-syntax.el
   ;; This includes syntax table definitions, misc syntax regexps
@@ -1294,73 +1259,54 @@ All Key Bindings:
 
   ;; Indentation setup.
   (setq indent-tabs-mode nil)
-  (make-local-variable 'indent-line-function)
-  (setq indent-line-function 'matlab-indent-line)
-  (make-local-variable 'indent-region-function)
-  (setq indent-region-function 'matlab-indent-region)
-  (make-local-variable 'comment-column)
-  (setq comment-column matlab-comment-column)
-  (make-local-variable 'comment-indent-function)
-  (setq comment-indent-function (lambda () nil)) ;; always use indent-according-to-mode
-  (make-local-variable 'electric-indent-functions)
-  (setq electric-indent-functions 'matlab-electric-indent-function)
+  (setq-local indent-line-function #'matlab-indent-line)
+  (setq-local indent-region-function #'matlab-indent-region)
+  (setq-local comment-column matlab-comment-column)
+  (setq-local comment-indent-function (lambda () nil)) ;; always use indent-according-to-mode
+  (setq-local electric-indent-functions #'matlab-electric-indent-function)
 
   ;; Sexp's and Defuns
-  (make-local-variable 'forward-sexp-function)
-  (setq forward-sexp-function 'matlab-forward-sexp-fcn)
-  (make-local-variable 'beginning-of-defun-function)
-  (setq beginning-of-defun-function 'matlab-beginning-of-defun)
-  (make-local-variable 'end-of-defun-function)
-  (setq end-of-defun-function 'matlab-skip-over-defun)
-  (make-local-variable 'add-log-current-defun-function)
-  (setq add-log-current-defun-function 'matlab-add-log-current-defun)
+  (setq-local forward-sexp-function #'matlab-forward-sexp-fcn)
+  (setq-local beginning-of-defun-function #'matlab-beginning-of-defun)
+  (setq-local end-of-defun-function #'matlab-skip-over-defun)
+  (setq-local add-log-current-defun-function #'matlab-add-log-current-defun)
 
   ;; Auto-Fill and Friends
-  (make-local-variable 'normal-auto-fill-function)
-  (setq normal-auto-fill-function 'matlab-auto-fill)
-  (make-local-variable 'fill-column)
-  (setq fill-column fill-column)
-  (make-local-variable 'fill-paragraph-function)
-  (setq fill-paragraph-function 'matlab-fill-paragraph)
-  (make-local-variable 'fill-prefix)
+  (setq-local normal-auto-fill-function #'matlab-auto-fill)
+  (setq-local fill-column fill-column)
+  (setq-local fill-paragraph-function #'matlab-fill-paragraph)
 
   ;; Imenu
-  (setq-local imenu-create-index-function #'matlab--imenu-index)
+  (setq-local imenu-generic-expression #'matlab--imenu-index)
 
   ;; Save hook for verifying src.  This lets us change the name of
   ;; the function in `write-file' and have the change be saved.
   ;; It also lets us fix mistakes before a `save-and-go'.
-  (make-local-variable 'write-contents-functions)
-  (add-hook 'write-contents-functions 'matlab-mode--write-file-callback)
-
-  ;; give each file it's own parameter history
-  (make-local-variable 'matlab-shell-save-and-go-history)
+  (add-hook 'write-contents-functions #'matlab-mode--write-file-callback)
 
   ;; Font lock support:
-  (make-local-variable 'font-lock-defaults)
-  (setq font-lock-defaults '((matlab-file-basic-font-lock-keywords
-                              matlab-file-gaudy-font-lock-keywords
-                              matlab-file-really-gaudy-font-lock-keywords
-                              )
-                             nil ; use syntax table comments/strings
-                             nil ; keywords are case sensitive.
-                             ;; This puts _ as a word constituent,
-                             ;; simplifying our keywords significantly
-                             ((?_ . "w"))))
+  (setq-local font-lock-defaults
+              '((matlab-file-basic-font-lock-keywords
+                 matlab-file-gaudy-font-lock-keywords
+                 matlab-file-really-gaudy-font-lock-keywords
+                 )
+                nil                   ; use syntax table comments/strings
+                nil                   ; keywords are case sensitive.
+                ;; This puts _ as a word constituent,
+                ;; simplifying our keywords significantly
+                ((?_ . "w"))))
   (setq font-lock-multiline 'undecided)
   (add-to-list 'font-lock-extend-region-functions #'matlab-font-lock-extend-region t)
 
   ;; Highlight parens OR if/end type blocks
-  (make-local-variable 'show-paren-data-function)
-  (setq show-paren-data-function 'matlab-show-paren-or-block)
+  (setq-local show-paren-data-function #'matlab-show-paren-or-block)
 
   ;; Electric pair mode needs customization around transpose
-  (make-local-variable 'electric-pair-inhibit-predicate)
-  (setq electric-pair-inhibit-predicate 'matlab-electric-pair-inhibit-predicate)
+  (setq-local electric-pair-inhibit-predicate
+              #'matlab-electric-pair-inhibit-predicate)
 
   ;; Electric pair mode - handle ' as string delimiter correctly
-  (make-local-variable 'electric-pair-pairs)
-  (setq electric-pair-pairs '((39 . 39)))
+  (setq-local electric-pair-pairs '((?\' . ?\')))
 
   (let ((mfile-type (matlab-guess-mfile-type)))
 

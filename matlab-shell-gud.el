@@ -129,10 +129,8 @@ Disable this option if the tooltips are too slow in your setup."
   (add-to-list 'mlgud-tooltip-modes 'matlab-ts-mode)
   (add-to-list 'mlgud-tooltip-modes 'matlab-mode)
 
-  (make-local-variable 'mlgud-marker-filter)
-  (setq mlgud-marker-filter 'gud-matlab-marker-filter)
-  (make-local-variable 'mlgud-find-file)
-  (setq mlgud-find-file 'gud-matlab-find-file)
+  (setq-local mlgud-marker-filter #'gud-matlab-marker-filter)
+  (setq-local mlgud-find-file #'gud-matlab-find-file)
 
   (global-matlab-shell-inactive-gud-minor-mode 1)
 
@@ -170,8 +168,7 @@ FILE is ignored, and ARGS is returned."
 ;; interprets it for formatting text, and for running the debugger.
 
 
-(defvar matlab-shell-gud--marker-acc "")
-(make-variable-buffer-local 'matlab-shell-gud--marker-acc)
+(defvar-local matlab-shell-gud--marker-acc "")
 
 (defvar gud-matlab-marker-regexp-plain-prompt "^K?>>"
   "Regular expression for finding a prompt.")
@@ -181,9 +178,8 @@ FILE is ignored, and ARGS is returned."
 (defvar gud-matlab-marker-regexp->> "^>>"
   "Regular expression for finding a file line-number.")
 
-(defvar gud-matlab-dbhotlink nil
+(defvar-local gud-matlab-dbhotlink nil
   "Track if we've sent a dbhotlink request.")
-(make-variable-buffer-local 'gud-matlab-dbhotlink)
 
 (defun gud-matlab-marker-filter (string)
   "Filters STRING for the Unified Debugger based on MATLAB output."
@@ -248,7 +244,7 @@ FILE is ignored, and ARGS is returned."
                           (let ((forms (read expression)))
                             (when forms
                               ;;(message "About to evaluate forms: \"%S\"" forms)
-                              (eval forms)))
+                              (eval forms t)))
                         (error
                          (message "Failed to evaluate dbhotlink expression: \"%s\"" expression)
                          (message "Error is: %S" ERR)
@@ -475,25 +471,23 @@ LONGESTNAME specifies the how long the longest name we can expect is."
 
 (defvar mlg-stack-mode-map
   (let ((km (make-sparse-keymap)))
-    (define-key km [return] 'mlg-stack-choose)
-    (define-key km "q" 'mlg-stack-quit)
-    (define-key km "n" 'mlg-stack-next)
-    (define-key km "p" 'mlg-stack-prev)
-    (define-key km [mouse-2] 'mlg-stack-click)
-    (define-key km [mouse-1] 'mlg-stack-click)
+    (define-key km [return] #'mlg-stack-choose)
+    (define-key km "q" #'mlg-stack-quit)
+    (define-key km "n" #'mlg-stack-next)
+    (define-key km "p" #'mlg-stack-prev)
+    (define-key km [mouse-2] #'mlg-stack-click)
+    (define-key km [mouse-1] #'mlg-stack-click)
     km)
   "Keymap used in MATLAB stack mode.")
 
 ;; Need this to fix weird problem in define-derived-mode
+;; FIXME: What problem?
 (defvar mlg-stack-mode-syntax-table (make-syntax-table)
-  "Syntax table used in `matlab-shell-help-mode'.")
+  "Syntax table used in `matlab-shell-help-mode'.") ;;FIXME: shell-help-mode?
 
 (define-derived-mode mlg-stack-mode
-  fundamental-mode "MStack"
-  "Major mode for viewing a MATLAB stack.
-
-Commands:
-\\{mlg-stack-mode-map}"
+  fundamental-mode "MStack"             ;FIXME: special-mode?
+  "Major mode for viewing a MATLAB stack."
   :syntax-table mlg-stack-mode-syntax-table
   (setq buffer-read-only t)
   )
@@ -611,8 +605,8 @@ LONGESTNAME specifies the how long the longest name we can expect is."
       ))
   ;; The first time breakpoints are added, make sure we can activate breakpoints
   ;; when new files are opened in a buffer.
-  (add-hook 'matlab-ts-mode-hook 'mlg-breakpoint-activate-buffer-opened-hook)
-  (add-hook 'matlab-mode-hook 'mlg-breakpoint-activate-buffer-opened-hook)
+  (add-hook 'matlab-ts-mode-hook #'mlg-breakpoint-activate-buffer-opened-hook)
+  (add-hook 'matlab-mode-hook #'mlg-breakpoint-activate-buffer-opened-hook)
   )
 
 (defun mlg-del-breakpoint (file fcn line)
@@ -745,12 +739,15 @@ FCN is ignored."
 
 (defvar mlg-breakpoint-mode-map
   (let ((km (make-sparse-keymap)))
-    (define-key km [return] 'mlg-breakpoint-choose)
-    (define-key km "q" 'mlg-breakpoint-quit)
-    (define-key km "n" 'mlg-breakpoint-next)
-    (define-key km "p" 'mlg-breakpoint-prev)
-    (define-key km [mouse-2] 'mlg-breakpoint-click)
-    (define-key km [mouse-1] 'mlg-breakpoint-click)
+    ;; Don't bind `return' but RET so it also works in TTYs and doesn't
+    ;; mistakenly override another binding on RET.
+    (define-key km (kbd "RET") #'mlg-breakpoint-choose)
+    (define-key km "q" #'mlg-breakpoint-quit)
+    (define-key km "n" #'mlg-breakpoint-next)
+    (define-key km "p" #'mlg-breakpoint-prev)
+    (define-key km [mouse-2] #'mlg-breakpoint-click)
+    ;; FIXME: Use `mouse-1-click-follows-link'.
+    (define-key km [mouse-1] #'mlg-breakpoint-click)
     km)
   "Keymap used in MATLAB breakpoint mode.")
 
@@ -759,11 +756,8 @@ FCN is ignored."
   "Syntax table used in `matlab-shell-help-mode'.")
 
 (define-derived-mode mlg-breakpoint-mode
-  fundamental-mode "MBreakpoints"
-  "Major mode for viewing a MATLAB breakpoints.
-
-Commands:
-\\{mlg-breakpoint-mode-map}"
+  fundamental-mode "MBreakpoints"       ;FIXME: special-mode?
+  "Major mode for viewing a MATLAB breakpoints."
   :syntax-table mlg-breakpoint-mode-syntax-table
   (setq buffer-read-only t)
   )
@@ -857,30 +851,41 @@ Call debug activate/deactivate features."
 ;; When K prompt is active, this minor mode is applied to frame buffers so
 ;; that GUD commands are easy to get to.
 
+(declare-function mlgud-break "mlgud")
+(declare-function mlgud-remove "mlgud")
+(declare-function mlgud-cont "mlgud")
+(declare-function mlgud-next "mlgud")
+(declare-function mlgud-step "mlgud")
+(declare-function mlgud-finish "mlgud")
+(declare-function mlgud-up "mlgud")
+(declare-function mlgud-down "mlgud")
+(declare-function mlgud-list-breakpoints "mlgud")
+
 (defvar matlab-shell-gud-minor-mode-map
   (let ((km (make-sparse-keymap))
-        (key ?\ ))
+        (key ?\s))
     (while (<= key ?~)
-      (define-key km (string key) 'matlab-shell-gud-mode-help-notice)
+      (define-key km (string key) #'matlab-shell-gud-mode-help-notice)
       (setq key (1+ key)))
-    (define-key km "h" 'matlab-shell-gud-mode-help)
+    (define-key km "h" #'matlab-shell-gud-mode-help)
 
     ;; mlgud bindings.
-    (define-key km "b" 'mlgud-break)
-    (define-key km "x" 'mlgud-remove)
-    (define-key km "c" 'mlgud-cont)
-    (define-key km " " 'mlgud-step)
-    (define-key km "s" 'mlgud-step)
-    (define-key km "n" 'mlgud-next)
-    (define-key km "f" 'mlgud-finish)
-    (define-key km "q" 'mlgud-stop-subjob)
-    (define-key km "<" 'mlgud-up)
-    (define-key km ">" 'mlgud-down)
-    (define-key km "w" 'mlg-show-stack)
-    (define-key km "v" 'mlgud-list-breakpoints)
-    (define-key km "e" 'matlab-shell-gud-show-symbol-value)
+    (define-key km "b" #'mlgud-break)
+    (define-key km "x" #'mlgud-remove)
+    (define-key km "c" #'mlgud-cont)
+    (define-key km " " #'mlgud-step)
+    (define-key km "s" #'mlgud-step)
+    (define-key km "n" #'mlgud-next)
+    (define-key km "f" #'mlgud-finish)
+    (define-key km "q" #'mlgud-stop-subjob)
+    (define-key km "<" #'mlgud-up)
+    (define-key km ">" #'mlgud-down)
+    (define-key km "w" #'mlg-show-stack)
+    (define-key km "v" #'mlgud-list-breakpoints)
+    (define-key km "e" #'matlab-shell-gud-show-symbol-value)
 
-    (define-key km "\C-x\C-q" 'matlab-shell-gud-mode-edit) ; like toggle-read-only
+    ;; FIXME: Use `remap'?
+    (define-key km "\C-x\C-q" #'matlab-shell-gud-mode-edit) ; like toggle-read-only
 
     km)
   "Keymap used by matlab mode maintainers.")
@@ -936,9 +941,7 @@ Debug commands are:
  \\[matlab-shell-gud-show-symbol-value]        - Evaluate expression
  \\[mlg-show-stack]        - Where am I (ebstack)
  \\[mlgud-stop-subjob]        - Quit (dbquit)"
-  :init-value nil
   :lighter " MGUD"
-  :keymap matlab-shell-gud-minor-mode-map
 
   ;; Make the buffer read only
   (if matlab-shell-gud-minor-mode
@@ -947,7 +950,7 @@ Debug commands are:
         (when (buffer-file-name) (setq buffer-read-only t))
         (when matlab-shell-debug-tooltips-p
           (mlgud-tooltip-mode 1)
-          (add-hook 'tooltip-functions 'gud-matlab-tooltip-tips)
+          (add-hook 'tooltip-functions #'gud-matlab-tooltip-tips nil 'local)
           )
         ;; Replace mlgud's toolbar which keeps stomping
         ;; on our toolbar.
@@ -982,23 +985,23 @@ Debug commands are:
 
 (defvar matlab-shell-inactive-gud-minor-mode-map
   (let ((km (make-sparse-keymap)))
-    (define-key km "\C-c\C-d\C-h" 'matlab-shell-inactive-gud-mode-help)
+    (define-key km "\C-c\C-d\C-h" #'matlab-shell-inactive-gud-mode-help)
 
     ;; mlgud bindings when debugger is inactive. When inactive, only bindings such as mlgud-break
     ;; make sense. However, we also keep these bindings when the debugger is active for consistency.
-    (define-key km (kbd "C-c C-d b")   'mlgud-break)
-    (define-key km (kbd "C-c C-d x")   'mlgud-remove)
-    (define-key km (kbd "C-c C-d c")   'mlgud-cont)
-    (define-key km (kbd "C-c C-d SPC") 'mlgud-step)
-    (define-key km (kbd "C-c C-d s")   'mlgud-step)
-    (define-key km (kbd "C-c C-d n")   'mlgud-next)
-    (define-key km (kbd "C-c C-d f")   'mlgud-finish)
-    (define-key km (kbd "C-c C-d q")   'mlgud-stop-subjob)
-    (define-key km (kbd "C-c C-d <")   'mlgud-up)
-    (define-key km (kbd "C-c C-d >")   'mlgud-down)
-    (define-key km (kbd "C-c C-d w")   'mlg-show-stack)
-    (define-key km (kbd "C-c C-d v")   'mlgud-list-breakpoints)
-    (define-key km (kbd "C-c C-d e")   'matlab-shell-gud-show-symbol-value)
+    (define-key km (kbd "C-c C-d b")   #'mlgud-break)
+    (define-key km (kbd "C-c C-d x")   #'mlgud-remove)
+    (define-key km (kbd "C-c C-d c")   #'mlgud-cont)
+    (define-key km (kbd "C-c C-d SPC") #'mlgud-step)
+    (define-key km (kbd "C-c C-d s")   #'mlgud-step)
+    (define-key km (kbd "C-c C-d n")   #'mlgud-next)
+    (define-key km (kbd "C-c C-d f")   #'mlgud-finish)
+    (define-key km (kbd "C-c C-d q")   #'mlgud-stop-subjob)
+    (define-key km (kbd "C-c C-d <")   #'mlgud-up)
+    (define-key km (kbd "C-c C-d >")   #'mlgud-down)
+    (define-key km (kbd "C-c C-d w")   #'mlg-show-stack)
+    (define-key km (kbd "C-c C-d v")   #'mlgud-list-breakpoints)
+    (define-key km (kbd "C-c C-d e")   #'matlab-shell-gud-show-symbol-value)
 
     km)
   "Keymap used by matlab mode maintainers.")
@@ -1011,13 +1014,11 @@ Debug commands are:
  \\[mlgud-break]        - Add breakpoint (ebstop in FILE at point)
  \\[mlgud-remove]        - Remove breakpoint (ebclear in FILE at point)
  \\[mlgud-list-breakpoints]        - List breakpoints (ebstatus)"
-  :init-value nil
   :lighter " I-MGUD"
-  :keymap matlab-shell-inactive-gud-minor-mode-map
 
   ;; Always disable tooltips, in case configured while in the mode.
   (mlgud-tooltip-mode -1)
-  (remove-hook 'tooltip-functions 'gud-matlab-tooltip-tips)
+  (remove-hook 'tooltip-functions #'gud-matlab-tooltip-tips)
 
   (when (boundp 'tool-bar-map)            ; not --without-x
     (kill-local-variable 'tool-bar-map)))

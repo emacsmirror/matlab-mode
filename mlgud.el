@@ -201,7 +201,7 @@ Uses `mlgud-<MINOR-MODE>-directories' to find the source files."
 		   (eq mlgud-minor-mode 'gdbmi))
 	  (make-local-variable 'gdb-define-alist)
 	  (unless  gdb-define-alist (gdb-create-define-alist))
-	  (add-hook 'after-save-hook 'gdb-create-define-alist nil t))
+	  (add-hook 'after-save-hook #'gdb-create-define-alist nil t))
 	(make-local-variable 'mlgud-keep-buffer))
       buf)))
 
@@ -309,16 +309,21 @@ The value t means that there is no stack, and we are in display-file mode.")
 (declare-function speedbar-add-expansion-list "speedbar" (new-list))
 (defvar speedbar-mode-functions-list)
 
+(declare-function mlgud-pp "mlgud.el")
+(declare-function gdb-var-delete "gdb-mi.el")
+(declare-function speedbar-toggle-line-expansion "speedbar.el")
+(declare-function speedbar-edit-line "speedbar.el")
+
 (defun mlgud-install-speedbar-variables ()
   "Install those variables used by speedbar to enhance mlgud/gdb."
   (unless mlgud-speedbar-key-map
     (setq mlgud-speedbar-key-map (speedbar-make-specialized-keymap))
-    (define-key mlgud-speedbar-key-map "j" 'speedbar-edit-line)
-    (define-key mlgud-speedbar-key-map "e" 'speedbar-edit-line)
-    (define-key mlgud-speedbar-key-map "\C-m" 'speedbar-edit-line)
-    (define-key mlgud-speedbar-key-map " " 'speedbar-toggle-line-expansion)
-    (define-key mlgud-speedbar-key-map "D" 'gdb-var-delete)
-    (define-key mlgud-speedbar-key-map "p" 'mlgud-pp))
+    (define-key mlgud-speedbar-key-map "j" #'speedbar-edit-line)
+    (define-key mlgud-speedbar-key-map "e" #'speedbar-edit-line)
+    (define-key mlgud-speedbar-key-map "\C-m" #'speedbar-edit-line)
+    (define-key mlgud-speedbar-key-map " " #'speedbar-toggle-line-expansion)
+    (define-key mlgud-speedbar-key-map "D" #'gdb-var-delete)
+    (define-key mlgud-speedbar-key-map "p" #'mlgud-pp))
 
   (speedbar-add-expansion-list '("mlMLGUD" mlgud-speedbar-menu-items
 				 mlgud-speedbar-key-map
@@ -392,9 +397,9 @@ required by the caller."
 			(value (nth 4 var)) (status (nth 5 var))
 			(has-more (nth 6 var)))
 	      (put-text-property
-	       0 (length expr) 'face font-lock-variable-name-face expr)
+	       0 (length expr) 'face 'font-lock-variable-name-face expr)
 	      (put-text-property
-	       0 (length type) 'face font-lock-type-face type)
+	       0 (length type) 'face 'font-lock-type-face type)
 	      (while (string-match "\\." varnum start)
 		(setq depth (1+ depth)
 		      start (1+ (match-beginning 0))))
@@ -579,16 +584,16 @@ commands.
 Other commands for interacting with the debugger process are inherited from
 comint mode, which see."
   (setq mode-line-process '(":%s"))
-  (define-key (current-local-map) "\C-c\C-l" 'mlgud-refresh)
-  (set (make-local-variable 'mlgud-last-frame) nil)
+  (define-key (current-local-map) "\C-c\C-l" #'mlgud-refresh)
+  (setq-local mlgud-last-frame nil)
   (if (boundp 'tool-bar-map)            ; not --without-x
       (setq-local tool-bar-map mlgud-tool-bar-map))
   (make-local-variable 'comint-prompt-regexp)
   ;; Don't put repeated commands in command history many times.
-  (set (make-local-variable 'comint-input-ignoredups) t)
+  (setq-local comint-input-ignoredups t)
   (make-local-variable 'paragraph-start)
-  (set (make-local-variable 'mlgud-delete-prompt-marker) (make-marker))
-  (add-hook 'kill-buffer-hook 'mlgud-kill-buffer-hook nil t))
+  (setq-local mlgud-delete-prompt-marker (make-marker))
+  (add-hook 'kill-buffer-hook #'mlgud-kill-buffer-hook nil t))
 
 (defun mlgud-set-buffer ()
   "Set buffer for mlgud."
@@ -1094,14 +1099,15 @@ it if ARG is omitted or nil."
   (require 'tooltip)
   (if mlgud-tooltip-mode
       (progn
-	(add-hook 'change-major-mode-hook 'mlgud-tooltip-change-major-mode)
-	(add-hook 'pre-command-hook 'tooltip-hide)
-	(add-hook 'tooltip-functions 'mlgud-tooltip-tips)
-	(define-key global-map [mouse-movement] 'mlgud-tooltip-mouse-motion))
-    (unless tooltip-mode (remove-hook 'pre-command-hook 'tooltip-hide)
-    (remove-hook 'change-major-mode-hook 'mlgud-tooltip-change-major-mode)
-    (remove-hook 'tooltip-functions 'mlgud-tooltip-tips)
-    (define-key global-map [mouse-movement] 'ignore)))
+	(add-hook 'change-major-mode-hook #'mlgud-tooltip-change-major-mode)
+	(add-hook 'pre-command-hook #'tooltip-hide)
+	(add-hook 'tooltip-functions #'mlgud-tooltip-tips)
+	(define-key global-map [mouse-movement] #'mlgud-tooltip-mouse-motion))
+    (unless tooltip-mode (remove-hook 'pre-command-hook #'tooltip-hide)
+    (remove-hook 'change-major-mode-hook #'mlgud-tooltip-change-major-mode)
+    (remove-hook 'tooltip-functions #'mlgud-tooltip-tips)
+    ;; FIXME: Maybe it wasn't `ignore' to start with?
+    (define-key global-map [mouse-movement] #'ignore)))
   (mlgud-tooltip-activate-mouse-motions-if-enabled)
   (if (and mlgud-comint-buffer
 	   (buffer-name mlgud-comint-buffer); mlgud-comint-buffer might be killed
@@ -1118,9 +1124,9 @@ it if ARG is omitted or nil."
 		    (make-local-variable 'gdb-define-alist)
 		    (gdb-create-define-alist)
 		    (add-hook 'after-save-hook
-			      'gdb-create-define-alist nil t))))))
+			      #'gdb-create-define-alist nil t))))))
 	(kill-local-variable 'gdb-define-alist)
-	(remove-hook 'after-save-hook 'gdb-create-define-alist t))))
+	(remove-hook 'after-save-hook #'gdb-create-define-alist t))))
 
 (defcustom mlgud-tooltip-modes '(mlgud-mode c-mode c++-mode fortran-mode
 					python-mode)
@@ -1153,12 +1159,13 @@ only tooltips in the buffer containing the overlay arrow."
 
 (defun mlgud-tooltip-change-major-mode ()
   "Function added to `change-major-mode-hook' when tooltip mode is on."
-  (add-hook 'post-command-hook 'mlgud-tooltip-activate-mouse-motions-if-enabled))
+  (add-hook 'post-command-hook
+            #'mlgud-tooltip-activate-mouse-motions-if-enabled))
 
 (defun mlgud-tooltip-activate-mouse-motions-if-enabled ()
   "Reconsider for all buffers whether mouse motion events are desired."
   (remove-hook 'post-command-hook
-	       'mlgud-tooltip-activate-mouse-motions-if-enabled)
+	       #'mlgud-tooltip-activate-mouse-motions-if-enabled)
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       (if (and mlgud-tooltip-mode
@@ -1266,7 +1273,7 @@ This function must return nil if it doesn't handle EVENT."
 	       (posn-point (event-end event))
 	       (or (and (eq mlgud-minor-mode 'gdbmi) (not gdb-active-process))
 		   (progn (setq mlgud-tooltip-event event)
-			  (eval (cons 'and mlgud-tooltip-display)))))
+			  (eval (cons 'and mlgud-tooltip-display) t))))
       (let ((expr (tooltip-expr-to-print event)))
 	(when expr
 	  (if (and (eq mlgud-minor-mode 'gdbmi)

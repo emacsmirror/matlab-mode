@@ -146,7 +146,7 @@ response from some Emacs based request."
 	((string= "eval" cmd)
 	 ;; (message "MATLAB Evaluating remote request")
 	 (let ((forms (read data)))
-	   (eval forms)))
+	   (eval forms t)))
 	(t
 	 (message "Unknown command from matlab: %S" cmd)
 	 )))

@@ -39,7 +39,7 @@
 (defun matlab-uniquify-list (lst)
   "Return a list that is a subset of LST where all elements are unique."
   (if (fboundp 'cl-remove-duplicates)
-      (cl-remove-duplicates lst :test 'string= :from-end t)
+      (cl-remove-duplicates lst :test #'string= :from-end t)
     ;; Else, do it by hand.
     (let ((nlst nil))
       (while lst
@@ -545,7 +545,7 @@ to change it temporarily."
 	    (insert matlab-last-prefix)
 	    (message "No completions."))))
        ((eq matlab-completion-technique 'complete)
-	(let ((allsyms (apply 'append
+	(let ((allsyms (apply #'append
 			      (mapcar (lambda (f) (funcall f prefix))
 				      matlab-completion-search-state))))
 	  (cond ((null allsyms)

@@ -67,17 +67,18 @@
 ;; View-major-mode is an emacs20 thing.  This gives us a small compatibility
 ;; layer.
 (eval-and-compile
-  (if (not (fboundp 'view-major-mode)) (defalias 'view-major-mode 'view-mode)))
+  (if (not (fboundp 'view-major-mode)) (defalias 'view-major-mode #'view-mode)))
 
 (defvar matlab-shell-help-mode-map
   (let ((km (make-sparse-keymap)))
-    (define-key km [return] 'matlab-shell-help-choose)
-    (define-key km "q" 'bury-buffer)
+    (define-key km [return] #'matlab-shell-help-choose)
+    (define-key km "q" #'bury-buffer)
     (define-key km [(control h) (control m)] matlab--shell-help-map)
-    (if (string-match "XEmacs" emacs-version)
-	(define-key km [button2] 'matlab-shell-help-click)
-      (define-key km [mouse-2] 'matlab-shell-help-click)
-      (define-key km [mouse-1] 'matlab-shell-help-click)
+    (if (featurep 'xemacs)
+	(define-key km [button2] #'matlab-shell-help-click)
+      (define-key km [mouse-2] #'matlab-shell-help-click)
+      ;; FIXME: Use `mouse-1-click-follows-link'.
+      (define-key km [mouse-1] #'matlab-shell-help-click)
       )
     (set-keymap-parent km view-mode-map)
     km)

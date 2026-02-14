@@ -191,9 +191,8 @@ In this case, comment and \n are not special, as word wrap can get in the way.")
   "Hooks run each time a prompt is seen and sent to display.
 If multiple prompts are seen together, only call this once.")
 
-(defvar matlab-shell-prompt-hook-cookie nil
+(defvar-local matlab-shell-prompt-hook-cookie nil
   "Cookie used to transfer info about detected prompts from inner filter to outer.")
-(make-variable-buffer-local 'matlab-shell-prompt-hook-cookie)
 
 (defvar matlab-shell-suppress-prompt-hooks nil
   "Non-nil to suppress running prompt hooks.")
@@ -524,9 +523,8 @@ Try C-h f matlab-shell RET"))
 (defvar matlab-shell-capturetext-end-text "</EMACSCAP>"
   "Text used as simple signal for text that should be captured.")
 
-(defvar matlab-shell-accumulator ""
+(defvar-local matlab-shell-accumulator ""
   "Accumulate text that is being captured.")
-(make-variable-buffer-local 'matlab-shell-accumulator)
 (defvar matlab-shell-flush-accumulation-buffer nil
   "When non-nil, flush the accumulation buffer.")
 
@@ -1546,9 +1544,8 @@ that doesn't exist."
             (find-file file)))
       (error "Command which('%s') returned empty" fcn))))
 
-(defvar matlab-shell-matlabroot-run nil
+(defvar-local matlab-shell-matlabroot-run nil
   "Cache of MATLABROOT in this shell.")
-(make-variable-buffer-local 'matlab-shell-matlabroot-run)
 
 (defun matlab-shell-matlabroot ()
   "Get the location of this shell's root.
@@ -2085,23 +2082,21 @@ These will differ when MATLAB code directory without notifying Emacs."
         (switch-to-buffer-other-window msbn)
       (message "There is not an active MATLAB process."))))
 
-(defvar matlab-shell-save-and-go-history '("()")
+(defvar-local matlab-shell-save-and-go-history '("()")
   "Keep track of parameters passed to the MATLAB shell.")
 
-(defvar matlab-shell-save-and-go-command nil
+(defvar-local matlab-shell-save-and-go-command nil
   "Command to use for `matlab-shell-save-and-go' instead of current buffer.
 This command will override the default computed command if non-nil.
 The command will be run in the shell's current directory without checks, so
 you will need to make sure MATLAB's pwd is correct.
 It is recommended you use directory-local or buffer-local variable settings to
 control this.")
-(make-variable-buffer-local 'matlab-shell-save-and-go-command)
 ;; Marking as SAFE b/c we will ask to use this before doing so.
 (put 'matlab-shell-save-and-go-command 'safe-local-variable #'stringp)
 
-(defvar matlab-shell-save-and-go-command-enabled nil
+(defvar-local matlab-shell-save-and-go-command-enabled nil
   "Remember if it is safe to use `matlab-shell-save-and-go-command' in this buffer.")
-(make-variable-buffer-local 'matlab-shell-save-and-go-command-enabled)
 (put 'matlab-shell-save-and-go-command 'risky-local-variable t)
 
 (defun matlab-shell-set-save-and-go-command (command)

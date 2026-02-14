@@ -15,3 +15,7 @@
 # matlab-autoload.el (matlab-load.el was the old name) is generated
 matlab-autoload.el
 matlab-load.el
+
+# ELPA-generated files.
+/matlab-mode-autoloads.el
+/matlab-mode-pkg.el

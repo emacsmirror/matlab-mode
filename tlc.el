@@ -133,8 +133,7 @@
   :group 'languages)
 
 (defcustom tlc-mode-hook nil
-  "*List of functions to call on entry to TLC mode."
-  :group 'tlc
+  "List of functions to call on entry to TLC mode."
   :type 'hook)
 
 (defvar tlc--imenu-generic-expression
@@ -159,9 +158,8 @@
 
 (defvar tlc-mode-map
   (let ((km  (make-sparse-keymap)))
-    (define-key km "\C-m" 'tlc-return)
-    (define-key km [return] 'tlc-return)
-    (define-key km "\C-i" 'tlc-indent)
+    (define-key km "\C-m" #'tlc-return)
+    (define-key km "\C-i" #'tlc-indent)
     km)
   "Keymap for `tlc-mode'.")
 
@@ -176,8 +174,7 @@
     (((class color) (background light)) (:foreground "DarkGreen"))
     (((class color) (background dark))  (:foreground "chartreuse"))
     (t (:underline t)))
-  "Font Lock mode face used to highlight tlc keywords."
-  :group 'tlc)
+  "Font Lock mode face used to highlight tlc keywords.")
 
 (defcustom tlc-keywords
   '("CAST" "EXISTS" "FEVAL" "FILE_EXISTS" "FORMAT"
@@ -198,8 +195,7 @@
     "UINT8MAX" "UINT16MAX" "UINT32MAX"
     "UINTWHITE_SPACE" "WILL_ROLL")
   "Built-in function keywords to highlight in TLC."
-  :type '(repeat (string :tag "keyword"))
-  :group 'tlc)
+  :type '(repeat (string :tag "keyword")))
 
 (defvar tlc-font-lock-keywords
   (list
