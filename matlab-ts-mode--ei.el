@@ -454,7 +454,8 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
         (when (> n-spaces-to-append 0)
           (insert (make-string n-spaces-to-append ? )))))))
 
-(defvar matlab-ts-mode--ei-error-query (treesit-query-compile 'matlab '((ERROR) @e)))
+(defvar matlab-ts-mode--ei-error-query (when (treesit-available-p)
+                                         (treesit-query-compile 'matlab '((ERROR) @e))))
 (defvar-local matlab-ts-mode--ei-errors-alist nil)
 
 ;; matlab-ts-mode--ei-tmp-buf-indent is non-nil if doing m-matrix indent (in this case we know there
