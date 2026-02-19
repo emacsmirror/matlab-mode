@@ -1,0 +1,25 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,296> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,75]@{% Case1: (t-utils-xr (re-search-forward "1 ,") "C-...}@) \n[75,76]
+ (if_statement<76,185> if[76,78] condition: (identifier[79,80]@{x}@)
+  (block<81,182>
+   (assignment<81,180>
+    left: 
+     (function_call<81,98> name: (identifier[81,82]@{a}@) ([82,83]
+      (arguments<83,97>
+       argument: 
+        (matrix<83,94> [[83,84]
+         (row<86,93> (number[86,87]@{1}@) ,[88,89] (number[92,93]@{2}@))
+         ][93,94])
+       ,[94,95]
+       (spread_operator<96,97> :[96,97]))
+      )[97,98])
+    =[99,100] (line_continuation[101,147]@{...                                          \n}@)
+    right: 
+     (matrix<151,180> [[151,152]
+      (row<153,160> (number[153,154]@{1}@) ,[154,155] (number[155,156]@{2}@) ,[159,159] (number[159,160]@{3}@))
+      (line_continuation[162,166]@{...\n}@)
+      (row<168,179> (number[168,171]@{100}@) ,[172,172] (number[172,175]@{200}@) ,[175,176] (number[176,179]@{300}@))
+      ][179,180]))
+   ;[180,181] \n[181,182])
+  end[182,185])
+ (comment[187,295]@{% Case2: (t-utils-xr (re-search-backward "^if") (t...}@) \n[295,296])

@@ -3,6 +3,94 @@
 
 # Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
+* Release 8.1.0 Feb-16-2026
+
+1. The behavior of TAB and RET in matlab-ts-mode to electric indent/code-format adjacent lines of
+   code.  There is no change in the indent/code-format rules. The goal of this change is to improve
+   editing interactions with the MATLAB indent/code-format engine.
+
+
+   - TAB behavior example. Given
+
+      #+begin_src matlab
+        a = 1;
+        foo = 2;
+        foobar = 3;
+      #+end_src
+
+      A TAB on any these code lines results in:
+
+      #+begin_src matlab
+        a      = 1;
+        foo    = 2;
+        foobar = 3;
+      #+end_src
+
+   - RET behavior example. Given
+
+      #+begin_src matlab
+        v1=1;
+        var2= [1,1];
+      #+end_src
+
+      Typing the 4 characters, ~x=3;~, on the 3rd line (without typing RET) gives us:
+
+      #+begin_src matlab
+        v1=1;
+        var2= [1,1];
+        x=3;
+      #+end_src
+
+      When we type the RET, we get:
+
+      #+begin_src matlab
+        v1   = 1;
+        var2 = [1, 1];
+        x    = 3;
+
+      #+end_src
+
+      Now, if we type a RET at the end of the 2nd line, we get the following. Notice that the alignment
+      of x assignment has changed.
+
+      #+begin_src matlab
+        v1   = 1;
+        var2 = [1, 1];
+
+        x = 3;
+
+      #+end_src
+
+2. An "electric ends" edge case issues in matlab-ts-mode has been fixed. When typing a statement
+   that is terminated by an end, e.g. "if", "function", "classdef", etc. the "end" keyword is
+   automatically added for you. For example, given:
+
+   #+begin_src matlab
+     if a
+   #+end_src
+
+   typing RET at the end of the "if a" line results in:
+
+   #+begin_src matlab
+     if a
+
+     end
+   #+end_src
+
+   where the point is left on the 2nd line, indented to 4 spaces.
+
+   There were some edge cases where an end-statement was being incorrectly inserted. This primarily
+   occurred with continued (ellipsis) conditions following the "if" and similar statements. For
+   example, given the following, typing RET at the end of the first line will not add an end-statement
+   whereas previously we were incorrectly adding and end-statement.
+
+   #+begin_src matlab
+     if a && ...
+
+     end
+   #+end_src
+
+
 * Release 8.0.5 Feb-14-2026
 
 This release fixes a build issue when using matlab-mode with Emacs that doesn't have tree-sitter. In

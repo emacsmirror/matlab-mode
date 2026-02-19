@@ -1,0 +1,6 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,517> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (function_definition<22,516> function[22,30] name: (identifier[31,66]@{electric_ends_if_continued_with_end}@)
+  (function_arguments<66,69> ([66,67] arguments: (identifier[67,68]@{a}@) )[68,69])
+  \n[69,71] (comment[75,511]@{%\{\n      Case1:\n      (t-utils-xr\n      (re-se...}@) \n[511,513] end[513,516])
+ \n[516,517])

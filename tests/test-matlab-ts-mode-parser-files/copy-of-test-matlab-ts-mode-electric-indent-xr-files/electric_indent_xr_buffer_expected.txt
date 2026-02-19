@@ -1,0 +1,8 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,202> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,91]@{% This validates point remains at point-min when w...}@) (comment[93,155]@{% Case1: (t-utils-xr (goto-char (point-min)) "C-x ...}@) \n[155,156]
+ (function_definition<156,201> function[156,164]
+  (function_output<165,168> (identifier[165,166]@{x}@) =[167,168])
+  name: (identifier[169,194]@{electric_indent_xr_buffer}@)
+  (function_arguments<194,197> ([194,195] arguments: (identifier[195,196]@{y}@) )[196,197])
+  \n[197,198] end[198,201])
+ \n[201,202])

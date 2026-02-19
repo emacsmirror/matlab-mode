@@ -11,7 +11,7 @@
   :      ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  132
   Moved to point:  136
   : 6:4:     
@@ -51,7 +51,7 @@
      % Case3: (t-utils-xr "C-n" "C-i" (insert "events") "C-m" (insert "% events-comment"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  146
   Moved to point:  155
   : 7:8:         
@@ -103,7 +103,7 @@
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  259
   Moved to point:  263
   : 11:4:     
@@ -143,7 +143,7 @@
      methods
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  270
   Moved to point:  279
   : 12:8:         
@@ -195,7 +195,7 @@
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  396
   Moved to point:  400
   : 16:4:     
@@ -235,7 +235,7 @@
          % Case4: (t-utils-xr "C-n" "C-i" (insert "function bar") "C-m" (insert "disp('bar')"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  406
   Moved to point:  415
   : 17:8:         
@@ -287,7 +287,7 @@
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  549
   Moved to point:  557
   : 23:8:         
@@ -327,7 +327,7 @@
          % foo help
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  569
   Moved to point:  582
   : 24:12:             
@@ -379,7 +379,7 @@
   :                          ^
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  740
   Moved to point:  749
   : 30:8:         % 
@@ -436,7 +436,7 @@
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  845
   Moved to point:  857
   : 33:12:             
@@ -453,7 +453,7 @@
 +            
              % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
  
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
   #+end_src diff
 
 - Invoking      : (insert "arguments")
@@ -473,10 +473,10 @@
 +            arguments
              % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
  
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  866
   Moved to point:  883
   : 34:16:                 
@@ -494,7 +494,7 @@
 +
              % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
  
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
   #+end_src diff
 
 - Invoking      : (insert "a")
@@ -528,7 +528,7 @@
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  992
   Moved to point: 1004
   : 38:12:             
@@ -543,7 +543,7 @@
              % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
 -
 +            
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
  
              % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
@@ -563,12 +563,12 @@
              % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
 -            
 +            if a
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
  
              % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1008
   Moved to point: 1025
   : 39:16:                 
@@ -584,7 +584,7 @@
 +                
 +            end
 +
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
  
              % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
@@ -606,23 +606,23 @@
 +                disp('if')
              end
  
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
   #+end_src diff
 
 * Executing commands from electric_ends_cases.m:42:21:
 
-  Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+  Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1175
-  Moved to point: 1176
+  Start point   : 1169
+  Moved to point: 1170
   : 43:0: 
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1176
-  Moved to point: 1188
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 1170
+  Moved to point: 1182
   : 43:12:             
   :                    ^
   Buffer modified:
@@ -632,7 +632,7 @@
 @@ -40,7 +40,7 @@
              end
  
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
 -
 +            
              % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
@@ -641,8 +641,8 @@
   #+end_src diff
 
 - Invoking      : (insert "switch a")
-  Start point   : 1188
-  Moved to point: 1196
+  Start point   : 1182
+  Moved to point: 1190
   : 43:20:             switch a
   :                            ^
   Buffer modified:
@@ -652,7 +652,7 @@
 @@ -40,7 +40,7 @@
              end
  
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
 -            
 +            switch a
              % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
@@ -660,18 +660,18 @@
              % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1196
-  Moved to point: 1211
-  : 44:14:               case 
-  :                      ^
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1190
+  Moved to point: 1210
+  : 44:19:               case 
+  :                           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
 @@ -41,6 +41,9 @@
  
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
 +              case 
 +            end
@@ -681,16 +681,9 @@
              % Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
-- Invoking      : "C-e" = move-end-of-line
-  Start point   : 1211
-  Moved to point: 1216
-  : 44:19:               case 
-  :                           ^
-  No buffer modifications
-
 - Invoking      : (insert "1")
-  Start point   : 1216
-  Moved to point: 1217
+  Start point   : 1210
+  Moved to point: 1211
   : 44:20:               case 1
   :                            ^
   Buffer modified:
@@ -699,7 +692,7 @@
 +++ end_contents
 @@ -41,7 +41,7 @@
  
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
 -              case 
 +              case 1
@@ -708,9 +701,9 @@
              % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1217
-  Moved to point: 1234
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1211
+  Moved to point: 1228
   : 45:16:                 
   :                        ^
   Buffer modified:
@@ -718,7 +711,7 @@
 --- start_contents
 +++ end_contents
 @@ -42,6 +42,7 @@
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
                case 1
 +                
@@ -728,8 +721,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp('case 1')")
-  Start point   : 1234
-  Moved to point: 1248
+  Start point   : 1228
+  Moved to point: 1242
   : 45:30:                 disp('case 1')
   :                                      ^
   Buffer modified:
@@ -737,7 +730,7 @@
 --- start_contents
 +++ end_contents
 @@ -42,7 +42,7 @@
-             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+             % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
              switch a
                case 1
 -                
@@ -752,15 +745,15 @@
   Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1356
-  Moved to point: 1357
+  Start point   : 1350
+  Moved to point: 1351
   : 49:0: 
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1357
-  Moved to point: 1369
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 1351
+  Moved to point: 1363
   : 49:12:             
   :                    ^
   Buffer modified:
@@ -779,8 +772,8 @@
   #+end_src diff
 
 - Invoking      : (insert "while true")
-  Start point   : 1369
-  Moved to point: 1379
+  Start point   : 1363
+  Moved to point: 1373
   : 49:22:             while true
   :                              ^
   Buffer modified:
@@ -798,9 +791,9 @@
              % Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1379
-  Moved to point: 1396
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1373
+  Moved to point: 1390
   : 50:16:                 
   :                        ^
   Buffer modified:
@@ -820,8 +813,8 @@
   #+end_src diff
 
 - Invoking      : (insert "break")
-  Start point   : 1396
-  Moved to point: 1401
+  Start point   : 1390
+  Moved to point: 1395
   : 50:21:                 break
   :                             ^
   Buffer modified:
@@ -844,15 +837,15 @@
   Case10: (t-utils-xr "C-n" "C-i" (insert "for idx=1:a") "C-m" (insert "disp(idx)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1515
-  Moved to point: 1516
+  Start point   : 1509
+  Moved to point: 1510
   : 54:0: 
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1516
-  Moved to point: 1528
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 1510
+  Moved to point: 1522
   : 54:12:             
   :                    ^
   Buffer modified:
@@ -871,8 +864,8 @@
   #+end_src diff
 
 - Invoking      : (insert "for idx=1:a")
-  Start point   : 1528
-  Moved to point: 1539
+  Start point   : 1522
+  Moved to point: 1533
   : 54:23:             for idx=1:a
   :                               ^
   Buffer modified:
@@ -890,9 +883,9 @@
              % Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1539
-  Moved to point: 1560
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1533
+  Moved to point: 1554
   : 55:16:                 
   :                        ^
   Buffer modified:
@@ -914,8 +907,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp(idx)")
-  Start point   : 1560
-  Moved to point: 1569
+  Start point   : 1554
+  Moved to point: 1563
   : 55:25:                 disp(idx)
   :                                 ^
   Buffer modified:
@@ -938,15 +931,15 @@
   Case11: (t-utils-xr "C-n" "C-i" (insert "parfor idx=1:a") "C-m" (insert "disp(idx)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1686
-  Moved to point: 1687
+  Start point   : 1680
+  Moved to point: 1681
   : 59:0: 
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1687
-  Moved to point: 1699
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 1681
+  Moved to point: 1693
   : 59:12:             
   :                    ^
   Buffer modified:
@@ -965,8 +958,8 @@
   #+end_src diff
 
 - Invoking      : (insert "parfor idx=1:a")
-  Start point   : 1699
-  Moved to point: 1713
+  Start point   : 1693
+  Moved to point: 1707
   : 59:26:             parfor idx=1:a
   :                                  ^
   Buffer modified:
@@ -984,9 +977,9 @@
              % Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1713
-  Moved to point: 1734
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1707
+  Moved to point: 1728
   : 60:16:                 
   :                        ^
   Buffer modified:
@@ -1008,8 +1001,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp(idx)")
-  Start point   : 1734
-  Moved to point: 1743
+  Start point   : 1728
+  Moved to point: 1737
   : 60:25:                 disp(idx)
   :                                 ^
   Buffer modified:
@@ -1032,15 +1025,15 @@
   Case12: (t-utils-xr "C-n" "C-i" (insert "spmd") "C-m" (insert "q = magic(spmdIndex + 2)"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1865
-  Moved to point: 1866
+  Start point   : 1859
+  Moved to point: 1860
   : 64:0: 
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1866
-  Moved to point: 1878
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 1860
+  Moved to point: 1872
   : 64:12:             
   :                    ^
   Buffer modified:
@@ -1059,8 +1052,8 @@
   #+end_src diff
 
 - Invoking      : (insert "spmd")
-  Start point   : 1878
-  Moved to point: 1882
+  Start point   : 1872
+  Moved to point: 1876
   : 64:16:             spmd
   :                        ^
   Buffer modified:
@@ -1078,9 +1071,9 @@
          end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1882
-  Moved to point: 1899
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1876
+  Moved to point: 1893
   : 65:16:                 
   :                        ^
   Buffer modified:
@@ -1100,8 +1093,8 @@
   #+end_src diff
 
 - Invoking      : (insert "q = magic(spmdIndex + 2)")
-  Start point   : 1899
-  Moved to point: 1923
+  Start point   : 1893
+  Moved to point: 1917
   : 65:40:                 q = magic(spmdIndex + 2)
   :                                                ^
   Buffer modified:
@@ -1124,15 +1117,15 @@
   Case13: (t-utils-xr "C-n" "C-i" (insert "try") "C-m" (insert "disp('try')"))
 
 - Invoking      : "C-n" = next-line
-  Start point   : 2031
-  Moved to point: 2032
+  Start point   : 2025
+  Moved to point: 2026
   : 69:0: 
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 2032
-  Moved to point: 2044
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 2026
+  Moved to point: 2038
   : 69:12:             
   :                    ^
   Buffer modified:
@@ -1151,8 +1144,8 @@
   #+end_src diff
 
 - Invoking      : (insert "try")
-  Start point   : 2044
-  Moved to point: 2047
+  Start point   : 2038
+  Moved to point: 2041
   : 69:15:             try
   :                       ^
   Buffer modified:
@@ -1170,9 +1163,9 @@
  
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2047
-  Moved to point: 2064
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2041
+  Moved to point: 2058
   : 70:16:                 
   :                        ^
   Buffer modified:
@@ -1193,8 +1186,8 @@
   #+end_src diff
 
 - Invoking      : (insert "disp('try')")
-  Start point   : 2064
-  Moved to point: 2075
+  Start point   : 2058
+  Moved to point: 2069
   : 70:27:                 disp('try')
   :                                   ^
   Buffer modified:
@@ -1217,7 +1210,7 @@
   Case14: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
 
 - Invoking      : (t-utils-xr-print-code (point-min) (point-max))
-  Start point   : 2210
+  Start point   : 2204
   No point movement
   standard-output:
   #+begin_src matlab-ts
@@ -1262,7 +1255,7 @@ classdef electric_ends_cases
                 disp('if')
             end
 
-            % Case8: (t-utils-xr \"C-n\" \"C-i\" (insert \"switch a\") \"C-m\" \"C-e\" (insert \"1\") \"C-m\" (insert \"disp('case 1')\"))
+            % Case8: (t-utils-xr \"C-n\" \"C-i\" (insert \"switch a\") \"C-m\" (insert \"1\") \"C-m\" (insert \"disp('case 1')\"))
             switch a
               case 1
                 disp('case 1')

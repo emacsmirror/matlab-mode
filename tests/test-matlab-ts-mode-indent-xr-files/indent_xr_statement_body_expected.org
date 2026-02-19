@@ -16,7 +16,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  124
   Moved to point:  129
   : 5:4:     
@@ -55,7 +55,7 @@
      properties
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  131
   Moved to point:  127
   : 5:2: %c
@@ -91,7 +91,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  207
   Moved to point:  216
   : 9:8:         
@@ -130,7 +130,7 @@
      % Case3: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  218
   No point movement
   No buffer modifications
@@ -151,7 +151,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  303
   Moved to point:  312
   : 14:8:         
@@ -190,7 +190,7 @@
              % Case4: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  314
   No point movement
   No buffer modifications
@@ -211,7 +211,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  433
   Moved to point:  450
   : 19:16:                 
@@ -250,7 +250,7 @@
                      % Case6: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  452
   No point movement
   No buffer modifications
@@ -271,7 +271,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  548
   Moved to point:  569
   : 22:20:                     
@@ -310,7 +310,7 @@
                  end
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  571
   No point movement
   No buffer modifications
@@ -331,7 +331,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  673
   Moved to point:  694
   : 25:20:                     
@@ -370,7 +370,7 @@
                  % Case7: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  696
   No point movement
   No buffer modifications
@@ -391,7 +391,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  814
   Moved to point:  835
   : 30:20:                     
@@ -430,7 +430,7 @@
                  % Case8: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  837
   No point movement
   No buffer modifications
@@ -451,7 +451,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  960
   Moved to point:  977
   : 35:16:                 
@@ -490,7 +490,7 @@
              else
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  979
   No point movement
   No buffer modifications
@@ -511,7 +511,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1073
   Moved to point: 1090
   : 39:16:                 
@@ -550,7 +550,7 @@
  
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   : 1092
   No point movement
   No buffer modifications
@@ -571,7 +571,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1203
   Moved to point: 1220
   : 45:16:                 
@@ -610,7 +610,7 @@
              % Case11: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   : 1222
   No point movement
   No buffer modifications
@@ -631,19 +631,21 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1340
-  Moved to point: 1357
+  Moved to point: 1359
   : 50:16:                 
   :                        ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -47,6 +47,7 @@
+@@ -46,7 +46,8 @@
+             end
  
              % Case11: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
-             for fIdx = 1:10
+-            for fIdx = 1:10
++            for fIdx = 1 : 10
 +                
              end
          end
@@ -651,8 +653,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   : 1357
-  Moved to point: 1359
+  Start point   : 1359
+  Moved to point: 1361
   : 50:18:                 %c
   :                          ^
   Buffer modified:
@@ -662,7 +664,7 @@
 @@ -47,7 +47,7 @@
  
              % Case11: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
-             for fIdx = 1:10
+             for fIdx = 1 : 10
 -                
 +                %c
              end
@@ -670,8 +672,8 @@
      end
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1359
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 1361
   No point movement
   No buffer modifications
 
@@ -680,20 +682,20 @@
   Case12: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1461
-  Moved to point: 1472
+  Start point   : 1463
+  Moved to point: 1474
   : 56:10:     events
   :                  ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1472
+  Start point   : 1474
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
-  Start point   : 1472
-  Moved to point: 1481
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1474
+  Moved to point: 1483
   : 57:8:         
   :               ^
   Buffer modified:
@@ -711,8 +713,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   : 1481
-  Moved to point: 1483
+  Start point   : 1483
+  Moved to point: 1485
   : 57:10:         %c
   :                  ^
   Buffer modified:
@@ -730,8 +732,8 @@
      % Case13: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1483
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 1485
   No point movement
   No buffer modifications
 
@@ -740,20 +742,20 @@
   Case13: (t-utils-xr "C-n" "C-e" "C-m" (insert "%c") "C-i")
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1557
-  Moved to point: 1573
+  Start point   : 1559
+  Moved to point: 1575
   : 61:15:     enumeration
   :                       ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   : 1573
+  Start point   : 1575
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
-  Start point   : 1573
-  Moved to point: 1582
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1575
+  Moved to point: 1584
   : 62:8:         
   :               ^
   Buffer modified:
@@ -771,8 +773,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%c")
-  Start point   : 1582
-  Moved to point: 1584
+  Start point   : 1584
+  Moved to point: 1586
   : 62:10:         %c
   :                  ^
   Buffer modified:
@@ -790,8 +792,8 @@
  end
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   : 1584
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   : 1586
   No point movement
   No buffer modifications
 
@@ -800,7 +802,7 @@
   Case14: (t-utils-xr (re-search-backward "^classdef") (print (buffer-substring-no-properties (point) (point-max))))
 
 - Invoking      : (re-search-backward "^classdef")
-  Start point   : 1726
+  Start point   : 1728
   Moved to point:   82
   : 4:0: classdef indent_xr_statement_body < handle
   :      ^
@@ -856,7 +858,7 @@ classdef indent_xr_statement_body < handle
             end
 
             % Case11: (t-utils-xr \"C-n\" \"C-e\" \"C-m\" (insert \"%c\") \"C-i\")
-            for fIdx = 1:10
+            for fIdx = 1 : 10
                 %c
             end
         end

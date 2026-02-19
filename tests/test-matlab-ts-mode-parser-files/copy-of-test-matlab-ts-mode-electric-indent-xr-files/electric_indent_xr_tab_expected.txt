@@ -1,0 +1,29 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,296> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,79]@{% Exercise TAB indent which will indent consecutiv...}@) (comment[81,133]@{% Case1: (t-utils-xr (re-search-forward "a1") "C-i...}@)
+ (assignment<135,142> left: (identifier[135,138]@{foo}@) =[139,140] right: (number[141,142]@{1}@))
+ ;[142,143]
+ (assignment<144,155> left: (identifier[144,146]@{a1}@) =[153,154] right: (number[154,155]@{2}@))
+ ;[155,156]
+ (assignment<157,175> left: (identifier[157,164]@{longvar}@) =[172,173] right: (number[174,175]@{3}@))
+ ;[177,178] (comment[180,233]@{% Case2: (t-utils-xr (re-search-forward "foo") "C-...}@)
+ (assignment<235,294> left: (identifier[235,237]@{m1}@) =[238,239]
+  right: 
+   (matrix<240,294> [[240,241]
+    (row<241,266> (number[241,242]@{1}@) ,[242,243] (number[243,244]@{2}@) ,[245,245] (number[245,246]@{1}@) ,[247,247]
+     (unary_operator<247,249> -[247,248] operand: (number[248,249]@{1}@))
+     ,[250,250]
+     (unary_operator<250,252> -[250,251] operand: (number[251,252]@{2}@))
+     ,[253,253]
+     (unary_operator<253,255> -[253,254] operand: (number[254,255]@{3}@))
+     ,[256,256]
+     (binary_operator<256,266>
+      left: 
+       (binary_operator<256,262>
+        left: (unary_operator<256,258> -[256,257] operand: (number[257,258]@{4}@))
+        -[259,260] right: (number[261,262]@{5}@))
+      -[263,264] right: (number[265,266]@{6}@)))
+    (row<273,293>
+     (binary_operator<273,281> left: (identifier[273,276]@{foo}@) +[277,278] right: (identifier[279,281]@{a1}@))
+     ,[282,282] (number[282,283]@{1}@) ,[284,284] (number[284,285]@{2}@) ,[286,286] (number[286,287]@{3}@) ,[288,288] (number[288,289]@{4}@) ,[290,290] (number[290,291]@{5}@) ,[292,292] (number[292,293]@{6}@))
+    ][293,294]))
+ ;[294,295] \n[295,296])

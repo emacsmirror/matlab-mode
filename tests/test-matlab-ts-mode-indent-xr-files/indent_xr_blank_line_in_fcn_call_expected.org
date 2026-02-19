@@ -57,7 +57,7 @@
   :                            ^
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  451
   Moved to point:  464
   : 28:12:             
@@ -70,8 +70,9 @@
      fprintf(1, '%s:%s:%s\n', ...
              in1, ...
              in2, ...
+-            );
 +            
-             );
++    );
  end
   #+end_src diff
 
@@ -90,7 +91,7 @@
              in2, ...
 -            
 +            in3 ...
-             );
+     );
  end
   #+end_src diff
 
@@ -111,7 +112,7 @@ function indent_xr_blank_line_in_fcn_call(in1, in2, in3)
             in1, ...
             in2, ...
             in3 ...
-            );
+    );
 end
   #+end_src
   No buffer modifications

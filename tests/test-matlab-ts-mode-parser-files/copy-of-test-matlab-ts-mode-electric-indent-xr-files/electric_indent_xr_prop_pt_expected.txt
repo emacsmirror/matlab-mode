@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,294> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+(source_file<1,393> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
  (class_definition<22,292> classdef[22,30] name: (identifier[31,57]@{electric_indent_xr_prop_pt}@) (comment[62,114]@{% case1: (t-utils-xr (re-search-forward "p1") "C-i...}@) \n[114,115]
   (properties<119,214> properties[119,129] \n[129,130]
    (property<138,145> name: (identifier[138,140]@{p1}@)
@@ -12,4 +12,4 @@
     (validation_functions<194,206> {[194,195] (identifier[195,205]@{mustBeReal}@) }[205,206]))
    \n[206,207] end[211,214])
   (comment[219,288]@{% case2: (t-utils-xr "C-a" (re-search-backward "pa...}@) \n[288,289] end[289,292])
- \n[292,294])
+ (comment[294,392]@{% case3: (t-utils-xr (re-search-backward "^classde...}@) \n[392,393])

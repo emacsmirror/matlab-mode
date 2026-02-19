@@ -16,7 +16,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  248
   Moved to point:  253
   : 4:4:     
@@ -51,7 +51,7 @@
  end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  276
   Moved to point:  289
   : 5:12:             

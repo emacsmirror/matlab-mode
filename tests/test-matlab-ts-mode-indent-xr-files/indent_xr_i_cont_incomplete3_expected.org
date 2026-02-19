@@ -27,7 +27,7 @@
   :                                                       ^
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  303
   Moved to point:  308
   : 16:4:     
@@ -62,7 +62,7 @@
  end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  321
   Moved to point:  322
   : 17:0: 
@@ -97,7 +97,7 @@
  end
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  325
   Moved to point:  333
   : 17:11:         99;

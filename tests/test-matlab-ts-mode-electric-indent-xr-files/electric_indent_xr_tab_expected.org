@@ -1,0 +1,66 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_tab.m:5:9:
+
+  Case1: (t-utils-xr (re-search-forward "a1") "C-i")
+
+- Invoking      : (re-search-forward "a1")
+  Start point   :  133
+  Moved to point:  146
+  : 8:2: a1       =2;
+  :        ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  146
+  Moved to point:  155
+  : 8:7: a1      = 2;
+  :             ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -4,9 +4,9 @@
+ 
+ % Case1: (t-utils-xr (re-search-forward "a1") "C-i")
+ 
+-foo = 1;
+-a1       =2;
+-longvar        = 3  ;
++foo     = 1;
++a1      = 2;
++longvar = 3;
+ 
+ % Case2: (t-utils-xr (re-search-forward "foo") "C-i")
+ 
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_tab.m:11:9:
+
+  Case2: (t-utils-xr (re-search-forward "foo") "C-i")
+
+- Invoking      : (re-search-forward "foo")
+  Start point   :  228
+  Moved to point:  271
+  : 14:9:       foo + a1 1 2 3 4 5 6];
+  :                ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  271
+  Moved to point:  284
+  : 14:9:       foo + a1, 1, 2,  3,  4,  5,          6];
+  :                ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -10,5 +10,5 @@
+ 
+ % Case2: (t-utils-xr (re-search-forward "foo") "C-i")
+ 
+-m1 = [1,2 1 -1 -2 -3 -4 - 5 - 6
+-      foo + a1 1 2 3 4 5 6];
++m1 = [       1, 2, 1, -1, -2, -3, -4 - 5 - 6
++      foo + a1, 1, 2,  3,  4,  5,          6];
+  #+end_src diff

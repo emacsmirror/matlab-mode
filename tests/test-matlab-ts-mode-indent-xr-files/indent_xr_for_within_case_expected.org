@@ -4,7 +4,7 @@
 
   Case1: (t-utils-xr
 
-  (re-search-forward ":10")                  "C-m"
+  (re-search-forward ": 10")                 "C-m"
   (insert "disp('i:');")                     "C-m"
   (insert "disp(i);")                        "C-m"
   (insert "end")
@@ -15,16 +15,16 @@
 
   )
 
-- Invoking      : (re-search-forward ":10")
+- Invoking      : (re-search-forward ": 10")
   Start point   :  351
-  Moved to point:  521
-  : 25:22:             for i=1:10
-  :                              ^
+  Moved to point:  525
+  : 25:26:             for i = 1 : 10
+  :                                  ^
   No buffer modifications
 
-- Invoking      : "C-m" = newline
-  Start point   :  521
-  Moved to point:  538
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  525
+  Moved to point:  542
   : 26:16:                 
   :                        ^
   Buffer modified:
@@ -34,16 +34,16 @@
 @@ -23,6 +23,7 @@
          switch completions{cIdx}
            case {'foo'}
-             for i=1:10
+             for i = 1 : 10
 +                
-           otherwise
-             error('assert - unhandled entryType');
-         end
+                 disp('i:');
+                 disp(i);
+             end
   #+end_src diff
 
 - Invoking      : (insert "disp('i:');")
-  Start point   :  538
-  Moved to point:  549
+  Start point   :  542
+  Moved to point:  553
   : 26:27:                 disp('i:');
   :                                   ^
   Buffer modified:
@@ -53,17 +53,17 @@
 @@ -23,7 +23,7 @@
          switch completions{cIdx}
            case {'foo'}
-             for i=1:10
+             for i = 1 : 10
 -                
 +                disp('i:');
-           otherwise
-             error('assert - unhandled entryType');
-         end
+                 disp('i:');
+                 disp(i);
+             end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   :  549
-  Moved to point:  566
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  553
+  Moved to point:  570
   : 27:16:                 
   :                        ^
   Buffer modified:
@@ -72,17 +72,17 @@
 +++ end_contents
 @@ -24,6 +24,7 @@
            case {'foo'}
-             for i=1:10
+             for i = 1 : 10
                  disp('i:');
 +                
-           otherwise
-             error('assert - unhandled entryType');
-         end
+                 disp('i:');
+                 disp(i);
+             end
   #+end_src diff
 
 - Invoking      : (insert "disp(i);")
-  Start point   :  566
-  Moved to point:  574
+  Start point   :  570
+  Moved to point:  578
   : 27:24:                 disp(i);
   :                                ^
   Buffer modified:
@@ -91,18 +91,18 @@
 +++ end_contents
 @@ -24,7 +24,7 @@
            case {'foo'}
-             for i=1:10
+             for i = 1 : 10
                  disp('i:');
 -                
 +                disp(i);
-           otherwise
-             error('assert - unhandled entryType');
-         end
+                 disp('i:');
+                 disp(i);
+             end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   :  574
-  Moved to point:  591
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  578
+  Moved to point:  595
   : 28:16:                 
   :                        ^
   Buffer modified:
@@ -110,18 +110,18 @@
 --- start_contents
 +++ end_contents
 @@ -25,6 +25,7 @@
-             for i=1:10
+             for i = 1 : 10
                  disp('i:');
                  disp(i);
 +                
-           otherwise
-             error('assert - unhandled entryType');
-         end
+                 disp('i:');
+                 disp(i);
+             end
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  591
-  Moved to point:  594
+  Start point   :  595
+  Moved to point:  598
   : 28:19:                 end
   :                           ^
   Buffer modified:
@@ -129,19 +129,19 @@
 --- start_contents
 +++ end_contents
 @@ -25,7 +25,7 @@
-             for i=1:10
+             for i = 1 : 10
                  disp('i:');
                  disp(i);
 -                
 +                end
-           otherwise
-             error('assert - unhandled entryType');
-         end
+                 disp('i:');
+                 disp(i);
+             end
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  594
-  Moved to point:  590
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  598
+  Moved to point:  594
   : 28:15:             end
   :                       ^
   Buffer modified:
@@ -149,18 +149,18 @@
 --- start_contents
 +++ end_contents
 @@ -25,7 +25,7 @@
-             for i=1:10
+             for i = 1 : 10
                  disp('i:');
                  disp(i);
 -                end
 +            end
-           otherwise
-             error('assert - unhandled entryType');
-         end
+                 disp('i:');
+                 disp(i);
+             end
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  590
+  Start point   :  594
   Moved to point:  356
   : 21:0: function indent_xr_for_within_case(completions)
   :       ^
@@ -175,7 +175,10 @@ function indent_xr_for_within_case(completions)
     for cIdx = 1 : length(completions)
         switch completions{cIdx}
           case {'foo'}
-            for i=1:10
+            for i = 1 : 10
+                disp('i:');
+                disp(i);
+            end
                 disp('i:');
                 disp(i);
             end

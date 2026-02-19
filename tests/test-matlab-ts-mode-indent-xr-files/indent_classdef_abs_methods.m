@@ -1,4 +1,4 @@
-% -*- mode: matlab-ts; matlab-ts-mode-electric-ends: nil -*-
+% -*- mode: matlab-ts; -*-
 
 classdef indent_classdef_abs_methods
     methods(Abstract)

@@ -20,7 +20,7 @@ classdef electric_ends_cases
 
             % Case7: (t-utils-xr "C-n" "C-i" (insert "if a") "C-m" (insert "disp('if')"))
 
-            % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" "C-e" (insert "1") "C-m" (insert "disp('case 1')"))
+            % Case8: (t-utils-xr "C-n" "C-i" (insert "switch a") "C-m" (insert "1") "C-m" (insert "disp('case 1')"))
 
             % Case9: (t-utils-xr "C-n" "C-i" (insert "while true") "C-m" (insert "break"))
 

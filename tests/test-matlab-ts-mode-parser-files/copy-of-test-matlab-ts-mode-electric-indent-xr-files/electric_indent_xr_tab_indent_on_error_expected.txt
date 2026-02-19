@@ -1,0 +1,16 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,221> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,76]@{% Case1: (t-utils-xr (re-search-forward "x===") "C...}@)
+ (binary_operator<78,90> left: (identifier[78,85]@{switch2}@)
+  (ERROR<85,86> =[85,86])
+  *[86,87]
+  (ERROR<87,89> (identifier[87,88]@{x}@) ,[89,89])
+  right: (identifier[89,90]@{a}@))
+ \n[90,91]
+ (comparison_operator<91,96> (identifier[91,92]@{x}@) ==[92,94]
+  (ERROR<94,95> =[94,95])
+  (number[95,96]@{2}@))
+ \n[96,97]
+ (ERROR<97,103>
+  (end_keyword<97,100> end[97,100])
+  *[100,101] *[101,102] *[102,103])
+ (number[103,104]@{2}@) (comment[106,220]@{% Case2: (t-utils-xr (re-search-backward "^switch"...}@) \n[220,221])

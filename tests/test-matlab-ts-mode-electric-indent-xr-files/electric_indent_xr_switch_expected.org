@@ -37,11 +37,11 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  309
-  Moved to point:  312
-  : 21:2:   case 
-  :         ^
+  Moved to point:  317
+  : 21:7:   case 
+  :              ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -58,10 +58,8 @@
   #+end_src diff
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  312
-  Moved to point:  317
-  : 21:7:   case 
-  :              ^
+  Start point   :  317
+  No point movement
   No buffer modifications
 
 - Invoking      : (insert "1")
@@ -82,7 +80,7 @@
  end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  318
   Moved to point:  323
   : 22:4:     

@@ -23,7 +23,7 @@
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  424
   Moved to point:  454
   : 11:29:                              

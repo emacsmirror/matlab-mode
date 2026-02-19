@@ -10,3 +10,4 @@ classdef electric_indent_xr_prop_pt
     % case2: (t-utils-xr "C-a" (re-search-backward "param2") "C-a" "C-i")
 end
 
+% case3: (t-utils-xr (re-search-backward "^classdef") (t-utils-xr-print-code (point) (point-max)))

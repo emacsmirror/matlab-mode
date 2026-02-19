@@ -17,7 +17,7 @@
   :                                     ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  202
   Moved to point:  194
   : 16:21:     s1 = struct('field1',      value1 + 10, ...
@@ -26,15 +26,18 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -13,7 +13,7 @@
+@@ -13,9 +13,9 @@
  %}
  
  if 1
 -       s1 = struct(     'field1', value1 + 10, ...
 +    s1 = struct('field1',      value1 + 10, ...
                  ...
-   'otherfield2', value2);
+-  'otherfield2', value2);
++                'otherfield2', value2);
  end
+ 
+ %{
   #+end_src diff
 
 - Invoking      : "C-n" = next-line
@@ -44,7 +47,7 @@
   :                           ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  240
   No point movement
   No buffer modifications
@@ -52,29 +55,14 @@
 - Invoking      : "C-n" = next-line
   Start point   :  240
   Moved to point:  260
-  : 18:19:   'otherfield2', value2);
+  : 18:19:                 'otherfield2', value2);
   :                           ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  260
-  Moved to point:  274
-  : 18:33:                 'otherfield2', value2);
-  :                                         ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -15,7 +15,7 @@
- if 1
-     s1 = struct('field1',      value1 + 10, ...
-                 ...
--  'otherfield2', value2);
-+                'otherfield2', value2);
- end
- 
- %{
-  #+end_src diff
+  No point movement
+  No buffer modifications
 
 * Executing commands from electric_indent_xr_struct.m:23:2:
 
@@ -93,7 +81,7 @@
   :                                               ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  474
   Moved to point:  471
   : 34:36:     s2 = struct('field1',      value9 + 10, ...
@@ -102,15 +90,18 @@
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -31,7 +31,7 @@
+@@ -31,9 +31,9 @@
  %}
  
  if 1
 -       s2 = struct(     'field1', value9 + 10, ...
 +    s2 = struct('field1',      value9 + 10, ...
                  ...
-   'otherfield2', value2);
+-  'otherfield2', value2);
++                'otherfield2', value2);
  end
+ 
+ % case3: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
   #+end_src diff
 
 - Invoking      : "C-n" = next-line
@@ -120,7 +111,7 @@
   :                           ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  502
   No point movement
   No buffer modifications
@@ -128,29 +119,14 @@
 - Invoking      : "C-n" = next-line
   Start point   :  502
   Moved to point:  522
-  : 36:19:   'otherfield2', value2);
+  : 36:19:                 'otherfield2', value2);
   :                           ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  522
-  Moved to point:  536
-  : 36:33:                 'otherfield2', value2);
-  :                                         ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -33,7 +33,7 @@
- if 1
-     s2 = struct('field1',      value9 + 10, ...
-                 ...
--  'otherfield2', value2);
-+                'otherfield2', value2);
- end
- 
- % case3: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
-  #+end_src diff
+  No point movement
+  No buffer modifications
 
 * Executing commands from electric_indent_xr_struct.m:39:9:
 

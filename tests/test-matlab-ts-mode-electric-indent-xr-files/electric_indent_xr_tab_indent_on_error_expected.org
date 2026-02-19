@@ -1,0 +1,42 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_tab_indent_on_error.m:3:9:
+
+  Case1: (t-utils-xr (re-search-forward "x===") "C-i")
+
+- Invoking      : (re-search-forward "x===")
+  Start point   :   76
+  Moved to point:   95
+  : 6:4: x===2
+  :          ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :   95
+  No point movement
+  No buffer modifications
+
+* Executing commands from electric_indent_xr_tab_indent_on_error.m:9:9:
+
+  Case2: (t-utils-xr (re-search-backward "^switch") (t-utils-xr-print-code (point) (re-search-forward "end.*\n")))
+
+- Invoking      : (re-search-backward "^switch")
+  Start point   :  220
+  Moved to point:   78
+  : 5:0: switch2=*x a
+  :      ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (re-search-forward "end.*
+"))
+  Start point   :   78
+  Moved to point:  105
+  : 8:0: 
+  :      ^
+  standard-output:
+  #+begin_src matlab-ts
+switch2=*x a
+x===2
+end***2
+  #+end_src
+  No buffer modifications

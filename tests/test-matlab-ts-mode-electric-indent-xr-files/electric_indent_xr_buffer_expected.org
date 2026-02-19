@@ -1,0 +1,22 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_buffer.m:5:9:
+
+  Case1: (t-utils-xr (goto-char (point-min)) "C-x h" "C-M-\\")
+
+- Invoking      : (goto-char (point-min))
+  Start point   :  155
+  Moved to point:    1
+  : 1:0: % -*- matlab-ts -*-
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-x h" = mark-whole-buffer
+  Start point   :    1
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-M-\\" = indent-region
+  Start point   :    1
+  No point movement
+  No buffer modifications

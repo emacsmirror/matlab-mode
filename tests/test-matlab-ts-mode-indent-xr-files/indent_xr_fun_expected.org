@@ -12,22 +12,22 @@
   )
 
 - Invoking      : (re-search-forward "%}")
-  Start point   :  276
-  Moved to point:  279
+  Start point   :  317
+  Moved to point:  320
   : 12:2: %}
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  279
-  Moved to point:  280
+  Start point   :  320
+  Moved to point:  321
   : 13:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "function a = indent_xr_fun()")
-  Start point   :  280
-  Moved to point:  308
+  Start point   :  321
+  Moved to point:  349
   : 13:28: function a = indent_xr_fun()
   :                                    ^
   Buffer modified:
@@ -42,9 +42,9 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   :  308
-  Moved to point:  309
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  349
+  Moved to point:  350
   : 14:0: 
   :       ^
   Buffer modified:
@@ -61,8 +61,8 @@
   #+end_src diff
 
 - Invoking      : (insert "a = 1;")
-  Start point   :  309
-  Moved to point:  315
+  Start point   :  350
+  Moved to point:  356
   : 14:6: a = 1;
   :             ^
   Buffer modified:
@@ -77,9 +77,9 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   :  315
-  Moved to point:  320
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  356
+  Moved to point:  361
   : 15:0: 
   :       ^
   Buffer modified:
@@ -96,8 +96,8 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   :  320
-  Moved to point:  323
+  Start point   :  361
+  Moved to point:  364
   : 15:3: end
   :          ^
   Buffer modified:
@@ -113,14 +113,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  323
-  Moved to point:  280
+  Start point   :  364
+  Moved to point:  321
   : 13:0: function a = indent_xr_fun()
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  280
+  Start point   :  321
   No point movement
   standard-output:
   #+begin_src matlab-ts

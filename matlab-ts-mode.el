@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 8.0.5
+;; Version: 8.1.0
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -2769,7 +2769,98 @@ Example:
      ))
   "Tree-sitter indent rules for `matlab-ts-mode'.")
 
-(defun matlab-ts-mode--treesit-indent ()
+(defvar matlab-ts-mode--tab-indent-line-limit 50)
+
+(defvar matlab-ts-mode--newline-entered-linenum nil)
+
+(defun matlab-ts-mode--get-region-for-tab-indent ()
+  "Return (cons BEG END) to indent.
+BEG and END are both start of a line.
+This is done such that electric TAB indent via `indent-for-tab-command'.
+Example, TAB on any line in:
+  foo =1;
+  a = 2;
+  foobar    =3  ;
+results in:
+  foo    = 1;
+  a      = 2;
+  foobar = 3;"
+  (let (beg end)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (let ((start-bol (pos-bol)))
+
+          (save-excursion
+            (setq beg start-bol)
+            (cl-loop
+             for direction in '(-1 1) do
+             (goto-char start-bol)
+             (cl-loop
+              while (not (if (= direction -1) (bobp) (eobp))) do
+              (forward-line direction)
+              (when (and (or (not matlab-ts-mode--newline-entered-linenum)
+                             (not (= (line-number-at-pos) matlab-ts-mode--newline-entered-linenum)))
+                         (looking-at (rx bol (0+ (or " " "\t"))
+                                         ;; comment line == no code
+                                         (zero-or-one (seq "%" (0+ anychar)))
+                                         eol)))
+                (cl-return))
+              (if (= direction -1)
+                  (setq beg (point))
+                (setq end (point)))))
+
+            ;; end is at bol of line following the region we want to indent.
+            (when end (goto-char end))
+            (forward-line)
+            (setq end (point)))
+
+          ;; Do not indent too many consecutive lines (large matrices are too slow).
+          ;; TODO remove this after speeding up indent.
+          (let ((limit matlab-ts-mode--tab-indent-line-limit)
+                (beg-linenum (line-number-at-pos beg))
+                (end-linenum (line-number-at-pos end)))
+            (when (> (1+ (- end-linenum beg-linenum)) limit)
+              (let* ((curr-linenum (line-number-at-pos))
+                     (n-prior-lines (- curr-linenum beg-linenum)))
+                (if (>= n-prior-lines limit)
+                    (setq beg (save-excursion (forward-line (1+ (- limit))) (point))
+                          end (save-excursion (forward-line) (point)))
+                  ;; else keep all prior lines and any following lines up to limit
+                  (let ((n-following-lines (- end-linenum curr-linenum)))
+                    (setq limit  (- limit n-prior-lines))
+                    (when (> n-following-lines limit)
+                      (setq end (save-excursion (forward-line limit)
+                                                (point)))))))))
+
+          ;; Don't indent error lines (excluding current line)
+          (let ((error-linenums (matlab-ts-mode--ei-get-errors-alist)))
+            (cl-loop
+             for direction in '(-1 1) do
+             (goto-char start-bol)
+             (cl-loop
+              while (not (if (= direction -1) (bobp) (eobp))) do
+              (forward-line direction)
+              (if (and (= direction -1)
+                       (< (point) beg))
+                  (goto-char (point-min))
+                ;; see if at error line
+                (when (and (= direction 1)
+                           (> (point) end))
+                  (cl-return))
+                (when (alist-get (line-number-at-pos) error-linenums)
+                  (if (= direction -1)
+                      (progn
+                        (forward-line)
+                        (setq beg (pos-bol))
+                        (goto-char (point-min)))
+                    (setq end (pos-bol))
+                    (cl-return))))))))))
+      
+    ;; region to indent
+    (cons beg end)))
+
+(defun matlab-ts-mode--indent-line ()
   "Call `treesit-indent', then do electric indent."
   (treesit-indent) ;; treesit-indent before electric indent to get updated point on the line
   (when matlab-ts-mode--electric-indent
@@ -2778,15 +2869,91 @@ Example:
       (matlab-ts-mode--ei-workaround-143 (pos-bol) (pos-eol) (point))
       (matlab-ts-mode--ei-indent-elements-in-line))))
 
-(defun matlab-ts-mode--treesit-indent-region (beg end)
-  "Call `treesit-indent-region' on BEG END, then do electric indent."
-  ;; `treesit-indent-region' will not alter the number of lines, but it may reduce the buffer size,
-  ;; thus grab the start/end lines for `matlab-ts-mode--ei-indent-elements-in-line'.
+(defun matlab-ts-mode-tab-indent (&optional _arg)
+  "Indent adjacent lines.
+Optional prefix _ARG is ignored and provided for compatibility with
+`indent-for-tab-command' because we bind TAB to
+`matlab-ts-mode-tab-indent'."
+  (interactive "P")
+  (if (save-excursion ;; at blank line or single-line comment?
+        (forward-line 0)
+        (looking-at "^[ \t]*\\(?:%.*\\)?$"))
+      (matlab-ts-mode--indent-line) ;; line indent only
+    ;; Else indent the line plus the non-blank lines before and after the current line
+    (let ((beg-end (matlab-ts-mode--get-region-for-tab-indent)))
+      (matlab-ts-mode--ei-indent-region (car beg-end) (cdr beg-end))
+      (when (save-excursion ;; at start of line?
+              (not (re-search-backward "[^ \t]" (pos-bol) t)))
+        (back-to-indentation)))))
 
+(defun matlab-ts-mode--delete-whitespace-if-blank-line ()
+  "If current line has only whitespace, delete the whitespace."
+  (when (and (save-excursion
+               (back-to-indentation)
+               (not (looking-at "[^ \t\n\r]")))
+             (not (= (pos-bol) (pos-eol))))
+    (delete-region (pos-bol) (pos-eol))))
+
+(defun matlab-ts-mode-newline (&optional _arg)
+  "Wrapper around `newline' to enable electric indent on RET.
+_ARG is ignored and for compatibility with `newline'."
+  (interactive "*P")
+  (if (looking-at "[ \t]*$") ;; At EOL, do "smart" indent
+      (let (e-insert-pair)
+        (when matlab-ts-mode-electric-ends
+          (setq e-insert-pair (matlab-ts-mode--insert-electric-ends)))
+        (if e-insert-pair ;; Did insert?
+            (progn (matlab-ts-mode--indent-line)
+                   (insert "\n")
+                   (treesit-indent)
+                   (save-excursion
+                     (let ((extra-insert (car e-insert-pair)))
+                       (when extra-insert
+                         (insert extra-insert))))
+                   (when (cdr e-insert-pair)
+                     (end-of-line)))
+          ;; else "TAB" indent after newline
+          (if (save-excursion ;; current-line has non-blank content
+                (forward-line 0)
+                (re-search-forward "[^ \t\n\r]" (pos-eol) t))
+              (let (;; Consider typing C-m at end-of "var1 = 10;" line
+                    ;;   var1 = 10;
+                    ;;   v2   = 20;
+                    ;; we get because of the entered linenum setting
+                    ;;   var1 = 10;
+                    ;;
+                    ;;   v2 = 20;
+                    (matlab-ts-mode--newline-entered-linenum
+                     (when (save-excursion (end-of-line)
+                                           (and (not (eobp))
+                                                (progn
+                                                  (forward-line 1)
+                                                  (looking-at "[ \t]*[^ \t\n\r]"))))
+                       (1+ (line-number-at-pos)))))
+
+                (insert "\n")
+                (let ((curr-linenum (line-number-at-pos)))
+                  (forward-line -1)
+                  (matlab-ts-mode-tab-indent)
+                  (goto-char (point-min))
+                  (forward-line (1- curr-linenum)))
+                (matlab-ts-mode--indent-line))
+            ;; else - just insert a newline because prior line doesn't have content
+            (matlab-ts-mode--delete-whitespace-if-blank-line)
+            (insert "\n")
+            (matlab-ts-mode--indent-line))))
+    ;; When in middle of a line, just split it w/o "region" indent because region indent will likely
+    ;; be off due to a syntax errors.
+    (let ((indent-line-function #'matlab-ts-mode-tab-indent))
+      (insert "\n")
+      (treesit-indent))))
+
+(defun matlab-ts-mode--indent-region (beg end)
+  "Call `treesit-indent-region' on BEG END, then do electric indent."
   (if matlab-ts-mode--electric-indent
-      ;; do electric indent, then indent-region
+      ;; This will widen, then electric indent, then indent-region
       (matlab-ts-mode--ei-indent-region beg end)
-    ;; just indent-region
+    ;; else just indent-region
     (treesit-indent-region beg end)))
 
 ;;; Thing settings for movement, etc.
@@ -3504,12 +3671,37 @@ THERE-END MISMATCH) or nil."
 
 ;;; post-self-command-hook
 
-(defun matlab-ts-mode--is-electric-end-missing (node)
-  "Is statement NODE missing an \"end\"."
+(cl-defun matlab-ts-mode--is-electric-end-missing (node)
+  "Is statement NODE missing an \"end\"?
+Point is at start of NODE which is the first non-whitespace character in
+the current line for which to add the missing end."
+
+  ;; Return nil if we already have a matching "end" at the NODE line indent level?
+  ;; Consider - we have a matching end even though the parse tree has a syntax error.
+  ;;    if a && ...            RET
+  ;;    end
+  ;; We *assume* spaces and not TABs are used for the indent level (MATLAB standard)
+  ;; because TAB characters have different meanings for the "tab stops", e.g. 4 or 8
+  ;; are inconsistently used.
+  (save-excursion
+    (let* ((indent-spaces (make-string (current-indentation) ? ))
+           (start (replace-regexp-in-string " " " ?" indent-spaces))
+           (indent-rx (concat "^" start "[^ \t\n\r]")))
+      (forward-line 1)
+      (when (and (not (eobp))
+                 (re-search-forward indent-rx nil t)
+                 (progn
+                   (forward-line 0)
+                   (looking-at (rx-to-string `(seq bol ,indent-spaces "end" word-end) t))))
+        ;; Found a matching "end" at same indent level as NODE
+        (cl-return-from matlab-ts-mode--is-electric-end-missing))))
+
   (let ((last-child (treesit-node-child (treesit-node-parent node) -1)))
     (cond
      ;; Case: no end keyword for the node in the parse tree
-     ((not (equal (treesit-node-type last-child) "end"))
+     ((or (not last-child)
+          (not (string-match-p (rx bos (or "end" "end_keyword") eos)
+                               (treesit-node-type last-child))))
       t)
 
      ;; Case: see if this is an end for a different statement. Consider:
@@ -3571,70 +3763,61 @@ THERE-END MISMATCH) or nil."
       ))))
 
 (defun matlab-ts-mode--insert-electric-ends ()
-  "A RET was type, insert the electric \"end\" if needed."
+  "A RET was typed at EOL, insert \"end\" or \"% \" for doc comment if needed."
 
   ;; We could also insert the end of a block comment, "%}", when "%{" is seen but that would likely
-  ;; be annoying because often %{ block comments %} are used to comment out sections of code.
+  ;; be troublesome when trying to comment out a block of code. Before the code, you type "%{" and
+  ;; if we were to insert "%}" we'd need to delete that, then move to the end-of-code and type "%}".
 
-  (let (end-indent-level
-        extra-insert
-        item-to-insert
-        move-point-to-extra-insert
-        (pre-insert "")
-        (statement-with-end-re (rx (or "function" "arguments" "if" "switch" "while" "for"
-                                       "parfor" "spmd" "try" "classdef" "enumeration"
-                                       "properties" "methods" "events"))))
-
+  (let ((statement-with-end-re (rx (or "function" "arguments" "if" "switch" "while" "for" "parfor"
+                                       "spmd" "try" "classdef" "enumeration" "properties"
+                                       "methods" "events")))
+        spaces-to-insert extra-insert item-to-insert move-to-end-of-extra-insert)
     (save-excursion
-      (forward-line -1)
       (matlab-ts-mode--ei-fast-back-to-indentation)
-      (let* ((node (treesit-node-at (point))))
+      (let* ((node (treesit-node-at (point)))
+             (node-type (treesit-node-type node)))
         (when node
-          (let ((node-type (treesit-node-type node)))
+          (cond
+           ;; Case: Was a statement entered that requires and end?
+           ((and (string-match-p (concat "\\`" statement-with-end-re "\\'") node-type)
+                 ;; must be at a keyword and not in whitespace before it
+                 ;; See: tests/test-matlab-ts-mode-electric-ends-files/electric_ends_in_ws.m
+                 (looking-at statement-with-end-re))
+            (when (and (or (> matlab-ts-mode--function-indent-level 0)
+                           (not (string= node-type "function")))
+                       (matlab-ts-mode--is-electric-end-missing node)) ;; Missing an end?
+              ;; Statement for the RET doesn't have an end, so add one at end-indent-level
 
-            (cond
+              ;; We need a blank line after the electric end statement to get correct indent level
+              (save-excursion
+                (forward-line)
+                (when (not (looking-at (rx bol (0+ (or " " "\t")) eol)))
+                  (insert "\n")))
 
-             ;; Case: Was a statement entered that requires and end?
-             ((and (string-match-p (concat "\\`" statement-with-end-re "\\'") node-type)
-                   ;; must be at a keyword and not in whitespace before it
-                   ;; See: tests/test-matlab-ts-mode-electric-ends-files/electric_ends_in_ws.m
-                   (looking-at statement-with-end-re))
-              (when (and (or (> matlab-ts-mode--function-indent-level 0)
-                             (not (string= node-type "function")))
-                         (matlab-ts-mode--is-electric-end-missing node)) ;; Missing an end?
-                ;; Statement for the RET doesn't have an end, so add one at end-indent-level
-                (setq end-indent-level (current-indentation))
-                (setq pre-insert "\n")
-                (setq item-to-insert "end\n")
+              (treesit-indent) ;; to get indent level for electric end
+              (setq spaces-to-insert (concat "\n" (make-string (current-indentation) ? ))
+                    item-to-insert "end")
 
-                ;; Extra insert, e.g. case for the switch statement.
-                (pcase node-type
-                  ("switch"
-                   (setq extra-insert "  case "
-                         move-point-to-extra-insert t))
-                  ("try"
-                   (setq extra-insert "catch me"))
-                  )))
+              ;; Extra insert, e.g. case for the switch statement.
+              (pcase node-type
+                ("switch"
+                 (setq extra-insert "case "
+                       move-to-end-of-extra-insert t))
+                ("try"
+                 (setq extra-insert (concat spaces-to-insert "catch me"))))))
 
-             ;; Case: Single-line doc comment?
-             ((and (string= node-type "comment")
-                   (eq (get-char-property (point) 'face) 'font-lock-doc-face)
-                   (looking-at "%[ \t]*[^ \t\r\n]"))
-              (setq end-indent-level (current-indentation))
-              (setq item-to-insert "% ")
-              ))))))
+           ;; Case: Single-line documentation comment, `font-lock-doc-face'? => insert line "% "
+           ((and (string= node-type "comment")
+                 (eq (get-char-property (point) 'face) 'font-lock-doc-face)
+                 (looking-at "%[ \t]*[^ \t\r\n]"))
+            (setq spaces-to-insert (make-string (current-indentation) ? ))
+            (setq item-to-insert "% "))))))
 
-    (when end-indent-level
-      (let ((indent-level-spaces (make-string end-indent-level ? )))
-        (save-excursion
-          (when extra-insert
-            (when (not move-point-to-extra-insert)
-              (insert "\n"))
-            (insert indent-level-spaces extra-insert))
-          (insert pre-insert indent-level-spaces item-to-insert))
-        (setq unread-command-events (nconc (listify-key-sequence (kbd "C-e"))
-                                           unread-command-events))
-        ))))
+    (when spaces-to-insert
+      (save-excursion
+        (insert spaces-to-insert item-to-insert))
+      (cons extra-insert move-to-end-of-extra-insert))))
 
 (defun matlab-ts-mode--add-final-newline (&optional restore-readonly)
   "Add a final newline to non-empty buffer to make tree-sitter happy.
@@ -3662,23 +3845,13 @@ final newline was inserted."
   "Callback attached to `post-self-insert-hook'.
 
 The matlab tree-sitter requires a final newline.  Setting
-`require-final-newline' to \\='visit-save doesn't guarantee we have a newline
-when typing code into the buffer, so we leverage `post-self-command-hook'
-to insert a newline if needed.
-
-  https://github.com/acristoffers/tree-sitter-matlab/issues/34
-
-This callback also implements `matlab-ts-mode-electric-ends'."
+`require-final-newline' to \\='visit-save doesn't guarantee we have a
+newline when typing code into the buffer, so we leverage
+`post-self-command-hook' to insert a newline if needed.  See
+https://github.com/acristoffers/tree-sitter-matlab/issues/34"
 
   (when (eq major-mode 'matlab-ts-mode)
-    (let ((ret-typed (eq last-command-event ?\n)))
-
-      (matlab-ts-mode--add-final-newline)
-
-      ;; Add "end" (for `matlab-ts-mode-electric-ends')
-      (when (and ret-typed
-                 matlab-ts-mode-electric-ends)
-        (matlab-ts-mode--insert-electric-ends)))))
+    (matlab-ts-mode--add-final-newline)))
 
 ;;; MLint Flycheck
 
@@ -4121,6 +4294,8 @@ these locally."
 
   ;; Editing commands
   "M-q" #'matlab-ts-mode-prog-fill-reindent-defun
+  "C-i" #'matlab-ts-mode-tab-indent
+  "C-m" #'matlab-ts-mode-newline
   "C-c C-j" #'matlab-justify-line
 
   ;; Integration with `matlab-shell'
@@ -4439,8 +4614,8 @@ so configuration variables of that mode, do not affect this mode.
 
     (treesit-major-mode-setup)
 
-    (setq-local indent-line-function #'matlab-ts-mode--treesit-indent)
-    (setq-local indent-region-function #'matlab-ts-mode--treesit-indent-region)
+    (setq-local indent-line-function #'matlab-ts-mode--indent-line)
+    (setq-local indent-region-function #'matlab-ts-mode--indent-region)
 
     ;; Correct forward-sexp setup created by `treesit-major-mode' so that for parenthesis, brackets,
     ;; braces, and comments we do normal s-expression matching using parenthesis. This fix is need
@@ -4549,4 +4724,4 @@ matlab-language-server-lsp-mode.org\n"
 ;; LocalWords:  Keymap keymap netshell gud ebstop mlgud ebclear ebstatus mlg mlgud's subjob reindent
 ;; LocalWords:  DWIM dwim parens caar cdar utils fooenum mcode CRLF cmddual lang nconc listify kbd
 ;; LocalWords:  matlabls vscode buf dolist sp ppss bobp sexps pragmas curr ei isstring eol listp
-;; LocalWords:  nums setf tmp fubar linenum
+;; LocalWords:  nums setf tmp fubar linenum anychar linenums

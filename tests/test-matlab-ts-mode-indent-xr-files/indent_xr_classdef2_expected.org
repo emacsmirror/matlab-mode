@@ -47,7 +47,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  656
   Moved to point:  661
   : 21:4:     
@@ -86,7 +86,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  671
   Moved to point:  680
   : 22:8:         
@@ -125,7 +125,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  682
   Moved to point:  691
   : 23:8:         
@@ -164,7 +164,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  701
   Moved to point:  710
   : 24:8:         
@@ -203,7 +203,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  727
   Moved to point:  740
   : 25:12:             
@@ -242,7 +242,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  741
   Moved to point:  750
   : 26:8:         
@@ -281,7 +281,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  753
   Moved to point:  754
   : 27:4:     
@@ -320,7 +320,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  757
   Moved to point:  754
   : 28:0: 

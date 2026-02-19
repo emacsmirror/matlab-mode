@@ -72,7 +72,7 @@
 +someVariable = {
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  401
   Moved to point:  419
   : 21:17:                  
@@ -105,7 +105,7 @@
 +                 1234
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  423
   Moved to point:  441
   : 22:17:                  
@@ -138,7 +138,7 @@
 +                 };
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  443
   Moved to point:  442
   : 23:0: 

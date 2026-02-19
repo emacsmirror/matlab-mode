@@ -575,7 +575,14 @@ skipped."
           (setq prop-major-mode (hack-local-variables-prop-line t))
           (when (or (not prop-major-mode))
             (error "First line must contain \"-*- MODE-NAME -*-\" or \"-*- mode: MODE-NAME -*-\""))
-          (funcall prop-major-mode))
+          (funcall prop-major-mode)
+          (let ((file-local-vars-alist (hack-local-variables-prop-line)))
+            (dolist (pair file-local-vars-alist)
+              (let ((var (car pair))
+                    (val (cdr pair)))
+                (when (not (string= var "mode"))
+                  (make-local-variable var)
+                  (set var val))))))
       (error
        (let ((err-msg (concat (error-message-string err)
                               (if file-major-mode

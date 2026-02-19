@@ -1,0 +1,64 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_tab_in_mat.m:3:9:
+
+  Case1: (t-utils-xr (re-search-forward "44") "C-i")
+
+- Invoking      : (re-search-forward "44")
+  Start point   :   74
+  Moved to point:  140
+  : 6:18:                 444, 53333, 6; ...
+  :                         ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  140
+  Moved to point:  123
+  : 6:14:             444, 53333,   6; ...
+  :                     ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,9 +2,9 @@
+ 
+ % Case1: (t-utils-xr (re-search-forward "44") "C-i")
+ if x
+-      m3b = [    21    ,          2, 223;
+-                444, 53333, 6; ...
+-           1222, 4,      5];
+-  end
++    m3b = [  21,     2, 223;
++            444, 53333,   6; ...
++           1222,     4,   5];
++end
+ 
+ % Case2: (t-utils-xr (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n")))
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_tab_in_mat.m:10:9:
+
+  Case2: (t-utils-xr (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n")))
+
+- Invoking      : (re-search-backward "^if")
+  Start point   :  285
+  Moved to point:   75
+  : 4:0: if x
+  :      ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (re-search-forward "end
+"))
+  Start point   :   75
+  Moved to point:  176
+  : 9:0: 
+  :      ^
+  standard-output:
+  #+begin_src matlab-ts
+if x
+    m3b = [  21,     2, 223;
+            444, 53333,   6; ...
+           1222,     4,   5];
+end
+  #+end_src
+  No buffer modifications

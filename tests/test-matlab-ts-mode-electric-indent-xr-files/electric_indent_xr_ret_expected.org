@@ -1,0 +1,209 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_ret.m:5:9:
+
+  Case1: (t-utils-xr (re-search-forward "a1") "C-m")
+
+- Invoking      : (re-search-forward "a1")
+  Start point   :  133
+  Moved to point:  146
+  : 8:2: a1       = 2;
+  :        ^
+  No buffer modifications
+
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  146
+  Moved to point:  151
+  : 9:4:     = 2;
+  :          ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -5,7 +5,8 @@
+ % Case1: (t-utils-xr (re-search-forward "a1") "C-m")
+ 
+ foo = 1;
+-a1       = 2;
++a1
++    = 2;
+ longvar        = 3  ;
+ 
+ % Case2: (t-utils-xr (re-search-forward "3") "C-e" "C-m")
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_ret.m:12:9:
+
+  Case2: (t-utils-xr (re-search-forward "3") "C-e" "C-m")
+
+- Invoking      : (re-search-forward "3")
+  Start point   :  236
+  Moved to point:  279
+  : 16:18: longvar        = 3  ;
+  :                          ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :  279
+  Moved to point:  282
+  : 16:21: longvar        = 3  ;
+  :                             ^
+  No buffer modifications
+
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  282
+  Moved to point:  277
+  : 17:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -11,9 +11,10 @@
+ 
+ % Case2: (t-utils-xr (re-search-forward "3") "C-e" "C-m")
+ 
+-foo = 1;
+-a1       = 2;
+-longvar        = 3  ;
++foo     = 1;
++a1      = 2;
++longvar = 3;
++
+ 
+ % Case3: (t-utils-xr (re-search-forward "6") "C-m")
+ 
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_ret.m:19:9:
+
+  Case3: (t-utils-xr (re-search-forward "6") "C-m")
+
+- Invoking      : (re-search-forward "6")
+  Start point   :  330
+  Moved to point:  363
+  : 21:31: m1 = [1,2 1 -1 -2 -3 -4 - 5 - 6
+  :                                       ^
+  No buffer modifications
+
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  363
+  Moved to point:  384
+  : 22:7:        
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -18,8 +18,9 @@
+ 
+ % Case3: (t-utils-xr (re-search-forward "6") "C-m")
+ 
+-m1 = [1,2 1 -1 -2 -3 -4 - 5 - 6
+-      foo + a1 1 2 3 4 5 6];
++m1 = [       1, 2, 1, -1, -2, -3, -4 - 5 - 6
++       
++      foo + a1, 1, 2,  3,  4,  5,          6];
+ 
+ % Case4: (t-utils-xr (re-search-forward "3;") (forward-line) (insert "x=1;") "C-m")
+ 
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_ret.m:25:9:
+
+  Case4: (t-utils-xr (re-search-forward "3;") (forward-line) (insert "x=1;") "C-m")
+
+- Invoking      : (re-search-forward "3;")
+  Start point   :  516
+  Moved to point:  556
+  : 29:12: foobar1 = 3;
+  :                    ^
+  No buffer modifications
+
+- Invoking      : (forward-line)
+  Start point   :  556
+  Moved to point:  557
+  : 30:0: 
+  :       ^
+  No buffer modifications
+
+- Invoking      : (insert "x=1;")
+  Start point   :  557
+  Moved to point:  561
+  : 30:4: x=1;
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -27,5 +27,5 @@
+ a1      = 1;
+ foo1    = 2;
+ foobar1 = 3;
+-
++x=1;
+ % Case5: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src diff
+
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  561
+  Moved to point:  570
+  : 31:0: 
+  :       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -27,5 +27,6 @@
+ a1      = 1;
+ foo1    = 2;
+ foobar1 = 3;
+-x=1;
++x       = 1;
++
+ % Case5: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_ret.m:32:9:
+
+  Case5: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :  640
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+% Exercise RET indent which will indent consecutive lines
+
+% Case1: (t-utils-xr (re-search-forward \"a1\") \"C-m\")
+
+foo = 1;
+a1
+    = 2;
+longvar        = 3  ;
+
+% Case2: (t-utils-xr (re-search-forward \"3\") \"C-e\" \"C-m\")
+
+foo     = 1;
+a1      = 2;
+longvar = 3;
+
+
+% Case3: (t-utils-xr (re-search-forward \"6\") \"C-m\")
+
+m1 = [       1, 2, 1, -1, -2, -3, -4 - 5 - 6
+       
+      foo + a1, 1, 2,  3,  4,  5,          6];
+
+% Case4: (t-utils-xr (re-search-forward \"3;\") (forward-line) (insert \"x=1;\") \"C-m\")
+
+a1      = 1;
+foo1    = 2;
+foobar1 = 3;
+x       = 1;
+
+% Case5: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src
+  No buffer modifications

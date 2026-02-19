@@ -7,187 +7,134 @@
   (re-search-forward "^%}") "C-n"
   (insert "function out=indent_xr_fun3(in1, ...")   "C-m"
   (insert                             "in2)")       "C-m"
-  (insert      "out = in1 + in2;")                  "C-m"
-  (insert "end")
+  (insert      "out = in1 + in2;")
   (re-search-backward "^fun")
   (t-utils-xr-print-code (point) (point-max))
-  (delete-region (point) (point-max))
-
   )
 
 - Invoking      : (re-search-forward "^%}")
-  Start point   :  392
-  Moved to point:  395
-  : 17:2: %}
+  Start point   :  320
+  Moved to point:  323
+  : 14:2: %}
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   :  395
-  Moved to point:  396
-  : 18:0: 
+  Start point   :  323
+  Moved to point:  324
+  : 15:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "function out=indent_xr_fun3(in1, ...")
-  Start point   :  396
-  Moved to point:  432
-  : 18:36: function out=indent_xr_fun3(in1, ...
+  Start point   :  324
+  Moved to point:  360
+  : 15:36: function out=indent_xr_fun3(in1, ...
   :                                            ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -15,3 +15,4 @@
- 
+@@ -12,3 +12,4 @@
+   (t-utils-xr-print-code (point) (point-max))
    )
  %}
 +function out=indent_xr_fun3(in1, ...
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   :  432
-  Moved to point:  461
-  : 19:28:                             
-  :                                    ^
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  360
+  Moved to point:  365
+  : 16:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -15,4 +15,5 @@
- 
+@@ -12,4 +12,6 @@
+   (t-utils-xr-print-code (point) (point-max))
    )
  %}
 -function out=indent_xr_fun3(in1, ...
 \ No newline at end of file
 +function out=indent_xr_fun3(in1, ...
-+                            
-\ No newline at end of file
++    
++end
   #+end_src diff
 
 - Invoking      : (insert "in2)")
-  Start point   :  461
-  Moved to point:  465
-  : 19:32:                             in2)
-  :                                        ^
+  Start point   :  365
+  Moved to point:  369
+  : 16:8:     in2)
+  :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -16,4 +16,4 @@
+@@ -13,5 +13,5 @@
    )
  %}
  function out=indent_xr_fun3(in1, ...
--                            
-\ No newline at end of file
-+                            in2)
-\ No newline at end of file
+-    
++    in2)
+ end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   :  465
-  Moved to point:  466
-  : 20:0: 
-  :       ^
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  369
+  Moved to point:  402
+  : 17:4:     
+  :           ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -16,4 +16,4 @@
+@@ -12,6 +12,7 @@
+   (t-utils-xr-print-code (point) (point-max))
    )
  %}
- function out=indent_xr_fun3(in1, ...
--                            in2)
-\ No newline at end of file
-+                            in2)
+-function out=indent_xr_fun3(in1, ...
+-    in2)
++function out = indent_xr_fun3(in1, ...
++                              in2)
++    
+ end
   #+end_src diff
 
 - Invoking      : (insert "out = in1 + in2;")
-  Start point   :  466
-  Moved to point:  482
-  : 20:16: out = in1 + in2;
-  :                        ^
+  Start point   :  402
+  Moved to point:  418
+  : 17:20:     out = in1 + in2;
+  :                            ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -17,3 +17,4 @@
+@@ -14,5 +14,5 @@
  %}
- function out=indent_xr_fun3(in1, ...
-                             in2)
-+out = in1 + in2;
-\ No newline at end of file
-  #+end_src diff
-
-- Invoking      : "C-m" = newline
-  Start point   :  482
-  Moved to point:  487
-  : 21:0: 
-  :       ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -17,4 +17,4 @@
- %}
- function out=indent_xr_fun3(in1, ...
-                             in2)
--out = in1 + in2;
-\ No newline at end of file
+ function out = indent_xr_fun3(in1, ...
+                               in2)
+-    
 +    out = in1 + in2;
-  #+end_src diff
-
-- Invoking      : (insert "end")
-  Start point   :  487
-  Moved to point:  490
-  : 21:3: end
-  :          ^
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -18,3 +18,4 @@
- function out=indent_xr_fun3(in1, ...
-                             in2)
-     out = in1 + in2;
-+end
-\ No newline at end of file
+ end
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  490
-  Moved to point:  396
-  : 18:0: function out=indent_xr_fun3(in1, ...
+  Start point   :  418
+  Moved to point:  324
+  : 15:0: function out = indent_xr_fun3(in1, ...
   :       ^
   No buffer modifications
 
 - Invoking      : (t-utils-xr-print-code (point) (point-max))
-  Start point   :  396
+  Start point   :  324
   No point movement
   standard-output:
   #+begin_src matlab-ts
-function out=indent_xr_fun3(in1, ...
-                            in2)
+function out = indent_xr_fun3(in1, ...
+                              in2)
     out = in1 + in2;
 end
   #+end_src
   No buffer modifications
-
-- Invoking      : (delete-region (point) (point-max))
-  Start point   :  396
-  No point movement
-  Buffer modified:
-  #+begin_src diff
---- start_contents
-+++ end_contents
-@@ -15,7 +15,3 @@
- 
-   )
- %}
--function out=indent_xr_fun3(in1, ...
--                            in2)
--    out = in1 + in2;
--end
-\ No newline at end of file
-  #+end_src diff

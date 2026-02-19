@@ -1,0 +1,41 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,596> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,79]@{% Exercise RET indent which will indent consecutiv...}@) (comment[81,133]@{% Case1: (t-utils-xr (re-search-forward "a1") "C-m...}@)
+ (assignment<135,142> left: (identifier[135,138]@{foo}@) =[139,140] right: (number[141,142]@{1}@))
+ ;[142,143]
+ (assignment<144,156> left: (identifier[144,146]@{a1}@) =[153,154] right: (number[155,156]@{2}@))
+ ;[156,157]
+ (assignment<158,176> left: (identifier[158,165]@{longvar}@) =[173,174] right: (number[175,176]@{3}@))
+ ;[178,179] (comment[181,238]@{% Case2: (t-utils-xr (re-search-forward "3") "C-e"...}@)
+ (assignment<240,247> left: (identifier[240,243]@{foo}@) =[244,245] right: (number[246,247]@{1}@))
+ ;[247,248]
+ (assignment<249,261> left: (identifier[249,251]@{a1}@) =[258,259] right: (number[260,261]@{2}@))
+ ;[261,262]
+ (assignment<263,281> left: (identifier[263,270]@{longvar}@) =[278,279] right: (number[280,281]@{3}@))
+ ;[283,284] (comment[286,337]@{% Case3: (t-utils-xr (re-search-forward "6") "C-m"...}@)
+ (assignment<339,398> left: (identifier[339,341]@{m1}@) =[342,343]
+  right: 
+   (matrix<344,398> [[344,345]
+    (row<345,370> (number[345,346]@{1}@) ,[346,347] (number[347,348]@{2}@) ,[349,349] (number[349,350]@{1}@) ,[351,351]
+     (unary_operator<351,353> -[351,352] operand: (number[352,353]@{1}@))
+     ,[354,354]
+     (unary_operator<354,356> -[354,355] operand: (number[355,356]@{2}@))
+     ,[357,357]
+     (unary_operator<357,359> -[357,358] operand: (number[358,359]@{3}@))
+     ,[360,360]
+     (binary_operator<360,370>
+      left: 
+       (binary_operator<360,366>
+        left: (unary_operator<360,362> -[360,361] operand: (number[361,362]@{4}@))
+        -[363,364] right: (number[365,366]@{5}@))
+      -[367,368] right: (number[369,370]@{6}@)))
+    (row<377,397>
+     (binary_operator<377,385> left: (identifier[377,380]@{foo}@) +[381,382] right: (identifier[383,385]@{a1}@))
+     ,[386,386] (number[386,387]@{1}@) ,[388,388] (number[388,389]@{2}@) ,[390,390] (number[390,391]@{3}@) ,[392,392] (number[392,393]@{4}@) ,[394,394] (number[394,395]@{5}@) ,[396,396] (number[396,397]@{6}@))
+    ][397,398]))
+ ;[398,399] (comment[401,484]@{% Case4: (t-utils-xr (re-search-forward "3;") (for...}@)
+ (assignment<486,497> left: (identifier[486,488]@{a1}@) =[494,495] right: (number[496,497]@{1}@))
+ ;[497,498]
+ (assignment<499,510> left: (identifier[499,503]@{foo1}@) =[507,508] right: (number[509,510]@{2}@))
+ ;[510,511]
+ (assignment<512,523> left: (identifier[512,519]@{foobar1}@) =[520,521] right: (number[522,523]@{3}@))
+ ;[523,524] (comment[526,595]@{% Case5: (t-utils-xr (t-utils-xr-print-code (point...}@) \n[595,596])

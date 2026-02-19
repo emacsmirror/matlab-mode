@@ -1,0 +1,9 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,344> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,113]@{% Validate that if a line contains whitespace and ...}@) (comment[115,203]@{% Case1: (t-utils-xr (re-search-forward "bar") "C-...}@) \n[203,205]
+ (if_statement<205,233> if[205,207]
+  condition: (comparison_operator<208,216> (identifier[208,211]@{foo}@) ==[212,214] (number[215,216]@{1}@))
+  (block<221,230>
+   (assignment<221,228> left: (identifier[221,224]@{bar}@) =[225,226] right: (number[227,228]@{1}@))
+   ;[228,229] \n[229,230])
+  end[230,233])
+ (comment[235,343]@{% Case2: (t-utils-xr (re-search-backward "^if") (t...}@) \n[343,344])

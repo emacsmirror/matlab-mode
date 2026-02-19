@@ -1,0 +1,63 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_tab_on_out_mat.m:3:9:
+
+  Case1: (t-utils-xr (re-search-forward "1 ,") "C-i")
+
+- Invoking      : (re-search-forward "1 ,")
+  Start point   :   75
+  Moved to point:   89
+  : 5:8: a([  1 ,   2], :) = ...                                          
+  :              ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :   89
+  Moved to point:   90
+  : 5:9:     a([1, 2], :) = ...                                          
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,9 +2,9 @@
+ 
+ % Case1: (t-utils-xr (re-search-forward "1 ,") "C-i")
+ if x
+-a([  1 ,   2], :) = ...                                          
+-    [ 1,2   3; ...
+-  100 200,300];
++    a([1, 2], :) = ...                                          
++        [  1,   2,   3; ...
++         100, 200, 300];
+ end
+ 
+ % Case2: (t-utils-xr (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n")))
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_tab_on_out_mat.m:10:9:
+
+  Case2: (t-utils-xr (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n")))
+
+- Invoking      : (re-search-backward "^if")
+  Start point   :  312
+  Moved to point:   76
+  : 4:0: if x
+  :      ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (re-search-forward "end
+"))
+  Start point   :   76
+  Moved to point:  203
+  : 9:0: 
+  :      ^
+  standard-output:
+  #+begin_src matlab-ts
+if x
+    a([1, 2], :) = ...                                          
+        [  1,   2,   3; ...
+         100, 200, 300];
+end
+  #+end_src
+  No buffer modifications

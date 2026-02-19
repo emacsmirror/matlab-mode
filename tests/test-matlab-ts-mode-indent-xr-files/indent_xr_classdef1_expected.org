@@ -27,7 +27,7 @@
   :                                    ^
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  538
   Moved to point:  543
   : 20:4:     
@@ -43,12 +43,12 @@
 +    
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  543
   No point movement
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  543
   No point movement
   No buffer modifications
@@ -70,7 +70,7 @@
 +    methods
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  550
   Moved to point:  559
   : 21:8:         
@@ -103,7 +103,7 @@
 +        function out=foo
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  575
   Moved to point:  588
   : 22:12:             
@@ -136,7 +136,7 @@
 +            end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  591
   Moved to point:  596
   : 23:8:         
@@ -171,7 +171,7 @@
 +        end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  599
   Moved to point:  600
   : 24:4:     
@@ -206,17 +206,21 @@
 +    end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  603
-  Moved to point:  600
+  Moved to point:  602
   : 25:0: 
   :       ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -21,4 +21,5 @@
-         function out=foo
+@@ -18,7 +18,8 @@
+ %}
+ classdef indent_xr_classdef1
+     methods
+-        function out=foo
++        function out = foo
          end
      end
 -    end
@@ -225,7 +229,7 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^classdef")
-  Start point   :  600
+  Start point   :  602
   Moved to point:  510
   : 19:0: classdef indent_xr_classdef1
   :       ^
@@ -238,7 +242,7 @@
   #+begin_example
 classdef indent_xr_classdef1
     methods
-        function out=foo
+        function out = foo
         end
     end
 end

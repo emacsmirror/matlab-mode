@@ -1,0 +1,139 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_newline_in_consecutive_statements.m:5:2:
+
+  Case1: (t-utils-xr 
+  (re-search-forward "x1")
+  "C-a" "C-i"
+  (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n"))
+  (re-search-backward "^    x1")
+  "C-a" "C-b" "C-m"
+  (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n"))
+  )
+
+- Invoking      : (re-search-forward "x1")
+  Start point   :  326
+  Moved to point:  369
+  : 19:2: x1    =                   4;
+  :         ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  369
+  Moved to point:  367
+  : 19:0: x1    =                   4;
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  367
+  Moved to point:  384
+  : 19:4:     x1       = 4;
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -14,8 +14,8 @@
+ %}
+ 
+ if x
+-var1 = [1,2];
+-longVar2 = 3;
+-x1    =                   4;
+-x23       = 5      ;
++    var1     = [1, 2];
++    longVar2 = 3;
++    x1       = 4;
++    x23      = 5;
+ end
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^if")
+  Start point   :  384
+  Moved to point:  334
+  : 16:0: if x
+  :       ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (re-search-forward "end
+"))
+  Start point   :  334
+  Moved to point:  420
+  : 22:0: 
+  :       ^
+  standard-output:
+  #+begin_src matlab-ts
+if x
+    var1     = [1, 2];
+    longVar2 = 3;
+    x1       = 4;
+    x23      = 5;
+end
+  #+end_src
+  No buffer modifications
+
+- Invoking      : (re-search-backward "^    x1")
+  Start point   :  420
+  Moved to point:  380
+  : 19:0:     x1       = 4;
+  :       ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  380
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-b" = backward-char
+  Start point   :  380
+  Moved to point:  379
+  : 18:17:     longVar2 = 3;
+  :                         ^
+  No buffer modifications
+
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  379
+  Moved to point:  384
+  : 19:4:     
+  :           ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -16,6 +16,7 @@
+ if x
+     var1     = [1, 2];
+     longVar2 = 3;
+-    x1       = 4;
+-    x23      = 5;
++    
++    x1  = 4;
++    x23 = 5;
+ end
+  #+end_src diff
+
+- Invoking      : (re-search-backward "^if")
+  Start point   :  384
+  Moved to point:  334
+  : 16:0: if x
+  :       ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (re-search-forward "end
+"))
+  Start point   :  334
+  Moved to point:  415
+  : 23:0: 
+  :       ^
+  standard-output:
+  #+begin_src matlab-ts
+if x
+    var1     = [1, 2];
+    longVar2 = 3;
+    
+    x1  = 4;
+    x23 = 5;
+end
+  #+end_src
+  No buffer modifications

@@ -28,7 +28,7 @@
   :                      ^
   No buffer modifications
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  371
   Moved to point:  374
   : 17:2:   
@@ -61,7 +61,7 @@
 +  case 1
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  380
   Moved to point:  385
   : 18:4:     
@@ -94,7 +94,7 @@
 +    disp('1');
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  395
   Moved to point:  400
   : 19:4:     
@@ -127,7 +127,7 @@
 +    end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  403
   Moved to point:  400
   : 20:0: 

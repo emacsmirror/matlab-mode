@@ -1,0 +1,60 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_tab_statement_eol.m:3:9:
+
+  Case1: (t-utils-xr "C-n" "C-e" "C-i")
+
+- Invoking      : "C-n" = next-line
+  Start point   :   61
+  Moved to point:   66
+  : 4:4: if x
+  :          ^
+  No buffer modifications
+
+- Invoking      : "C-e" = move-end-of-line
+  Start point   :   66
+  No point movement
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :   66
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,7 +2,7 @@
+ 
+ % Case1: (t-utils-xr "C-n" "C-e" "C-i")
+ if x
+-       a - b *2;
++    a - b * 2;
+ end
+ 
+ % Case2: (t-utils-xr (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n")))
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_tab_statement_eol.m:8:9:
+
+  Case2: (t-utils-xr (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n")))
+
+- Invoking      : (re-search-backward "^if")
+  Start point   :  195
+  Moved to point:   62
+  : 4:0: if x
+  :      ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (re-search-forward "end
+"))
+  Start point   :   62
+  Moved to point:   86
+  : 7:0: 
+  :      ^
+  standard-output:
+  #+begin_src matlab-ts
+if x
+    a - b * 2;
+end
+  #+end_src
+  No buffer modifications

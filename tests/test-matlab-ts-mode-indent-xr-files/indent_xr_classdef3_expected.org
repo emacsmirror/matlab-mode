@@ -43,22 +43,22 @@
   )
 
 - Invoking      : (re-search-forward "^%}")
-  Start point   : 1701
-  Moved to point: 1704
+  Start point   : 1742
+  Moved to point: 1745
   : 44:2: %}
   :         ^
   No buffer modifications
 
 - Invoking      : "C-n" = next-line
-  Start point   : 1704
-  Moved to point: 1705
+  Start point   : 1745
+  Moved to point: 1746
   : 45:0: 
   :       ^
   No buffer modifications
 
-- Invoking      : "C-m" = newline
-  Start point   : 1705
-  Moved to point: 1706
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1746
+  Moved to point: 1747
   : 46:0: 
   :       ^
   Buffer modified:
@@ -72,9 +72,9 @@
 +
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1706
-  Moved to point: 1707
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1747
+  Moved to point: 1748
   : 47:0: 
   :       ^
   Buffer modified:
@@ -89,15 +89,15 @@
   #+end_src diff
 
 - Invoking      : (forward-line -1)
-  Start point   : 1707
-  Moved to point: 1706
+  Start point   : 1748
+  Moved to point: 1747
   : 46:0: 
   :       ^
   No buffer modifications
 
 - Invoking      : (insert "% comment1")
-  Start point   : 1706
-  Moved to point: 1716
+  Start point   : 1747
+  Moved to point: 1757
   : 46:10: % comment1
   :                  ^
   Buffer modified:
@@ -112,9 +112,9 @@
 +% comment1
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1716
-  Moved to point: 1717
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1757
+  Moved to point: 1758
   : 47:0: 
   :       ^
   Buffer modified:
@@ -129,8 +129,8 @@
   #+end_src diff
 
 - Invoking      : (insert "classdef indent_xr_classdef3 < handle")
-  Start point   : 1717
-  Moved to point: 1754
+  Start point   : 1758
+  Moved to point: 1795
   : 47:37: classdef indent_xr_classdef3 < handle
   :                                             ^
   Buffer modified:
@@ -145,9 +145,9 @@
 +classdef indent_xr_classdef3 < handle
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1754
-  Moved to point: 1759
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1795
+  Moved to point: 1800
   : 48:4:     
   :           ^
   Buffer modified:
@@ -161,9 +161,9 @@
 +    
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1759
-  Moved to point: 1760
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1800
+  Moved to point: 1801
   : 49:4:     
   :           ^
   Buffer modified:
@@ -179,8 +179,8 @@
   #+end_src diff
 
 - Invoking      : (insert "% comment2")
-  Start point   : 1760
-  Moved to point: 1770
+  Start point   : 1801
+  Moved to point: 1811
   : 49:14:     % comment2
   :                      ^
   Buffer modified:
@@ -195,9 +195,9 @@
 +    % comment2
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1770
-  Moved to point: 1775
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1811
+  Moved to point: 1816
   : 50:4:     
   :           ^
   Buffer modified:
@@ -212,8 +212,8 @@
   #+end_src diff
 
 - Invoking      : (insert "properties")
-  Start point   : 1775
-  Moved to point: 1785
+  Start point   : 1816
+  Moved to point: 1826
   : 50:14:     properties
   :                      ^
   Buffer modified:
@@ -228,9 +228,9 @@
 +    properties
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1785
-  Moved to point: 1794
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1826
+  Moved to point: 1835
   : 51:8:         
   :               ^
   Buffer modified:
@@ -245,8 +245,8 @@
   #+end_src diff
 
 - Invoking      : (insert "foo;")
-  Start point   : 1794
-  Moved to point: 1798
+  Start point   : 1835
+  Moved to point: 1839
   : 51:12:         foo;
   :                    ^
   Buffer modified:
@@ -261,9 +261,9 @@
 +        foo;
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1798
-  Moved to point: 1807
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1839
+  Moved to point: 1848
   : 52:8:         
   :               ^
   Buffer modified:
@@ -278,8 +278,8 @@
   #+end_src diff
 
 - Invoking      : (insert "bar;")
-  Start point   : 1807
-  Moved to point: 1811
+  Start point   : 1848
+  Moved to point: 1852
   : 52:12:         bar;
   :                    ^
   Buffer modified:
@@ -294,9 +294,9 @@
 +        bar;
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1811
-  Moved to point: 1820
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1852
+  Moved to point: 1861
   : 53:8:         
   :               ^
   Buffer modified:
@@ -311,8 +311,8 @@
   #+end_src diff
 
 - Invoking      : (insert "% comment3")
-  Start point   : 1820
-  Moved to point: 1830
+  Start point   : 1861
+  Moved to point: 1871
   : 53:18:         % comment3
   :                          ^
   Buffer modified:
@@ -327,9 +327,9 @@
 +        % comment3
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1830
-  Moved to point: 1839
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1871
+  Moved to point: 1880
   : 54:8:         
   :               ^
   Buffer modified:
@@ -344,8 +344,8 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 1839
-  Moved to point: 1842
+  Start point   : 1880
+  Moved to point: 1883
   : 54:11:         end
   :                   ^
   Buffer modified:
@@ -360,9 +360,9 @@
 +        end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1842
-  Moved to point: 1843
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1883
+  Moved to point: 1884
   : 55:4:     
   :           ^
   Buffer modified:
@@ -378,9 +378,9 @@
 +    
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1843
-  Moved to point: 1844
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1884
+  Moved to point: 1885
   : 56:4:     
   :           ^
   Buffer modified:
@@ -396,8 +396,8 @@
   #+end_src diff
 
 - Invoking      : (insert "% comment4")
-  Start point   : 1844
-  Moved to point: 1854
+  Start point   : 1885
+  Moved to point: 1895
   : 56:14:     % comment4
   :                      ^
   Buffer modified:
@@ -412,9 +412,9 @@
 +    % comment4
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1854
-  Moved to point: 1859
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1895
+  Moved to point: 1900
   : 57:4:     
   :           ^
   Buffer modified:
@@ -429,8 +429,8 @@
   #+end_src diff
 
 - Invoking      : (insert "events")
-  Start point   : 1859
-  Moved to point: 1865
+  Start point   : 1900
+  Moved to point: 1906
   : 57:10:     events
   :                  ^
   Buffer modified:
@@ -445,9 +445,9 @@
 +    events
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1865
-  Moved to point: 1874
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1906
+  Moved to point: 1915
   : 58:8:         
   :               ^
   Buffer modified:
@@ -462,8 +462,8 @@
   #+end_src diff
 
 - Invoking      : (insert "goo;")
-  Start point   : 1874
-  Moved to point: 1878
+  Start point   : 1915
+  Moved to point: 1919
   : 58:12:         goo;
   :                    ^
   Buffer modified:
@@ -478,9 +478,9 @@
 +        goo;
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1878
-  Moved to point: 1887
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1919
+  Moved to point: 1928
   : 59:8:         
   :               ^
   Buffer modified:
@@ -495,8 +495,8 @@
   #+end_src diff
 
 - Invoking      : (insert "% comment5")
-  Start point   : 1887
-  Moved to point: 1897
+  Start point   : 1928
+  Moved to point: 1938
   : 59:18:         % comment5
   :                          ^
   Buffer modified:
@@ -511,9 +511,9 @@
 +        % comment5
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1897
-  Moved to point: 1906
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1938
+  Moved to point: 1947
   : 60:8:         
   :               ^
   Buffer modified:
@@ -528,8 +528,8 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 1906
-  Moved to point: 1909
+  Start point   : 1947
+  Moved to point: 1950
   : 60:11:         end
   :                   ^
   Buffer modified:
@@ -544,9 +544,9 @@
 +        end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1909
-  Moved to point: 1910
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1950
+  Moved to point: 1951
   : 61:4:     
   :           ^
   Buffer modified:
@@ -562,9 +562,9 @@
 +    
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1910
-  Moved to point: 1911
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1951
+  Moved to point: 1952
   : 62:4:     
   :           ^
   Buffer modified:
@@ -580,8 +580,8 @@
   #+end_src diff
 
 - Invoking      : (insert "% comment6")
-  Start point   : 1911
-  Moved to point: 1921
+  Start point   : 1952
+  Moved to point: 1962
   : 62:14:     % comment6
   :                      ^
   Buffer modified:
@@ -596,9 +596,9 @@
 +    % comment6
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1921
-  Moved to point: 1926
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1962
+  Moved to point: 1967
   : 63:4:     
   :           ^
   Buffer modified:
@@ -613,8 +613,8 @@
   #+end_src diff
 
 - Invoking      : (insert "methods")
-  Start point   : 1926
-  Moved to point: 1933
+  Start point   : 1967
+  Moved to point: 1974
   : 63:11:     methods
   :                   ^
   Buffer modified:
@@ -629,9 +629,9 @@
 +    methods
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1933
-  Moved to point: 1942
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1974
+  Moved to point: 1983
   : 64:8:         
   :               ^
   Buffer modified:
@@ -645,9 +645,9 @@
 +        
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1942
-  Moved to point: 1943
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1983
+  Moved to point: 1984
   : 65:8:         
   :               ^
   Buffer modified:
@@ -663,8 +663,8 @@
   #+end_src diff
 
 - Invoking      : (insert "% comment7")
-  Start point   : 1943
-  Moved to point: 1953
+  Start point   : 1984
+  Moved to point: 1994
   : 65:18:         % comment7
   :                          ^
   Buffer modified:
@@ -679,9 +679,9 @@
 +        % comment7
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1953
-  Moved to point: 1962
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1994
+  Moved to point: 2003
   : 66:8:         
   :               ^
   Buffer modified:
@@ -696,8 +696,8 @@
   #+end_src diff
 
 - Invoking      : (insert "function foo1(a)")
-  Start point   : 1962
-  Moved to point: 1978
+  Start point   : 2003
+  Moved to point: 2019
   : 66:24:         function foo1(a)
   :                                ^
   Buffer modified:
@@ -712,9 +712,9 @@
 +        function foo1(a)
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1978
-  Moved to point: 1991
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2019
+  Moved to point: 2032
   : 67:12:             
   :                    ^
   Buffer modified:
@@ -728,9 +728,9 @@
 +            
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1991
-  Moved to point: 1992
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2032
+  Moved to point: 2033
   : 68:12:             
   :                    ^
   Buffer modified:
@@ -746,8 +746,8 @@
   #+end_src diff
 
 - Invoking      : (insert "% comment8")
-  Start point   : 1992
-  Moved to point: 2002
+  Start point   : 2033
+  Moved to point: 2043
   : 68:22:             % comment8
   :                              ^
   Buffer modified:
@@ -762,9 +762,9 @@
 +            % comment8
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2002
-  Moved to point: 2015
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2043
+  Moved to point: 2056
   : 69:12:             
   :                    ^
   Buffer modified:
@@ -779,8 +779,8 @@
   #+end_src diff
 
 - Invoking      : (insert "arguments")
-  Start point   : 2015
-  Moved to point: 2024
+  Start point   : 2056
+  Moved to point: 2065
   : 69:21:             arguments
   :                             ^
   Buffer modified:
@@ -795,9 +795,9 @@
 +            arguments
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2024
-  Moved to point: 2041
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2065
+  Moved to point: 2082
   : 70:16:                 
   :                        ^
   Buffer modified:
@@ -812,8 +812,8 @@
   #+end_src diff
 
 - Invoking      : (insert "a")
-  Start point   : 2041
-  Moved to point: 2042
+  Start point   : 2082
+  Moved to point: 2083
   : 70:17:                 a
   :                         ^
   Buffer modified:
@@ -828,9 +828,9 @@
 +                a
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2042
-  Moved to point: 2059
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2083
+  Moved to point: 2100
   : 71:16:                 
   :                        ^
   Buffer modified:
@@ -845,8 +845,8 @@
   #+end_src diff
 
 - Invoking      : (insert "% comment9")
-  Start point   : 2059
-  Moved to point: 2069
+  Start point   : 2100
+  Moved to point: 2110
   : 71:26:                 % comment9
   :                                  ^
   Buffer modified:
@@ -861,9 +861,9 @@
 +                % comment9
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2069
-  Moved to point: 2086
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2110
+  Moved to point: 2127
   : 72:16:                 
   :                        ^
   Buffer modified:
@@ -878,8 +878,8 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 2086
-  Moved to point: 2089
+  Start point   : 2127
+  Moved to point: 2130
   : 72:19:                 end
   :                           ^
   Buffer modified:
@@ -894,9 +894,9 @@
 +                end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2089
-  Moved to point: 2102
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2130
+  Moved to point: 2143
   : 73:16:                 
   :                        ^
   Buffer modified:
@@ -913,8 +913,8 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 2102
-  Moved to point: 2105
+  Start point   : 2143
+  Moved to point: 2146
   : 73:19:                 end
   :                           ^
   Buffer modified:
@@ -929,9 +929,9 @@
 +                end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2105
-  Moved to point: 2106
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2146
+  Moved to point: 2147
   : 74:8:         
   :               ^
   Buffer modified:
@@ -948,8 +948,8 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 2106
-  Moved to point: 2109
+  Start point   : 2147
+  Moved to point: 2150
   : 74:11:         end
   :                   ^
   Buffer modified:
@@ -964,9 +964,9 @@
 +        end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2109
-  Moved to point: 2110
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2150
+  Moved to point: 2151
   : 75:4:     
   :           ^
   Buffer modified:
@@ -983,8 +983,8 @@
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 2110
-  Moved to point: 2113
+  Start point   : 2151
+  Moved to point: 2154
   : 75:7:     end
   :              ^
   Buffer modified:
@@ -999,9 +999,9 @@
 +    end
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 2113
-  Moved to point: 2110
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 2154
+  Moved to point: 2151
   : 76:0: 
   :       ^
   Buffer modified:
@@ -1018,14 +1018,14 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^classdef")
-  Start point   : 2110
-  Moved to point: 1717
+  Start point   : 2151
+  Moved to point: 1758
   : 47:0: classdef indent_xr_classdef3 < handle
   :       ^
   No buffer modifications
 
 - Invoking      : (print (buffer-substring-no-properties (point) (point-max)))
-  Start point   : 1717
+  Start point   : 1758
   No point movement
   standard-output:
   #+begin_example

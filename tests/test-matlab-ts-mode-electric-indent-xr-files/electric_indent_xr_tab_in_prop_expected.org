@@ -1,0 +1,70 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_tab_in_prop.m:3:9:
+
+  Case1: (t-utils-xr (re-search-forward "param2") "C-a" "C-i")
+
+- Invoking      : (re-search-forward "param2")
+  Start point   :   84
+  Moved to point:  177
+  : 7:16:           param2 (2,1)
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  177
+  Moved to point:  161
+  : 7:0:           param2 (2,1)
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  161
+  Moved to point:  169
+  : 7:8:         param2 (2,1)
+  :              ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -4,8 +4,8 @@
+ classdef electric_indent_xr_tab_in_prop
+     properties
+         p1     (1,3)
+-          param2 (2,1)
+-             x{mustBeReal}
++        param2 (2,1)
++        x      {mustBeReal}
+     end
+ end
+ 
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_tab_in_prop.m:12:9:
+
+  Case2: (t-utils-xr (re-search-backward "^classdef") (t-utils-xr-print-code (point) (re-search-forward "^end\n")))
+
+- Invoking      : (re-search-backward "^classdef")
+  Start point   :  338
+  Moved to point:   85
+  : 4:0: classdef electric_indent_xr_tab_in_prop
+  :      ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (point) (re-search-forward "^end
+"))
+  Start point   :   85
+  Moved to point:  222
+  : 11:0: 
+  :       ^
+  standard-output:
+  #+begin_src matlab-ts
+classdef electric_indent_xr_tab_in_prop
+    properties
+        p1     (1,3)
+        param2 (2,1)
+        x      {mustBeReal}
+    end
+end
+  #+end_src
+  No buffer modifications

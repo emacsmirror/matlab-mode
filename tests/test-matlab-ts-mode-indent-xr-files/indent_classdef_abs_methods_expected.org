@@ -5,20 +5,20 @@
   Case1: (t-utils-xr "C-n" "C-e" "C-m" "C-a" "C-i" "C-a" "C-k" "C-o" "C-i" (insert "%comment"))
 
 - Invoking      : "C-n" = next-line
-  Start point   :  225
-  Moved to point:  261
+  Start point   :  191
+  Moved to point:  227
   : 6:35:         [area, desc] = getArea(obj)
   :                                          ^
   No buffer modifications
 
 - Invoking      : "C-e" = move-end-of-line
-  Start point   :  261
+  Start point   :  227
   No point movement
   No buffer modifications
 
-- Invoking      : "C-m" = newline
-  Start point   :  261
-  Moved to point:  270
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   :  227
+  Moved to point:  236
   : 7:8:         
   :              ^
   Buffer modified:
@@ -36,28 +36,28 @@
   #+end_src diff
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  270
-  Moved to point:  262
+  Start point   :  236
+  Moved to point:  228
   : 7:0:         
   :      ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  262
-  Moved to point:  270
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  228
+  Moved to point:  236
   : 7:8:         
   :              ^
   No buffer modifications
 
 - Invoking      : "C-a" = move-beginning-of-line
-  Start point   :  270
-  Moved to point:  262
+  Start point   :  236
+  Moved to point:  228
   : 7:0:         
   :      ^
   No buffer modifications
 
 - Invoking      : "C-k" = kill-line
-  Start point   :  262
+  Start point   :  228
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -74,7 +74,7 @@
   #+end_src diff
 
 - Invoking      : "C-o" = open-line
-  Start point   :  262
+  Start point   :  228
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -90,9 +90,9 @@
  
   #+end_src diff
 
-- Invoking      : "C-i" = indent-for-tab-command
-  Start point   :  262
-  Moved to point:  270
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  228
+  Moved to point:  236
   : 7:8:         
   :              ^
   Buffer modified:
@@ -111,8 +111,8 @@
   #+end_src diff
 
 - Invoking      : (insert "%comment")
-  Start point   :  270
-  Moved to point:  278
+  Start point   :  236
+  Moved to point:  244
   : 7:16:         %comment
   :                       ^
   Buffer modified:
@@ -135,11 +135,11 @@
   Case2: (t-utils-xr (t-utils-xr-print-code (point-min) (point-max)))
 
 - Invoking      : (t-utils-xr-print-code (point-min) (point-max))
-  Start point   :  361
+  Start point   :  327
   No point movement
   standard-output:
   #+begin_src matlab-ts
-% -*- mode: matlab-ts; matlab-ts-mode-electric-ends: nil -*-
+% -*- mode: matlab-ts; -*-
 
 classdef indent_classdef_abs_methods
     methods(Abstract)

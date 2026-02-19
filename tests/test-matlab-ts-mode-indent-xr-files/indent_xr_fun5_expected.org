@@ -54,7 +54,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  962
   Moved to point:  967
   : 32:4:     
@@ -93,7 +93,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  972
   Moved to point:  978
   : 33:5:      
@@ -132,7 +132,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   :  997
   Moved to point: 1003
   : 34:5:      
@@ -171,7 +171,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1010
   Moved to point: 1014
   : 35:4:     
@@ -210,7 +210,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1032
   Moved to point: 1037
   : 36:4:     
@@ -249,7 +249,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1042
   Moved to point: 1048
   : 37:5:      
@@ -288,7 +288,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1067
   Moved to point: 1073
   : 38:5:      
@@ -327,7 +327,7 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1074
   No point movement
   Buffer modified:
@@ -343,7 +343,7 @@
 +    )
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1074
   Moved to point: 1075
   : 40:0: 
@@ -376,9 +376,9 @@
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
+- Invoking      : "C-m" = matlab-ts-mode-newline
   Start point   : 1081
-  Moved to point: 1086
+  Moved to point: 1090
   : 41:0: 
   :       ^
   Buffer modified:
@@ -391,12 +391,12 @@
  
 -b=2*a;
 \ No newline at end of file
-+    b=2*a;
++    b = 2 * a;
   #+end_src diff
 
 - Invoking      : (insert "end")
-  Start point   : 1086
-  Moved to point: 1089
+  Start point   : 1090
+  Moved to point: 1093
   : 41:3: end
   :          ^
   Buffer modified:
@@ -406,14 +406,14 @@
 @@ -38,3 +38,4 @@
      )
  
-     b=2*a;
+     b = 2 * a;
 +end
 \ No newline at end of file
   #+end_src diff
 
-- Invoking      : "C-m" = newline
-  Start point   : 1089
-  Moved to point: 1090
+- Invoking      : "C-m" = matlab-ts-mode-newline
+  Start point   : 1093
+  Moved to point: 1094
   : 42:0: 
   :       ^
   Buffer modified:
@@ -423,19 +423,19 @@
 @@ -38,4 +38,4 @@
      )
  
-     b=2*a;
+     b = 2 * a;
 -end
 \ No newline at end of file
 +end
   #+end_src diff
 
 - Invoking      : (indent-region (point-min) (point-max))
-  Start point   : 1090
+  Start point   : 1094
   No point movement
   No buffer modifications
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   : 1090
+  Start point   : 1094
   Moved to point:  950
   : 31:0: function ...
   :       ^
@@ -455,7 +455,7 @@ function ...
      a ... comment for a
     )
 
-    b=2*a;
+    b = 2 * a;
 end
   #+end_src
   No buffer modifications

@@ -1,4 +1,4 @@
-% -*- matlab-ts -*-
+% -*- mode: matlab-ts; matlab-ts-mode-electric-ends: nil -*-
 
 %{
   Case1:

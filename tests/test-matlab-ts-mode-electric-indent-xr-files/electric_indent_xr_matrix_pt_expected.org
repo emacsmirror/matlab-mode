@@ -18,7 +18,7 @@
   :                                      ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  126
   Moved to point:  115
   : 5:20: m3a = [  21,     2, 223;
@@ -56,20 +56,22 @@
   :       ^
   No buffer modifications
 
-- Invoking      : "C-i" = indent-for-tab-command
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :  273
-  Moved to point:  281
+  Moved to point:  270
   : 12:8:         444, 53333,   6; ...
   :               ^
   Buffer modified:
   #+begin_src diff
 --- start_contents
 +++ end_contents
-@@ -9,5 +9,5 @@
+@@ -8,6 +8,6 @@
+ 
  % case2: (t-utils-xr (re-search-forward "444") "C-a" "C-i")
  
- m3b = [    21    ,          2, 223;
+-m3b = [    21    ,          2, 223;
 -            444, 53333, 6; ...
++m3b = [  21,     2, 223;
 +        444, 53333,   6; ...
         1222,     4,   5];
   #+end_src diff
