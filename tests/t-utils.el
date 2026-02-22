@@ -1,6 +1,6 @@
 ;;; t-utils.el --- Test utilities -*- lexical-binding: t -*-
 
-;; Copyright (C) 2025 Free Software Foundation, Inc.
+;; Copyright (C) 2025-2026 Free Software Foundation, Inc.
 ;;
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
@@ -445,11 +445,11 @@ Returns LOG-FILE truename"
   log-file)
 
 (defun t-utils--baseline-check (test-name start-time
-                                          lang-file got got-file expected expected-file
+                                          lang-file got expected-file
                                           &optional checker-fun)
   "Validate GOT string matches EXPECTED for LANG-FILE of TEST-NAME.
-GOT-FILE is equal to EXPECTED-FILE with a tilde prefix.  GOT-FILE will
-be created if (string= GOT EXPECTED) is nil.  EXPECTED-FILE is the
+This will create got-file with name (concat EXPECTED-FILE \"~\")
+created if (not (string= GOT EXPECTED)).  EXPECTED-FILE is the
 baseline file for EXPECTED.  START-TIME is when we started the test and
 is used in displaying the test took time.
 
@@ -464,7 +464,12 @@ Returns nil on success, otherwise an error message list of strings if
 baseline check fails."
 
   (let (error-msg
-        (do-baseline-check t))
+        (do-baseline-check t)
+        (got-file (concat expected-file "~"))
+        (expected (when (file-exists-p expected-file)
+                    (with-temp-buffer
+                      (insert-file-contents-literally expected-file)
+                      (buffer-string)))))
 
     (when checker-fun
       (let ((result (funcall checker-fun lang-file got got-file expected expected-file)))
@@ -976,12 +981,7 @@ To debug a specific movement test file
         (let* ((start-time (current-time))
                (expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.org"
                                                         lang-file))
-               (expected (when (file-exists-p expected-file)
-                           (with-temp-buffer
-                             (insert-file-contents-literally expected-file)
-                             (buffer-string))))
-               (got "#+startup: showall\n")
-               (got-file (concat expected-file "~")))
+               (got "#+startup: showall\n"))
 
           (message "START: %s %s" test-name lang-file)
 
@@ -1021,7 +1021,7 @@ To debug a specific movement test file
             (error "No (t-utils-xr COMMANDS) found in %s" lang-file))
 
           (let ((error-msg (t-utils--baseline-check test-name start-time
-                                                    lang-file got got-file expected expected-file)))
+                                                    lang-file got expected-file)))
             (when error-msg
               (push error-msg error-msgs))))))
 
@@ -1113,17 +1113,11 @@ containing the LANGUAGE tree-sitter parse errors.
           (t-utils--insert-file-for-test lang-file)
 
           (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
-                 (expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string))))
                  (got (concat (symbol-name action-fun) " result:\n---\n"
-                              (funcall action-fun)))
-                 (got-file (concat expected-file "~")))
+                              (funcall action-fun))))
 
-            (let ((error-msg (t-utils--baseline-check
-                              test-name start-time
-                              lang-file got got-file expected expected-file)))
+            (let ((error-msg (t-utils--baseline-check test-name start-time
+                                                      lang-file got expected-file)))
               (when error-msg
                 (push error-msg error-msgs)))))))
     ;; Validate t-utils-test-outline-search-function result
@@ -1259,12 +1253,7 @@ To debug a specific font-lock test file
           (goto-char (point-min))
           (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt"
                                                           lang-file))
-                 (expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string))))
-                 (got "")
-                 (got-file (concat expected-file "~")))
+                 (got ""))
 
             (while (not (eobp))
               (let* ((face (if (face-at-point) (face-at-point) 'default))
@@ -1281,9 +1270,8 @@ To debug a specific font-lock test file
                   (forward-char))))
 
             (let ((error-msg
-                   (t-utils--baseline-check
-                    test-name start-time
-                    lang-file got got-file expected expected-file
+                   (t-utils--baseline-check test-name start-time
+                                            lang-file got expected-file
                     (lambda (lang-file got got-file expected expected-file)
                       (t-utils--test-font-lock-checker lang-file got got-file
                                                        expected expected-file
@@ -1440,11 +1428,6 @@ the indented code to create NAME_expected_msgs.txt of form:
   ..."
   (let* ((expected-file (replace-regexp-in-string "\\.\\([^.]+\\)\\'" "_expected_msgs.\\1"
                                                   lang-file))
-         (expected (when (file-exists-p expected-file)
-                     (with-temp-buffer
-                       (insert-file-contents-literally expected-file)
-                       (buffer-string))))
-         (got-file (concat expected-file "~"))
          got)
 
     (save-excursion
@@ -1460,9 +1443,8 @@ the indented code to create NAME_expected_msgs.txt of form:
                             "\n"))
           (forward-line))))
 
-    (let ((error-msg (t-utils--baseline-check
-                      test-name nil
-                      lang-file got got-file expected expected-file)))
+    (let ((error-msg (t-utils--baseline-check test-name nil
+                                              lang-file got expected-file)))
       error-msg)))
 
 (cl-defun t-utils-test-indent (test-name lang-files
@@ -1673,8 +1655,7 @@ To debug a specific indent test file
               ;; insertion on a "blank" line. To simplify our baselines, we remove this extra space.
               (t-utils--trim)
 
-              (let ((got (buffer-substring (point-min) (point-max)))
-                    (got-file (concat expected-file "~")))
+              (let ((got (buffer-substring (point-min) (point-max))))
 
                 (setq do-line-by-line-indent
                       (not (string-match-p "t-utils-test-indent:[ \t]*no-line-by-line-indent" got)))
@@ -1683,7 +1664,7 @@ To debug a specific indent test file
 
                 (let ((indent-error-msg (t-utils--baseline-check
                                          (concat test-name " <indent-region>") start-time
-                                         lang-file got got-file expected expected-file)))
+                                         lang-file got expected-file)))
                   (when indent-error-msg
                     (push indent-error-msg error-msgs)))
 
@@ -2078,12 +2059,7 @@ Where ./tests/test-LANGUAGE-ts-mode-syntax-table.el contains:
           (t-utils--insert-file-for-test lang-file)
 
           (let* ((got "")
-                 (expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
-                 (got-file (concat expected-file "~"))
-                 (expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string)))))
+                 (expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file)))
             (forward-line) ;; skip the mode line specification
             (while (not (eobp))
               (when (looking-at "^")
@@ -2100,9 +2076,8 @@ Where ./tests/test-LANGUAGE-ts-mode-syntax-table.el contains:
 
               (forward-char))
 
-            (let ((error-msg (t-utils--baseline-check
-                              test-name start-time
-                              lang-file got got-file expected expected-file)))
+            (let ((error-msg (t-utils--baseline-check test-name start-time
+                                                      lang-file got expected-file)))
               (when error-msg
                 (push error-msg error-msgs)))))))
     ;; Validate t-utils-test-syntax-table result
@@ -2177,12 +2152,7 @@ Where ./tests/test-LANGUAGE-ts-mode-treesit-defun-name.el contains:
 
           (let* ((root (treesit-buffer-root-node))
                  (expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
-                 (expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string))))
-                 (got "")
-                 (got-file (concat expected-file "~")))
+                 (got ""))
 
             (treesit-search-subtree
              root
@@ -2198,9 +2168,8 @@ Where ./tests/test-LANGUAGE-ts-mode-treesit-defun-name.el contains:
                                     (if defun-name defun-name "nil")))))
                nil))
 
-            (let ((error-msg (t-utils--baseline-check
-                              test-name start-time
-                              lang-file got got-file expected expected-file)))
+            (let ((error-msg (t-utils--baseline-check test-name start-time
+                                                      lang-file got expected-file)))
               (when error-msg
                 (push error-msg error-msgs)))))))
 
@@ -2304,16 +2273,10 @@ Where ./tests/test-LANGUAGE-ts-mode-imenu.el contains:
 
           (let* ((index (funcall imenu-create-index-function))
                  (expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
-                 (expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string))))
-                 (got (t-utils--get-imenu-str index))
-                 (got-file (concat expected-file "~")))
+                 (got (t-utils--get-imenu-str index)))
 
-            (let ((error-msg (t-utils--baseline-check
-                              test-name start-time
-                              lang-file got got-file expected expected-file)))
+            (let ((error-msg (t-utils--baseline-check test-name start-time
+                                                      lang-file got expected-file)))
               (when error-msg
                 (push error-msg error-msgs)))))))
     ;; Validate t-utils-test-imenu result
@@ -2388,12 +2351,7 @@ Where ./tests/test-LANGUAGE-ts-mode-outline.el contains:
           (t-utils--insert-file-for-test lang-file)
 
           (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
-                 (expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string))))
-                 (got "Section heading lines\n\n")
-                 (got-file (concat expected-file "~")))
+                 (got "Section heading lines\n\n"))
 
             (while (not (eobp))
               (let ((next-heading (funcall outline-search-function)))
@@ -2407,9 +2365,8 @@ Where ./tests/test-LANGUAGE-ts-mode-outline.el contains:
                       (forward-line))
                   (goto-char (point-max)))))
 
-            (let ((error-msg (t-utils--baseline-check
-                              test-name start-time
-                              lang-file got got-file expected expected-file)))
+            (let ((error-msg (t-utils--baseline-check test-name start-time
+                                                      lang-file got expected-file)))
               (when error-msg
                 (push error-msg error-msgs)))))))
     ;; Validate t-utils-test-outline-search-function result
@@ -2491,12 +2448,7 @@ To debug a specific file-encoding test file
           (message "START: %s %s" test-name lang-file)
 
           (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
-                 (expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string))))
-                 (got "Major mode activated successfully.")
-                 (got-file (concat expected-file "~")))
+                 (got "Major mode activated successfully."))
 
             ;; Load lang-file in temp buffer and activate file-major-mode
             (condition-case err
@@ -2506,9 +2458,8 @@ To debug a specific file-encoding test file
 
             (setq got (concat got "\n\n" "Entered major-mode: " (symbol-name major-mode) "\n"))
 
-            (let ((error-msg (t-utils--baseline-check
-                              test-name start-time
-                              lang-file got got-file expected expected-file)))
+            (let ((error-msg (t-utils--baseline-check test-name start-time
+                                                      lang-file got expected-file)))
               (when error-msg
                 (push error-msg error-msgs)))))))
 
@@ -3241,11 +3192,6 @@ To debug a specific -parser test file
           (message "START: %s %s" test-name lang-file)
 
           (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
-                 (expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string))))
-                 (got-file (concat expected-file "~"))
                  got)
 
             (t-utils--insert-file-for-test lang-file)
@@ -3254,7 +3200,7 @@ To debug a specific -parser test file
 
             (let ((error-msg (t-utils--baseline-check
                               test-name start-time
-                              lang-file got got-file expected expected-file
+                              lang-file got expected-file
                               #'t-utils--test-parser-error-node-checker)))
 
               (when error-msg
@@ -3271,4 +3217,4 @@ To debug a specific -parser test file
 ;; LocalWords:  consp listp cdr CRLF impl tmp xr boundp SPC kbd prin progn defmacro sexp stdlib locs
 ;; LocalWords:  showall repeat:nil kkk fff Dkkkk kkkkkk mapcar eobp trim'd bol NPS prev puthash md
 ;; LocalWords:  maphash lessp gethash nbutlast mapconcat ppss imenu pcase eow NAME's darwin libtree
-;; LocalWords:  defface fontify keymap curr noselect
+;; LocalWords:  defface fontify keymap curr noselect nsec

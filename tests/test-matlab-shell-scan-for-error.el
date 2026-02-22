@@ -71,13 +71,8 @@ after validating them, rename them to
                        (setq s (concat s (format "%s:%d: %S\n"
                                                  org-file-base (car got-match) (cdr got-match)))))
                      s)))
-          (let* ((expected (when (file-exists-p expected-file)
-                             (with-temp-buffer
-                               (insert-file-contents-literally expected-file)
-                               (buffer-string))))
-                 (error-msg (t-utils--baseline-check test-name start-time
-                                                     org-file got (concat expected-file "~")
-                                                     expected expected-file)))
+          (let ((error-msg (t-utils--baseline-check test-name start-time
+                                                    org-file got expected-file)))
             (when error-msg
               (push error-msg error-msgs))))))
 
