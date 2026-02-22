@@ -35,15 +35,16 @@
   (when (< emacs-major-version 30)
     (user-error "Unsupported Emacs version, %d" emacs-major-version))
 
-  (let ((ts-abi-ver (treesit-library-abi-version))
+  (let ((ts-abi-min-compatible-ver (treesit-library-abi-version t))
         (release-abi-ver (if (string-match "\\`matlab-ts-abi\\([0-9]+\\)-"
                                            matlab--ts-grammar-release)
                              (string-to-number (match-string 1 matlab--ts-grammar-release))
                            (error "Unexpected matlab--ts-grammar-release %s"
                                   matlab--ts-grammar-release))))
-    (when (not (= ts-abi-ver release-abi-ver))
-      (user-error "Emacs treesit-library-abi-version is %d and the matlab-ts grammar version "
-                  "is %d, which indicates a new build is required for matlab-ts"))))
+    (when (> ts-abi-min-compatible-ver release-abi-ver)
+      (user-error
+       "Emacs oldest compatible treesit ABI version is %d and the matlab-ts grammar version is %d,\
+ which indicates a new build is required for matlab-ts" ts-abi-min-compatible-ver release-abi-ver))))
 
 (defun matlab--ts-get-grammar-branch-and-install-dir (prompt)
   "Get branch and tree-sitter install directory.
