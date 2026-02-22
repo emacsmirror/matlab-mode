@@ -39,20 +39,20 @@ This is provided for debugging.
 
 (ert-deftest test-matlab-ts-mode-electric-indent ()
   "Test electric indent.
-Compare indent of ./test-MATLAB-ts-mode-electric-indent-files/NAME.m
-against ./test-MATLAB-ts-mode-electric-indent-files/NAME_expected.m.
+Compare indent of ./test-matlab-ts-mode-electric-indent-files/NAME.m
+against ./test-matlab-ts-mode-electric-indent-files/NAME_expected.m.
 Indent is done several ways as described in `t-utils-test-indent'.
-This loops on all ./test-MATLAB-ts-mode-electric-indent-files/NAME.m
+This loops on all ./test-matlab-ts-mode-electric-indent-files/NAME.m
 files.
 
 To add a test, create
-  ./test-MATLAB-ts-mode-electric-indent-files/NAME.m
+  ./test-matlab-ts-mode-electric-indent-files/NAME.m
 and run this function.  The baseline is saved for you as
-  ./test-MATLAB-ts-mode-electric-indent-files/NAME_expected.m~
-  ./test-MATLAB-ts-mode-electric-indent-files/NAME_expected_msgs.m~
+  ./test-matlab-ts-mode-electric-indent-files/NAME_expected.m~
+  ./test-matlab-ts-mode-electric-indent-files/NAME_expected_msgs.m~
 after validating them, rename them to
-  ./test-MATLAB-ts-mode-electric-indent-files/NAME_expected.m
-  ./test-MATLAB-ts-mode-electric-indent-files/NAME_expected_msgs.m"
+  ./test-matlab-ts-mode-electric-indent-files/NAME_expected.m
+  ./test-matlab-ts-mode-electric-indent-files/NAME_expected_msgs.m"
 
   (let* ((matlab-ts-mode-electric-ends nil)
          (test-name "test-matlab-ts-mode-electric-indent")
