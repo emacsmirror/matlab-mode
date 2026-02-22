@@ -288,7 +288,7 @@ Warning ID's won't change between releases, unlike the warning messages.")
   "Create a group object for tracking linemark entries.
 Do not permit multiple groups with the same name."
   (let* ((name "mlint")
-         (newgroup (mlint-lm-group :face 'linemark-go-face))
+         (newgroup (mlint-lm-group :object-name name :face 'linemark-go-face))
          (foundgroup nil)
          (lmg linemark-groups))
     (while (and (not foundgroup) lmg)
