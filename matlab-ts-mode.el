@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode.el --- MATLAB(R) Tree-Sitter Mode -*- lexical-binding: t -*-
 
-;; Version: 8.1.0
+;; Version: 8.1.1
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;

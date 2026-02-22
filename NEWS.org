@@ -3,6 +3,16 @@
 
 # Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
+* Release 8.1.1 Feb-22-2026
+
+1. Enable matlab-ts-mode with Emacs 30.2 which is using tree-sitter ABI 15 (or 14). Note, Emacs 30.1
+   is using tree-sitter ABI 14 which continues to work.
+
+2. Update installation instructions for the MATLAB Language Server
+
+3. Fix mlint.el issue ("Do not permit multiple groups with the same name")
+
+
 * Release 8.1.0 Feb-16-2026
 
 1. The behavior of TAB and RET in matlab-ts-mode to electric indent/code-format adjacent lines of
