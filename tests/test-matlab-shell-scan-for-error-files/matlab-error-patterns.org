@@ -1,0 +1,86 @@
+* Syntax error, R2026b
+
+Given
+
+#+begin_src matlab
+  %
+  function = 1
+#+end_src
+
+We get:
+
+#+begin_example
+>> foo
+File: /home/ciolfi/tmp/foo.m Line: 2 Column: 10
+Incorrect use of '=' operator. Assign a value to a variable using '=' and compare values for equality using '=='.
+#+end_example
+
+* Error using command
+
+#+begin_example
+Error using ls (line 49)
+ls: cannot access 'blarg': No such file or directory
+#+end_example
+
+* Error in function
+
+#+begin_example
+Error in buggy (line 12)
+        ls blarg
+#+end_example
+
+* Error in function with more text
+
+#+begin_example
+Error using buggy (line 7)
+You encounered an error in buggy.m
+#+end_example
+
+* Syntax error example 1
+
+#+begin_example
+Error: File: /home/eludlam/WORK/matlab-emacs-src/tests/syntaxerr.m Line: 8 Column: 12
+Invalid expression. When calling a function or indexing a variable, use parentheses. Otherwise, check for mismatched delimiters.
+#+end_example
+
+* Syntax error example 2
+
+#+begin_example
+Error: File: /home/eludlam/WORK/matlab-emacs-src/tests/syntaxerr.m Line: 4 Column: 9
+Character vector is not terminated properly.
+#+end_example
+    
+* Warning
+
+#+begin_example
+Warning: You enountered a warning in buggy.m 
+> In buggy (line 15) 
+#+end_example
+
+* Old MATLAB style error example 1
+
+#+begin_example
+>> ls
+Error in ==> buggy
+On line 12 ==> ls blarg
+#+end_example
+
+* Old MATLAB style error example 2
+
+#+begin_example
+Error using ==> buggy at 7
+#+end_example
+
+
+* Old MATLAB syntax error
+
+#+begin_example
+Syntax error in ==> syntaxerr.m
+On line 8 ==> B = A(1
+#+end_example
+
+* Old MATLAB warning
+
+#+begin_example
+In buggy at line 15 You encountered a warning
+#+end_example

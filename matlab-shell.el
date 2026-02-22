@@ -725,9 +725,17 @@ Argument STR is the text for the anchor."
 
 ;;; ERROR HANDLING
 ;;
+;;  See: tests/test-matlab-shell-scan-for-error.el
+;;  Error patterns in tests/test-matlab-shell-scan-for-error-files/*.org
 
-;; The regular expression covers to forms in tests/erroexamples.shell.m
-;;
+(defvar matlab-shell--file-line-column-re
+  (rx bol
+      "File: " (group (1+ (not (or "\n" "\r"))) ".m") " "
+      "Line: " (group (1+ digit)) " "
+      "Column: " (group (1+ digit))
+      eol)
+  "Match error lines of form \"File: /path/to/f.m Line: M Column N\".")
+
 (defvar matlab-shell-error-anchor-expression
   (concat "^>?\\s-*\\(\\(Error \\(in\\|using\\)\\s-+\\|Syntax error in \\)\\(?:==> \\)?\\|"
           "In\\s-+\\(?:workspace belonging to\\s-+\\)?\\|Error:\\s-+File:\\s-+\\|Warning:\\s-+[^\n]+\n\\)")
@@ -766,33 +774,36 @@ Each expression should have the following match strings:
       (pulse-momentary-highlight-region (car ans) (car (cdr ans))))
     (message "Found: %S" ans)))
 
-
 (defun matlab-shell-scan-for-error (limit)
   "Scan backward for a MATLAB error in the current buffer until LIMIT.
 Uses `matlab-shell-error-anchor-expression' to find the error.
 Uses `matlab-shell-error-location-expression' to find where the error is.
 Returns a list of the form:
-  ( STARTPT ENDPT FILE LINE COLUMN )"
+  ( STARTPT ENDPT FILE LINE COLUMN )
+Point is let at error match when a match is found."
   (with-syntax-table matlab-shell-errorscanning-syntax-table
     (let ((ans nil)
           (beginning nil))
-      (when (re-search-backward matlab-shell-error-anchor-expression
-                                limit
-                                t)
-        (save-excursion
-          (setq beginning (save-excursion (goto-char (match-beginning 0))
-                                          (back-to-indentation)
-                                          (point)))
-          (goto-char (match-end 0))
-          (dolist (EXP matlab-shell-error-location-expression)
-            (when (looking-at EXP)
-              (setq ans (list beginning
-                              (match-end 0)
-                              (match-string-no-properties 1)
-                              (match-string-no-properties 2)
-                              (match-string-no-properties 3)
-                              )))))
-        )
+      (if (re-search-backward matlab-shell-error-anchor-expression limit t)
+          (save-excursion
+            (setq beginning (save-excursion (goto-char (match-beginning 0))
+                                            (back-to-indentation)
+                                            (point)))
+            (goto-char (match-end 0))
+            (dolist (EXP matlab-shell-error-location-expression)
+              (when (looking-at EXP)
+                (setq ans (list beginning
+                                (match-end 0)
+                                (match-string-no-properties 1)
+                                (match-string-no-properties 2)
+                                (match-string-no-properties 3)
+                                )))))
+        (when (re-search-backward matlab-shell--file-line-column-re limit t)
+          (setq ans (list (match-beginning 0)
+                          (match-end 0)
+                          (match-string-no-properties 1)
+                          (match-string-no-properties 2)
+                          (match-string-no-properties 3)))))
       ans)))
 
 (defvar matlab-shell-last-anchor-as-frame nil
@@ -2495,7 +2506,7 @@ Argument FNAME specifies if we should echo the region to the command line."
 ;; LocalWords:  keymap subjob kbd emacscd featurep fboundp EDU msbn pc Thx Chappaz windowid tcp lang
 ;; LocalWords:  postoutput capturetext EMACSCAP captext STARTCAP progn eol dbhot erroexamples cdr
 ;; LocalWords:  ENDPT dolist overlaystack mref deref errortext ERRORTXT shellerror Emacsen iq nt buf
-;; LocalWords:  auth mlfile EMAACSCAP buffname showbuff symlink'd emacsinit sha dirs ebstop
+;; LocalWords:  auth mlfile EMAACSCAP buffname showbuff symlink'd emacsinit sha dirs ebstop subr
 ;; LocalWords:  evalforms Histed pmark memq promptend numchars integerp emacsdocomplete mycmd ba
 ;; LocalWords:  nreverse emacsdocompletion byteswap stringp cbuff mapcar bw FCN's alist substr usr
 ;; LocalWords:  dired bol bobp numberp princ minibuffer fn matlabregex lastcmd notimeout
