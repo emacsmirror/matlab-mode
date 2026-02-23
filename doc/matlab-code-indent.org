@@ -101,6 +101,13 @@ eliminates the need for comment directives like ~%#<format-off>~ and ~%<format-o
 indent standard, people reading code from different projects will see consistency. Consistency helps
 with understanding and communication.
 
+An important design consideration is to respect what the author wrote by respecting newlines. Adding
+newlines or combining newlines can make it harder to read the code. Therefore, as a coding
+guideline, one should not put too much logic on a given line. Line length should be limited 100 when
+possible. However, going beyond 100 columns is allowed when it improves readability. For example, a
+matrix of data where each row is slightly longer than 100 columns is easier to read when compared
+with the same matrix of data formatted to fit within 100 columns.
+
 For performance considerations, we added ~%-indent-mode=minimal~ and ~%-indent-mode=full~ comment
 directives.
 
