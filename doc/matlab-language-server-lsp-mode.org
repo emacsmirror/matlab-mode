@@ -95,7 +95,7 @@ type =M-,= to jump back.
 
    + In the cloned or unzipped directory,
      #+begin_src bash
-       npm project-install
+       npm run project-install
        npm run compile
        npm run package  # optional JavaScript minimization
 
