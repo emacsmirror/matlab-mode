@@ -108,6 +108,10 @@ possible. However, going beyond 100 columns is allowed when it improves readabil
 matrix of data where each row is slightly longer than 100 columns is easier to read when compared
 with the same matrix of data formatted to fit within 100 columns.
 
+In this [[https://lkml.iu.edu/hypermail/linux/kernel/2005.3/08168.html][post]], Linus Torvalds makes a good point about the problems caused when code is formatted to
+fit within a column limit (in his case 80): "Excessive line breaks are BAD. They cause real and
+every-day problems. ..."
+
 For performance considerations, we added ~%-indent-mode=minimal~ and ~%-indent-mode=full~ comment
 directives.
 
