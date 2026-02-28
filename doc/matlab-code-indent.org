@@ -37,7 +37,7 @@ When using matlab-ts-mode (and not matlab-mode) the MATLAB indent engine:
    #+end_src
 
    v.s.
-   
+
    #+begin_src matlab
      longVariableNameForMatrix1 = myFcn( ...
          arg1, ...
@@ -120,7 +120,7 @@ directives.
 1. *Indent level of 4 spaces, no TAB characters, unicode, LF line-endings (no CRLF)*
 
    The MATLAB indent engine will indent to a level of 4 spaces for each scope or conditional.  Tab characters
-   are converted to spaces to ensure that code looks the same in all editors. 
+   are converted to spaces to ensure that code looks the same in all editors.
    For example, UNIX (POSIX) uses tab stops of 8 whereas Microsoft uses tab stops of 4. Note,
    the indent engine retains TAB characters within strings because altering them would change
    answers.
@@ -143,6 +143,49 @@ directives.
      end
    #+end_src
 
+   MATLAB supports two types of functions, those without a terminating end-statement and
+   "endless" function that have no terminating end-statement. Endless functions without
+   a terminating end-statement should not be indented. Functions with terminating end-statements
+   should be indented. Examples:
+
+   #+begin_src matlab
+     function a = myFunctionWithEnd(b)
+         if b > 0
+             a = 1
+         else
+             a = 0
+         end
+     end
+   #+end_src
+
+   #+begin_src matlab
+     function a = myEndlessFunction(b)
+     if b > 0
+         a = 1
+     else
+         a = 0
+     end
+   #+end_src
+
+   When creating new function m-files, an end-statement is recommended and the editor should
+   insert an end-statement when you type the start of a function. Adding a new function to an
+   existing file should conform to the existing end-statement state.
+
+   For example, if I create a myNewFunction.m, containing:
+
+   #+begin_src matlab
+     function out = myNewFunction(in)
+   #+end_src
+
+   and then type the Enter (RET) key, the end-statement should be automatically added and
+   the cursor point should be placed at the carrot (^) location:
+
+   #+begin_src matlab
+     function out = myNewFunction(in)
+         ^
+     end
+   #+end_src
+
 2. *Recommended line length 100*
 
    Code and comments should fit within 100 columns. A line may exceed 100 characters if it improves
@@ -150,10 +193,11 @@ directives.
 
    In general, too much logic on a given line hurts readability.  Reading the first part of a
    line should convey the operation being performed by the line.  Adding unrelated concepts on a
-   give line hurts readability. Hence the recommendation that lines are not too long.
+   give line hurts readability. Hence the recommendation that lines are not too long and thus
+   the recommendation for limiting length to 100.
 
-   Consider the following where the row content causes the column width to be 105.
-   Re-flowing would hurt readability.
+   However, lines can exceed 100 columns when readability is improved. Consider the following where
+   the row content causes the column width to be 105.  Re-flowing would hurt readability.
 
    #+begin_src matlab
      mat = [ ...
@@ -164,40 +208,40 @@ directives.
            ]
    #+end_src
 
-   Consider the following where a very long model/path/to/block causes the first line to be very
-   long.  Re-flowing will hurt readability.
+   As another example of long lines, the code below exceeds 100 characters.  To re-flow to fit
+   within 100 columns we'd need to split the Simulink block path, which would hurt readability:
+   using lines
 
    #+begin_src matlab
      set_param( ...
-         'model/path/to/block', ...
+         'model/subsystem1/subsystem2/subsystem3/subsystem4/subsystem5/Variable-Fractional-Delay FIR Filter', ...
          'Parameter', 'Value')
    #+end_src
 
-   Re-flowing code is not implemented in the indent engine because newlines help with readability and
-   programmatically adding or removing them can adversely effect the readability of code.  Adding the
-   ability to explicitly re-flowing of code in a region, similar to the way M-q or `fill-paragraph'
-   works in a comment, could be added.
+   Re-flowing code is not implemented in the indent engine because newlines help with readability
+   and programmatically adding or removing them can adversely effect the readability of code.
 
 3. *Use 2-space offset for case labels*
 
    The code under switch case or otherwise statements is one condition and hence should have the
-   same indent level anchored from the switch statement.  The level of complexity of the
-   following two statements is the same which is clear from the level of indent of the doIt
-   function call.
+   indent level anchored from the switch statement.  More specifically switch-statements and
+   if-statements are semantically equivalent and should have the same indent level. For example, the
+   level of complexity of the following two statements is the same which is clear from the level of
+   indent of the doIt function call.
 
    #+begin_src matlab
-   if condition1 == 1      |     switch condition1
-       doIt                |       case 1
-   end                     |         doIt
-                           |     end
+     if condition1 == 1      |     switch condition1
+         doIt                |       case 1
+     end                     |         doIt
+                             |     end
    #+end_src
 
-4. *Cells and arrays contain data and have indent level of 2 spaces*
+4. *Cells and arrays use indent level of 2 spaces*
 
    Indents cells and array with an inner indent level of 2 spaces for the data. Cells and arrays
-   which are structured data. Since there's no "conditionals" within structured data, we treat
-   the nesting in structured data like labels and indent by 2 spaces. Also, data is aligned with
-   the opening parenthesis or bracket. Example:
+   which are structured data. Since there are no "conditionals" within structured data, we treat the
+   nesting in structured data like labels and indent by 2 spaces. Also, data is aligned with the
+   opening parenthesis or bracket. Example:
 
    #+begin_src matlab
      myCell = { ...
@@ -225,13 +269,13 @@ directives.
    Example 1:
 
    #+begin_src matlab
-     a+b * c/ d-1;
+     e=a+b * c/ d-1;
    #+end_src
 
    Indents to:
 
    #+begin_src matlab
-     a + b * c / d - 1;
+     e = a + b * c / d - 1;
    #+end_src
 
    Example 2:
@@ -310,14 +354,14 @@ directives.
        [result1, result2] = myFunction( ...
            arg1, arg2, ...
            arg3)
-      #+end_src
+     #+end_src
 
    This is invalid:
 
-   #+begin_example
+   #+begin_src matlab
      [result1, result2] = myFunction(arg1, ...
          arg2)                                     % arg2 should be aligned with arg1
-   #+end_example
+   #+end_src
 
 7. *Function definition formats*
 
@@ -506,7 +550,6 @@ directives.
 
 13. *Align consecutive trailing comments*
 
-    Consecutive
     Example:
 
     #+begin_src matlab
@@ -609,7 +652,7 @@ directives.
       end
     #+end_src
 
-18. *Indent is robust to code with syntax errors.*
+18. *Indent must be robust to code with syntax errors.*
 
     Syntax errors should not cause the indent to cause major changes. For example, syntax errors in
     a matrix, shouldn't cause the matrix to be incorrectly indented (formatted).
