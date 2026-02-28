@@ -186,6 +186,21 @@ directives.
      end
    #+end_src
 
+   The documentation help comment for a function is not indented. Comments for code are indented at
+   the level of the code. The help comment is the comment immediately following the function
+   statement (no blank lines). Example:
+
+   #+begin_src matlab
+     function out = foobar(in)
+     % FOOBAR - this is the H1 line of the help
+     % This is additional help info.
+     % This comment is not indented.
+
+         % this is a comment for the following code
+         out = 2 * in;
+     end
+   #+end_src
+
 2. *Recommended line length 100*
 
    Code and comments should fit within 100 columns. A line may exceed 100 characters if it improves
