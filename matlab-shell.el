@@ -76,6 +76,27 @@
 Command switches are a list of strings.  Each entry is one switch."
   :type '(choice (repeat :tag "Switches, one per entry" string)))
 
+(defvar-local matlab-shell-matlab-exe-to-use nil
+  "MATLAB executable to use for `matlab-shell'.
+By default this is the resolved value of `matlab-shell-command'.
+See `matlab-shell-before-start-hook'.")
+
+(defvar-local matlab-shell-command-switches-to-use nil
+  "List of switches to provide when starting MATLAB for `matlab-shell'.
+By default this is `matlab-shell-command-switches''.
+See `matlab-shell-before-start-hook'.")
+
+(defcustom matlab-shell-before-start-hook nil
+  "List of functions called in *MATLAB* buffer before starting the MATLAB process.
+
+The hooks can `setq-local' the following which are used in starting MATLAB.
+ `matlab-shell-matlab-exe-to-use' - absolute path to the MATLAB executable
+ `matlab-shell-switches-to-use'   - list of switches provided to MATLAB.
+
+In addition, hooks can set other environment settings as required for
+the MATLAB process."
+  :type 'hook)
+
 (defface matlab-shell-error-face
   (list
    (list t
@@ -258,7 +279,7 @@ If multiple prompts are seen together, only call this once.")
   (append matlab-shell-error-font-lock-keywords
           matlab-shell-object-output-font-lock-keywords)
   "The matlab-shell keywords.")
-    
+
 
 ;;; Keymaps & Menus
 ;;
@@ -453,27 +474,26 @@ Try C-h f matlab-shell RET"))
              (not (matlab-netshell-server-active-p)))
     (matlab-netshell-server-start))
 
-  ;; Show the shell buffer
   (switch-to-buffer (concat "*" matlab-shell-buffer-name "*"))
 
-  ;; If the shell isn't active yet, start it.
   (unless (matlab-shell-active-p)
 
-    ;; Clean up crufty state
     (kill-all-local-variables)
 
-    ;; Thx David Chappaz for reminding me about this patch.
     (let* ((windowid (frame-parameter (selected-frame) 'outer-window-id))
            (newvar (concat "WINDOWID=" windowid))
            (process-environment (cons newvar process-environment))
-           (abs-matlab-exe (matlab--get-abs-matlab-exe))
-           (matlab-exe (file-local-name abs-matlab-exe))  ;; cleaner, works everywhere
-           )
-      (message "Running: %s" abs-matlab-exe)
-      (apply #'make-comint matlab-shell-buffer-name matlab-exe
-             nil matlab-shell-command-switches))
+           (abs-matlab-exe (matlab--get-abs-matlab-exe)))
 
-    ;; Enable GUD
+      ;; Need `file-local-name' for comint because for abs-matlab-exe can be local or remote.
+      (setq-local matlab-shell-matlab-exe-to-use (file-local-name abs-matlab-exe))
+      (setq-local matlab-shell-command-switches-to-use matlab-shell-command-switches)
+      (run-hooks 'matlab-shell-before-start-hook)
+
+      (message "Running: %s" abs-matlab-exe)
+      (apply #'make-comint matlab-shell-buffer-name matlab-shell-matlab-exe-to-use
+             nil matlab-shell-command-switches-to-use))
+
     (matlab-shell-gud-startup)
 
     ;; Init our filter and sentinel
