@@ -37,6 +37,18 @@
           (string-trim (format "%10.1f" (float-time (time-subtract (current-time) start-time))))
           " seconds."))
 
+(defvar-local matlab-ts-mode--ei-errors-map nil) ;; Key LINENUM, if t on an error line.
+
+(defun matlab-ts-mode--ei-mark-error-lines (error-node)
+  "Add lines of ERROR-NODE to `matlab-ts-mode--ei-errors-map'."
+  (let* ((error-start-pt (treesit-node-start error-node))
+         (error-end-pt (treesit-node-end error-node))
+         (error-start-linenum (line-number-at-pos error-start-pt))
+         (error-end-linenum (line-number-at-pos error-end-pt)))
+    (cl-loop
+     for linenum from error-start-linenum to error-end-linenum do
+     (puthash linenum t matlab-ts-mode--ei-errors-map))))
+
 (defvar matlab-ts-mode--ei-all-nodes-query (when (treesit-available-p)
                                              (treesit-query-compile 'matlab '(_ @n))))
 
@@ -49,6 +61,9 @@ adjusted.  For example, when NODE parent is a string and NODE is the
 string start characters, we return the parent string node.  Another
 example: when NODE is a \"+\" and parent is a unary_operator, we return
 MODIFIED-NODE-TYPE to be unary-op even though the node type is \"+\"."
+
+  (setq matlab-ts-mode--ei-errors-map (make-hash-table))
+
   (matlab-ts-mode--ei-fast-back-to-indentation)
   (let ((region-nodes (treesit-query-capture (treesit-buffer-root-node 'matlab)
                                              matlab-ts-mode--ei-all-nodes-query beg end t))
@@ -59,6 +74,10 @@ MODIFIED-NODE-TYPE to be unary-op even though the node type is \"+\"."
       (let ((node-type (treesit-node-type node)))
 
         (cond
+         ;; Case: ERROR node
+         ((string= node-type "ERROR")
+          (matlab-ts-mode--ei-mark-error-lines node)
+          (setq node nil))
 
          ;; Case: \n - ignore these, we don't pad them or anything
          ((string= node-type "\n")
@@ -147,9 +166,49 @@ MODIFIED-NODE-TYPE to be unary-op even though the node type is \"+\"."
           (setq node nil)))
 
         (when node
-          (push `(,node ,node-type) line-nodes))))
+          (push `(,node . ,node-type) line-nodes))))
 
     (reverse line-nodes)))
+
+(cl-defun matlab-ts-mode--ei-move-to-and-get-node-info (line-nodes-loc)
+  "Move to and return (UPDATED-LOC NODE MODIFIED-NODE-TYPE).
+Assumes point is at end of an existing node or at beginning of line.
+LINE-NODES-LOC is a location within line-nodes that is managed by
+this function.
+
+UPDATED-LOC is the cdr location in LINE-NODES, i.e. following is t
+
+  (let* ((pair (car UPDATED-LOC))
+         (node (car pair))
+     (and (>= (point) (treesit-node-start node)
+          (>= (point) (treesit-node-start node))))))
+
+Returned NODE and MODIFIED-NODE-TYPE will be nil if no next node before
+end-of-line.  MODIFIED-NODE-TYPE is computed by
+`matlab-ts-mode--ei-line-nodes-in-region' and is used in
+`matlab-ts-mode--ei-spacing'."
+
+  ;; Move point to next node start
+  (when (looking-at "[ \t]")
+    (if (re-search-forward "[^ \t]" nil (pos-eol))
+        (backward-char)
+      (cl-return-from matlab-ts-mode--ei-move-to-and-get-node-info (list line-nodes-loc))))
+
+  ;; TODO - this doesn't handle what about the hidden ';' nodes
+
+  (let* ((head-pair (car line-nodes-loc))
+         (updated-loc line-nodes-loc)
+         (pt (point)))
+    
+    (cl-loop while (let ((node (car head-pair)))
+                     (and node
+                          (or (< pt (treesit-node-start node))
+                              (>= pt (treesit-node-end node)))))
+             do
+             (setq updated-loc (cdr updated-loc)
+                   head-pair (car updated-loc)))
+
+    (list updated-loc (car head-pair) (cdr head-pair))))
 
 (defun prof-matlab-ts-mode--ei-line-nodes-region (arg)
   "Profile `matlab-ts-mode--ei-line-nodes-in-region'.
@@ -157,54 +216,71 @@ With prefix ARG, report elapsed time without profiling."
   (interactive "P")
   (when (not (eq major-mode 'matlab-ts-mode))
     (user-error "Buffer %s major-mode is not matlab-ts-mode" (buffer-name)))
-  (goto-char (point-min))
-  (let ((start-time (current-time))
-        line-nodes)
+  (let ((beg-pt (point-min))
+        (end-pt (point-max))
+        (start-time (current-time)))
     (when (not arg)
+      (when (profiler-running-p)
+        (profiler-stop))
       (profiler-start 'cpu))
     (unwind-protect
-        (setq line-nodes (matlab-ts-mode--ei-line-nodes-in-region (point-min) (point-max)))
+        (let* ((line-nodes (matlab-ts-mode--ei-line-nodes-in-region beg-pt end-pt))
+               (line-nodes-loc line-nodes))
+          (save-excursion
+            (goto-char (point-min))
+            (while (not (eobp))
+              (if (looking-at "[ \t]*$")
+                  (forward-line)
+                (let ((tuple (matlab-ts-mode--ei-move-to-and-get-node-info line-nodes-loc)))
+                  (setq line-nodes-loc (nth 0 tuple))
+                  (let ((node (nth 1 tuple))
+                        (node-type (nth 2 tuple)))
+                    (message "Line %d:%d, node-type: %s, node: %S"
+                             (line-number-at-pos) (current-column) node-type node)
+                    (goto-char (min (treesit-node-end node) (pos-eol)))))))))
       (when (not arg)
         (profiler-stop)
         (profiler-report)))
-    (message "Found %d line nodes. %s" (length line-nodes)
-             (matlab-ts-mode--ei-elapsed-time start-time))))
+    (message "%s" (matlab-ts-mode--ei-elapsed-time start-time))))
 
-(defun matlab-ts-mode--ei-nodes-in-line ()
-  "Get leave nodes in current line."
-  (matlab-ts-mode--ei-fast-back-to-indentation)
-  (let ((line-nodes (treesit-query-capture (treesit-buffer-root-node)
-                                           matlab-ts-mode--ei-all-nodes-query (point) (pos-eol) t))
-        line-leaf-nodes)
-    (dolist (node line-nodes)
-      (when (= (treesit-node-child-count node) 0)
-        (push node line-leaf-nodes)))
-    (reverse line-leaf-nodes)))
-
-(defun prof-matlab-ts-mode--ei-nodes-in-line (arg)
-  "Profile `matlab-ts-mode--ei-nodes-in-line'.
-This profiles the current `matlab-ts-mode' buffer.
-With prefix ARG, report elapsed time without profiling."
-  (interactive "P")
-  (when (not (eq major-mode 'matlab-ts-mode))
-    (user-error "Buffer %s major-mode is not matlab-ts-mode" (buffer-name)))
-  (goto-char (point-min))
-  (let ((start-time (current-time))
-        (count 0))
-    (when (not arg)
-      (profiler-start 'cpu))
-    (unwind-protect
-        (while (not (eobp))
-          (let ((line-leaf-nodes (matlab-ts-mode--ei-nodes-in-line)))
-            (setq count (+ count (length line-leaf-nodes))))
-          (forward-line))
-      (when (not arg)
-        (profiler-stop)
-        (profiler-report)))
-    (message "Found %d leaf nodes. %s" count
-             (matlab-ts-mode--ei-elapsed-time start-time))))
+;; Multiple queries is slower than one large query
+;; -----
+;; (defun matlab-ts-mode--ei-nodes-in-line ()
+;;   "Get leave nodes in current line."
+;;   (matlab-ts-mode--ei-fast-back-to-indentation)
+;;   (let ((line-nodes (treesit-query-capture (treesit-buffer-root-node)
+;;                                            matlab-ts-mode--ei-all-nodes-query (point) (pos-eol) t))
+;;         line-leaf-nodes)
+;;     (dolist (node line-nodes)
+;;       (when (= (treesit-node-child-count node) 0)
+;;         (push node line-leaf-nodes)))
+;;     (reverse line-leaf-nodes)))
+;;
+;; (defun prof-matlab-ts-mode--ei-nodes-in-line (arg)
+;;   "Profile `matlab-ts-mode--ei-nodes-in-line'.
+;; This profiles the current `matlab-ts-mode' buffer.
+;; With prefix ARG, report elapsed time without profiling."
+;;   (interactive "P")
+;;   (when (not (eq major-mode 'matlab-ts-mode))
+;;     (user-error "Buffer %s major-mode is not matlab-ts-mode" (buffer-name)))
+;;   (goto-char (point-min))
+;;   (let ((start-time (current-time))
+;;         (count 0))
+;;     (when (not arg)
+;;       (profiler-start 'cpu))
+;;     (unwind-protect
+;;         (while (not (eobp))
+;;           (let ((line-leaf-nodes (matlab-ts-mode--ei-nodes-in-line)))
+;;             (setq count (+ count (length line-leaf-nodes))))
+;;           (forward-line))
+;;       (when (not arg)
+;;         (profiler-stop)
+;;         (profiler-report)))
+;;     (message "Found %d leaf nodes. %s" count
+;;              (matlab-ts-mode--ei-elapsed-time start-time))))
 
 (provide 'prof-matlab-ts-mode--ei-capture)
 ;;; prof-matlab-ts-mode--ei-capture.el ends here
 
-;; LocalWords:  SPDX gmail defun treesit dolist setq isstring bos eos eol eobp
+;; LocalWords:  SPDX gmail defun treesit dolist setq isstring bos eos eol eobp LINENUM linenum cdr
+;; LocalWords:  puthash
