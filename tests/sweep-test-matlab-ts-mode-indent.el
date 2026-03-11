@@ -20,10 +20,10 @@
 ;; M-: (sweep-test-matlab-ts-mode-indent)
 ;;
 ;; Checks indent on all files under the current directory:
-;;  - runs `t-utils-sweep-test-indent' which validates the tree-sitter parse error state matches
-;;    mlint parse error state.
+;;  - runs `t-utils-sweep-test-indent' which indent files, saving as NAME~ and creates a diff.
 ;;  - activates `matlab-ts-mode--indent-assert'
 ;;  - reports slowest indents
+;;  - verifies state of mlint matches state of matlab tree-sitter with respect to errors
 
 ;;; Code:
 
@@ -69,20 +69,15 @@ String CHECK-RESULT is what the MLint returned."
             mlint-out)))
     (cons valid mlint-out)))
 
-(defun sweep-test-matlab-ts-mode-indent (&optional directory check-valid-parse)
+(defun sweep-test-matlab-ts-mode-indent (&optional directory save-diff)
   "Use `matlab-ts-mode' to indent each *.m file in DIRECTORY.
 
 If DIRECTORY isn't specified, it defaults to the current directory.
 
-CHECK-VALID-PARSE if t, will call SYNTAX-CHECKER-FUN on all files being
-processed to verify that the a successful tree-sitter parse also has no
-errors according to SYNTAX-CHECKER-FUN.  Any inconsistent parses are
-reported which is likely a bug in the tree-sitter parser.
-
-This calls `t-utils-sweep-test-indent' with does a number of
-checks to validate the indent rules.  When run interactively,
-displays the result in a *sweep-test-matlab-ts-mode-indent* buffer, otherwise
-the results are displayed on stdout."
+This calls `t-utils-sweep-test-indent' with does a number of checks to
+validate the indent rules.  When run interactively, displays the result
+in a *sweep-test-matlab-ts-mode-indent* buffer, otherwise the results
+are displayed on stdout.  When SAVE-DIFF is t, a *.diff file is created."
 
   (let ((test-name "sweep-test-matlab-ts-mode-indent")
         (matlab-ts-mode--indent-assert t))
@@ -95,9 +90,10 @@ the results are displayed on stdout."
      (rx ".m" eos)
      #'matlab-ts-mode
      :syntax-checker-fun #'sweep-test-matlab-ts-mode-indent--syntax-checker
-     :check-valid-parse check-valid-parse)))
+     :check-valid-parse t
+     :save-diff save-diff)))
 
 (provide 'sweep-test-matlab-ts-mode-indent)
 ;;; sweep-test-matlab-ts-mode-indent.el ends here
 
-;; LocalWords:  utils MLint defun setq EOL regularcode eos bos
+;; LocalWords:  utils MLint defun setq EOL regularcode eos bos alist

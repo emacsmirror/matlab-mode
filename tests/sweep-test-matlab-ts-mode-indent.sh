@@ -18,6 +18,6 @@ emacs --batch -q --eval "(setq treesit-extra-load-path (list \"$TS_EXTRA_LOAD_DI
         -L "$EmacsMATLABModeDir/tests" \
         -l "$EmacsMATLABModeDir/tests/t-utils.el" \
         -l "$EmacsMATLABModeDir/tests/sweep-test-matlab-ts-mode-indent.el" \
-        -f sweep-test-matlab-ts-mode-indent < /dev/null
+        --eval "(sweep-test-matlab-ts-mode-indent nil $TS_INDENT_SAVE_DIFF)" < /dev/null
 
 # LocalWords:  usr MFILES dylib slib uname elif esac libtree realpath fn setq treesit dev utils
