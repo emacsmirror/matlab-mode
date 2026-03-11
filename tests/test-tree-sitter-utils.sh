@@ -47,6 +47,7 @@ fi
 #-------------#
 
 libTreeSitterMatlab=""
+TS_INDENT_SAVE_DIFF=nil
 
 while [[ $# -gt 0 ]]
 do
@@ -76,6 +77,10 @@ do
             echo "$0 [-libtree-sitter-matlab /PATH/TO/libtree-sitter-matlab.SLIB_EXT]"
             exit 0
             ;;
+        -save-diff)
+            TS_INDENT_SAVE_DIFF=t
+            shift
+            ;;
         *)
             echo "Invalid option: $1"
             exit 0
@@ -99,5 +104,7 @@ export TS_EXTRA_LOAD_DIR
 
 EmacsMATLABModeDir=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && cd .. && pwd)
 export EmacsMATLABModeDir
+
+export TS_INDENT_SAVE_DIFF
 
 #  LocalWords:  libtree dylib slib uname elif esac realpath fn setq treesit
