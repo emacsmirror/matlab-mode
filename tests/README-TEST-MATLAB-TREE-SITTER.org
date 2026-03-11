@@ -1,5 +1,5 @@
 # File: tests/README-TEST-MATLAB-TREE-SITTER.org
-# Copyright (C) 2025 Free Software Foundation, Inc.
+# Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
 #+startup: showall
 #+startup: logdone
@@ -15,7 +15,6 @@
 
 #+title:  MATLAB tree-sitter only testing
 #+author: John Ciolfi
-#+date:   Nov-24-2025
 
 Emacs leverages https://github.com/acristoffers/tree-sitter-matlab for matlab-ts-mode and thus has
 tests for it. The tests below /only/ exercise the matlab tree-sitter grammar shared library and not the
@@ -253,10 +252,14 @@ To use sweep-test-matlab-ts-mode-indent.sh
 
    or if mlint (which mlint) isn't on the path
 
-   #+begin_src matlab
+   #+begin_src bash
      env PATH=/matlab-install/bin:$PATH \
          /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/sweep-test-matlab-ts-mode-indent.sh
    #+end_src
+
+   Add option -save-diff to save a =*.diff= file:
+
+   : /YOUR/WORK/DIRECTORY/Emacs-MATLAB-Mode/tests/sweep-test-matlab-ts-mode-indent.sh -save-diff
 
 2. Results
 
@@ -264,7 +267,17 @@ To use sweep-test-matlab-ts-mode-indent.sh
 
      This lists the files parsed and whether or not they have syntax errors.
 
+   - *sweep-test-matlab-ts-mode-indent.diff*
+
+     Indent differences. Only created if -save-diff was provided to
+     sweep-test-matlab-ts-mode-indent.sh.
+
    - *sweep-test-matlab-ts-mode-indent.result.txt*
+
+* Test: sweep-test-matlab-ts-mode-indent-no-mlint.sh
+
+This is the same as [[Test: sweep-test-matlab-ts-mode-indent.sh]], but does not run mlint to validate
+mlint output matches the matlab tree-sitter output and this is faster.
 
 # LocalWords:  showall backports libtree SLIB dylib ABI abi MFILES utils VC vcvars logdone env
 # LocalWords:  inlineimages latexpreview usepackage parskip svg
