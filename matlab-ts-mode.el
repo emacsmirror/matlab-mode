@@ -1109,8 +1109,9 @@ is where we start looking for the error node."
                (cond
                 ((string-match-p (rx bos (or "line_continuation" "," ";") eos) check-type)
                  (goto-char (treesit-node-start check-node))
-                 (re-search-backward "[^ \t\n\r]" nil t)
-                 t)
+                 (if (re-search-backward "[^ \t\n\r]" nil t)
+                     t
+                   (setq check-node nil)))
                 ((and (string-match-p (rx bos "ERROR" eos) check-type)
                       (looking-at ";" t))
                  (goto-char (1- (point)))
@@ -2834,29 +2835,31 @@ results in:
                                                 (point)))))))))
 
           ;; Don't indent error lines (excluding current line)
-          (let ((error-linenums (matlab-ts-mode--ei-get-errors-alist)))
+          (let ((err-map (matlab-ts-mode--ei-query-errors)))
             (cl-loop
              for direction in '(-1 1) do
              (goto-char start-bol)
              (cl-loop
               while (not (if (= direction -1) (bobp) (eobp))) do
               (forward-line direction)
-              (if (and (= direction -1)
+
+              (if (and (= direction -1) ;; moving backward and at beginning?
                        (< (point) beg))
                   (goto-char (point-min))
-                ;; see if at error line
-                (when (and (= direction 1)
+                (when (and (= direction 1) ;; moving forward and at end?
                            (> (point) end))
-                  (cl-return))
-                (when (alist-get (line-number-at-pos) error-linenums)
-                  (if (= direction -1)
+                  (cl-return)))
+
+              ;; On an error line?
+              (when (gethash (pos-bol) err-map)
+                (if (= direction -1)
                       (progn
                         (forward-line)
                         (setq beg (pos-bol))
                         (goto-char (point-min)))
-                    (setq end (pos-bol))
-                    (cl-return))))))))))
-      
+                  (setq end (pos-bol))
+                  (cl-return)))))))))
+
     ;; region to indent
     (cons beg end)))
 
@@ -2870,7 +2873,7 @@ results in:
       (matlab-ts-mode--ei-indent-elements-in-line))))
 
 (defun matlab-ts-mode-tab-indent (&optional _arg)
-  "Indent adjacent lines.
+  "Indent current and adjacent lines.
 Optional prefix _ARG is ignored and provided for compatibility with
 `indent-for-tab-command' because we bind TAB to
 `matlab-ts-mode-tab-indent'."
