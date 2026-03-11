@@ -1270,8 +1270,9 @@ To debug a specific font-lock test file
                   (forward-char))))
 
             (let ((error-msg
-                   (t-utils--baseline-check test-name start-time
-                                            lang-file got expected-file
+                   (t-utils--baseline-check
+                    test-name start-time
+                    lang-file got expected-file
                     (lambda (lang-file got got-file expected expected-file)
                       (t-utils--test-font-lock-checker lang-file got got-file
                                                        expected expected-file
@@ -1935,25 +1936,29 @@ LANGUAGE tree-sitter that need addressing or some other issue."
   (when (not error-nodes-regexp)
     (setq error-nodes-regexp (rx bos "ERROR" eos)))
 
-  (let ((all-lang-files (directory-files-recursively directory lang-file-regexp))
-        (start-time (current-time))
-        (parse-errors "")
-        (invalid-successful-parse "")
-        (indent-errors "")
-        (took-ht (make-hash-table :test 'equal))
-        diff-file
-        n-lines
-        indent-phase)
+  (let* ((all-lang-files (directory-files-recursively directory lang-file-regexp))
+         (start-time (current-time))
+         (parse-errors "")
+         (invalid-successful-parse "")
+         (indent-errors "")
+         (took-ht (make-hash-table :test 'equal))
+         diff-file
+         n-lines
+         indent-phase
+         (n-files (length all-lang-files))
+         (file-num 0))
     (setq log-file (t-utils--log-create test-name log-file))
     (setq diff-file (concat (file-name-sans-extension log-file) ".diff"))
     (message "Diff: %s" diff-file)
     (t-utils--log log-file (format "Found %d files to indent %s\n"
-                                   (length all-lang-files) (t-utils--took start-time)))
+                                   n-files (t-utils--took start-time)))
 
     (dolist (lang-file all-lang-files)
       (when (setq n-lines (t-utils--get-lang-file-n-lines lang-file major-mode-fun log-file))
         (with-temp-buffer
-          (t-utils--log log-file (format "Reading: %s (%d lines)\n" lang-file n-lines))
+          (setq file-num (1+ file-num))
+          (t-utils--log log-file (format "Reading: %d of %d: %s (%d lines)\n"
+                                         file-num n-files lang-file n-lines))
 
           ;; Check indent
           (condition-case err
