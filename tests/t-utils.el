@@ -1779,20 +1779,23 @@ else return nil and write a skipping message to LOG-FILE."
     (kill-buffer lang-file-buf)
     n-lines))
 
-(defun t-utils--indent-save-result (lang-file log-file diff-file)
+(defun t-utils--indent-save-result (lang-file log-file took-nsec diff-file)
   "Save indent result to LANG-FILE~ and diff to DIFF-FILE.
-Log activity to LOG-FILE."
+Log activity to LOG-FILE.  TOOK-NSEC is the time indent took in seconds.
+Specify DIFF-FILE as nil to skip the diff."
   (let ((lang-file-tilde (concat lang-file "~")))
     (write-region (point-min) (point-max) lang-file-tilde)
-    (t-utils--log log-file (format "IndentSavedTo: %s\n" lang-file-tilde))
-    (with-current-buffer (diff-no-select lang-file lang-file-tilde "-u" t)
-      ;; Remove diff summary (\nDiff Finished ...)
-      (goto-char (point-max))
-      (forward-line -2)
-      (let ((diff-str (buffer-substring (point-min) (point)))
-            (coding-system-for-write 'utf-8))
-        ;; Force utf-8 on write to handle case of non-utf8 characters in diff.
-        (write-region diff-str nil diff-file t)))))
+    (t-utils--log log-file (format "IndentSavedTo: %s (took %.3f seconds)\n" lang-file-tilde
+                                   took-nsec))
+    (when diff-file
+      (with-current-buffer (diff-no-select lang-file lang-file-tilde "-u" t)
+        ;; Remove diff summary (\nDiff Finished ...)
+        (goto-char (point-max))
+        (forward-line -2)
+        (let ((diff-str (buffer-substring (point-min) (point)))
+              (coding-system-for-write 'utf-8))
+          ;; Force utf-8 on write to handle case of non-utf8 characters in diff.
+          (write-region diff-str nil diff-file t))))))
 
 (defun t-utils--indent-err (err lang-file indent-phase log-file indent-errors)
   "Log ERR for LANG-FILE in INDENT-PHASE in LOG-FILE.
@@ -1833,7 +1836,8 @@ Returns update INDENT-ERRORS string."
                                      check-valid-parse
                                      error-nodes-regexp
                                      log-file
-                                     result-file)
+                                     result-file
+                                     save-diff)
   "Sweep test indent on files under DIRECTORY recursively.
 File base names matching LANG-FILE-REGEXP are tested.
 TEST-NAME is used in messages.
@@ -1864,8 +1868,9 @@ the SYNTAX-CHECKER-FUN says it does not.
 Next, the buffer is indented using `indent-region' and if this fails it
 is reported.  In addition, the slowest indents are reported.  The result
 of indent is saved to the file name with a tilde suffix, e.g. indent of
-foo.ext is saved to foo.ext~.  Differences are saved to a *.diff file
-which the LOG-FILE with the extension replaced with .diff.
+foo.ext is saved to foo.ext~.  When SAVE-DIFF is t, differences are
+saved to a *.diff file which the LOG-FILE with the extension replaced
+with .diff.
 
 Callers of this function should activate any assertions prior to calling
 this function.  For example, the last rule of the tree-sitter mode may
@@ -1948,8 +1953,9 @@ LANGUAGE tree-sitter that need addressing or some other issue."
          (n-files (length all-lang-files))
          (file-num 0))
     (setq log-file (t-utils--log-create test-name log-file))
-    (setq diff-file (concat (file-name-sans-extension log-file) ".diff"))
-    (message "Diff: %s" diff-file)
+    (when save-diff
+      (setq diff-file (concat (file-name-sans-extension log-file) ".diff"))
+      (message "Diff: %s" diff-file))
     (t-utils--log log-file (format "Found %d files to indent %s\n"
                                    n-files (t-utils--took start-time)))
 
@@ -1975,10 +1981,11 @@ LANGUAGE tree-sitter that need addressing or some other issue."
 
                 (setq indent-phase "indent-region")
                 (indent-region (point-min) (point-max))
-                (puthash lang-file (t-utils--took-nsec indent-start) took-ht)
+                (let ((took-nsec (t-utils--took-nsec indent-start)))
+                  (puthash lang-file took-nsec took-ht)
 
-                (setq indent-phase "save-results")
-                (t-utils--indent-save-result lang-file log-file diff-file))
+                  (setq indent-phase "save-results")
+                  (t-utils--indent-save-result lang-file log-file took-nsec diff-file)))
             (error (setq indent-errors (t-utils--indent-err err lang-file indent-phase
                                                             log-file indent-errors)))))))
 
