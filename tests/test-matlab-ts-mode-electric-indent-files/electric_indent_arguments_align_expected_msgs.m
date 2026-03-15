@@ -1,0 +1,19 @@
+% -*- matlab-ts -*- %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+
+function electric_indent_arguments_align(reallyLongLongLongLongLongLongLongLongInput1, in2, opts) %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
+    arguments (Input) %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
+        reallyLongLongLongLongLongLongLongLongInput1 (1,2) {mustBeFinite} %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        in2                                          {mustBeA(in1, {'single', 'double'}), mustBeReal, mustBeFinite} %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        opts.AddOperationalAuditoryContributions     (1,1) logical {} = true %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        opts.fooSignalLevel                          (1,5) {mustBeA(opts.fooSignalLevel, {'single', 'double'}), mustBeReal} %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        opts.fooNoiseLevel                           (1,5) {mustBeA(opts.fooNoiseLevel, {'single', 'double'}), mustBeReal} %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        opts.OperationalSignalLevel                  (1,5) {mustBeA(opts.OperationalSignalLevel, {'single', 'double'}), mustBeReal} = 60 + [-2.5, 1.5, 0, -6.2, -12]; %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        opts.OperationalNoiseLevel                   (1,5) {mustBeA(opts.OperationalNoiseLevel, {'single', 'double'}), mustBeReal} = [40, 36, 34, 33, 32]; %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        opts.AddOperationalAmbientNoise              (1,1) logical {} = true %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        opts.fooBar                                  logical {} = true %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+        opts.onOff                                   (1,1) matlab.lang.OnOffSwitchState = 'on' %  <{Matched rule: ((node-is "\\`\\(?:arguments_statement\\|block\\|e\\(?:num\\(?:eration\\)?\\|vents\\)\\|function_definition\\|methods\\|propert\\(?:ies\\|y\\)\\)\\'") parent 4)}>
+    end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>
+    disp(reallyLongLongLongLongLongLongLongLongInput1); %  <{Matched rule: ((parent-is "\\`function_definition\\'") parent matlab-ts-mode--set-function-indent-level-for-gp)}>
+    disp(in2); %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
+    disp(opts); %  <{Matched rule: ((parent-is "\\`block\\'") parent 0)}>
+end %  <{Matched rule: ((node-is "\\`\\(?:catch_clause\\|e\\(?:lse\\(?:\\(?:if\\)?_clause\\)\\|nd\\)\\)\\'") parent 0)}>

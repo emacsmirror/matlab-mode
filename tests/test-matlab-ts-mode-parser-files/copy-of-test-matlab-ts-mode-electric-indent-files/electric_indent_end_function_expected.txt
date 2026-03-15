@@ -1,0 +1,26 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,222> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,109]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[109,111]
+ (function_definition<111,221> function[111,119]
+  (function_output<120,125> (identifier[120,123]@{out}@) =[124,125])
+  name: (identifier[126,154]@{electric_indent_end_function}@)
+  (function_arguments<154,158> ([154,155] arguments: (identifier[155,157]@{in}@) )[157,158])
+  \n[158,159]
+  (block<163,218>
+   (assignment<163,179> left: (identifier[163,164]@{b}@) =[167,168]
+    right: 
+     (field_expression<169,179> object: (identifier[169,171]@{in}@) .[171,172]
+      field: (function_call<172,179> name: (identifier[172,177]@{begin}@) ([177,178] )[178,179])))
+   ;[179,180]
+   (assignment<185,199> left: (identifier[185,186]@{e}@) =[189,190]
+    right: 
+     (field_expression<191,199> object: (identifier[191,193]@{in}@) .[193,194]
+      field: 
+       (function_call<194,199>
+        name: (identifier<194,197> end[194,197])
+        ([197,198] )[198,199])))
+   ;[199,200]
+   (assignment<205,216> left: (identifier[205,208]@{out}@) =[209,210]
+    right: (binary_operator<211,216> left: (identifier[211,212]@{e}@) -[213,214] right: (identifier[215,216]@{b}@)))
+   ;[216,217] \n[217,218])
+  end[218,221])
+ \n[221,222])

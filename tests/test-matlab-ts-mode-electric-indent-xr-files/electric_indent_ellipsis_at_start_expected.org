@@ -1,0 +1,106 @@
+#+startup: showall
+
+* Executing commands from electric_indent_ellipsis_at_start.m:5:2:
+
+  case1: (t-utils-xr 
+  (re-search-forward "\\.\\.\\.") 
+  "C-a" 
+  (delete-region (point) (point-min)) 
+  (insert "\n\n\n")
+  (indent-region (point-min) (point-max))
+  (t-utils-xr-print-code (point-min) (point-max))
+  )
+
+- Invoking      : (re-search-forward "\\.\\.\\.")
+  Start point   :  249
+  Moved to point:  258
+  : 16:3: ...
+  :          ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  258
+  Moved to point:  255
+  : 16:0: ...
+  :       ^
+  No buffer modifications
+
+- Invoking      : (delete-region (point) (point-min))
+  Start point   :  255
+  Moved to point:    1
+  : 1:0: ...
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,18 +1,3 @@
+-% -*- matlab-ts -*-
+-
+-%{ 
+-  case1: 
+-  (t-utils-xr 
+-  (re-search-forward "\\.\\.\\.") 
+-  "C-a" 
+-  (delete-region (point) (point-min)) 
+-  (insert "\n\n\n")
+-  (indent-region (point-min) (point-max))
+-  (t-utils-xr-print-code (point-min) (point-max))
+-  )
+-%}
+-
+-
+ ...
+ 
+     % comment
+  #+end_src diff
+
+- Invoking      : (insert "
+
+
+")
+  Start point   :    1
+  Moved to point:    4
+  : 4:0: ...
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,3 +1,6 @@
++
++
++
+ ...
+ 
+     % comment
+  #+end_src diff
+
+- Invoking      : (indent-region (point-min) (point-max))
+  Start point   :    4
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -3,4 +3,4 @@
+ 
+ ...
+ 
+-    % comment
++% comment
+  #+end_src diff
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :    4
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+
+
+
+...
+
+% comment
+  #+end_src
+  No buffer modifications

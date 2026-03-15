@@ -1,0 +1,29 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,326> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22] (comment[22,167]@{%\{\n  case1: \n  (t-utils-xr\n  (re-search-forwar...}@) \n[167,169]
+ (function_definition<169,325> function[169,177] name: (identifier[178,214]@{electric_indent_xr_prop_hidden_nodes}@)
+  (function_arguments<214,224> ([214,215] arguments: (identifier[215,217]@{p1}@) ,[217,218] (identifier[218,223]@{prop2}@) )[223,224])
+  \n[224,225]
+  (arguments_statement<229,292> arguments[229,238]
+   (attributes<239,246> ([239,240] argument: (identifier[240,245]@{Input}@) )[245,246])
+   \n[246,247]
+   (property<255,263> name: (identifier[255,257]@{p1}@)
+    (validation_functions<260,263> {[260,261]
+     (identifier<261,261> arguments[261,261])
+     }[262,263]))
+   \n[263,264]
+   (property<272,284> name: (identifier[272,277]@{prop2}@)
+    (validation_functions<279,284> {[279,280]
+     (identifier<280,280> arguments[280,280])
+     }[283,284]))
+   \n[284,285] end[289,292])
+  (block<297,322>
+   (function_call<297,305> name: (identifier[297,301]@{disp}@) ([301,302]
+    (arguments<302,304> argument: (identifier[302,304]@{p1}@))
+    )[304,305])
+   \n[305,306]
+   (function_call<310,321> name: (identifier[310,314]@{disp}@) ([314,315]
+    (arguments<315,320> argument: (identifier[315,320]@{prop2}@))
+    )[320,321])
+   \n[321,322])
+  end[322,325])
+ \n[325,326])

@@ -1,41 +1,41 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,322> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
- (function_definition<22,321> function[22,30]
-  (function_output<31,36> (identifier[31,34]@{out}@) =[35,36])
-  name: (identifier[37,67]@{electric_indent_keyword_as_var}@)
-  (function_arguments<67,83> ([67,68] arguments: (identifier[68,71]@{in1}@) ,[71,72]
-   (identifier<73,82> arguments[73,82])
-   )[82,83])
-  \n[83,84]
-  (arguments_statement<88,180> arguments[88,97] \n[97,98]
-   (property<106,128> name: (identifier[106,109]@{in1}@)
-    (validation_functions<110,128> {[110,111] (identifier[111,127]@{mustBeTextScalar}@) }[127,128]))
-   \n[128,129]
-   (property<137,172>
-    name: (identifier<137,146> arguments[137,146])
-    (identifier[151,155]@{cell}@)
-    (validation_functions<155,167> {[155,156] (identifier[156,166]@{mustBeText}@) }[166,167])
-    (default_value<167,172> =[167,168]
-     (cell<168,172> {[168,169] }[171,172])))
-   \n[172,173] end[177,180])
-  (comment[186,271]@{% following both returns the first entry of argume...}@)
-  (block<276,318>
-   (assignment<276,316> left: (identifier[276,279]@{out}@) =[280,281]
+(source_file<1,421> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,119]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[119,121]
+ (function_definition<121,420> function[121,129]
+  (function_output<130,135> (identifier[130,133]@{out}@) =[134,135])
+  name: (identifier[136,166]@{electric_indent_keyword_as_var}@)
+  (function_arguments<166,182> ([166,167] arguments: (identifier[167,170]@{in1}@) ,[170,171]
+   (identifier<172,181> arguments[172,181])
+   )[181,182])
+  \n[182,183]
+  (arguments_statement<187,279> arguments[187,196] \n[196,197]
+   (property<205,227> name: (identifier[205,208]@{in1}@)
+    (validation_functions<209,227> {[209,210] (identifier[210,226]@{mustBeTextScalar}@) }[226,227]))
+   \n[227,228]
+   (property<236,271>
+    name: (identifier<236,245> arguments[236,245])
+    (identifier[250,254]@{cell}@)
+    (validation_functions<254,266> {[254,255] (identifier[255,265]@{mustBeText}@) }[265,266])
+    (default_value<266,271> =[266,267]
+     (cell<267,271> {[267,268] }[270,271])))
+   \n[271,272] end[276,279])
+  (comment[285,370]@{% following both returns the first entry of argume...}@)
+  (block<375,417>
+   (assignment<375,415> left: (identifier[375,378]@{out}@) =[379,380]
     right: 
-     (cell<282,316> {[282,283]
-      (row<283,315> (identifier[283,286]@{in1}@) ,[287,288]
-       (function_call<289,301>
-        name: (identifier<289,298> arguments[289,298])
-        {[298,299]
-        (arguments<299,300> argument: (number[299,300]@{1}@))
-        }[300,301])
-       ,[302,302]
-       (identifier<302,311> arguments[302,311])
-       ,[312,312]
-       (cell<312,315> {[312,313]
-        (row<313,314> (number[313,314]@{1}@))
-        }[314,315]))
-      }[315,316]))
-   ;[316,317] \n[317,318])
-  end[318,321])
- \n[321,322])
+     (cell<381,415> {[381,382]
+      (row<382,414> (identifier[382,385]@{in1}@) ,[386,387]
+       (function_call<388,400>
+        name: (identifier<388,397> arguments[388,397])
+        {[397,398]
+        (arguments<398,399> argument: (number[398,399]@{1}@))
+        }[399,400])
+       ,[401,401]
+       (identifier<401,410> arguments[401,410])
+       ,[411,411]
+       (cell<411,414> {[411,412]
+        (row<412,413> (number[412,413]@{1}@))
+        }[413,414]))
+      }[414,415]))
+   ;[415,416] \n[416,417])
+  end[417,420])
+ \n[420,421])

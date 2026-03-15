@@ -1,0 +1,47 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_align_assign_eat_comma.m:3:9:
+
+  case1: (t-utils-xr (re-search-forward "b2") "C-i" (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : (re-search-forward "b2")
+  Start point   :  122
+  Moved to point:  153
+  : 5:10:         b2 = [a2 ',' ...
+  :                 ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  153
+  Moved to point:  137
+  : 5:2: b2 = [a2, ',', ...
+  :        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,6 +1,6 @@
+ % -*- matlab-ts -*-
+ 
+ % case1: (t-utils-xr (re-search-forward "b2") "C-i" (t-utils-xr-print-code (point-min) (point-max)))
+-        a1 = 'foo';
+-        b2 = [a2 ',' ...
+-                           'bar'];
++a1 = 'foo';
++b2 = [a2, ',', ...
++      'bar'];
+  #+end_src diff
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :  137
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+% case1: (t-utils-xr (re-search-forward \"b2\") \"C-i\" (t-utils-xr-print-code (point-min) (point-max)))
+a1 = 'foo';
+b2 = [a2, ',', ...
+      'bar'];
+  #+end_src
+  No buffer modifications

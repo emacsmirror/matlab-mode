@@ -1,0 +1,148 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_matrix_with_blank_lines.m:5:2:
+
+  Case1: (t-utils-xr 
+  (re-search-forward "30,")
+  "C-i"
+  )
+
+- Invoking      : (re-search-forward "30,")
+  Start point   :   88
+  Moved to point:  137
+  : 13:11:         30,4
+  :                   ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  137
+  Moved to point:  142
+  : 13:16:             30, 4
+  :                        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -10,8 +10,8 @@
+ 
+ mat1 = [     111111, 2
+          
+-        30,4
+-         500, 4];
++            30, 4
++           500, 4];
+ 
+ %{
+   Case2:
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_matrix_with_blank_lines.m:18:2:
+
+  Case2: (t-utils-xr 
+  (re-search-forward "30,")
+  "C-i"
+  )
+
+- Invoking      : (re-search-forward "30,")
+  Start point   :  231
+  Moved to point:  283
+  : 26:18:                30,4
+  :                          ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  283
+  Moved to point:  285
+  : 26:20:                 30, 4
+  :                            ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -23,7 +23,7 @@
+ 
+ mat2 = [     11, 2
+          
+-               30,4
++                30, 4
+ 
+ 
+    5000000000, 4];
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_matrix_with_blank_lines.m:31:9:
+
+  Case3: (t-utils-xr (indent-region (point-min) (point-max))  (t-utils-xr-print-code (point-min) (point-max)))
+
+- Invoking      : (indent-region (point-min) (point-max))
+  Start point   :  419
+  Moved to point:  422
+  : 31:110: % Case3: (t-utils-xr (indent-region (point-min) (point-max))  (t-utils-xr-print-code (point-min) (point-max)))
+  :                                                                                                                       ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -8,7 +8,7 @@
+   )
+ %}
+ 
+-mat1 = [     111111, 2
++mat1 = [111111, 2
+          
+             30, 4
+            500, 4];
+@@ -21,11 +21,11 @@
+   )
+ %}
+ 
+-mat2 = [     11, 2
++mat2 = [        11, 2
+          
+                 30, 4
+ 
+ 
+-   5000000000, 4];
++        5000000000, 4];
+ 
+ % Case3: (t-utils-xr (indent-region (point-min) (point-max))  (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src diff
+
+- Invoking      : (t-utils-xr-print-code (point-min) (point-max))
+  Start point   :  422
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+% -*- matlab-ts -*-
+
+%{
+  Case1:
+  (t-utils-xr 
+  (re-search-forward \"30,\")
+  \"C-i\"
+  )
+%}
+
+mat1 = [111111, 2
+         
+            30, 4
+           500, 4];
+
+%{
+  Case2:
+  (t-utils-xr 
+  (re-search-forward \"30,\")
+  \"C-i\"
+  )
+%}
+
+mat2 = [        11, 2
+         
+                30, 4
+
+
+        5000000000, 4];
+
+% Case3: (t-utils-xr (indent-region (point-min) (point-max))  (t-utils-xr-print-code (point-min) (point-max)))
+  #+end_src
+  No buffer modifications

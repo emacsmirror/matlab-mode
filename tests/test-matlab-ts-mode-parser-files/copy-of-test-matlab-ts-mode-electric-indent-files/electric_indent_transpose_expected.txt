@@ -1,0 +1,20 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,161> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,114]@{% .^ binds tighly (no spaces) when the left and ri...}@)
+ (assignment<116,132> left: (identifier[116,118]@{a0}@) =[119,120]
+  right: 
+   (binary_operator<121,132>
+    left: 
+     (matrix<121,127> [[121,122]
+      (row<122,126> (number[122,123]@{1}@) ,[123,124] (number[125,126]@{2}@))
+      ][126,127])
+    .^[128,130] right: (number[131,132]@{2}@)))
+ ;[132,133]
+ (assignment<134,145> left: (identifier[134,136]@{a1}@) =[137,138]
+  right: (binary_operator<139,145> left: (identifier[139,140]@{T}@) .^[141,143] right: (number[144,145]@{2}@)))
+ ;[145,146]
+ (assignment<147,159> left: (identifier[147,149]@{a2}@) =[150,151]
+  right: 
+   (binary_operator<152,159>
+    left: (postfix_operator<152,154> operand: (identifier[152,153]@{T}@) '[153,154])
+    .^[155,157] right: (number[158,159]@{2}@)))
+ ;[159,160] \n[160,161])

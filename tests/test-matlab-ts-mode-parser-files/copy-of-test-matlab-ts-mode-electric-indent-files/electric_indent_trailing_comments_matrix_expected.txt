@@ -1,0 +1,41 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,595> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,96]@{% t-utils-test-indent: no-line-by-line-indent - we...}@)
+ (assignment<98,178> left: (identifier[98,107]@{fooBarGoo}@) =[108,109]
+  right: 
+   (matrix<110,178> [[110,111]
+    (row<111,112> (number[111,112]@{0}@))
+    (row<114,115> (number[114,115]@{0}@))
+    (comment[117,128]@{% comment 1}@)
+    (row<142,143> (number[142,143]@{3}@))
+    (row<145,146> (number[145,146]@{4}@))
+    (comment[148,159]@{% comment 2}@)
+    (row<173,174> (number[173,174]@{8}@))
+    (row<176,177> (number[176,177]@{0}@))
+    ][177,178]))
+ ;[178,179] (comment[180,191]@{% Comment 3}@)
+ (assignment<197,593> left: (identifier[197,202]@{xvals}@) =[203,204]
+  right: 
+   (function_call<205,593> name: (identifier[205,209]@{cast}@) ([209,210]
+    (arguments<210,592>
+     argument: 
+      (matrix<210,547> [[210,211] (comment[212,223]@{% comment 0}@) \n[223,224]
+       (row<243,256> (number[243,256]@{1.51266667212}@))
+       (comment[257,268]@{% comment 1}@)
+       (row<288,308> (number[288,308]@{2.236550782529778999}@))
+       (comment[309,320]@{% comment 2}@)
+       (row<340,357> (number[340,357]@{1.882832775783885}@))
+       (comment[358,369]@{% comment 3}@)
+       (row<389,403> (number[389,403]@{6.036100699764}@))
+       (comment[404,415]@{% comment 4}@)
+       (row<435,449> (number[435,449]@{1.239375584911}@))
+       (comment[450,461]@{% comment 5}@)
+       (row<481,501> (number[481,501]@{1.998030698880604271}@))
+       (comment[502,513]@{% comment 6}@)
+       (row<533,546> (number[533,546]@{2.78762992099}@))
+       ][546,547])
+     ,[547,548] (line_continuation[549,566]@{...  % comment 7\n}@)
+     (function_call<583,592> name: (identifier[583,588]@{class}@) ([588,589]
+      (arguments<589,591> argument: (identifier[589,591]@{eg}@))
+      )[591,592]))
+    )[592,593]))
+ ;[593,594] \n[594,595])

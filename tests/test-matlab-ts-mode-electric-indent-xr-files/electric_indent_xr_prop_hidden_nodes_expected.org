@@ -1,0 +1,67 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_prop_hidden_nodes.m:5:2:
+
+  case1: (t-utils-xr
+  (re-search-forward "^ +p1")
+  "C-i"
+  "C-i"
+  (t-utils-xr-print-code (re-search-backward "^fun") (point-max))
+  )
+
+- Invoking      : (re-search-forward "^ +p1")
+  Start point   :  164
+  Moved to point:  257
+  : 15:10:         p1   { }
+  :                  ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  257
+  Moved to point:  261
+  : 15:13:         p1    {}
+  :                     ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -10,10 +10,10 @@
+   )
+ %}
+ 
+-function electric_indent_xr_prop_hidden_nodes(p1,prop2)
++function electric_indent_xr_prop_hidden_nodes(p1, prop2)
+     arguments (Input)
+-        p1   { }
+-        prop2  {   }
++        p1    {}
++        prop2 {}
+     end
+     disp(p1)
+     disp(prop2)
+  #+end_src diff
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  261
+  Moved to point:  262
+  : 15:14:         p1    {}
+  :                      ^
+  No buffer modifications
+
+- Invoking      : (t-utils-xr-print-code (re-search-backward "^fun") (point-max))
+  Start point   :  262
+  Moved to point:  169
+  : 13:0: function electric_indent_xr_prop_hidden_nodes(p1, prop2)
+  :       ^
+  standard-output:
+  #+begin_src matlab-ts
+function electric_indent_xr_prop_hidden_nodes(p1, prop2)
+    arguments (Input)
+        p1    {}
+        prop2 {}
+    end
+    disp(p1)
+    disp(prop2)
+end
+  #+end_src
+  No buffer modifications

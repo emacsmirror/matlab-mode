@@ -1,0 +1,156 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1111> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22]
+ (function_definition<22,1110> function[22,30] name: (identifier[31,62]@{electric_indent_arguments_align}@)
+  (function_arguments<62,119> ([62,63] arguments: (identifier[63,107]@{reallyLongLongLongLongLongLongLongLongInput1}@) ,[107,108] (identifier[109,112]@{in2}@) ,[112,113] (identifier[114,118]@{opts}@) )[118,119])
+  \n[119,120]
+  (arguments_statement<124,1019> arguments[124,133]
+   (attributes<134,141> ([134,135] argument: (identifier[135,140]@{Input}@) )[140,141])
+   \n[141,142]
+   (property<150,215> name: (identifier[150,194]@{reallyLongLongLongLongLongLongLongLongInput1}@)
+    (dimensions<195,200> ([195,196] (number[196,197]@{1}@) ,[197,198] (number[198,199]@{2}@) )[199,200])
+    (validation_functions<201,215> {[201,202] (identifier[202,214]@{mustBeFinite}@) }[214,215]))
+   \n[215,216]
+   (property<224,293> name: (identifier[224,227]@{in2}@)
+    (validation_functions<231,293> {[231,232]
+     (function_call<232,266> name: (identifier[232,239]@{mustBeA}@) ([239,240]
+      (arguments<240,265> argument: (identifier[240,243]@{in1}@) ,[243,244]
+       (cell<245,265> {[245,246]
+        (row<246,264>
+         (string<246,254> '[246,247] (string_content[247,253]@{single}@) '[253,254])
+         ,[254,255]
+         (string<256,264> '[256,257] (string_content[257,263]@{double}@) '[263,264]))
+        }[264,265]))
+      )[265,266])
+     ,[266,267] (identifier[268,278]@{mustBeReal}@) ,[278,279] (identifier[280,292]@{mustBeFinite}@) }[292,293]))
+   \n[293,294]
+   (property<302,366>
+    name: (property_name<302,342> (identifier[302,306]@{opts}@) .[306,307] (identifier[307,342]@{AddOperationalAuditoryContributions}@))
+    (dimensions<343,348> ([343,344] (number[344,345]@{1}@) ,[345,346] (number[346,347]@{1}@) )[347,348])
+    (identifier[349,356]@{logical}@)
+    (validation_functions<357,359> {[357,358]
+     (identifier<358,358> arguments[358,358])
+     }[358,359])
+    (default_value<360,366> =[360,361] (identifier[362,366]@{true}@)))
+   \n[366,367]
+   (property<375,465>
+    name: (property_name<375,394> (identifier[375,379]@{opts}@) .[379,380] (identifier[380,394]@{fooSignalLevel}@))
+    (dimensions<395,400> ([395,396] (number[396,397]@{1}@) ,[397,398] (number[398,399]@{5}@) )[399,400])
+    (validation_functions<401,465> {[401,402]
+     (function_call<402,452> name: (identifier[402,409]@{mustBeA}@) ([409,410]
+      (arguments<410,451>
+       argument: (field_expression<410,429> object: (identifier[410,414]@{opts}@) .[414,415] field: (identifier[415,429]@{fooSignalLevel}@))
+       ,[429,430]
+       (cell<431,451> {[431,432]
+        (row<432,450>
+         (string<432,440> '[432,433] (string_content[433,439]@{single}@) '[439,440])
+         ,[440,441]
+         (string<442,450> '[442,443] (string_content[443,449]@{double}@) '[449,450]))
+        }[450,451]))
+      )[451,452])
+     ,[452,453] (identifier[454,464]@{mustBeReal}@) }[464,465]))
+   \n[465,466]
+   (property<474,562>
+    name: (property_name<474,492> (identifier[474,478]@{opts}@) .[478,479] (identifier[479,492]@{fooNoiseLevel}@))
+    (dimensions<493,498> ([493,494] (number[494,495]@{1}@) ,[495,496] (number[496,497]@{5}@) )[497,498])
+    (validation_functions<499,562> {[499,500]
+     (function_call<500,549> name: (identifier[500,507]@{mustBeA}@) ([507,508]
+      (arguments<508,548>
+       argument: (field_expression<508,526> object: (identifier[508,512]@{opts}@) .[512,513] field: (identifier[513,526]@{fooNoiseLevel}@))
+       ,[526,527]
+       (cell<528,548> {[528,529]
+        (row<529,547>
+         (string<529,537> '[529,530] (string_content[530,536]@{single}@) '[536,537])
+         ,[537,538]
+         (string<539,547> '[539,540] (string_content[540,546]@{double}@) '[546,547]))
+        }[547,548]))
+      )[548,549])
+     ,[549,550] (identifier[551,561]@{mustBeReal}@) }[561,562]))
+   \n[562,563]
+   (property<571,710>
+    name: (property_name<571,598> (identifier[571,575]@{opts}@) .[575,576] (identifier[576,598]@{OperationalSignalLevel}@))
+    (dimensions<599,604> ([599,600] (number[600,601]@{1}@) ,[601,602] (number[602,603]@{5}@) )[603,604])
+    (validation_functions<605,677> {[605,606]
+     (function_call<606,664> name: (identifier[606,613]@{mustBeA}@) ([613,614]
+      (arguments<614,663>
+       argument: (field_expression<614,641> object: (identifier[614,618]@{opts}@) .[618,619] field: (identifier[619,641]@{OperationalSignalLevel}@))
+       ,[641,642]
+       (cell<643,663> {[643,644]
+        (row<644,662>
+         (string<644,652> '[644,645] (string_content[645,651]@{single}@) '[651,652])
+         ,[652,653]
+         (string<654,662> '[654,655] (string_content[655,661]@{double}@) '[661,662]))
+        }[662,663]))
+      )[663,664])
+     ,[664,665] (identifier[666,676]@{mustBeReal}@) }[676,677])
+    (default_value<678,710> =[678,679]
+     (binary_operator<680,710> left: (number[680,682]@{60}@) +[683,684]
+      right: 
+       (matrix<685,710> [[685,686]
+        (row<686,709>
+         (unary_operator<686,690> -[686,687] operand: (number[687,690]@{2.5}@))
+         ,[690,691] (number[692,695]@{1.5}@) ,[695,696] (number[697,698]@{0}@) ,[698,699]
+         (unary_operator<700,704> -[700,701] operand: (number[701,704]@{6.2}@))
+         ,[704,705]
+         (unary_operator<706,709> -[706,707] operand: (number[707,709]@{12}@)))
+        ][709,710]))))
+   ;[710,711] \n[711,712]
+   (property<720,847>
+    name: (property_name<720,746> (identifier[720,724]@{opts}@) .[724,725] (identifier[725,746]@{OperationalNoiseLevel}@))
+    (dimensions<747,752> ([747,748] (number[748,749]@{1}@) ,[749,750] (number[750,751]@{5}@) )[751,752])
+    (validation_functions<753,824> {[753,754]
+     (function_call<754,811> name: (identifier[754,761]@{mustBeA}@) ([761,762]
+      (arguments<762,810>
+       argument: (field_expression<762,788> object: (identifier[762,766]@{opts}@) .[766,767] field: (identifier[767,788]@{OperationalNoiseLevel}@))
+       ,[788,789]
+       (cell<790,810> {[790,791]
+        (row<791,809>
+         (string<791,799> '[791,792] (string_content[792,798]@{single}@) '[798,799])
+         ,[799,800]
+         (string<801,809> '[801,802] (string_content[802,808]@{double}@) '[808,809]))
+        }[809,810]))
+      )[810,811])
+     ,[811,812] (identifier[813,823]@{mustBeReal}@) }[823,824])
+    (default_value<825,847> =[825,826]
+     (matrix<827,847> [[827,828]
+      (row<828,846> (number[828,830]@{40}@) ,[830,831] (number[832,834]@{36}@) ,[834,835] (number[836,838]@{34}@) ,[838,839] (number[840,842]@{33}@) ,[842,843] (number[844,846]@{32}@))
+      ][846,847])))
+   ;[847,848] \n[848,849]
+   (property<857,912>
+    name: (property_name<857,888> (identifier[857,861]@{opts}@) .[861,862] (identifier[862,888]@{AddOperationalAmbientNoise}@))
+    (dimensions<889,894> ([889,890] (number[890,891]@{1}@) ,[891,892] (number[892,893]@{1}@) )[893,894])
+    (identifier[895,902]@{logical}@)
+    (validation_functions<903,905> {[903,904]
+     (identifier<904,904> arguments[904,904])
+     }[904,905])
+    (default_value<906,912> =[906,907] (identifier[908,912]@{true}@)))
+   \n[912,913]
+   (property<921,950>
+    name: (property_name<921,932> (identifier[921,925]@{opts}@) .[925,926] (identifier[926,932]@{fooBar}@))
+    (identifier[933,940]@{logical}@)
+    (validation_functions<941,943> {[941,942]
+     (identifier<942,942> arguments[942,942])
+     }[942,943])
+    (default_value<944,950> =[944,945] (identifier[946,950]@{true}@)))
+   \n[950,951]
+   (property<959,1011>
+    name: (property_name<959,969> (identifier[959,963]@{opts}@) .[963,964] (identifier[964,969]@{onOff}@))
+    (dimensions<970,975> ([970,971] (number[971,972]@{1}@) ,[972,973] (number[973,974]@{1}@) )[974,975])
+    (property_name<976,1004> (identifier[976,982]@{matlab}@) .[982,983] (identifier[983,987]@{lang}@) .[987,988] (identifier[988,1004]@{OnOffSwitchState}@))
+    (default_value<1005,1011> =[1005,1006]
+     (string<1007,1011> '[1007,1008] (string_content[1008,1010]@{on}@) '[1010,1011])))
+   \n[1011,1012] end[1016,1019])
+  (block<1024,1107>
+   (function_call<1024,1074> name: (identifier[1024,1028]@{disp}@) ([1028,1029]
+    (arguments<1029,1073> argument: (identifier[1029,1073]@{reallyLongLongLongLongLongLongLongLongInput1}@))
+    )[1073,1074])
+   ;[1074,1075]
+   (function_call<1080,1089> name: (identifier[1080,1084]@{disp}@) ([1084,1085]
+    (arguments<1085,1088> argument: (identifier[1085,1088]@{in2}@))
+    )[1088,1089])
+   ;[1089,1090]
+   (function_call<1095,1105> name: (identifier[1095,1099]@{disp}@) ([1099,1100]
+    (arguments<1100,1104> argument: (identifier[1100,1104]@{opts}@))
+    )[1104,1105])
+   ;[1105,1106] \n[1106,1107])
+  end[1107,1110])
+ \n[1110,1111])

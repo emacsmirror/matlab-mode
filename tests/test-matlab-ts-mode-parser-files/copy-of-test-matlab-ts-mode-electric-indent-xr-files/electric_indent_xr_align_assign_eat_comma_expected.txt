@@ -1,0 +1,14 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,203> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,122]@{% case1: (t-utils-xr (re-search-forward "b2") "C-i...}@)
+ (assignment<131,141> left: (identifier[131,133]@{a1}@) =[134,135]
+  right: (string<136,141> '[136,137] (string_content[137,140]@{foo}@) '[140,141]))
+ ;[141,142]
+ (assignment<151,201> left: (identifier[151,153]@{b2}@) =[154,155]
+  right: 
+   (matrix<156,201> [[156,157]
+    (row<157,200> (identifier[157,159]@{a2}@) ,[160,160]
+     (string<160,163> '[160,161] (string_content[161,162]@{,}@) '[162,163])
+     (line_continuation[164,195]@{...\n                           }@) ,[195,195]
+     (string<195,200> '[195,196] (string_content[196,199]@{bar}@) '[199,200]))
+    ][200,201]))
+ ;[201,202] \n[202,203])

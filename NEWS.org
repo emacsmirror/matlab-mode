@@ -3,6 +3,43 @@
 
 # Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
+* Release 8.1.2 Mar-15-2026
+
+1. matlab-ts-mode: improved performance of electric indent.
+
+   Previously we were using (treesit-node-at (point)) to obtain the language elements to indent. Now
+   we use treesit-capture-query which is faster.
+
+   This is the first step in speeding up electric indent. Future possible optimizations include
+   using symbols from the treesit-capture for language element identification rather than
+   treesit-node-type, simplification of matrix alignment and the other alignments, additional
+   removal of treesit-node-at, etc.
+
+2. matlab-ts-mode: fixed trailing comment alignment problems.
+
+   Now we only align consecutive statements when in same scope. For example, first comment below is
+   in a different scope so not aligned with the last two comments:
+
+   #+begin_src matlab
+     fooBarGooToo = [something, ...
+                     [otherThing(wIndex) : theEndIndex(wIndex) - 1, ...
+                      otherThing(wIndex) + 1 : theEndIndex(wIndex); ...
+                      otherThing(wIndex) + 1 : theEndIndex(wIndex), ...
+                      otherThing(wIndex) : theEndIndex(wIndex) - 1]]; %#ok<AGROW>
+     P0 = [P0, foo.blah{wIndex}.foobarGooOrig(:, 1 : end - 1)]; %#ok<AGROW>
+     P1 = [P1, foo.blah{wIndex}.foobarGooOrig(:, 2 : end)];     %#ok<AGROW>
+   #+end_src
+
+3. matlab-ts-mode: when using keywords (end, arguments, etc.) as variables or functions, they now
+   indent correctly. Note, MATLAB allows end.m, arguments = 10, etc.
+  
+4. matlab-ts-mode: An ellipsis at start of file no longer causes a hang
+
+5. matlab-shell: add matlab-shell-before-start-hook
+
+6. matlab-shell: hyperlink syntax error
+
+
 * Release 8.1.1 Feb-22-2026
 
 1. Enable matlab-ts-mode with Emacs 30.2 which is using tree-sitter ABI 15 (or 14). Note, Emacs 30.1

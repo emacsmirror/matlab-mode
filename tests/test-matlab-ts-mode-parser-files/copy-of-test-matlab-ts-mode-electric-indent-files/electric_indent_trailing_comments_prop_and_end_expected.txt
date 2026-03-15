@@ -1,0 +1,31 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,622> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,109]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[109,111]
+ (class_definition<111,621> classdef[111,119] name: (identifier[120,166]@{electric_indent_trailing_comments_prop_and_end}@) \n[166,167]
+  (properties<171,282> properties[171,181] \n[181,182]
+   (property<190,199> name: (identifier[190,199]@{property1}@))
+   ;[199,200] (comment[201,274]@{% list of properties affected by interlacing for c...}@) \n[274,275] end[279,282])
+  (comment[283,314]@{%properties Dependent protected}@) \n[314,316]
+  (properties<320,616> properties[320,330]
+   (attributes<331,360> ([331,332]
+    (attribute<332,348> (identifier[332,338]@{Access}@) =[339,340] (identifier[341,348]@{private}@))
+    ,[348,349]
+    (attribute<350,359> (identifier[350,359]@{Transient}@))
+    )[359,360])
+   (comment[363,373]@{% comment1}@) \n[373,374]
+   (property<382,404> name: (identifier[382,388]@{foobar}@)
+    (default_value<397,404> =[397,398] (identifier[399,404]@{false}@)))
+   ;[404,405] (comment[420,430]@{% comment2}@) \n[430,431]
+   (property<439,457> name: (identifier[439,449]@{foobarTime}@)
+    (default_value<454,457> =[454,455] (number[456,457]@{0}@)))
+   ;[457,458] (comment[477,487]@{% comment3}@) \n[487,488]
+   (property<496,537> name: (identifier[496,517]@{foobarGooTooSupported}@)
+    (default_value<518,537> =[518,519]
+     (field_expression<520,537> object: (identifier[520,523]@{opc}@) .[523,524] field: (identifier[524,526]@{ua}@) .[526,527] (identifier[527,531]@{Node}@) .[531,532] (identifier[532,537]@{empty}@))))
+   ;[537,538] (comment[541,551]@{% comment4}@) \n[551,552]
+   (property<560,596> name: (identifier[560,571]@{foobarToken}@)
+    (dimensions<575,580> ([575,576] (number[576,577]@{1}@) ,[577,578] (number[578,579]@{1}@) )[579,580])
+    (identifier[581,588]@{logical}@)
+    (default_value<589,596> =[589,590] (identifier[591,596]@{false}@)))
+   ;[596,597] (comment[598,608]@{% comment5}@) \n[608,609] end[613,616])
+  \n[616,618] end[618,621])
+ \n[621,622])

@@ -1,0 +1,8 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,52> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,50> left: (identifier[22,23]@{a}@) =[24,25]
+  right: 
+   (matrix<26,50> [[26,27]
+    (row<27,49> (number[27,28]@{1}@) ,[28,29] (line_continuation[30,34]@{...\n}@) (line_continuation[39,43]@{...\n}@) (number[48,49]@{2}@))
+    ][49,50]))
+ ;[50,51] \n[51,52])

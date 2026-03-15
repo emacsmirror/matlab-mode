@@ -1,5 +1,7 @@
 % -*- matlab-ts -*-
 
+% t-utils-test-indent: no-line-by-line-indent - when typing line-by-line we can't align arguments
+
 function out = electric_indent_keyword_as_var(in1, arguments)
     arguments
         in1 {mustBeTextScalar}

@@ -1,6 +1,6 @@
 ;;; matlab-ts-mode--ei.el --- MATLAB electric indent -*- lexical-binding: t -*-
 
-;; Version: 8.1.1
+;; Version: 8.1.2
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -298,69 +298,307 @@ be unary-op even though the node type is \"+\"."
 
     (cons node node-type)))
 
-(cl-defun matlab-ts-mode--ei-move-to-and-get-node ()
-  "Move to and return node.
-Will return nil if no next node before end-of-line.
-Assumes point is at of current node or beginning of line.
+;; matlab-ts-mode--ei-bol2loc-map:
+;;   Key `pos-bol', value is a location, loc, in line-nodes result from
+;;   `matlab-ts-mode--ei-line-nodes-in-region' such that loc is the first location that satisfies:
+;;   pos-bol <= (treesit-node-start (caar loc))
+;;
+;;   Given foo.m
+;;      L1: a = 1;
+;;      L2:
+;;      L3:
+;;      L4: % comment line 1
+;;      L5: % comment line 2
+;;      L6:
+;;      L7: b = 2;
+;;   M-x matlab-ei-utils-print-bol2loc-map
+;;      -->matlab-ts-mode--ei-bol2loc-map
+;;         L1  : point     1 (#<treesit-node identifier in 1-2> . "identifier")
+;;         L2  : point     8 (#<treesit-node comment in 10-43> . "comment")
+;;         L3  : point     9 (#<treesit-node comment in 10-43> . "comment")
+;;         L4  : point    10 (#<treesit-node comment in 10-43> . "comment")
+;;         L5  : point    27 (#<treesit-node identifier in 45-46> . "identifier")
+;;         L6  : point    44 (#<treesit-node identifier in 45-46> . "identifier")
+;;         L7  : point    45 (#<treesit-node identifier in 45-46> . "identifier")
 
-Returns (NODE . MODIFIED-NODE-TYPE) where MODIFIED-NODE-TYPE
-is used in `matlab-ts-mode--ei-spacing'"
-  ;; Move point to first non-whitespace char
-  (let ((eol-pt (pos-eol)))
+(defvar-local matlab-ts-mode--ei-bol2loc-map nil)
 
-    (let (node)
+(defun matlab-ts-mode--ei-bol2loc-setup (beg end region-nodes)
+  "Use BEG END REGION-NODES to populate `matlab-ts-mode--ei-bol2loc-map'."
+  (setq matlab-ts-mode--ei-bol2loc-map (make-hash-table))
+  (save-excursion
+    (let ((ptr region-nodes))
+      (goto-char beg)
+      (while (and ptr (< (point) end) (not (eobp)))
 
-      ;; If next node is a array comma node return that. Examples:
-      ;;    x1 = [(3*(2+1))   2]
-      ;;                   ^      <== point here (next node is invisible comma node w/start=end pt)
-      ;;    x2 = [1, 2]
-      ;;           ^              <== point here (next node is comma node)
-      ;;    x3 = {'one' 'two'...
-      ;;                     ^    <== point here (next node is invisible comma node w/start=end pt)
-      (when (looking-at "\\(?:[ \t]\\|\\.\\.\\.\\)" (point))
-        (setq node (treesit-node-at (point) 'matlab))
-        (let ((candidate node)) ;; candidate will be the array element
-          (while (= (treesit-node-end candidate) (point)) ;; lookup to find our array element
-            (let* ((next-node (treesit-node-next-sibling candidate))
-                   (next-type (treesit-node-type next-node)))
-              ;; At comma node of a row in an array (a matrix or cell)?
-              (when (and (equal next-type ",")
-                         (string= (treesit-node-type (treesit-node-parent candidate)) "row"))
-                (cl-return-from matlab-ts-mode--ei-move-to-and-get-node
-                  (cons next-node next-type))))
-            (setq candidate (treesit-node-parent candidate)))))
+        (let* ((bol-pt (pos-bol))
+               (node (cdar ptr))
+               (node-pt (treesit-node-start node)))
+          (while (and ptr (< node-pt bol-pt))
+            (setq ptr (cdr ptr)
+                  node (cdar ptr)
+                  node-pt (treesit-node-start node)))
+          (when ptr
+            (puthash bol-pt ptr matlab-ts-mode--ei-bol2loc-map))
+          (forward-line))))))
 
-      ;; Move to next non-whitespace character to get next node
-      (when (looking-at "[ \t]")
-        (when (not (re-search-forward "[^ \t]" eol-pt t))
-          (cl-return-from matlab-ts-mode--ei-move-to-and-get-node))
+(defvar-local matlab-ts-mode--ei-errors-map nil) ;; Key (pos-bol), value t on an error line.
+
+(defun matlab-ts-mode--ei-mark-error-lines (error-node)
+  "Add lines of ERROR-NODE to `matlab-ts-mode--ei-errors-map'."
+  (let* ((error-start-pt (treesit-node-start error-node))
+         (error-end-pt (treesit-node-end error-node)))
+    (save-excursion
+      (goto-char error-start-pt)
+      (while (and (<= (point) error-end-pt) (not (eobp)))
+        (puthash (pos-bol) t matlab-ts-mode--ei-errors-map)
+        (forward-line)))))
+
+(defvar matlab-ts-mode--ei-error-query (when (treesit-available-p)
+                                         (treesit-query-compile 'matlab '((ERROR) @e))))
+
+(defun matlab-ts-mode--ei-query-errors ()
+  "Query tree-sitter for ERROR's and populate `matlab-ts-mode--ei-errors-map'."
+  (let ((curr-err-map matlab-ts-mode--ei-errors-map)
+        (error-nodes (treesit-query-capture (treesit-buffer-root-node 'matlab)
+                                            matlab-ts-mode--ei-error-query nil nil t)))
+    (setq matlab-ts-mode--ei-errors-map (make-hash-table))
+    (dolist (error-node error-nodes)
+      (matlab-ts-mode--ei-mark-error-lines error-node))
+    (let ((err-map matlab-ts-mode--ei-errors-map))
+      (setq matlab-ts-mode--ei-errors-map curr-err-map)
+      ;; result
+      err-map)))
+
+(defvar matlab-ts-mode--ei-all-nodes-query (when (treesit-available-p)
+                                             (treesit-query-compile 'matlab '(_ @n (ERROR) @e))))
+
+(defun matlab-ts-mode--ei-line-nodes-in-region (beg end)
+  "Get line nodes in region BEG to END.
+Line nodes are the language elements that we electric indent in the
+line.  These are typically leaf nodes except for nodes like strings
+which are not leaf nodes.
+
+Returns list with elements (MODIFIED-NODE-TYPE . NODE) where
+MODIFIED-NODE-TYPE is the NODE type adjusted.  For example, when NODE
+parent is a string and NODE is the string start characters, we return
+the parent string node.  Another example: when NODE is a \"+\" and
+parent is a unary_operator, we return MODIFIED-NODE-TYPE to be unary-op
+even though the node type is \"+\"."
+
+  (setq matlab-ts-mode--ei-errors-map (make-hash-table))
+
+  ;; TODO - speedup: query explicit nodes and use the capture node symbol instead of type string.
+  (let* ((region-nodes (treesit-query-capture (treesit-buffer-root-node 'matlab)
+                                              matlab-ts-mode--ei-all-nodes-query beg end))
+         dimensions-node ;; we use this to track the "number" and ":" with in properties dimension
+         (prev-ptr region-nodes)
+         (ptr prev-ptr))
+
+    (while ptr
+      (let* ((node (cdar ptr))
+             (node-type (treesit-node-type node)))
+
+        ;; TODO - optimize by reducing comparisons? Add leaf-node check?
+        (cond
+         ;; Case: ERROR node
+         ((string= node-type "ERROR")
+          (matlab-ts-mode--ei-mark-error-lines node)
+          (setq node nil))
+
+         ;; Case: \n - ignore these, we don't pad them or anything
+         ((string= node-type "\n")
+          (setq node nil))
+
+         ;; Case: track when in a property dimensions node
+         ((string= node-type "dimensions")
+          (setq dimensions-node node
+                node nil))
+
+         ;; Case: arguments fcn keyword: arguments (1, :) {mustBeNumeric}
+         ;;                                        ^
+         ((and dimensions-node (string= node-type "("))
+          (setq node-type "dim-("))
+
+         ;; Case: property dimensions
+         ;;   foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+         ((and dimensions-node (or (string= node-type "number") (string= node-type ":")))
+          (setq node-type "prop-dim"))
+
+         ;; Case: lambda:     @(x) ((ischar(x) || isstring(x)))
+         ;;                      ^
+         ;;       properties: foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
+         ;;                             ^
+         ((string= node-type ")")
+          (setq dimensions-node nil) ;; close of dimension-node or other close paren
+          (let* ((parent (treesit-node-parent node))
+                 (parent-type (treesit-node-type parent)))
+            (if (string= parent-type "lambda")
+                (setq node-type "lambda-)")
+              (if (string= parent-type "dimensions")
+                  (setq node-type "dim-)")))))
+
+         ;; Case: parts of a string to ignore ("), ('), "string_content"
+         ((or (and (string= node-type "'") ;; ' can be for string or transpose, ignore when string
+                   (string= (treesit-node-type (treesit-node-parent node)) "string"))
+              (or (string= node-type "string_content")
+                  (string= node-type "formatting_sequence")
+                  (string= node-type "\"")))
+          (setq node nil))
+
+         ;; Case: string - "double-quote-string" or 'single-quote-string'
+         ((string= node-type "string")
+          nil)
+
+         ;; Case: prop-id, prop-class-id, enum-id
+         ((string= node-type "identifier")
+          (let* ((parent (treesit-node-parent node))
+                 (parent-type (treesit-node-type parent)))
+            (cond
+             ;; arguments
+             ;;     p1              % property
+             ;; end
+             ;; classdef
+             ;;     properties
+             ;;         p1          % property
+             ;;     end
+             ;; end
+             ((string= parent-type "property") ;; propertyWithOutDot?
+              (if (equal (treesit-node-child parent 0) node)
+                  (setq node-type "prop-id")
+                (setq node-type "prop-class-id")))
+
+             ;; arguments
+             ;;     opts.foo string                               % property_name
+             ;;     opts.onOff (1,1) matlab.lang.OnOffSwitchState % two property_name's
+             ;; end
+             ;;
+             ;; classdef foo < a & b.c.d                         % two property_name's to skip
+             ;; end
+             ((string= parent-type "property_name") ;; property.nameWithDot?
+              (if (equal (treesit-node-child (treesit-node-parent parent) 0) parent)
+                  (setq node-type "prop-id")
+                (setq node-type "prop-class-id")))
+
+             ;; enumeration
+             ;;     e1 (1)   % e1 is an identifier node that we give modified type: enum-id
+             ;; end
+             ((string= parent-type "enum")
+              (setq node-type "enum-id")))))
+
+         ;; Case: unary operator sign, + or -, e.g. [0 -e] or g = - e
+         ((or (string= node-type "+") (string= node-type "-"))
+          (let* ((parent (treesit-node-parent node))
+                 (parent-type (treesit-node-type parent)))
+            (when(and (string= parent-type "unary_operator")
+                      (equal (treesit-node-child parent 0) node))
+              (setq node-type "unary-op"))))
+
+         ;; Case: super-class constructor call
+         ;;  obj@myUtils.super;
+         ((string= node-type "@")
+          (let* ((parent (treesit-node-parent node))
+                 (parent-type (treesit-node-type parent)))
+            (when (string= parent-type "function_call")
+              (setq node-type "@-fcn-call"))))
+
+         ;; Case: events, enumeration, methods "commands" and not keywords
+         ((and (string-match-p (rx bos (or "events" "enumeration" "methods" "arguments") eos)
+                               node-type)
+               (= (treesit-node-child-count node) 0)) ;; no children == command
+          (let* ((parent (treesit-node-parent node))
+                 (parent-type (treesit-node-type parent)))
+            (when (string= parent-type "identifier")
+              ;; TopTester: electric_indent_inspect_keyword_commands.m
+              ;; TopTester: electric_indent_inspect_keyword_commands2.m
+              (setq node-type (concat node-type "-fcn")))))
+
+         ((not (= (treesit-node-child-count node) 0)) ;; non-leaf node
+          (setq node nil)))
+
+        (if (and node
+                 ;; See: electric_indent_xr_prop_hidden_nodes.m: empty nodes in { }
+                 ;; See: electric_indent_example.m: figure       ;% Create a new figure
+                 ;;                                              ^ <== empty command_argument
+                 (or (not (= (treesit-node-start node) (treesit-node-end node)))
+                     (string= (treesit-node-type node) ",")))
+            ;; Keep the node and change the capture name to the node-type string
+            (progn
+              (setcar (car ptr) node-type)
+              (setq prev-ptr ptr ;; advance
+                    ptr (cdr ptr)))
+          ;; Else remove the node
+          (if (eq ptr region-nodes)
+              (setq region-nodes (cdr ptr)
+                    ptr region-nodes)
+            (setq ptr (cdr ptr))
+            (setcdr prev-ptr ptr)))))
+
+    (matlab-ts-mode--ei-bol2loc-setup beg end region-nodes)
+
+    ;; Result may be nil (consider a region of only blank lines)
+    region-nodes))
+
+;; This is setup before `matlab-ts-mode--ei-move-to-and-get-node-pair' is used
+(defvar-local matlab-ts-mode--ei-line-nodes nil)
+
+(defvar-local matlab-ts-mode--ei-line-nodes-loc nil)
+(defvar-local matlab-ts-mode--ei-line-nodes-eat-comma nil)
+
+(cl-defun matlab-ts-mode--ei-move-to-and-get-node-pair ()
+  "Move to and return (MODIFIED-NODE-TYPE . NODE) in line.
+Assumes point is at end of an existing node or at beginning of line.
+Leverages `matlab-ts-mode--ei-line-nodes-loc' and updates it.
+
+Returned MODIFIED-NODE-TYPE and NODE will be nil if no next node before
+end-of-line.  MODIFIED-NODE-TYPE is computed by
+`matlab-ts-mode--ei-line-nodes-in-region' and is used in
+`matlab-ts-mode--ei-spacing'."
+
+  ;; Move point to next node start
+  (when (looking-at "[ \t]")
+    (if (re-search-forward "[^ \t]" nil (pos-eol))
         (backward-char)
-        (setq node (treesit-node-at (point) 'matlab)))
+      (cl-return-from matlab-ts-mode--ei-move-to-and-get-node-pair)))
 
-      (when (not node)
-        (setq node (treesit-node-at (point) 'matlab)))
+  (let* ((head-pair (car matlab-ts-mode--ei-line-nodes-loc))
+         (pt (point)))
 
-      ;; Consider [[1,2];[3,4]] when point is on semicolon, node will be the prior "]" because the
-      ;; semicolon is an ignored node, so move forward to get to the "[" after the semicolon.
-      (while (and (not (eobp))
-                  (let ((node-start (treesit-node-start node)))
-                    (and (>= node-start (pos-bol))
-                         (< node-start (point)))))
-        (forward-char)
-        (setq node (treesit-node-at (point) 'matlab)))
+    (cl-loop while (let* ((node (cdr head-pair))
+                          (node-end (treesit-node-end node)))
+                     (and node
+                          (or (> pt node-end)
+                              (and (= pt node-end)
+                                   ;; Are we at a hidden node, e.g.:
+                                   ;;   a = [1 2 -3]
+                                   ;;          ^    hidden comma node here where start == end
+                                   (if (= (treesit-node-start node) node-end)
+                                       ;; Keep the hidden node (e.g. comma) unless we are eating it.
+                                       ;; See: electric_indent_eat_hidden_comma.m
+                                       ;;   a = [1 ...  // we use the hidden comma after the 1 node
+                                       ;;        ...
+                                       ;;        2];    // hidden comma is before the 2 node
+                                       (when (and matlab-ts-mode--ei-line-nodes-eat-comma
+                                                  (string= (treesit-node-type node) ","))
+                                         (setq matlab-ts-mode--ei-line-nodes-eat-comma nil)
+                                         t)
+                                     ;; Else node start != end, so move forward.
+                                     t)))))
+             do
+             (setq matlab-ts-mode--ei-line-nodes-loc (cdr matlab-ts-mode--ei-line-nodes-loc)
+                   head-pair (car matlab-ts-mode--ei-line-nodes-loc)))
 
-      ;; Don't go past end-of-line point
-      (when (or (equal "\n" (treesit-node-type node))
-                (> (treesit-node-start node) eol-pt)
-                ;; When we get to EOL and in error context, node start will be on an earlier line
-                ;;           x = [
-                ;;  TAB>           1  ,   2  ;
-                (< (treesit-node-start node) (pos-bol)))
-        (goto-char eol-pt)
-        (setq node nil))
+    (if-let* ((head-node (cdr head-pair)))
+        (let ((head-node-start (treesit-node-start head-node)))
+          (if (= head-node-start (treesit-node-end head-node))
+              ;; Hidden comma has start == end and we just used it, so move our location
+              (setq matlab-ts-mode--ei-line-nodes-loc (cdr matlab-ts-mode--ei-line-nodes-loc))
+            ;; Else, see if we moved to the next line
+            (when (> head-node-start (pos-eol))
+              (setq head-pair nil)))))
 
-      (when node
-        (matlab-ts-mode--ei-get-node-to-use node)))))
+    ;; Result which may be nil
+    head-pair))
 
 (defun matlab-ts-mode--ei-assert-line-match (new-line orig-line)
   "Assert NEW-LINE matches ORIG-LINE ignoring spaces, tabs, and commas."
@@ -382,7 +620,7 @@ and not \"visual\" based."
   (if pt
       (- pt (save-excursion (goto-char pt) (pos-bol)))
     (- (point) (pos-bol))))
-  
+
 (defvar-local matlab--eilb nil) ;; Buffer used to create new electric indent line, ei-line
 
 (defmacro matlab--eilb-length ()
@@ -463,49 +701,19 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
         (when (> n-spaces-to-append 0)
           (insert (make-string n-spaces-to-append ? )))))))
 
-(defvar matlab-ts-mode--ei-error-query (when (treesit-available-p)
-                                         (treesit-query-compile 'matlab '((ERROR) @e))))
-(defvar-local matlab-ts-mode--ei-errors-alist nil)
-
 ;; matlab-ts-mode--ei-tmp-buf-indent is non-nil if doing m-matrix indent (in this case we know there
 ;; are no ERROR nodes).
 (defvar-local matlab-ts-mode--ei-tmp-buf-indent nil)
-
-(defun matlab-ts-mode--ei-get-errors-alist ()
-  "Return an alist of `(ERROR-LINENUM . t) elements.
-If an error node spans multiple lines, we ignore it assuming
-there's an inner error node.  This always returns non-nil, thus
-enabling caching."
-  (let (error-linenums
-        (capture-errors (when (not matlab-ts-mode--ei-tmp-buf-indent)
-                          (treesit-query-capture (treesit-buffer-root-node)
-                                                 matlab-ts-mode--ei-error-query))))
-    (dolist (capture-error capture-errors)
-      (let* ((error-node (cdr capture-error))
-             (error-start-pt (treesit-node-start error-node))
-             (error-end-pt (treesit-node-end error-node))
-             (error-start-linenum (line-number-at-pos error-start-pt))
-             (error-end-linenum (line-number-at-pos error-end-pt)))
-        (cl-loop
-         for linenum from error-start-linenum to error-end-linenum do
-         (when (not (alist-get linenum error-linenums))
-           (push `(,linenum . t) error-linenums)))))
-    (if error-linenums
-        (reverse error-linenums)
-      '(-1 . nil))))
 
 (defun matlab-ts-mode--ei-no-elements-to-indent ()
   "Return t if no elements in the current line to indent.
 Assumes that current point is at `back-to-indentation'."
   (or
-   ;; (1) Comment line? Nothing to indent in line if it's a comment line.
+   ;; (1) Nothing to indent in line if it's a comment or ellipsis-line.
    (let ((first-node-type (or (treesit-node-type (treesit-node-at (point) 'matlab)) "")))
      (string-match-p (rx bos (or "line_continuation" "comment") eos) first-node-type))
-   ;; (2) Syntax error *within* the line? If error node covers whole line, assume nodes in
-   ;;     line are good, i.e. electric indent the line.
-   (let ((error-linenums (or matlab-ts-mode--ei-errors-alist (matlab-ts-mode--ei-get-errors-alist)))
-         (curr-linenum (line-number-at-pos (point))))
-     (alist-get curr-linenum error-linenums))))
+   ;; (2) Nothing to indent if syntax error on the line.
+   (gethash (pos-bol) matlab-ts-mode--ei-errors-map)))
 
 (defun matlab-ts-mode--ei-node-extra-chars (node node-end next-node-start)
   "Get extra chars for NODE after NODE-END and before NEXT-NODE-START."
@@ -546,9 +754,10 @@ Assumes that current point is at `back-to-indentation'."
                 (when (not (string= row-item-type ","))
                   (setq row-item (treesit-node-prev-sibling row-item))
                   (setq row-item-type (treesit-node-type row-item)))
-                (if (and (equal row-item-type ",")
-                         (= (treesit-node-start row-item) (treesit-node-end row-item)))
-                    (setq ans '(","))  ;; list means prefix to NODE text
+                (when (and (equal row-item-type ",")
+                           (= (treesit-node-start row-item) (treesit-node-end row-item)))
+                  (setq matlab-ts-mode--ei-line-nodes-eat-comma t)
+                  (setq ans '(","))  ;; list means prefix to NODE text
                   )))))
         ans))
 
@@ -602,13 +811,20 @@ Optional START-NODE and START-OFFSET are used to compute new pt-offset,
 the point offset in the line used to restore point after updating line.
 Note, new line content may be same as current line.  Also computes
 ORIG-LINE-NODE-TYPES which is a string containing the original line node types.
-If we nave a new line, returns electric indent info, ei-info:
 
-  (list NEW-LINE-CONTENT PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-IN-LINE)
+If no new line (e.g. blank, comment, or syntax error on line), nil is
+returned, otherwise returns electric indent info, ei-info:
 
-where NEW-LINE-CONTENT, during `indent-region', does not contain the
-final amount of leading whitespace because we do electric indent before
-`treesit-indent-region'."
+  (list NEW-LINE-CONTENT PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-PAIR-IN-LINE)
+        0                1         2                    3
+where:
+ - NEW-LINE-CONTENT is the indented line.  Note, during `indent-region',
+   does not contain the final amount of leading whitespace because we do
+   electric indent before `treesit-indent-region'.
+ - PT-OFFSET is the new point offset in the NEW-LINE-CONTENT
+ - ORIG-LINE-NODE-TYPES is the nodes in the original line when
+   `matlab-ts-mode--indent-assert' is active, otherwise nil.
+ - FIRST-NODE-PAIR-IN-LINE is (node . modified-node-type)"
   (save-excursion
     ;; Move to first non-whitespace character on the line
     (let ((have-non-empty-line (matlab-ts-mode--ei-fast-back-to-indentation)))
@@ -619,12 +835,18 @@ final amount of leading whitespace because we do electric indent before
     ;; Compute new electric indented line content in matlab--eilb
     (matlab--eilb-setup)
 
+    ;; Setup for `matlab-ts-mode--ei-move-to-and-get-node-pair'
+    (setq matlab-ts-mode--ei-line-nodes-loc (gethash (pos-bol) matlab-ts-mode--ei-bol2loc-map))
+    (when (not matlab-ts-mode--ei-line-nodes-loc)
+      (matlab-ts-mode--assert-msg "No pos-bol in matlab-ts-mode--ei-bol2loc-map"))
+
+    ;; --- Loop inserting spaces between language elements ---
     (let* (pt-offset ;; used in restoring point
-           (pair (matlab-ts-mode--ei-move-to-and-get-node))
-           (node (or (car pair)
+           (pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
+           (node-type (or (car pair)
                      (cl-return-from matlab-ts-mode--ei-get-new-line)))
-           (node-type (cdr pair))
-           (first-node node)
+           (node (cdr pair))
+           (first-node-pair pair)
            orig-line-node-types
            next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
            next2-n-spaces-between
@@ -639,20 +861,9 @@ final amount of leading whitespace because we do electric indent before
        (let* ((next-pair (progn
                            (goto-char (treesit-node-end node))
                            (or next2-pair
-                               (matlab-ts-mode--ei-move-to-and-get-node))))
-              (next-node-type (cdr next-pair))
-              (next-node (let ((candidate-node (car next-pair)))
-                           (when (not candidate-node)
-                             (cl-return))
-                           (when (and (= (treesit-node-start candidate-node)
-                                         (treesit-node-end candidate-node))
-                                      ;; Comma nodes can be invisible, e.g. in matrix [1 2]
-                                      (not (string= next-node-type ",")))
-                             ;; Syntax errors can result in empty nodes, so skip this line
-                             ;; TopTester: electric_indent_empty_node_error.m
-                             (cl-return-from matlab-ts-mode--ei-get-new-line))
-                           candidate-node))
-
+                               (matlab-ts-mode--ei-move-to-and-get-node-pair))))
+              (next-node-type (or (car next-pair) (cl-return)))
+              (next-node (cdr next-pair))
               (n-spaces-between next2-n-spaces-between))
 
          (setq next2-pair nil
@@ -674,9 +885,9 @@ final amount of leading whitespace because we do electric indent before
                                  (or (not next2-node-re)
                                      (save-excursion
                                        (goto-char (treesit-node-end next-node))
-                                       (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node))
+                                       (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
                                               (next2-node-type
-                                               (or (cdr pair)
+                                               (or (car pair)
                                                    (cl-return-from
                                                        matlab-ts-mode--ei-get-new-line))))
 
@@ -721,7 +932,8 @@ final amount of leading whitespace because we do electric indent before
                             eol-pt)))
           (matlab--eilb-add-node-text node extra-chars)))
 
-      (list (matlab--eilb-content) pt-offset orig-line-node-types first-node))))
+      (setq matlab-ts-mode--ei-line-nodes-loc nil)
+      (list (matlab--eilb-content) pt-offset orig-line-node-types first-node-pair))))
 
 (defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-alist nil)
 
@@ -1259,7 +1471,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
         (cl-return-from matlab-ts-mode--ei-align-line-in-m-struct ei-info))
       (setq comma-offset (1+ comma-offset) ;; point after the ","
             new-comma-offset (+ (string-match-p "[^ \t]" ei-line) max-field-width))
-      (let ((first-node-in-line (nth 3 ei-info))
+      (let ((first-node-in-line (cdr (nth 3 ei-info)))
             (arguments-node (nth 2 tuple)))
         (when (not (equal (treesit-node-parent first-node-in-line) arguments-node))
           ;; TopTester: electric_indent_struct_with_multiline_field_values.m
@@ -1343,21 +1555,21 @@ Note, \\='m-struct returns (list assignment-node max-field-width arguments-node)
 
 (defun matlab-ts-mode--ei-point-in-m-type (ei-info m-type)
   "Are we in an M-TYPE line?
-If M-TYPE is \\='m-matrix, return the assignment node when an m-matrix
-else nil.  We define an m-matrix to be an assignment where there's more
-than one line, each row is on the same line, with same number of
-columns:
-  m = [100   2;
-         3 400];
-If M-TYPE is \\='m-struct, return the assignment node if m-struct else
-nil.  We define an m-matrix to be an assignment where there's more than
-one line, each row is on the same line, with same number of columns:
-  m = [100   2;
-         3 400];
-If M-TYPE is \\'single-line, return assignment node when on a single line,
-else nil.
+1. \\='m-matrix M-TYPE: return the assignment node when in an
+   m-matrix else nil.  We define an m-matrix to be an assignment where
+   there's more than one line, each row is on the same line, with same
+   number of columns.  Example:
+     m = [100   2;
+            3 400];
+2. \\='m-struct M-TYPE: return the assignment node if m-struct else
+   nil.  We define an m-matrix to be an assignment where there's more than
+   one line, each row is on the same line, with same number of columns:
+     m = [100   2;
+            3 400];
+3. \\='single-line M-TYPE: return assignment node when on a single line,
+   else nil.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
-  (let* ((first-node-in-line (nth 3 ei-info))
+  (let* ((first-node-in-line (cdr (nth 3 ei-info)))
          (assign-node (treesit-parent-until first-node-in-line
                                             (rx bos (or "property" "assignment") eos))))
     (when assign-node
@@ -1382,7 +1594,11 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
 (defun matlab-ts-mode--ei-align-assignments (ei-info)
   "Update EI-INFO to align assignments.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
-  (let ((first-node-in-line (nth 3 ei-info)))
+  (let ((first-node-in-line (cdr (nth 3 ei-info)))
+        (eat-comma matlab-ts-mode--ei-line-nodes-eat-comma))
+    ;; We are calling `matlab-ts-mode--ei-get-new-line' and hence need to have our own hidden comma
+    ;; handling state.
+    (setq matlab-ts-mode--ei-line-nodes-eat-comma nil)
     (when (matlab-ts-mode--ei-is-assign first-node-in-line 'single-line)
       (let* ((ei-line (nth 0 ei-info))
              (line-assign-offset (matlab-ts-mode--ei-assign-offset ei-line))
@@ -1407,7 +1623,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               while (not (if (= direction -1) (bobp) (eobp))) do
               (forward-line direction)
               (let* ((l-info (matlab-ts-mode--ei-get-new-line))
-                     (l-first-node (nth 3 l-info)))
+                     (l-first-node (cdr (nth 3 l-info))))
                 (if (and l-first-node
                          (matlab-ts-mode--ei-is-assign l-first-node 'single-line))
                     (let ((l-offset (matlab-ts-mode--ei-assign-offset (nth 0 l-info))))
@@ -1430,20 +1646,22 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               (setq ei-line (concat (substring ei-line 0 loc)
                                     (make-string diff ? )
                                     (substring ei-line loc)))
-              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info)))))))))
+              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info))))))))
+    (setq matlab-ts-mode--ei-line-nodes-eat-comma eat-comma))
   ei-info)
 
 (defun matlab-ts-mode--ei-get-prop-node (ei-info)
-  "Return property or argument node for first node in EI-INFO.
-Returns nil if not a property, enum field, or argument node that ends on
-same line and has items to align."
-  (if-let ((first-node-in-line (nth 3 ei-info)))
-      (let* ((modified-node-type (cdr (matlab-ts-mode--ei-get-node-to-use first-node-in-line)))
+  "Return property node for first node in EI-INFO.
+Returns nil if not a class property, enum field, or argument property
+node that ends on same line and has items to align."
+  (if-let ((first-node-in-line-pair (nth 3 ei-info)))
+      (let* ((modified-node-type (car first-node-in-line-pair))
+             (first-node (cdr first-node-in-line-pair))
              (prop-id-node (pcase modified-node-type
                              ((or "prop-id" "enum-id")
-                              first-node-in-line)
+                              first-node)
                              ("property_name"
-                              (treesit-node-parent first-node-in-line))))
+                              (treesit-node-parent first-node))))
              (prop-node (treesit-node-parent prop-id-node)))
         ;; skip multi-line nodes for alignment (properties / arguments can span multiple lines)
         (when (and prop-node
@@ -1475,7 +1693,9 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (when (matlab-ts-mode--ei-get-prop-node ei-info)
     (let ((ei-info-p-length (matlab-ts-mode--ei-prop-length ei-info))
           (p-length (when matlab-ts-mode--ei-align-prop-alist
-                      (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-prop-alist))))
+                      (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-prop-alist)))
+          (eat-comma matlab-ts-mode--ei-line-nodes-eat-comma))
+
       (when (not p-length)
         (save-excursion
           (forward-line 0)
@@ -1487,6 +1707,10 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
             ;; Look backwards and then forwards for properties/arguments
             (cl-loop
              for direction in '(-1 1) do
+
+             ;; We are calling `matlab-ts-mode--ei-get-new-line' and hence need to have our own
+             ;; hidden comma handling state.
+             (setq matlab-ts-mode--ei-line-nodes-eat-comma nil)
 
              (goto-char line-start-pt)
              (cl-loop
@@ -1519,47 +1743,81 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               (setq ei-line (concat (substring ei-line 0 p-end)
                                     (make-string diff ? )
                                     (substring ei-line p-end)))
-              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info)))))))))
+              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info)))))))
+      (setq matlab-ts-mode--ei-line-nodes-eat-comma eat-comma)))
   ei-info)
 
 (defun matlab-ts-mode--ei-trailing-comment-offset (ei-info)
-  "Get trailing comment offset from first char current line?
+  "Get trailing comment (scope . offset) from first node in line.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents.
 To simplify implementation, we require that the first \"%\" character in
 the line be the start of the trailing comment.  Thus,
   s = \"foo % bar\" % comment
-is not identified as a trailing comment and
+is not identified as having a trailing comment and
   s = \"foo bar\" %comment
-is identified as a trailing comment."
+is identified as having a trailing comment."
   (when ei-info
     (save-excursion
       (forward-line 0)
       (when (re-search-forward "%" (pos-eol) t)
-        (let ((node (treesit-node-at (point) 'matlab)))
-          (when (and (equal (treesit-node-type node) "comment")
-                     ;; And not for a control flow or definition statement. For example,
-                     ;;    if a % comment1                  <= we shouldn't align this
-                     ;;       b = [1, 2, 3]; % comment2
-                     ;;       c = 1;         % comment3
-                     (progn
-                       (forward-line 0)
-                       (while (and (not (bobp))
-                                   (save-excursion
-                                     (backward-char)
-                                     (when (re-search-backward "[^ \t]" (pos-bol) t)
-                                       (equal (treesit-node-type (treesit-node-at (point) 'matlab))
-                                              "line_continuation"))))
-                         (forward-line -1))
-                       (matlab-ts-mode--ei-fast-back-to-indentation)
-                       (let ((node (treesit-node-at (point) 'matlab)))
-                         (not (string-match-p matlab-ts-mode--ei-keywords-re
-                                              (treesit-node-type node))))))
-
-            (let* ((new-line (nth 0 ei-info))
-                   (offset (- (string-match-p "%" new-line) (string-match-p "[^ \t]" new-line))))
-              (when (> offset 0)
-                ;; have trailing comment at offset from first char in new-line
-                offset))))))))
+        (let ((c-node (treesit-node-at (point) 'matlab)))
+          (when (equal (treesit-node-type c-node) "comment")
+            (if-let* ((first-node (cdr (nth 3 ei-info)))
+                      (scope (or
+                              ;; Line of matrix/cell? Skip 1st line because its indent level differs.
+                              ;; TODO - handle first line, e.g.
+                              ;;   cell2 = { % comment 1
+                              ;;            [], [], [], []; % comment 2
+                              ;;            0, 0, 0, 0;     % comment 3
+                              ;;           };
+                              (let ((a-node (treesit-parent-until c-node (rx bos (or "cell" "matrix") eos))))
+                                (when (and a-node
+                                           (not (= (pos-bol) (save-excursion
+                                                               (goto-char (treesit-node-start a-node))
+                                                               (pos-bol)))))
+                                  a-node))
+                              ;; Use scope of first node in the line
+                              (let ()
+                                (or (when (string-match-p (rx bol (or "arguments"
+                                                                      "end"
+                                                                      "enumeration"
+                                                                      "events"
+                                                                      "function"
+                                                                      "methods"
+                                                                      "properties")
+                                                              eos)
+                                                          (treesit-node-type first-node))
+                                      first-node)
+                                    (treesit-parent-until
+                                     first-node (rx bol (or "block"
+                                                            "cell"
+                                                            "matrix"
+                                                            "source_file"
+                                                            (seq (1+ anychar) "_clause")
+                                                            (seq (1+ anychar) "_definition")
+                                                            (seq (1+ anychar) "_definition")
+                                                            (seq (1+ anychar) "_statement"))
+                                                    eol)))))))
+                ;; We align trailing comments when in same "scope" (same indent level):
+                ;;    x   = [1, 2, 3]; % comment 1 (aligned)
+                ;;    xyz = 2;         % comment 2 (aligned)
+                ;;
+                ;;    foo1 blah % comment (aligned)
+                ;;    c = 1;    % comment (aligned)
+                ;; We do when not in same "scope":
+                ;;    fooBarGooToo = [something                                ...
+                ;;                    otherThing(wIndex):theEndIndex(wIndex)-1}]; %#ok<AGROW>
+                ;;    P0 = [P0 foo.blah{wIndex}.foobarGooOrig(:,1:end-1)]; %#ok<AGROW>
+                ;;
+                ;;    if a % comment1                  <= we shouldn't align this
+                ;;       b = [1, 2, 3]; % comment2
+                ;;       c = 1;         % comment3
+                (let* ((new-line (nth 0 ei-info))
+                       (indent-col (string-match-p "[^ \t]" new-line))
+                       (offset (- (string-match-p "%" new-line) indent-col)))
+                  (when (> offset 0)
+                    ;; have trailing comment at offset from first char in new-line
+                    `(,scope . ,offset))))))))))
 
 ;; This is used to cache comment alignments for indent-region
 (defvar-local matlab-ts-mode--ei-align-comment-alist nil)
@@ -1567,58 +1825,69 @@ is identified as a trailing comment."
 (defun matlab-ts-mode--ei-align-trailing-comments (ei-info)
   "Align trailing comments in EI-INFO.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
-  (let* ((line-comment-offset (matlab-ts-mode--ei-trailing-comment-offset ei-info)))
-    (when line-comment-offset
-      (let* (comment-offset
-             line-nums
-             line-start-pt)
+  (if-let* ((line-comment-pair (matlab-ts-mode--ei-trailing-comment-offset ei-info)))
+      (let ((eat-comma matlab-ts-mode--ei-line-nodes-eat-comma)
+            comment-offset)
 
+        ;; Compute desired comment-offset
         (when (or (not matlab-ts-mode--ei-align-comment-alist)
                   (not (setq comment-offset (alist-get (line-number-at-pos)
                                                        matlab-ts-mode--ei-align-comment-alist))))
-          (setq comment-offset line-comment-offset)
-          (setq line-nums `(,(line-number-at-pos)))
-          (save-excursion
-            (forward-line 0)
-            (setq line-start-pt (point))
+          (let (line-nums
+                line-start-pt
+                (scope (car line-comment-pair)))
 
-            ;; Look backwards and then forwards for lines with trailing comments
-            (cl-loop
-             for direction in '(-1 1) do
-             (goto-char line-start-pt)
-             (cl-loop
-              while (not (if (= direction -1) (bobp) (eobp))) do
-              (forward-line direction)
-              (let ((ei-l-info (matlab-ts-mode--ei-get-new-line))
-                    l-offset)
-                (setq ei-l-info (matlab-ts-mode--ei-align-assignments ei-l-info))
-                (setq ei-l-info (matlab-ts-mode--ei-align-properties ei-l-info))
-                (setq l-offset (matlab-ts-mode--ei-trailing-comment-offset ei-l-info))
-                (if l-offset
-                    (progn
-                      (push (line-number-at-pos) line-nums)
-                      (when (> l-offset comment-offset)
-                        (setq comment-offset l-offset)))
-                  (cl-return))))))
+            (setq comment-offset (cdr line-comment-pair))
 
-          (when matlab-ts-mode--ei-align-comment-alist
-            (dolist (line-num line-nums)
-              (push `(,line-num . ,comment-offset) matlab-ts-mode--ei-align-comment-alist))))
+            (setq line-nums `(,(line-number-at-pos)))
+            (save-excursion
+              (forward-line 0)
+              (setq line-start-pt (point))
 
-        (let ((diff (- comment-offset line-comment-offset)))
-          (when (> diff 0)
-            (let* ((ei-line (nth 0 ei-info))
-                   (loc (1- (string-match "%" ei-line)))
-                   (new-pt-offset (let ((pt-offset (nth 1 ei-info)))
-                                    (when pt-offset
-                                      (if (<= loc pt-offset)
-                                          (+ pt-offset diff)
-                                        pt-offset)))))
-              (setq ei-line (concat (substring ei-line 0 loc)
-                                    (make-string diff ? )
-                                    (substring ei-line loc)))
-              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info))))))))
-    ei-info))
+              ;; Look backwards and then forwards for lines with trailing comments
+              (cl-loop
+               for direction in '(-1 1) do
+               (goto-char line-start-pt)
+
+               ;; We are calling `matlab-ts-mode--ei-get-new-line' and hence need to have our own
+               ;; hidden comma handling state.
+               (setq matlab-ts-mode--ei-line-nodes-eat-comma nil)
+
+               (cl-loop
+                while (not (if (= direction -1) (bobp) (eobp))) do
+                (forward-line direction)
+                (let ((ei-l-info (matlab-ts-mode--ei-get-new-line))
+                      l-offset-pair)
+                  (setq ei-l-info (matlab-ts-mode--ei-align-assignments ei-l-info))
+                  (setq ei-l-info (matlab-ts-mode--ei-align-properties ei-l-info))
+                  (setq l-offset-pair (matlab-ts-mode--ei-trailing-comment-offset ei-l-info))
+                  (if (and l-offset-pair (equal scope (car l-offset-pair)))
+                      (let ((l-offset (cdr l-offset-pair)))
+                        (push (line-number-at-pos) line-nums)
+                        (when (> l-offset comment-offset)
+                          (setq comment-offset l-offset)))
+                    (cl-return))))))
+
+            (when matlab-ts-mode--ei-align-comment-alist
+              (dolist (line-num line-nums)
+                (push `(,line-num . ,comment-offset) matlab-ts-mode--ei-align-comment-alist)))))
+
+        (let ((diff (- comment-offset (cdr line-comment-pair))))
+            (when (> diff 0)
+              (let* ((ei-line (nth 0 ei-info))
+                     (loc (1- (string-match "%" ei-line)))
+                     (new-pt-offset (let ((pt-offset (nth 1 ei-info)))
+                                      (when pt-offset
+                                        (if (<= loc pt-offset)
+                                            (+ pt-offset diff)
+                                          pt-offset)))))
+                (setq ei-line (concat (substring ei-line 0 loc)
+                                      (make-string diff ? )
+                                      (substring ei-line loc)))
+                (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info))))))
+
+        (setq matlab-ts-mode--ei-line-nodes-eat-comma eat-comma)))
+  ei-info)
 
 (defun matlab-ts-mode--ei-align (ei-info &optional start-pt-linenum start-pt-offset)
   "Align elements in EI-INFO.
@@ -1679,7 +1948,7 @@ need to just move the point to the end of the electric indented line."
               (backward-char)
               (setq node (car (matlab-ts-mode--ei-get-node-to-use
                                (treesit-node-at (point) 'matlab))))))
-          
+
           (when (and node
                      (>= (point) (treesit-node-start node))
                      (<= (point) (treesit-node-end node)))
@@ -1754,38 +2023,53 @@ TAB>  x = 123 ./1 + 567
 (defun matlab-ts-mode--ei-assert-line-nodes-match (start-linenum end-linenum)
   "Assert that original line node types match modified line node types.
 We examine lines between START-LINENUM and END-LINENUM inclusive."
+
   (save-excursion
-    (goto-char (point-min))
-    (forward-line (1- start-linenum))
-    (cl-loop
-     for linenum from start-linenum to end-linenum
-     do
-     (let ((orig-line-node-types (alist-get linenum
-                                            matlab-ts-mode--ei-orig-line-node-types-alist)))
-       (when orig-line-node-types ;; line was updated
+    (let ((beg (progn
+                 (goto-char (point-min))
+                 (forward-line (1- start-linenum))
+                 (point)))
+          (end (progn
+                 (goto-char (point-min))
+                 (forward-line end-linenum)
+                 (point))))
+      (setq matlab-ts-mode--ei-line-nodes (matlab-ts-mode--ei-line-nodes-in-region beg end)
+            matlab-ts-mode--ei-line-nodes-loc matlab-ts-mode--ei-line-nodes)))
 
-         (matlab-ts-mode--ei-fast-back-to-indentation)
-         (let (curr-line-node-types
-               (eol-pt (pos-eol)))
-           (cl-loop
-            while (< (point) eol-pt)
-            do
-            (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node))
-                   (node (or (car pair)
-                             (cl-return)))
-                   (node-type (cdr pair)))
-              (setq curr-line-node-types
-                    (matlab-ts-mode--ei-update-line-node-types curr-line-node-types
-                                                               node node-type))
-              (let ((node-end (treesit-node-end node)))
-                (if (< node-end eol-pt)
-                    (goto-char node-end)
-                  (goto-char eol-pt)))))
+  (goto-char (point-min))
+  (forward-line (1- start-linenum))
+  (cl-loop
+   for linenum from start-linenum to end-linenum
+   do
+   (let ((orig-line-node-types (alist-get linenum
+                                          matlab-ts-mode--ei-orig-line-node-types-alist)))
+     (when orig-line-node-types ;; line was updated
 
-           (matlab-ts-mode--ei-assert-nodes-types-match curr-line-node-types
-                                                        orig-line-node-types
-                                                        linenum)))
-       (forward-line)))))
+       (matlab-ts-mode--ei-fast-back-to-indentation)
+       (let (curr-line-node-types
+             (eol-pt (pos-eol)))
+         (cl-loop
+          while (< (point) eol-pt)
+          do
+          (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
+                 (node-type (or (car pair)
+                           (cl-return)))
+                 (node (cdr pair)))
+            (setq curr-line-node-types
+                  (matlab-ts-mode--ei-update-line-node-types curr-line-node-types
+                                                             node node-type))
+            (let ((node-end (treesit-node-end node)))
+              (if (< node-end eol-pt)
+                  (goto-char node-end)
+                (goto-char eol-pt)))))
+
+         (matlab-ts-mode--ei-assert-nodes-types-match curr-line-node-types
+                                                      orig-line-node-types
+                                                      linenum)))
+     (forward-line)))
+
+  (setq matlab-ts-mode--ei-line-nodes nil
+        matlab-ts-mode--ei-line-nodes-loc nil))
 
 (defvar-local matlab-ts-mode--ei-get-disabled-regions-cache nil)
 
@@ -1864,6 +2148,56 @@ Returns the region (START-LINE . END-LINE) if disabled, else nil."
                           (<= linenum region-end))
                  (cl-return region))))))
 
+(defun matlab-ts-mode--ei-setup (beg end)
+  "Setup for indent in region BEG to END."
+
+  ;; Expand region to enable alignments, e.g. consecutive statements, matrix alignment
+  (save-excursion
+    ;; Move beg "up" based on consecutive lines
+    (goto-char beg)
+    (forward-line -1)
+    (while (and (not (bobp))
+                (looking-at (rx (0+ (or " " "\t")) (not (or " " "\t")))))
+      (setq beg (point))
+      (forward-line -1))
+
+    ;; Move up to handle matrix with blank lines
+    (when (not (bobp))
+      (goto-char beg)
+      (when (re-search-forward "[^ \t\n\r]" nil t)
+        (backward-char)
+        (let ((matrix-node (treesit-parent-until (treesit-node-at (point)) (rx bol "matrix" eol))))
+          (when matrix-node
+            (goto-char (treesit-node-start matrix-node))
+            (setq beg (pos-bol))))))
+
+    ;; Move end "down" based on consecutive lines
+    (goto-char end)
+    (forward-line -1)
+    (while (and (not (eobp))
+                (looking-at (rx (0+ (or " " "\t")) (not (or " " "\t")))))
+      (forward-line)
+      (setq end (point)))
+
+    ;; Move down to handle matrix with blank lines
+    (when (not (eobp))
+      (goto-char end)
+      (when (re-search-backward "[^ \t\n\r]" nil t)
+        (let ((matrix-node (treesit-parent-until (treesit-node-at (point)) (rx bol "matrix" eol))))
+          (when matrix-node
+            (goto-char (treesit-node-end matrix-node))
+            (forward-line)
+            (setq end (point)))))))
+
+  (setq matlab-ts-mode--ei-line-nodes-eat-comma nil)
+  (setq matlab-ts-mode--ei-line-nodes (matlab-ts-mode--ei-line-nodes-in-region beg end)))
+
+(defun matlab-ts-mode--ei-cleanup ()
+  "Free memory used during indent."
+  (setq matlab-ts-mode--ei-line-nodes nil
+        matlab-ts-mode--ei-errors-map nil
+        matlab-ts-mode--ei-bol2loc-map nil))
+
 (cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region
                                                                 start-pt-linenum start-pt-offset)
   "Indent current line by adjusting spacing around elements.
@@ -1877,6 +2211,9 @@ IS-INDENT-REGION is t to compute NEW-START-PT-OFFSET for that line.
 
 When IS-INDENT-REGION is nil, we update the line and restore the point
 to it's logical location when the line is updated."
+
+  (when (not is-indent-region)
+    (matlab-ts-mode--ei-setup (pos-bol) (pos-eol)))
 
   (when (matlab-ts-mode--ei-in-disabled-region)
     (cl-return-from matlab-ts-mode--ei-indent-elements-in-line))
@@ -1933,6 +2270,7 @@ to it's logical location when the line is updated."
         (setq result (list orig-line))))
 
     (when (not is-indent-region)
+      (matlab-ts-mode--ei-cleanup)
       (matlab--eilb-kill))
     result))
 
@@ -1946,11 +2284,18 @@ to it's logical location when the line is updated."
       (setq start-pt-offset eol-col)))
   (forward-char start-pt-offset))
 
-(defun matlab-ts-mode--ei-set-alist-caches (init)
+(defun matlab-ts-mode--ei-set-region-caches (init &optional beg end)
   "Setup electric indent alist caches.
+Optional region BEG END must be provided when INIT is t.
 If INIT is non-nil, set to initial value, otherwise set to nil."
   (let ((value (when init '((-1 . 0))))) ;; Entries of form (LINENUM . INFO)
-    (setq-local
+
+    (if init
+        (matlab-ts-mode--ei-setup beg end)
+      (matlab-ts-mode--ei-cleanup))
+
+    ;; TODO replace alist's with hashes to improve performance
+    (setq
      matlab-ts-mode--ei-align-assign-alist value
      matlab-ts-mode--ei-align-prop-alist value
      matlab-ts-mode--ei-align-comment-alist value
@@ -1959,14 +2304,16 @@ If INIT is non-nil, set to initial value, otherwise set to nil."
      matlab-ts-mode--ei-is-m-matrix-alist value
      matlab-ts-mode--ei-align-matrix-alist value
      matlab-ts-mode--ei-is-m-struct-alist value
-     matlab-ts-mode--ei-errors-alist (when init (matlab-ts-mode--ei-get-errors-alist))
      matlab-ts-mode--ei-orig-line-node-types-alist value
      matlab-ts-mode--ei-get-disabled-regions-cache (when init
                                                      (matlab-ts-mode--ei-get-disabled-regions)))))
 
-(cl-defun matlab-ts-mode--ei-indent-region-impl (new-content-buf beg end)
+(defun matlab-ts-mode--ei-indent-region-impl (new-content-buf
+                                              beg end start-pt start-linenum end-linenum)
   "Implementation for `matlab-ts-mode--ei-indent-region'.
-NEW-CONTENT-BUF is used to electric indent BEG to END region."
+NEW-CONTENT-BUF is used to electric indent BEG to END region.
+START-PT is our starting point for indent.
+START-LINENUM and END-LINENUM correspond to the BEG and END points."
   ;; We need to run electric indent before treesit-indent-region. Consider
   ;;    l2 = @(x)((ischar(x) || isstring(x) || isnumeric(x)) && ...
   ;;                 ~strcmpi(x, 'fubar'));
@@ -1978,79 +2325,52 @@ NEW-CONTENT-BUF is used to electric indent BEG to END region."
   ;;    l2 = @(x) ((ischar(x) || isstring(x) || isnumeric(x)) && ...
   ;;              ~strcmpi(x, 'fubar'));
 
-  (let* ((start-linenum (line-number-at-pos beg))
-         (end-linenum (save-excursion (goto-char end)
-                                      (- (line-number-at-pos) (if (= (point) (pos-bol)) 1 0))))
-         (start-disabled (matlab-ts-mode--ei-in-disabled-region start-linenum))
-         (end-disabled (matlab-ts-mode--ei-in-disabled-region end-linenum)))
+  (let* ((max-end-linenum (= end-linenum (line-number-at-pos (point-max))))
+         (start-pt-linenum (line-number-at-pos start-pt))
+         (start-pt-offset (matlab--ei-offset start-pt))
+         region-updated
+         (i-linenum start-linenum))
 
-    (when (and start-disabled (equal start-disabled end-disabled))
-      (treesit-indent-region beg end)
-      (cl-return-from matlab-ts-mode--ei-indent-region-impl))
+    (forward-line 0)
+    (while (<= i-linenum end-linenum)
+      (let ((line-ending (if (or max-end-linenum (< i-linenum end-linenum)) "\n" "")))
+        (if (matlab-ts-mode--ei-in-disabled-region i-linenum)
+            (let ((curr-line (buffer-substring (pos-bol) (pos-eol))))
+              (with-current-buffer new-content-buf
+                (insert curr-line line-ending)))
+          ;; else: electric indent the line
+          (let* ((tuple (matlab-ts-mode--ei-indent-elements-in-line
+                         'indent-region start-pt-linenum start-pt-offset))
+                 (new-line (nth 0 tuple))
+                 (line-updated (nth 1 tuple))
+                 (new-start-pt-offset (nth 2 tuple)))
+            (with-current-buffer new-content-buf
+              (insert new-line line-ending))
+            (when (= i-linenum start-pt-linenum)
+              (if new-start-pt-offset
+                  (setq start-pt-offset new-start-pt-offset)
+                (when line-updated
+                  (setq start-pt-offset (length new-line)))))
+            (when line-updated
+              (setq region-updated t)))))
+      (forward-line)
+      (setq i-linenum (1+ i-linenum)))
 
-    (let* ((max-end-linenum (= end-linenum (line-number-at-pos (point-max))))
-           (start-pt (point))
-           (start-pt-linenum (line-number-at-pos start-pt))
-           (start-pt-offset (matlab--ei-offset start-pt)))
+    (when region-updated
       (save-excursion
-        (save-restriction
-          (widen)
-          (matlab-ts-mode--ei-workaround-143 beg end) ;; may insert spaces on BEG to END lines
+        (goto-char beg)
+        (delete-region beg end)
+        (insert (with-current-buffer new-content-buf (buffer-string)))
+        (when matlab-ts-mode--indent-assert
+          (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))
+        ;; Restore END point accounting for electric indent changes
+        (goto-char (point-min))
+        (forward-line end-linenum)
+        (setq end (point))))
 
-          ;; Move END point to end of line.
-          ;; To do this, we use end-linenum, because workaround-143 could have moved END.
-          (goto-char (point-min))
-          (when (> end-linenum 1)
-            (forward-line (1- end-linenum)))
-          (let ((inhibit-field-text-motion t)) (end-of-line))
-          (setq end (point))
-          ;; Move BEG to beginning of line and leave point there.
-          (goto-char beg)
-          (forward-line 0)
-          (setq beg (point))
-
-          (let (region-updated
-                (i-linenum start-linenum))
-
-            (while (<= i-linenum end-linenum)
-              (let ((line-ending (if (or max-end-linenum (< i-linenum end-linenum)) "\n" "")))
-                (if (matlab-ts-mode--ei-in-disabled-region i-linenum)
-                    (let ((curr-line (buffer-substring (pos-bol) (pos-eol))))
-                      (with-current-buffer new-content-buf
-                        (insert curr-line line-ending)))
-                  ;; else: electric indent the line
-                  (forward-line 0)
-                  (let* ((tuple (matlab-ts-mode--ei-indent-elements-in-line
-                                 'indent-region start-pt-linenum start-pt-offset))
-                         (new-line (nth 0 tuple))
-                         (line-updated (nth 1 tuple))
-                         (new-start-pt-offset (nth 2 tuple)))
-                    (with-current-buffer new-content-buf
-                      (insert new-line line-ending))
-                    (when (= i-linenum start-pt-linenum)
-                      (if new-start-pt-offset
-                          (setq start-pt-offset new-start-pt-offset)
-                        (when line-updated
-                          (setq start-pt-offset (length new-line)))))
-                    (when line-updated
-                      (setq region-updated t)))))
-              (forward-line)
-              (setq i-linenum (1+ i-linenum)))
-
-            (when region-updated
-              (save-excursion
-                (goto-char beg)
-                (delete-region beg end)
-                (insert (with-current-buffer new-content-buf (buffer-string)))
-                (when matlab-ts-mode--indent-assert
-                  (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))
-                ;; Restore END point accounting for electric indent changes
-                (goto-char (point-min))
-                (forward-line end-linenum)
-                (setq end (point)))))))
-
-      (matlab-ts-mode--ei-move-to-loc start-pt-linenum start-pt-offset)
-      (treesit-indent-region beg end))))
+    (matlab-ts-mode--ei-move-to-loc start-pt-linenum start-pt-offset)
+    (treesit-indent-region beg end)
+    (point)))
 
 (defun matlab-ts-mode--ei-indent-region (beg end)
   "Indent BEG END region by adjusting spacing around elements.
@@ -2060,12 +2380,45 @@ This expansion of the region is done to simplify electric indent."
   (let ((new-content-buf (get-buffer-create
                           (generate-new-buffer-name " *temp-matlab-indent-region*"))))
     (unwind-protect
-        (progn
-          (matlab-ts-mode--ei-set-alist-caches t)
-          (matlab-ts-mode--ei-indent-region-impl new-content-buf beg end))
+        (let* ((start-pt (point))
+               (start-linenum (line-number-at-pos beg))
+               (end-linenum (save-excursion (goto-char end)
+                                            (- (line-number-at-pos)
+                                               (if (= (point) (pos-bol)) 1 0))))
+               (start-disabled (matlab-ts-mode--ei-in-disabled-region start-linenum))
+               (end-disabled (matlab-ts-mode--ei-in-disabled-region end-linenum))
+               end-pt)
 
+          (if (and start-disabled (equal start-disabled end-disabled))
+              (treesit-indent-region beg end) ;; adjust indent-level only
+            ;; Else electric indent
+            (save-excursion
+              (save-restriction
+                (widen)
+                (matlab-ts-mode--ei-workaround-143 beg end) ;; may insert spaces on BEG to END lines
+
+                ;; Move END point to end of line.
+                ;; To do this, we use end-linenum, because workaround-143 could have moved END.
+                (goto-char (point-min))
+                (when (> end-linenum 1)
+                  (forward-line (1- end-linenum)))
+                (let ((inhibit-field-text-motion t)) (end-of-line))
+                (setq end (point))
+                ;; Move BEG to beginning of line and leave point there.
+                (goto-char beg)
+                (forward-line 0)
+                (setq beg (point))
+
+                (matlab-ts-mode--ei-set-region-caches t beg end)
+
+                (setq end-pt (matlab-ts-mode--ei-indent-region-impl
+                              new-content-buf beg end
+                              start-pt start-linenum end-linenum))))
+            (goto-char end-pt)))
+
+      ;; unwind-protect cleanup:
       (matlab--eilb-kill)
-      (matlab-ts-mode--ei-set-alist-caches nil)
+      (matlab-ts-mode--ei-set-region-caches nil)
       (kill-buffer new-content-buf))))
 
 (provide 'matlab-ts-mode--ei)
@@ -2073,4 +2426,5 @@ This expansion of the region is done to simplify electric indent."
 
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
-;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl
+;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
+;; LocalWords:  alist's ERROR's repeat:nil lang xyz

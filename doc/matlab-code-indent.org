@@ -565,6 +565,8 @@ directives.
 
 13. *Align consecutive trailing comments*
 
+    Trailing comments of consecutive statements in the same scope are aligned.
+
     Example:
 
     #+begin_src matlab
@@ -581,6 +583,24 @@ directives.
       timeH1    = 2;           % Time in hours traveled of first vehicle in hours
       distance1 = s1 * timeH1; % Distance we've traveled in miles
       disp(distance1)          % Report how far we've gone
+    #+end_src
+
+    Example:
+
+    #+begin_src matlab
+      if a % comment about a
+          b    = 1;     % comment about b
+          cLongVariable = [1.01 2.001]; % comment about cLongVariable
+      end
+    #+end_src
+
+    Indents to:
+
+    #+begin_src matlab
+      if a % comment about a
+          b             = 1;             % comment about b
+          cLongVariable = [1.01, 2.001]; % comment about cLongVariable
+      end
     #+end_src
 
 14. *Commas in arrays (matrices and cells)*

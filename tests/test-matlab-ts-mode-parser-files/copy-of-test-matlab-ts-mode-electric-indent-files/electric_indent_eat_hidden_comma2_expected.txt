@@ -1,0 +1,216 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1175> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,121]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[121,123]
+ (for_statement<123,647> for[123,126]
+  (iterator<127,154> (identifier[127,133]@{wIndex}@) =[134,135]
+   (range<136,154> (number[136,137]@{1}@) :[137,138]
+    (function_call<138,154> name: (identifier[138,144]@{length}@) ([144,145]
+     (arguments<145,153>
+      argument: (field_expression<145,153> object: (identifier[145,148]@{foo}@) .[148,149] field: (identifier[149,153]@{blah}@)))
+     )[153,154])))
+  (block<159,644>
+   (assignment<159,494> left: (identifier[159,171]@{fooBarGooToo}@) =[172,173]
+    right: 
+     (matrix<174,494> [[174,175]
+      (row<175,493> (identifier[175,184]@{something}@) (line_continuation[216,228]@{...\n        }@) ,[228,228]
+       (matrix<228,493> [[228,229]
+        (row<229,344>
+         (range<229,269>
+          (function_call<229,247> name: (identifier[229,239]@{otherThing}@) ([239,240]
+           (arguments<240,246> argument: (identifier[240,246]@{wIndex}@))
+           )[246,247])
+          :[247,248]
+          (binary_operator<248,269>
+           left: 
+            (function_call<248,267> name: (identifier[248,259]@{theEndIndex}@) ([259,260]
+             (arguments<260,266> argument: (identifier[260,266]@{wIndex}@))
+             )[266,267])
+           -[267,268] right: (number[268,269]@{1}@)))
+         (line_continuation[290,304]@{...\n          }@) ,[304,304]
+         (range<304,344>
+          (binary_operator<304,324>
+           left: 
+            (function_call<304,322> name: (identifier[304,314]@{otherThing}@) ([314,315]
+             (arguments<315,321> argument: (identifier[315,321]@{wIndex}@))
+             )[321,322])
+           +[322,323] right: (number[323,324]@{1}@))
+          :[324,325]
+          (function_call<325,344> name: (identifier[325,336]@{theEndIndex}@) ([336,337]
+           (arguments<337,343> argument: (identifier[337,343]@{wIndex}@))
+           )[343,344])))
+        (line_continuation[366,370]@{...\n}@)
+        (row<378,492>
+         (range<378,418>
+          (binary_operator<378,398>
+           left: 
+            (function_call<378,396> name: (identifier[378,388]@{otherThing}@) ([388,389]
+             (arguments<389,395> argument: (identifier[389,395]@{wIndex}@))
+             )[395,396])
+           +[396,397] right: (number[397,398]@{1}@))
+          :[398,399]
+          (function_call<399,418> name: (identifier[399,410]@{theEndIndex}@) ([410,411]
+           (arguments<411,417> argument: (identifier[411,417]@{wIndex}@))
+           )[417,418]))
+         (line_continuation[440,452]@{...\n        }@) ,[452,452]
+         (range<452,492>
+          (function_call<452,470> name: (identifier[452,462]@{otherThing}@) ([462,463]
+           (arguments<463,469> argument: (identifier[463,469]@{wIndex}@))
+           )[469,470])
+          :[470,471]
+          (binary_operator<471,492>
+           left: 
+            (function_call<471,490> name: (identifier[471,482]@{theEndIndex}@) ([482,483]
+             (arguments<483,489> argument: (identifier[483,489]@{wIndex}@))
+             )[489,490])
+           -[490,491] right: (number[491,492]@{1}@))))
+        ][492,493]))
+      ][493,494]))
+   ;[494,495] (comment[496,507]@{%#ok<AGROW>}@)
+   (assignment<512,563> left: (identifier[512,514]@{P0}@) =[515,516]
+    right: 
+     (matrix<517,563> [[517,518]
+      (row<518,562> (identifier[518,520]@{P0}@) ,[521,521]
+       (field_expression<521,562> object: (identifier[521,524]@{foo}@) .[524,525]
+        field: 
+         (function_call<525,537> name: (identifier[525,529]@{blah}@) {[529,530]
+          (arguments<530,536> argument: (identifier[530,536]@{wIndex}@))
+          }[536,537])
+        .[537,538]
+        (function_call<538,562> name: (identifier[538,551]@{foobarGooOrig}@) ([551,552]
+         (arguments<552,561>
+          argument: (spread_operator<552,553> :[552,553])
+          ,[553,554]
+          (range<554,561> (number[554,555]@{1}@) :[555,556]
+           (binary_operator<556,561>
+            left: (end_keyword<556,559> end[556,559])
+            -[559,560] right: (number[560,561]@{1}@))))
+         )[561,562])))
+      ][562,563]))
+   ;[563,564] (comment[565,576]@{%#ok<AGROW>}@)
+   (assignment<581,630> left: (identifier[581,583]@{P1}@) =[584,585]
+    right: 
+     (matrix<586,630> [[586,587]
+      (row<587,629> (identifier[587,589]@{P1}@) ,[590,590]
+       (field_expression<590,629> object: (identifier[590,593]@{foo}@) .[593,594]
+        field: 
+         (function_call<594,606> name: (identifier[594,598]@{blah}@) {[598,599]
+          (arguments<599,605> argument: (identifier[599,605]@{wIndex}@))
+          }[605,606])
+        .[606,607]
+        (function_call<607,629> name: (identifier[607,620]@{foobarGooOrig}@) ([620,621]
+         (arguments<621,628>
+          argument: (spread_operator<621,622> :[621,622])
+          ,[622,623]
+          (range<623,628> (number[623,624]@{2}@) :[624,625]
+           (end_keyword<625,628> end[625,628])))
+         )[628,629])))
+      ][629,630]))
+   ;[630,631] (comment[632,643]@{%#ok<AGROW>}@) \n[643,644])
+  end[644,647])
+ \n[647,650]
+ (for_statement<650,1174> for[650,653]
+  (iterator<654,681> (identifier[654,660]@{wIndex}@) =[661,662]
+   (range<663,681> (number[663,664]@{1}@) :[664,665]
+    (function_call<665,681> name: (identifier[665,671]@{length}@) ([671,672]
+     (arguments<672,680>
+      argument: (field_expression<672,680> object: (identifier[672,675]@{foo}@) .[675,676] field: (identifier[676,680]@{blah}@)))
+     )[680,681])))
+  (block<686,1171>
+   (assignment<686,1021> left: (identifier[686,698]@{fooBarGooToo}@) =[699,700]
+    right: 
+     (matrix<701,1021> [[701,702]
+      (row<702,1020> (identifier[702,711]@{something}@) (line_continuation[743,755]@{...\n        }@) ,[755,755]
+       (cell<755,1020> {[755,756]
+        (row<756,871>
+         (range<756,796>
+          (function_call<756,774> name: (identifier[756,766]@{otherThing}@) ([766,767]
+           (arguments<767,773> argument: (identifier[767,773]@{wIndex}@))
+           )[773,774])
+          :[774,775]
+          (binary_operator<775,796>
+           left: 
+            (function_call<775,794> name: (identifier[775,786]@{theEndIndex}@) ([786,787]
+             (arguments<787,793> argument: (identifier[787,793]@{wIndex}@))
+             )[793,794])
+           -[794,795] right: (number[795,796]@{1}@)))
+         (line_continuation[817,831]@{...\n          }@) ,[831,831]
+         (range<831,871>
+          (binary_operator<831,851>
+           left: 
+            (function_call<831,849> name: (identifier[831,841]@{otherThing}@) ([841,842]
+             (arguments<842,848> argument: (identifier[842,848]@{wIndex}@))
+             )[848,849])
+           +[849,850] right: (number[850,851]@{1}@))
+          :[851,852]
+          (function_call<852,871> name: (identifier[852,863]@{theEndIndex}@) ([863,864]
+           (arguments<864,870> argument: (identifier[864,870]@{wIndex}@))
+           )[870,871])))
+        (line_continuation[893,897]@{...\n}@)
+        (row<905,1019>
+         (range<905,945>
+          (binary_operator<905,925>
+           left: 
+            (function_call<905,923> name: (identifier[905,915]@{otherThing}@) ([915,916]
+             (arguments<916,922> argument: (identifier[916,922]@{wIndex}@))
+             )[922,923])
+           +[923,924] right: (number[924,925]@{1}@))
+          :[925,926]
+          (function_call<926,945> name: (identifier[926,937]@{theEndIndex}@) ([937,938]
+           (arguments<938,944> argument: (identifier[938,944]@{wIndex}@))
+           )[944,945]))
+         (line_continuation[967,979]@{...\n        }@) ,[979,979]
+         (range<979,1019>
+          (function_call<979,997> name: (identifier[979,989]@{otherThing}@) ([989,990]
+           (arguments<990,996> argument: (identifier[990,996]@{wIndex}@))
+           )[996,997])
+          :[997,998]
+          (binary_operator<998,1019>
+           left: 
+            (function_call<998,1017> name: (identifier[998,1009]@{theEndIndex}@) ([1009,1010]
+             (arguments<1010,1016> argument: (identifier[1010,1016]@{wIndex}@))
+             )[1016,1017])
+           -[1017,1018] right: (number[1018,1019]@{1}@))))
+        }[1019,1020]))
+      ][1020,1021]))
+   ;[1021,1022] (comment[1023,1034]@{%#ok<AGROW>}@)
+   (assignment<1039,1090> left: (identifier[1039,1041]@{P0}@) =[1042,1043]
+    right: 
+     (matrix<1044,1090> [[1044,1045]
+      (row<1045,1089> (identifier[1045,1047]@{P0}@) ,[1048,1048]
+       (field_expression<1048,1089> object: (identifier[1048,1051]@{foo}@) .[1051,1052]
+        field: 
+         (function_call<1052,1064> name: (identifier[1052,1056]@{blah}@) {[1056,1057]
+          (arguments<1057,1063> argument: (identifier[1057,1063]@{wIndex}@))
+          }[1063,1064])
+        .[1064,1065]
+        (function_call<1065,1089> name: (identifier[1065,1078]@{foobarGooOrig}@) ([1078,1079]
+         (arguments<1079,1088>
+          argument: (spread_operator<1079,1080> :[1079,1080])
+          ,[1080,1081]
+          (range<1081,1088> (number[1081,1082]@{1}@) :[1082,1083]
+           (binary_operator<1083,1088>
+            left: (end_keyword<1083,1086> end[1083,1086])
+            -[1086,1087] right: (number[1087,1088]@{1}@))))
+         )[1088,1089])))
+      ][1089,1090]))
+   ;[1090,1091] (comment[1092,1103]@{%#ok<AGROW>}@)
+   (assignment<1108,1157> left: (identifier[1108,1110]@{P1}@) =[1111,1112]
+    right: 
+     (matrix<1113,1157> [[1113,1114]
+      (row<1114,1156> (identifier[1114,1116]@{P1}@) ,[1117,1117]
+       (field_expression<1117,1156> object: (identifier[1117,1120]@{foo}@) .[1120,1121]
+        field: 
+         (function_call<1121,1133> name: (identifier[1121,1125]@{blah}@) {[1125,1126]
+          (arguments<1126,1132> argument: (identifier[1126,1132]@{wIndex}@))
+          }[1132,1133])
+        .[1133,1134]
+        (function_call<1134,1156> name: (identifier[1134,1147]@{foobarGooOrig}@) ([1147,1148]
+         (arguments<1148,1155>
+          argument: (spread_operator<1148,1149> :[1148,1149])
+          ,[1149,1150]
+          (range<1150,1155> (number[1150,1151]@{2}@) :[1151,1152]
+           (end_keyword<1152,1155> end[1152,1155])))
+         )[1155,1156])))
+      ][1156,1157]))
+   ;[1157,1158] (comment[1159,1170]@{%#ok<AGROW>}@) \n[1170,1171])
+  end[1171,1174])
+ \n[1174,1175])

@@ -1,0 +1,53 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,497> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,109]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) \n[109,111]
+ (function_definition<111,496> function[111,119]
+  (function_output<120,147>
+   (multioutput_variable<120,145> [[120,121] (identifier[121,128]@{success}@) ,[128,129] (identifier[130,136]@{stdout}@) ,[136,137] (identifier[138,144]@{stderr}@) ][144,145])
+   =[146,147])
+  name: (identifier[148,180]@{electric_indent_arguments_as_arg}@)
+  (function_arguments<180,225> ([180,181] arguments: (identifier[181,184]@{obj}@) ,[184,185] (identifier[186,193]@{command}@) ,[193,194]
+   (identifier<195,204> arguments[195,204])
+   ,[204,205] (identifier[206,211]@{inDir}@) ,[211,212] (identifier[213,224]@{buildLogger}@) )[224,225])
+  \n[225,226]
+  (arguments_statement<230,409> arguments[230,239] \n[239,240]
+   (property<248,251> name: (identifier[248,251]@{obj}@))
+   \n[251,252]
+   (property<260,282> name: (identifier[260,267]@{command}@)
+    (dimensions<272,277> ([272,273] (number[273,274]@{1}@) ,[274,275]
+     (spread_operator<275,276> :[275,276])
+     )[276,277])
+    (identifier[278,282]@{char}@))
+   \n[282,283]
+   (property<291,326>
+    name: (identifier<291,300> arguments[291,300])
+    (dimensions<303,308> ([303,304] (number[304,305]@{1}@) ,[305,306]
+     (spread_operator<306,307> :[306,307])
+     )[307,308])
+    (identifier[309,313]@{cell}@)
+    (validation_functions<314,326> {[314,315] (identifier[315,325]@{mustBeText}@) }[325,326]))
+   \n[326,327]
+   (property<335,357> name: (identifier[335,340]@{inDir}@)
+    (dimensions<347,352> ([347,348] (number[348,349]@{1}@) ,[349,350]
+     (spread_operator<350,351> :[350,351])
+     )[351,352])
+    (identifier[353,357]@{char}@))
+   \n[357,358]
+   (property<366,401> name: (identifier[366,377]@{buildLogger}@)
+    (dimensions<378,383> ([378,379] (number[379,380]@{1}@) ,[380,381] (number[381,382]@{1}@) )[382,383])
+    (property_name<384,401> (identifier[384,389]@{utils}@) .[389,390] (identifier[390,401]@{BuildLogger}@)))
+   \n[401,402] end[406,409])
+  (block<415,493>
+   (assignment<415,491>
+    left: (multioutput_variable<415,440> [[415,416] (identifier[416,423]@{success}@) ,[423,424] (identifier[425,431]@{stdout}@) ,[431,432] (identifier[433,439]@{stderr}@) ][439,440])
+    =[441,442]
+    right: 
+     (field_expression<443,491> object: (identifier[443,446]@{obj}@) .[446,447]
+      field: 
+       (function_call<447,491> name: (identifier[447,451]@{exec}@) ([451,452]
+        (arguments<452,490> argument: (identifier[452,459]@{command}@) ,[459,460]
+         (identifier<461,470> arguments[461,470])
+         ,[470,471] (identifier[472,477]@{inDir}@) ,[477,478] (identifier[479,490]@{buildLogger}@))
+        )[490,491])))
+   ;[491,492] \n[492,493])
+  end[493,496])
+ \n[496,497])
