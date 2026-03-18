@@ -370,8 +370,143 @@ be unary-op even though the node type is \"+\"."
       ;; result
       err-map)))
 
-(defvar matlab-ts-mode--ei-all-nodes-query (when (treesit-available-p)
-                                             (treesit-query-compile 'matlab '(_ @n (ERROR) @e))))
+(defvar matlab-ts-mode--ei-all-nodes-query
+  (when (treesit-available-p)
+    (treesit-query-compile
+     'matlab
+     `(;; Named nodes
+       ((identifier) @identifier)
+       ((number) @number)
+       ((string) @string)
+       ((comment) @comment)
+       ((line_continuation) @line_continuation)
+       ((command_argument) @command_argument)
+       ((command_name) @command_name)
+       ((dimensions) @dimensions)
+       ((ERROR) @error)
+
+       ;; Punctuation & delimiters
+       ("," @comma) (";" @semicolon) ("." @dot)
+       ("(" @lparen) (")" @rparen)
+       ("[" @lbrack) ("]" @rbrack) ("{" @lbrace) ("}" @rbrace)
+
+       ;; Arithmetic & assignment operators
+       ("+" @plus) ("-" @minus) ("*" @star) ("/" @slash) ("\\" @backslash)
+       ("^" @caret) (":" @colon) ("=" @assign)
+
+       ;; Dot operators
+       (".*" @dotStar) ("./" @dotSlash) (".\\" @dotBackslash) (".^" @dotCaret)
+       (".?" @dotQuestion) (".'" @dotTranspose)
+
+       ;; Comparison operators
+       ("<" @lt) (">" @gt) ("<=" @leq) (">=" @geq) ("==" @eqeq) ("~=" @neq)
+
+       ;; Logical operators
+       ("&" @amp) ("|" @pipe) ("&&" @and2) ("||" @or2)
+
+       ;; Other operators
+       ("~" @tilde) ("@" @at) ("?" @question)
+
+       ;; String or transpose
+       ("'" @singleTick)
+
+       ;; Keywords
+       ("arguments" @kw_arguments)
+       ("break" @kw_break)
+       ("case" @kw_case)
+       ("catch" @kw_catch)
+       ("classdef" @kw_classdef)
+       ("continue" @kw_continue)
+       ("else" @kw_else)
+       ("elseif" @kw_elseif)
+       ("end" @kw_end)
+       ("enumeration" @kw_enumeration)
+       ("events" @kw_events)
+       ("for" @kw_for)
+       ("function" @kw_function)
+       ("global" @kw_global)
+       ("if" @kw_if)
+       ("methods" @kw_methods)
+       ("otherwise" @kw_otherwise)
+       ("parfor" @kw_parfor)
+       ("persistent" @kw_persistent)
+       ("properties" @kw_properties)
+       ("return" @kw_return)
+       ("spmd" @kw_spmd)
+       ("switch" @kw_switch)
+       ("try" @kw_try)
+       ("while" @kw_while)
+
+       ;; classdef property get and set method start nodes
+       ;; (https://www.mathworks.com/help/matlab/matlab_oop/property-set-methods.html)
+       ("get." @kw_get_dot)
+       ("set." @kw_set_dot)
+       ))))
+
+;; Map capture symbols to their node-type strings for the spacing table.
+;; Only symbols whose type string differs from (symbol-name sym) need entries;
+;; for the rest we derive the string from the grammar node type at init time.
+(defvar matlab-ts-mode--ei-capture-type-map
+  (let ((ht (make-hash-table :test 'eq :size 80)))
+    ;; Named nodes — capture symbol matches type string
+    (dolist (sym '(identifier number string comment line_continuation
+                              command_argument command_name))
+      (puthash sym (symbol-name sym) ht))
+    ;; Punctuation & delimiters
+    (puthash 'comma "," ht)     (puthash 'semicolon ";" ht)
+    (puthash 'dot "." ht)
+    (puthash 'lparen "(" ht)    (puthash 'rparen ")" ht)
+    (puthash 'lbrack "[" ht)    (puthash 'rbrack "]" ht)
+    (puthash 'lbrace "{" ht)    (puthash 'rbrace "}" ht)
+    ;; Arithmetic & assignment
+    (puthash 'plus "+" ht)      (puthash 'minus "-" ht)
+    (puthash 'star "*" ht)      (puthash 'slash "/" ht)
+    (puthash 'backslash "\\" ht)
+    (puthash 'caret "^" ht)     (puthash 'colon ":" ht)
+    (puthash 'assign "=" ht)
+    ;; Dot operators
+    (puthash 'dotStar ".*" ht)       (puthash 'dotSlash "./" ht)
+    (puthash 'dotBackslash ".\\" ht) (puthash 'dotCaret ".^" ht)
+    (puthash 'dotQuestion ".?" ht)   (puthash 'dotTranspose ".'" ht)
+    ;; Comparison
+    (puthash 'lt "<" ht)        (puthash 'gt ">" ht)
+    (puthash 'leq "<=" ht)      (puthash 'geq ">=" ht)
+    (puthash 'eqeq "==" ht)     (puthash 'neq "~=" ht)
+    ;; Logical
+    (puthash 'amp "&" ht)       (puthash 'pipe "|" ht)
+    (puthash 'and2 "&&" ht)     (puthash 'or2 "||" ht)
+    ;; Other operators
+    (puthash 'tilde "~" ht)     (puthash 'at "@" ht)
+    (puthash 'question "?" ht)  (puthash 'singleTick "'" ht)
+    ;; Keywords
+    (puthash 'kw_arguments "arguments" ht)
+    (puthash 'kw_break "break" ht)
+    (puthash 'kw_case "case" ht)
+    (puthash 'kw_catch "catch" ht)
+    (puthash 'kw_classdef "classdef" ht)
+    (puthash 'kw_continue "continue" ht)
+    (puthash 'kw_else "else" ht)
+    (puthash 'kw_elseif "elseif" ht)
+    (puthash 'kw_end "end" ht)
+    (puthash 'kw_enumeration "enumeration" ht)
+    (puthash 'kw_events "events" ht)
+    (puthash 'kw_for "for" ht)
+    (puthash 'kw_function "function" ht)
+    (puthash 'kw_global "global" ht)
+    (puthash 'kw_if "if" ht)
+    (puthash 'kw_methods "methods" ht)
+    (puthash 'kw_otherwise "otherwise" ht)
+    (puthash 'kw_parfor "parfor" ht)
+    (puthash 'kw_persistent "persistent" ht)
+    (puthash 'kw_properties "properties" ht)
+    (puthash 'kw_return "return" ht)
+    (puthash 'kw_spmd "spmd" ht)
+    (puthash 'kw_switch "switch" ht)
+    (puthash 'kw_try "try" ht)
+    (puthash 'kw_while "while" ht)
+    (puthash 'kw_get_dot "get." ht)
+    (puthash 'kw_set_dot "set." ht)
+    ht))
 
 (defun matlab-ts-mode--ei-line-nodes-in-region (beg end)
   "Get line nodes in region BEG to END.
@@ -388,7 +523,6 @@ even though the node type is \"+\"."
 
   (setq matlab-ts-mode--ei-errors-map (make-hash-table))
 
-  ;; TODO - speedup: query explicit nodes and use the capture node symbol instead of type string.
   (let* ((region-nodes (treesit-query-capture (treesit-buffer-root-node 'matlab)
                                               matlab-ts-mode--ei-all-nodes-query beg end))
          dimensions-node ;; we use this to track the "number" and ":" with in properties dimension
@@ -396,62 +530,49 @@ even though the node type is \"+\"."
          (ptr prev-ptr))
 
     (while ptr
-      (let* ((node (cdar ptr))
-             (node-type (treesit-node-type node)))
+      (let* ((capture (caar ptr))
+             (node (cdar ptr))
+             (node-type (gethash capture matlab-ts-mode--ei-capture-type-map)))
 
-        ;; TODO - optimize by reducing comparisons? Add leaf-node check?
         (cond
          ;; Case: ERROR node
-         ((string= node-type "ERROR")
+         ((eq capture 'error)
           (matlab-ts-mode--ei-mark-error-lines node)
           (setq node nil))
 
-         ;; Case: \n - ignore these, we don't pad them or anything
-         ((string= node-type "\n")
-          (setq node nil))
-
          ;; Case: track when in a property dimensions node
-         ((string= node-type "dimensions")
+         ((eq capture 'dimensions)
           (setq dimensions-node node
                 node nil))
 
          ;; Case: arguments fcn keyword: arguments (1, :) {mustBeNumeric}
          ;;                                        ^
-         ((and dimensions-node (string= node-type "("))
+         ((and dimensions-node (eq capture 'lparen))
           (setq node-type "dim-("))
 
          ;; Case: property dimensions
          ;;   foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
-         ((and dimensions-node (or (string= node-type "number") (string= node-type ":")))
+         ((and dimensions-node (or (eq capture 'number) (eq capture 'colon)))
           (setq node-type "prop-dim"))
 
          ;; Case: lambda:     @(x) ((ischar(x) || isstring(x)))
          ;;                      ^
          ;;       properties: foo1 (1, :) {mustBeNumeric, mustBeReal} = [0, 0, 0];
          ;;                             ^
-         ((string= node-type ")")
-          (setq dimensions-node nil) ;; close of dimension-node or other close paren
-          (let* ((parent (treesit-node-parent node))
-                 (parent-type (treesit-node-type parent)))
-            (if (string= parent-type "lambda")
-                (setq node-type "lambda-)")
-              (if (string= parent-type "dimensions")
-                  (setq node-type "dim-)")))))
+         ((eq capture 'rparen)
+          (if dimensions-node
+              (setq dimensions-node nil ;; close of dimension-node
+                    node-type "dim-)")
+            (when (string= (treesit-node-type (treesit-node-parent node)) "lambda")
+              (setq node-type "lambda-)"))))
 
-         ;; Case: parts of a string to ignore ("), ('), "string_content"
-         ((or (and (string= node-type "'") ;; ' can be for string or transpose, ignore when string
-                   (string= (treesit-node-type (treesit-node-parent node)) "string"))
-              (or (string= node-type "string_content")
-                  (string= node-type "formatting_sequence")
-                  (string= node-type "\"")))
+         ;; Case: ' string delimiter — ignore (transpose is kept)
+         ((and (eq capture 'singleTick)
+               (string= (treesit-node-type (treesit-node-parent node)) "string"))
           (setq node nil))
 
-         ;; Case: string - "double-quote-string" or 'single-quote-string'
-         ((string= node-type "string")
-          nil)
-
          ;; Case: prop-id, prop-class-id, enum-id
-         ((string= node-type "identifier")
+         ((eq capture 'identifier)
           (let* ((parent (treesit-node-parent node))
                  (parent-type (treesit-node-type parent)))
             (cond
@@ -473,7 +594,7 @@ even though the node type is \"+\"."
              ;;     opts.onOff (1,1) matlab.lang.OnOffSwitchState % two property_name's
              ;; end
              ;;
-             ;; classdef foo < a & b.c.d                         % two property_name's to skip
+             ;; classdef foo < a & b.c.d                          % two property_name's to skip
              ;; end
              ((string= parent-type "property_name") ;; property.nameWithDot?
               (if (equal (treesit-node-child (treesit-node-parent parent) 0) parent)
@@ -487,41 +608,37 @@ even though the node type is \"+\"."
               (setq node-type "enum-id")))))
 
          ;; Case: unary operator sign, + or -, e.g. [0 -e] or g = - e
-         ((or (string= node-type "+") (string= node-type "-"))
+         ((or (eq capture 'plus) (eq capture 'minus))
           (let* ((parent (treesit-node-parent node))
                  (parent-type (treesit-node-type parent)))
-            (when(and (string= parent-type "unary_operator")
-                      (equal (treesit-node-child parent 0) node))
+            (when (and (string= parent-type "unary_operator")
+                       (equal (treesit-node-child parent 0) node))
               (setq node-type "unary-op"))))
 
          ;; Case: super-class constructor call
          ;;  obj@myUtils.super;
-         ((string= node-type "@")
+         ((eq capture 'at)
           (let* ((parent (treesit-node-parent node))
                  (parent-type (treesit-node-type parent)))
             (when (string= parent-type "function_call")
               (setq node-type "@-fcn-call"))))
 
-         ;; Case: events, enumeration, methods "commands" and not keywords
-         ((and (string-match-p (rx bos (or "events" "enumeration" "methods" "arguments") eos)
-                               node-type)
-               (= (treesit-node-child-count node) 0)) ;; no children == command
-          (let* ((parent (treesit-node-parent node))
-                 (parent-type (treesit-node-type parent)))
-            (when (string= parent-type "identifier")
-              ;; TopTester: electric_indent_inspect_keyword_commands.m
-              ;; TopTester: electric_indent_inspect_keyword_commands2.m
-              (setq node-type (concat node-type "-fcn")))))
-
-         ((not (= (treesit-node-child-count node) 0)) ;; non-leaf node
-          (setq node nil)))
+         ;; Case: events, enumeration, methods, arguments "commands" and not keywords
+         ((memq capture '(kw_events kw_enumeration kw_methods kw_arguments))
+          (when (= (treesit-node-child-count node) 0) ;; no children == command
+            (let* ((parent (treesit-node-parent node))
+                   (parent-type (treesit-node-type parent)))
+              (when (string= parent-type "identifier")
+                ;; TopTester: electric_indent_inspect_keyword_commands.m
+                ;; TopTester: electric_indent_inspect_keyword_commands2.m
+                (setq node-type (concat node-type "-fcn")))))))
 
         (if (and node
                  ;; See: electric_indent_xr_prop_hidden_nodes.m: empty nodes in { }
                  ;; See: electric_indent_example.m: figure       ;% Create a new figure
                  ;;                                              ^ <== empty command_argument
                  (or (not (= (treesit-node-start node) (treesit-node-end node)))
-                     (string= (treesit-node-type node) ",")))
+                     (eq capture 'comma)))
             ;; Keep the node and change the capture name to the node-type string
             (progn
               (setcar (car ptr) node-type)
@@ -2427,4 +2544,6 @@ This expansion of the region is done to simplify electric indent."
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
-;; LocalWords:  alist's ERROR's repeat:nil lang xyz
+;; LocalWords:  alist's ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace
+;; LocalWords:  geq eqeq neq memq
+;; LocalWords:  setcar setcdr anychar
