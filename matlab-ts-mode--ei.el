@@ -87,9 +87,6 @@
               ":")
       eos))
 
-(defvar matlab-ts-mode--ei-0-after-re
-  (rx bos (or "[" "{" "(" "~" "unary-op") eos))
-
 (defvar matlab-ts-mode--ei-val-re (rx bos (or "identifier" "number") eos))
 
 ;; TODO optimize following by grouping together, also improve comments.  Perhaps write an optimizer
@@ -137,8 +134,12 @@
 
     (,(rx bos (or "," ";" "command_argument" "command_name" "enum-id") eos)  "."                 1)
 
-    (,matlab-ts-mode--ei-0-after-re   "."                                                        0)
+    ;; Case: open bracket etc., not (~var), unary operator (+123, -123)
+    ;;       Example: [123
+    ;;                 ^
+    (,(rx bos (or "[" "{" "(" "~" "unary-op") eos)  "."                                          0)
 
+    ;; Case: close bracket, etc.
     (,(rx bos "]" eos)                ,(rx bos (or "," ";") eos)                                 0)
     (,(rx bos "]" eos)                ,(rx bos "[" eos)                                          1)
     ("."                              ,(rx bos (or "]" ")" "}" "lambda-)") eos)                  0)
@@ -155,7 +156,7 @@
     ;; Case: property identifier (the prop or class): propName (1,1) double
     (,(rx bos (or "prop-id" "prop-class-id") eos)   "."                                          1)
 
-    ;; Case: padded operators, e.g.: a || b
+    ;; Case: padded operators, e.g.: a || b     c * d
     (,matlab-ts-mode--ei-pad-op-re    "."                                                        1)
     ("."                              ,matlab-ts-mode--ei-pad-op-re                              1)
 
@@ -181,6 +182,7 @@
     (,(rx bos "<" eos)                "."                                                        1)
 
     ;; Case: keywords, e.g. if condition
+    ;;                         ^
     (,matlab-ts-mode--ei-keywords-re  "."                                                        1)
 
     ;; Case: c = {['freq' '%'] num2str(2)};
