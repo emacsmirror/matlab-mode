@@ -800,23 +800,8 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
 
       (insert node-text extra-chars)
 
-      (if (not n-spaces-to-append) ;; last node?
-          ;; Add trailing whitespace when in an ERROR node. Consider
-          ;;    switch a
-          ;;      case                    ;; One trailing whitespace
-          ;;    end
-          ;; TopTester: electric_indent_xr_switch.m
-          (when (and (treesit-parent-until node (rx bos "ERROR" eos))
-                     (< last-pt eol-pt))
-            (save-excursion
-              (let ((inhibit-field-text-motion t)) (end-of-line))
-              (when (re-search-backward "[^ \t]" (pos-bol) t)
-                (forward-char)
-                (when (not (= (point) (pos-eol)))
-                  (buffer-substring (point) (pos-eol))))))
-        ;; Else insert the spaces
-        (when (> n-spaces-to-append 0)
-          (insert (make-string n-spaces-to-append ? )))))))
+      (when (and n-spaces-to-append (> n-spaces-to-append 0))
+        (insert (make-string n-spaces-to-append ? ))))))
 
 ;; matlab-ts-mode--ei-tmp-buf-indent is non-nil if doing m-matrix indent (in this case we know there
 ;; are no ERROR nodes).
