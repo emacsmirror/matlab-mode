@@ -1413,18 +1413,21 @@ nil."
            (cond
             ;; Case: row
             ((string= child-type "row")
-             (let ((row-start-linenum (line-number-at-pos (treesit-node-start child))))
+             (let ((row-start-bol (save-excursion (goto-char (treesit-node-start child))
+                                                  (pos-bol))))
 
-               ;; Not an m-matrix when row is not on one line
-               (when (not (= row-start-linenum (line-number-at-pos (treesit-node-end child))))
+               ;; Not an m-matrix when row is not on one line, i.e. start line != end line of row.
+               (when (not (= row-start-bol (save-excursion (goto-char (treesit-node-end child))
+                                                           (pos-bol))))
                  (setq is-m-matrix nil)
                  (cl-return))
 
                ;; Not an m-matrix when more than one row is on the line
                (let ((next-node (treesit-node-next-sibling child)))
                  (when (and (string= (treesit-node-type next-node) "row")
-                            (= row-start-linenum (line-number-at-pos
-                                                  (treesit-node-start next-node))))
+                            (= row-start-bol (save-excursion
+                                               (goto-char (treesit-node-start next-node))
+                                               (pos-bol))))
                    (setq is-m-matrix nil)
                    (cl-return)))
 
