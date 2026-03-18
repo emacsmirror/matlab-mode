@@ -1,0 +1,21 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,304> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,67]@{% t-utils-test-indent: no-line-by-line-indent}@) \n[67,69]
+ (class_definition<69,303> classdef[69,77] name: (identifier[78,98]@{electric_indent_dot4}@)
+  (superclasses<99,137> <[99,100]
+   (property_name<101,137> (identifier[101,104]@{foo}@) .[104,105] (identifier[105,108]@{bar}@) .[108,109] (identifier[109,113]@{Base}@) .[113,114] (identifier[114,132]@{AlgorithmGenerator}@) .[132,133] (identifier[133,137]@{Base}@)))
+  \n[137,138]
+  (methods<142,299> methods[142,149] \n[149,150]
+   (function_definition<158,291> function[158,166]
+    (function_output<167,173> (identifier[167,171]@{this}@) =[172,173])
+    name: (identifier[174,194]@{electric_indent_dot4}@) \n[194,195]
+    (block<207,280>
+     (function_call<207,278> name: (identifier[207,211]@{this}@) @[211,212]
+      (superclass<212,274> (identifier[212,215]@{foo}@) .[215,216] (identifier[216,219]@{bar}@) .[219,220] (identifier[220,224]@{Base}@) .[224,225] (line_continuation[226,230]@{...\n}@) (identifier[251,269]@{AlgorithmGenerator}@) .[269,270] (identifier[270,274]@{Base}@))
+      ([274,275]
+      (arguments<275,277> argument: (number[275,277]@{10}@))
+      )[277,278])
+     ;[278,279] \n[279,280])
+    end[288,291])
+   \n[291,292] end[296,299])
+  \n[299,300] end[300,303])
+ \n[303,304])
