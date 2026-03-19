@@ -1801,14 +1801,14 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (when (matlab-ts-mode--ei-get-prop-node ei-info)
     (let ((ei-info-p-length (matlab-ts-mode--ei-prop-length ei-info))
           (p-length (when matlab-ts-mode--ei-align-prop-cache
-                      (gethash (line-number-at-pos) matlab-ts-mode--ei-align-prop-cache)))
+                      (gethash (pos-bol) matlab-ts-mode--ei-align-prop-cache)))
           (eat-comma matlab-ts-mode--ei-line-nodes-eat-comma))
 
       (when (not p-length)
         (save-excursion
           (forward-line 0)
-          (let* ((line-nums `(,(line-number-at-pos)))
-                 (line-start-pt (point)))
+          (let* ((line-start-pt (point))
+                 (line-bols `(,line-start-pt)))
 
             (setq p-length ei-info-p-length)
 
@@ -1828,14 +1828,14 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                 (if (matlab-ts-mode--ei-get-prop-node l-ei-info)
                     (let ((l-p-length (matlab-ts-mode--ei-prop-length l-ei-info)))
                       (when matlab-ts-mode--ei-align-prop-cache
-                        (push (line-number-at-pos) line-nums))
+                        (push (pos-bol) line-bols))
                       (when (> l-p-length p-length)
                         (setq p-length l-p-length)))
                   (cl-return)))))
 
             (when matlab-ts-mode--ei-align-prop-cache
-              (dolist (line-num line-nums)
-                (puthash line-num p-length matlab-ts-mode--ei-align-prop-cache))))))
+              (dolist (line-bol line-bols)
+                (puthash line-bol p-length matlab-ts-mode--ei-align-prop-cache))))))
 
       (when (not (= p-length ei-info-p-length))
         (let* ((diff (- p-length ei-info-p-length))
