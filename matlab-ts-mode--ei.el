@@ -1473,7 +1473,7 @@ nil."
 
 (defun matlab-ts-mode--ei-struct-starts-on-first-line (struct)
   "Is function_call STRUCT node have opening paren on start line?"
-  (let ((start-linenum (line-number-at-pos (treesit-node-start struct)))
+  (let ((start-bol (save-excursion (goto-char (treesit-node-start struct)) (pos-bol)))
         paren-node)
     (cl-loop
      for child in (treesit-node-children struct) do
@@ -1481,7 +1481,7 @@ nil."
        (setq paren-node child)
        (cl-return)))
     (and paren-node
-         (= start-linenum (line-number-at-pos (treesit-node-start paren-node))))))
+         (= start-bol (save-excursion (goto-char (treesit-node-start paren-node)) (pos-bol))))))
 
 (defvar-local matlab-ts-mode--ei-is-m-struct-cache nil) ;; cache
 
@@ -1489,19 +1489,19 @@ nil."
   "Is function_call STRUCT node a multi-line struct that can be aligned?
 If so return `(max-field-width . arguments-node), else nil."
 
-  (let* ((start-linenum (line-number-at-pos (treesit-node-start struct)))
+  (let* ((start-bol (save-excursion (goto-char (treesit-node-start struct)) (pos-bol)))
          (cache-value (when matlab-ts-mode--ei-is-m-struct-cache
-                        (gethash start-linenum matlab-ts-mode--ei-is-m-struct-cache)))
+                        (gethash start-bol matlab-ts-mode--ei-is-m-struct-cache)))
          (max-field-width 0))
 
     (when cache-value
       (cl-return-from matlab-ts-mode--ei-is-m-struct (when (> (car cache-value) 0) cache-value)))
 
-    (let* ((end-line (line-number-at-pos (treesit-node-end struct)))
+    (let* ((end-bol (save-excursion (goto-char (treesit-node-end struct)) (pos-bol)))
            arguments-node
            (is-m-struct (and
                          ;; Is candidate for a multi-line struct we can align if more than one line
-                         (> end-line start-linenum)
+                         (> end-bol start-bol)
                          ;; AND the opening "(" is on the same line as the struct
                          (matlab-ts-mode--ei-struct-starts-on-first-line struct)
                          ;; AND the closing ")" ends on it's own line
@@ -1510,15 +1510,15 @@ If so return `(max-field-width . arguments-node), else nil."
                          (setq arguments-node (treesit-search-subtree struct
                                                                       (rx bos "arguments" eos))))))
       (when is-m-struct
-        (let (tracking-line-num ;; iterate through arguments, tracking how many args on a line
+        (let (tracking-bol ;; iterate through arguments, tracking how many args on a line
               (n-args-on-tracking-line 0))
           (cl-loop
            for child in (treesit-node-children arguments-node) do
            (when (not (string-match-p (rx bos (or "," "line_continuation" eos))
                                       (treesit-node-type child)))
              ;; either field or value?
-             (let ((arg-line-num (line-number-at-pos (treesit-node-start child))))
-               (if (and tracking-line-num (= tracking-line-num arg-line-num))
+             (let ((arg-bol (save-excursion (goto-char (treesit-node-start child)) (pos-bol))))
+               (if (and tracking-bol (= tracking-bol arg-bol))
                    (progn (setq n-args-on-tracking-line (1+ n-args-on-tracking-line))
                           (when (> n-args-on-tracking-line 2)
                             (setq is-m-struct nil)
@@ -1536,7 +1536,7 @@ If so return `(max-field-width . arguments-node), else nil."
                  (let ((field-width (length (treesit-node-text child))))
                    (when (> field-width max-field-width)
                      (setq max-field-width field-width)))
-                 (setq tracking-line-num arg-line-num
+                 (setq tracking-bol arg-bol
                        n-args-on-tracking-line 1)))))
           (when (and n-args-on-tracking-line (= n-args-on-tracking-line 1)) ;; 0 or 2 is good
             (setq is-m-struct nil))))
@@ -1545,7 +1545,7 @@ If so return `(max-field-width . arguments-node), else nil."
                    `(,max-field-width . ,arguments-node))))
         (when matlab-ts-mode--ei-is-m-struct-cache
           ;; When not an alignable multi-line struct, use (0 . nil) to indicate it as such
-          (puthash start-linenum (if ans ans '(0 . nil))
+          (puthash start-bol (if ans ans '(0 . nil))
                    matlab-ts-mode--ei-is-m-struct-cache))
         ans))))
 
@@ -1557,11 +1557,11 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
   (let* ((ei-line (nth 0 ei-info))
          (struct-assign-node (nth 0 tuple))
          (max-field-width (nth 1 tuple))
-         (assign-linenum (line-number-at-pos (treesit-node-start struct-assign-node)))
+         (assign-bol (save-excursion (goto-char (treesit-node-start struct-assign-node)) (pos-bol)))
          comma-offset
          new-comma-offset)
 
-    (if (= (line-number-at-pos) assign-linenum)
+    (if (= (pos-bol) assign-bol)
         ;; On "var = struct(........" line?
         (let* ((eq-offset (string-match-p "=" ei-line))
                (open-paren-offset (string-match-p "(" ei-line eq-offset))
