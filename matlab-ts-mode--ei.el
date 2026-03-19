@@ -1939,15 +1939,15 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
 
         ;; Compute desired comment-offset
         (when (or (not matlab-ts-mode--ei-align-comment-cache)
-                  (not (setq comment-offset (gethash (line-number-at-pos)
+                  (not (setq comment-offset (gethash (pos-bol)
                                                      matlab-ts-mode--ei-align-comment-cache))))
-          (let (line-nums
+          (let (line-bols
                 line-start-pt
                 (scope (car line-comment-pair)))
 
             (setq comment-offset (cdr line-comment-pair))
 
-            (setq line-nums `(,(line-number-at-pos)))
+            (setq line-bols `(,(pos-bol)))
             (save-excursion
               (forward-line 0)
               (setq line-start-pt (point))
@@ -1971,14 +1971,14 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                   (setq l-offset-pair (matlab-ts-mode--ei-trailing-comment-offset ei-l-info))
                   (if (and l-offset-pair (equal scope (car l-offset-pair)))
                       (let ((l-offset (cdr l-offset-pair)))
-                        (push (line-number-at-pos) line-nums)
+                        (push (pos-bol) line-bols)
                         (when (> l-offset comment-offset)
                           (setq comment-offset l-offset)))
                     (cl-return))))))
 
             (when matlab-ts-mode--ei-align-comment-cache
-              (dolist (line-num line-nums)
-                (puthash line-num comment-offset matlab-ts-mode--ei-align-comment-cache)))))
+              (dolist (line-bol line-bols)
+                (puthash line-bol comment-offset matlab-ts-mode--ei-align-comment-cache)))))
 
         (let ((diff (- comment-offset (cdr line-comment-pair))))
           (when (> diff 0)
