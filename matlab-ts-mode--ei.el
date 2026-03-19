@@ -1871,41 +1871,43 @@ is identified as having a trailing comment."
         (let ((c-node (treesit-node-at (point) 'matlab)))
           (when (equal (treesit-node-type c-node) "comment")
             (if-let* ((first-node (cdr (nth 3 ei-info)))
-                      (scope (or
-                              ;; Line of matrix/cell? Skip 1st line because its indent level differs.
-                              ;; TODO - handle first line, e.g.
-                              ;;   cell2 = { % comment 1
-                              ;;            [], [], [], []; % comment 2
-                              ;;            0, 0, 0, 0;     % comment 3
-                              ;;           };
-                              (let ((a-node (treesit-parent-until c-node (rx bos (or "cell" "matrix") eos))))
-                                (when (and a-node
-                                           (not (= (pos-bol) (save-excursion
-                                                               (goto-char (treesit-node-start a-node))
-                                                               (pos-bol)))))
-                                  a-node))
-                              ;; Use scope of first node in the line
-                              (let ()
-                                (or (when (string-match-p (rx bol (or "arguments"
-                                                                      "end"
-                                                                      "enumeration"
-                                                                      "events"
-                                                                      "function"
-                                                                      "methods"
-                                                                      "properties")
-                                                              eos)
-                                                          (treesit-node-type first-node))
-                                      first-node)
-                                    (treesit-parent-until
-                                     first-node (rx bol (or "block"
-                                                            "cell"
-                                                            "matrix"
-                                                            "source_file"
-                                                            (seq (1+ anychar) "_clause")
-                                                            (seq (1+ anychar) "_definition")
-                                                            (seq (1+ anychar) "_definition")
-                                                            (seq (1+ anychar) "_statement"))
-                                                    eol)))))))
+                      (scope
+                       (or
+                        ;; Line of matrix/cell? Skip 1st line because its indent level differs.
+                        ;; TODO - handle first line, e.g.
+                        ;;   cell2 = { % comment 1
+                        ;;            [], [], [], []; % comment 2
+                        ;;            0, 0, 0, 0;     % comment 3
+                        ;;           };
+                        (let ((a-node (treesit-parent-until c-node
+                                                            (rx bos (or "cell" "matrix") eos))))
+                          (when (and a-node
+                                     (not (= (pos-bol) (save-excursion
+                                                         (goto-char (treesit-node-start a-node))
+                                                         (pos-bol)))))
+                            a-node))
+                        ;; Use scope of first node in the line
+                        (let ()
+                          (or (when (string-match-p (rx bol (or "arguments"
+                                                                "end"
+                                                                "enumeration"
+                                                                "events"
+                                                                "function"
+                                                                "methods"
+                                                                "properties")
+                                                        eos)
+                                                    (treesit-node-type first-node))
+                                first-node)
+                              (treesit-parent-until
+                               first-node (rx bol (or "block"
+                                                      "cell"
+                                                      "matrix"
+                                                      "source_file"
+                                                      (seq (1+ anychar) "_clause")
+                                                      (seq (1+ anychar) "_definition")
+                                                      (seq (1+ anychar) "_definition")
+                                                      (seq (1+ anychar) "_statement"))
+                                              eol)))))))
                 ;; We align trailing comments when in same "scope" (same indent level):
                 ;;    x   = [1, 2, 3]; % comment 1 (aligned)
                 ;;    xyz = 2;         % comment 2 (aligned)
