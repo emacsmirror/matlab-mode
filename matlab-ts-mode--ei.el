@@ -1712,14 +1712,14 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
       (let* ((ei-line (nth 0 ei-info))
              (line-assign-offset (matlab-ts-mode--ei-assign-offset ei-line))
              assign-offset
-             line-nums
+             assign-bols
              line-start-pt)
 
         (when (or (not matlab-ts-mode--ei-align-assign-cache)
-                  (not (setq assign-offset (gethash (line-number-at-pos)
+                  (not (setq assign-offset (gethash (pos-bol)
                                                     matlab-ts-mode--ei-align-assign-cache))))
           (setq assign-offset line-assign-offset)
-          (setq line-nums `(,(line-number-at-pos)))
+          (setq assign-bols `(,(pos-bol)))
           (save-excursion
             (forward-line 0)
             (setq line-start-pt (point))
@@ -1736,13 +1736,13 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                 (if (and l-first-node
                          (matlab-ts-mode--ei-is-assign l-first-node 'single-line))
                     (let ((l-offset (matlab-ts-mode--ei-assign-offset (nth 0 l-info))))
-                      (push (line-number-at-pos) line-nums)
+                      (push (pos-bol) assign-bols)
                       (when (> l-offset assign-offset)
                         (setq assign-offset l-offset)))
                   (cl-return))))))
           (when matlab-ts-mode--ei-align-assign-cache
-            (dolist (line-num line-nums)
-              (puthash line-num assign-offset matlab-ts-mode--ei-align-assign-cache))))
+            (dolist (assign-bol assign-bols)
+              (puthash assign-bol assign-offset matlab-ts-mode--ei-align-assign-cache))))
 
         (let ((diff (- assign-offset line-assign-offset)))
           (when (> diff 0)
