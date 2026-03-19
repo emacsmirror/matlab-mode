@@ -1887,8 +1887,7 @@ is identified as having a trailing comment."
                                                          (pos-bol)))))
                             a-node))
                         ;; Use scope of first node in the line
-                        (let ()
-                          (or (when (string-match-p (rx bol (or "arguments"
+                        (or (when (string-match-p (rx bol (or "arguments"
                                                                 "end"
                                                                 "enumeration"
                                                                 "events"
@@ -1907,7 +1906,7 @@ is identified as having a trailing comment."
                                                       (seq (1+ anychar) "_definition")
                                                       (seq (1+ anychar) "_definition")
                                                       (seq (1+ anychar) "_statement"))
-                                              eol)))))))
+                                              eol))))))
                 ;; We align trailing comments when in same "scope" (same indent level):
                 ;;    x   = [1, 2, 3]; % comment 1 (aligned)
                 ;;    xyz = 2;         % comment 2 (aligned)
