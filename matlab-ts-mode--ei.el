@@ -1039,7 +1039,7 @@ where:
       (setq matlab-ts-mode--ei-line-nodes-loc nil)
       (list (matlab--eilb-content) pt-offset orig-line-node-types first-node-pair))))
 
-(defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-alist nil)
+(defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-cache nil)
 
 (cl-defun matlab-ts-mode--ei-m-matrix-first-col-extra (matrix)
   "For MATRIX indent alignment, get first-col-extra."
@@ -1050,8 +1050,9 @@ where:
   ;;         3 4
   ;;       ];
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
-         (first-col-extra (or (alist-get start-linenum
-                                         matrix-ts-mode--ei-m-matrix-first-col-extra-alist)
+         (first-col-extra (or (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
+                               (gethash start-linenum
+                                        matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
                               (save-excursion
                                 (goto-char (treesit-node-start matrix))
                                 (forward-char) ;; step over the "["
@@ -1069,15 +1070,15 @@ where:
                                       (goto-char (min (pos-eol)
                                                       (treesit-node-end node)))))
                                   (let ((ans (if found-element
-                                                 0
-                                               (1- matlab-ts-mode--array-indent-level))))
-                                    (when matrix-ts-mode--ei-m-matrix-first-col-extra-alist
-                                      (push `(,start-linenum . ,ans)
-                                            matrix-ts-mode--ei-m-matrix-first-col-extra-alist))
-                                    ans))))))
+                                                0
+                                              (1- matlab-ts-mode--array-indent-level))))
+                                   (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
+                                     (puthash start-linenum ans
+                                              matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
+                                   ans))))))
     first-col-extra))
 
-(defvar-local matlab-ts-mode--ei-m-matrix-col-widths-alist nil)
+(defvar-local matlab-ts-mode--ei-m-matrix-col-widths-cache nil)
 
 (defun matlab-ts-mode--ei-m-matrix-col-widths (matrix first-col-extra &optional first-col-only)
   "Get multi-line MATRIX column widths adding in FIRST-COL-EXTRA to first column.
@@ -1086,7 +1087,8 @@ first column in MATRIX.
 Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
-         (column-widths (alist-get start-linenum matlab-ts-mode--ei-m-matrix-col-widths-alist)))
+         (column-widths (when matlab-ts-mode--ei-m-matrix-col-widths-cache
+                         (gethash start-linenum matlab-ts-mode--ei-m-matrix-col-widths-cache))))
     (when (not column-widths)
       (dolist (m-child (treesit-node-children matrix))
         (when (string= (treesit-node-type m-child) "row")
@@ -1109,8 +1111,8 @@ Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
         (let ((col1-width (+ (alist-get 1 column-widths) first-col-extra)))
           (setf (alist-get 1 column-widths) col1-width)))
 
-      (when matlab-ts-mode--ei-m-matrix-col-widths-alist
-        (push `(,start-linenum . ,column-widths) matlab-ts-mode--ei-m-matrix-col-widths-alist)))
+      (when matlab-ts-mode--ei-m-matrix-col-widths-cache
+        (puthash start-linenum column-widths matlab-ts-mode--ei-m-matrix-col-widths-cache)))
 
     column-widths))
 
@@ -1237,7 +1239,7 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
 
 ;; This is used to cache matrix alignments for indent-region
 ;; It will be non-nil when called from indent-region.
-(defvar-local matlab-ts-mode--ei-align-matrix-alist nil)
+(defvar-local matlab-ts-mode--ei-align-matrix-cache nil)
 
 (cl-defun matlab-ts-mode--ei-align-line-in-m-matrix (assign-node
                                                      ei-info
@@ -1246,12 +1248,12 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents.  Optional
 START-PT-LINENUM and START-PT-OFFSET give point prior to electric indent
 region.  START-PT-LINENUM may be different from current line."
-  (let* ((matrix-alist matlab-ts-mode--ei-align-matrix-alist) ;; non-nil if indenting a region
+  (let* ((matrix-cache matlab-ts-mode--ei-align-matrix-cache) ;; non-nil if indenting a region
          (assign-start-linenum (line-number-at-pos (treesit-node-start assign-node)))
          (t-buf-start-pt-linenum (when start-pt-linenum
                                    (1+ (- start-pt-linenum assign-start-linenum))))
          (t-buf-ei-linenum (1+ (- (line-number-at-pos) assign-start-linenum)))
-         (t-buf-row-linenum (if matlab-ts-mode--ei-align-matrix-alist 1 t-buf-ei-linenum)))
+         (t-buf-row-linenum (if matlab-ts-mode--ei-align-matrix-cache 1 t-buf-ei-linenum)))
     (with-temp-buffer
       (unwind-protect
           (progn
@@ -1274,7 +1276,7 @@ region.  START-PT-LINENUM may be different from current line."
                    (col-widths (matlab-ts-mode--ei-m-matrix-col-widths t-matrix-node
                                                                        first-col-extra)))
               ;; Move to the line of interest when directly indenting a line rather than a region.
-              (when (and (not matrix-alist)
+              (when (and (not matrix-cache)
                          (> t-buf-ei-linenum 1))
                 (forward-line (1- t-buf-ei-linenum)))
 
@@ -1346,19 +1348,17 @@ region.  START-PT-LINENUM may be different from current line."
                     ;; Else a blank or continuation line w/o matrix content
                     (setq ei-line (buffer-substring (pos-bol) (pos-eol))))
 
-                  (when matrix-alist
+                  (when matrix-cache
                     (let* ((buf-linenum (1- (+ assign-start-linenum t-buf-row-linenum))))
-                      (push `(,buf-linenum . ,(list ei-line pt-offset)) matrix-alist)))
+                      (puthash buf-linenum (list ei-line pt-offset) matrix-cache)))
 
-                  (if (not matrix-alist)
+                  (if (not matrix-cache)
                       (goto-char (point-max))
                     (forward-line)
                     (setq t-buf-row-linenum (1+ t-buf-row-linenum)))))))
         ;; unwind forms
         (matlab--eilb-kill)))
-
-    (when matrix-alist
-      (setq matlab-ts-mode--ei-align-matrix-alist matrix-alist)))
+    )
   ;; ei-info for current line
   ei-info)
 
@@ -1375,7 +1375,7 @@ region.  START-PT-LINENUM may be different from current line."
         (goto-char (treesit-node-end node)))))
   t)
 
-(defvar-local matlab-ts-mode--ei-is-m-matrix-alist nil) ;; cache
+(defvar-local matlab-ts-mode--ei-is-m-matrix-cache nil) ;; cache
 
 (cl-defun matlab-ts-mode--ei-is-m-matrix (matrix &optional check-for-indent-mode-minimal)
   "Is MATRIX node a multi-line matrix?
@@ -1389,8 +1389,9 @@ nil."
     (cl-return-from matlab-ts-mode--ei-is-m-matrix))
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
-         (cache-value (alist-get start-linenum matlab-ts-mode--ei-is-m-matrix-alist)))
-    (when cache-value ;; 0 or 1
+         (cache-value (when matlab-ts-mode--ei-is-m-matrix-cache
+                       (gethash start-linenum matlab-ts-mode--ei-is-m-matrix-cache 'miss))))
+    (when (and cache-value (not (eq cache-value 'miss))) ;; 0 or 1
       (cl-return-from matlab-ts-mode--ei-is-m-matrix (= cache-value 1)))
 
     (let* ((end-line (line-number-at-pos (treesit-node-end matrix)))
@@ -1451,9 +1452,9 @@ nil."
 
       ;; Multi-line matrix (m-matrix) with each row is on its own line?
       (let ((ans (and is-m-matrix (> n-rows 1) (>= n-cols 1))))
-        (when matlab-ts-mode--ei-is-m-matrix-alist
+        (when matlab-ts-mode--ei-is-m-matrix-cache
           ;; Use 1 or 0 so we can differentiate between nil and not a multi-line matrix
-          (push `(,start-linenum . ,(if ans 1 0)) matlab-ts-mode--ei-is-m-matrix-alist))
+          (puthash start-linenum (if ans 1 0) matlab-ts-mode--ei-is-m-matrix-cache))
         ans))))
 
 (cl-defun matlab-ts-mode--ei-struct-ends-on-line (struct)
@@ -1482,17 +1483,18 @@ nil."
     (and paren-node
          (= start-linenum (line-number-at-pos (treesit-node-start paren-node))))))
 
-(defvar-local matlab-ts-mode--ei-is-m-struct-alist nil) ;; cache
+(defvar-local matlab-ts-mode--ei-is-m-struct-cache nil) ;; cache
 
 (cl-defun matlab-ts-mode--ei-is-m-struct (struct)
   "Is function_call STRUCT node a multi-line struct that can be aligned?
 If so return `(max-field-width . arguments-node), else nil."
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start struct)))
-         (cache-value (alist-get start-linenum matlab-ts-mode--ei-is-m-struct-alist))
+         (cache-value (when matlab-ts-mode--ei-is-m-struct-cache
+                       (gethash start-linenum matlab-ts-mode--ei-is-m-struct-cache 'miss)))
          (max-field-width 0))
 
-    (when cache-value ;; '(0 . nil) or (max-field-width . assignment-node)
+    (when (and cache-value (not (eq cache-value 'miss))) ;; '(0 . nil) or (max-field-width . assignment-node)
       (cl-return-from matlab-ts-mode--ei-is-m-struct (when (> (car cache-value) 0) cache-value)))
 
     (let* ((end-line (line-number-at-pos (treesit-node-end struct)))
@@ -1541,10 +1543,10 @@ If so return `(max-field-width . arguments-node), else nil."
 
       (let ((ans (when (and is-m-struct (> max-field-width 0))
                    `(,max-field-width . ,arguments-node))))
-        (when matlab-ts-mode--ei-is-m-struct-alist
-          ;; Use 1 or 0 so we can differentiate between nil and not a multi-line struct
-          (push `(,start-linenum . ,(if ans ans '(0 . nil)))
-                matlab-ts-mode--ei-is-m-struct-alist))
+        (when matlab-ts-mode--ei-is-m-struct-cache
+          ;; Use (0 . nil) so we can differentiate between miss and not a multi-line struct
+          (puthash start-linenum (if ans ans '(0 . nil))
+                   matlab-ts-mode--ei-is-m-struct-cache))
         ans))))
 
 (cl-defun matlab-ts-mode--ei-align-line-in-m-struct (tuple ei-info)
@@ -1696,7 +1698,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
     offset))
 
 ;; This is used to cache aligned assignments for indent-region
-(defvar-local matlab-ts-mode--ei-align-assign-alist nil)
+(defvar-local matlab-ts-mode--ei-align-assign-cache nil)
 
 (defun matlab-ts-mode--ei-align-assignments (ei-info)
   "Update EI-INFO to align assignments.
@@ -1713,9 +1715,9 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
              line-nums
              line-start-pt)
 
-        (when (or (not matlab-ts-mode--ei-align-assign-alist)
-                  (not (setq assign-offset (alist-get (line-number-at-pos)
-                                                      matlab-ts-mode--ei-align-assign-alist))))
+        (when (or (not matlab-ts-mode--ei-align-assign-cache)
+                  (not (setq assign-offset (gethash (line-number-at-pos)
+                                                    matlab-ts-mode--ei-align-assign-cache))))
           (setq assign-offset line-assign-offset)
           (setq line-nums `(,(line-number-at-pos)))
           (save-excursion
@@ -1738,9 +1740,9 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                       (when (> l-offset assign-offset)
                         (setq assign-offset l-offset)))
                   (cl-return))))))
-          (when matlab-ts-mode--ei-align-assign-alist
+          (when matlab-ts-mode--ei-align-assign-cache
             (dolist (line-num line-nums)
-              (push `(,line-num . ,assign-offset) matlab-ts-mode--ei-align-assign-alist))))
+              (puthash line-num assign-offset matlab-ts-mode--ei-align-assign-cache))))
 
         (let ((diff (- assign-offset line-assign-offset)))
           (when (> diff 0)
@@ -1790,17 +1792,16 @@ node that ends on same line and has items to align."
       (matlab-ts-mode--assert-msg (format "no property in ei-line %s" ei-line)))
     (- (match-end 0) (match-beginning 0))))
 
-;; This is used to cache aligned properties/arguments for indent-region, and contains
-;; '(linenum . prop-length) entries.
-(defvar-local matlab-ts-mode--ei-align-prop-alist nil)
+;; This is used to cache aligned properties/arguments for indent-region.
+(defvar-local matlab-ts-mode--ei-align-prop-cache nil)
 
 (defun matlab-ts-mode--ei-align-properties (ei-info)
   "Align properties and arguments in EI-INFO.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (when (matlab-ts-mode--ei-get-prop-node ei-info)
     (let ((ei-info-p-length (matlab-ts-mode--ei-prop-length ei-info))
-          (p-length (when matlab-ts-mode--ei-align-prop-alist
-                      (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-prop-alist)))
+          (p-length (when matlab-ts-mode--ei-align-prop-cache
+                      (gethash (line-number-at-pos) matlab-ts-mode--ei-align-prop-cache)))
           (eat-comma matlab-ts-mode--ei-line-nodes-eat-comma))
 
       (when (not p-length)
@@ -1826,15 +1827,15 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               (let* ((l-ei-info (matlab-ts-mode--ei-get-new-line)))
                 (if (matlab-ts-mode--ei-get-prop-node l-ei-info)
                     (let ((l-p-length (matlab-ts-mode--ei-prop-length l-ei-info)))
-                      (when matlab-ts-mode--ei-align-prop-alist
+                      (when matlab-ts-mode--ei-align-prop-cache
                         (push (line-number-at-pos) line-nums))
                       (when (> l-p-length p-length)
                         (setq p-length l-p-length)))
                   (cl-return)))))
 
-            (when matlab-ts-mode--ei-align-prop-alist
+            (when matlab-ts-mode--ei-align-prop-cache
               (dolist (line-num line-nums)
-                (push `(,line-num . ,p-length) matlab-ts-mode--ei-align-prop-alist))))))
+                (puthash line-num p-length matlab-ts-mode--ei-align-prop-cache))))))
 
       (when (not (= p-length ei-info-p-length))
         (let* ((diff (- p-length ei-info-p-length))
@@ -1927,7 +1928,7 @@ is identified as having a trailing comment."
                     `(,scope . ,offset))))))))))
 
 ;; This is used to cache comment alignments for indent-region
-(defvar-local matlab-ts-mode--ei-align-comment-alist nil)
+(defvar-local matlab-ts-mode--ei-align-comment-cache nil)
 
 (defun matlab-ts-mode--ei-align-trailing-comments (ei-info)
   "Align trailing comments in EI-INFO.
@@ -1937,9 +1938,9 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
             comment-offset)
 
         ;; Compute desired comment-offset
-        (when (or (not matlab-ts-mode--ei-align-comment-alist)
-                  (not (setq comment-offset (alist-get (line-number-at-pos)
-                                                       matlab-ts-mode--ei-align-comment-alist))))
+        (when (or (not matlab-ts-mode--ei-align-comment-cache)
+                  (not (setq comment-offset (gethash (line-number-at-pos)
+                                                     matlab-ts-mode--ei-align-comment-cache))))
           (let (line-nums
                 line-start-pt
                 (scope (car line-comment-pair)))
@@ -1975,9 +1976,9 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                           (setq comment-offset l-offset)))
                     (cl-return))))))
 
-            (when matlab-ts-mode--ei-align-comment-alist
+            (when matlab-ts-mode--ei-align-comment-cache
               (dolist (line-num line-nums)
-                (push `(,line-num . ,comment-offset) matlab-ts-mode--ei-align-comment-alist)))))
+                (puthash line-num comment-offset matlab-ts-mode--ei-align-comment-cache)))))
 
         (let ((diff (- comment-offset (cdr line-comment-pair))))
             (when (> diff 0)
@@ -2097,7 +2098,7 @@ TAB>  x = 123 ./1 + 567
   (when line-pt
     (goto-char line-pt)))
 
-(defvar-local matlab-ts-mode--ei-orig-line-node-types-alist nil)
+(defvar-local matlab-ts-mode--ei-orig-line-node-types-cache nil)
 
 (cl-defun matlab-ts-mode--ei-assert-nodes-types-match (curr-line-node-types
                                                        orig-line-node-types
@@ -2148,8 +2149,9 @@ We examine lines between START-LINENUM and END-LINENUM inclusive."
   (cl-loop
    for linenum from start-linenum to end-linenum
    do
-   (let ((orig-line-node-types (alist-get linenum
-                                          matlab-ts-mode--ei-orig-line-node-types-alist)))
+   (let ((orig-line-node-types (when matlab-ts-mode--ei-orig-line-node-types-cache
+                                 (gethash linenum
+                                          matlab-ts-mode--ei-orig-line-node-types-cache))))
      (when orig-line-node-types ;; line was updated
 
        (matlab-ts-mode--ei-fast-back-to-indentation)
@@ -2335,9 +2337,9 @@ to it's logical location when the line is updated."
          ei-info
          result)
 
-    (if (and matlab-ts-mode--ei-align-matrix-alist
+    (if (and matlab-ts-mode--ei-align-matrix-cache
              (setq cached-ei-info
-                   (alist-get (line-number-at-pos) matlab-ts-mode--ei-align-matrix-alist)))
+                   (gethash (line-number-at-pos) matlab-ts-mode--ei-align-matrix-cache)))
         ;; TopTester: test-matlab-ts-mode-electric-indent-files/electric_indent_matrix_cols.m
         (setq ei-info cached-ei-info)
       (setq ei-info (matlab-ts-mode--ei-get-new-line start-node (cdr start-node-and-offset))))
@@ -2357,9 +2359,9 @@ to it's logical location when the line is updated."
 
                   (when (and updated
                              matlab-ts-mode--indent-assert)
-                    (when matlab-ts-mode--ei-orig-line-node-types-alist
-                      (push `(,(line-number-at-pos) . ,orig-line-node-types)
-                            matlab-ts-mode--ei-orig-line-node-types-alist))
+                    (when matlab-ts-mode--ei-orig-line-node-types-cache
+                      (puthash (line-number-at-pos) orig-line-node-types
+                               matlab-ts-mode--ei-orig-line-node-types-cache))
                     (matlab-ts-mode--ei-assert-line-match ei-line orig-line))
 
                   (if is-indent-region
@@ -2392,28 +2394,37 @@ to it's logical location when the line is updated."
   (forward-char start-pt-offset))
 
 (defun matlab-ts-mode--ei-set-region-caches (init &optional beg end)
-  "Setup electric indent alist caches.
+  "Setup electric indent hash table caches.
 Optional region BEG END must be provided when INIT is t.
 If INIT is non-nil, set to initial value, otherwise set to nil."
-  (let ((value (when init '((-1 . 0))))) ;; Entries of form (LINENUM . INFO)
 
-    (if init
-        (matlab-ts-mode--ei-setup beg end)
-      (matlab-ts-mode--ei-cleanup))
+  (if init
+      (matlab-ts-mode--ei-setup beg end)
+    (matlab-ts-mode--ei-cleanup))
 
-    ;; TODO replace alist's with hashes to improve performance
+  (if init
+      (setq
+       matlab-ts-mode--ei-align-assign-cache (make-hash-table :test 'eql)
+       matlab-ts-mode--ei-align-prop-cache (make-hash-table :test 'eql)
+       matlab-ts-mode--ei-align-comment-cache (make-hash-table :test 'eql)
+       matlab-ts-mode--ei-m-matrix-col-widths-cache (make-hash-table :test 'eql)
+       matrix-ts-mode--ei-m-matrix-first-col-extra-cache (make-hash-table :test 'eql)
+       matlab-ts-mode--ei-is-m-matrix-cache (make-hash-table :test 'eql)
+       matlab-ts-mode--ei-align-matrix-cache (make-hash-table :test 'eql)
+       matlab-ts-mode--ei-is-m-struct-cache (make-hash-table :test 'eql)
+       matlab-ts-mode--ei-orig-line-node-types-cache (make-hash-table :test 'eql)
+       matlab-ts-mode--ei-get-disabled-regions-cache (matlab-ts-mode--ei-get-disabled-regions))
     (setq
-     matlab-ts-mode--ei-align-assign-alist value
-     matlab-ts-mode--ei-align-prop-alist value
-     matlab-ts-mode--ei-align-comment-alist value
-     matlab-ts-mode--ei-m-matrix-col-widths-alist value
-     matrix-ts-mode--ei-m-matrix-first-col-extra-alist value
-     matlab-ts-mode--ei-is-m-matrix-alist value
-     matlab-ts-mode--ei-align-matrix-alist value
-     matlab-ts-mode--ei-is-m-struct-alist value
-     matlab-ts-mode--ei-orig-line-node-types-alist value
-     matlab-ts-mode--ei-get-disabled-regions-cache (when init
-                                                     (matlab-ts-mode--ei-get-disabled-regions)))))
+     matlab-ts-mode--ei-align-assign-cache nil
+     matlab-ts-mode--ei-align-prop-cache nil
+     matlab-ts-mode--ei-align-comment-cache nil
+     matlab-ts-mode--ei-m-matrix-col-widths-cache nil
+     matrix-ts-mode--ei-m-matrix-first-col-extra-cache nil
+     matlab-ts-mode--ei-is-m-matrix-cache nil
+     matlab-ts-mode--ei-align-matrix-cache nil
+     matlab-ts-mode--ei-is-m-struct-cache nil
+     matlab-ts-mode--ei-orig-line-node-types-cache nil
+     matlab-ts-mode--ei-get-disabled-regions-cache nil)))
 
 (defun matlab-ts-mode--ei-indent-region-impl (new-content-buf
                                               beg end start-pt start-linenum end-linenum)
@@ -2534,6 +2545,6 @@ This expansion of the region is done to simplify electric indent."
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
-;; LocalWords:  alist's ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace
+;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace
 ;; LocalWords:  geq eqeq neq memq
 ;; LocalWords:  setcar setcdr anychar
