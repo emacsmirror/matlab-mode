@@ -948,7 +948,7 @@ where:
     (let* (pt-offset ;; used in restoring point
            (pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
            (node-type (or (car pair)
-                     (cl-return-from matlab-ts-mode--ei-get-new-line)))
+                          (cl-return-from matlab-ts-mode--ei-get-new-line)))
            (node (cdr pair))
            (first-node-pair pair)
            orig-line-node-types
@@ -1051,8 +1051,8 @@ where:
   ;;       ];
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
          (first-col-extra (or (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
-                               (gethash start-linenum
-                                        matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
+                                (gethash start-linenum
+                                         matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
                               (save-excursion
                                 (goto-char (treesit-node-start matrix))
                                 (forward-char) ;; step over the "["
@@ -1070,12 +1070,12 @@ where:
                                       (goto-char (min (pos-eol)
                                                       (treesit-node-end node)))))
                                   (let ((ans (if found-element
-                                                0
-                                              (1- matlab-ts-mode--array-indent-level))))
-                                   (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
-                                     (puthash start-linenum ans
-                                              matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
-                                   ans))))))
+                                                 0
+                                               (1- matlab-ts-mode--array-indent-level))))
+                                    (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
+                                      (puthash start-linenum ans
+                                               matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
+                                    ans))))))
     first-col-extra))
 
 (defvar-local matlab-ts-mode--ei-m-matrix-col-widths-cache nil)
@@ -1088,7 +1088,7 @@ Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
          (column-widths (when matlab-ts-mode--ei-m-matrix-col-widths-cache
-                         (gethash start-linenum matlab-ts-mode--ei-m-matrix-col-widths-cache))))
+                          (gethash start-linenum matlab-ts-mode--ei-m-matrix-col-widths-cache))))
     (when (not column-widths)
       (dolist (m-child (treesit-node-children matrix))
         (when (string= (treesit-node-type m-child) "row")
@@ -1390,8 +1390,8 @@ nil."
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
          (cache-value (when matlab-ts-mode--ei-is-m-matrix-cache
-                       (gethash start-linenum matlab-ts-mode--ei-is-m-matrix-cache 'miss))))
-    (when (and cache-value (not (eq cache-value 'miss))) ;; 0 or 1
+                        (gethash start-linenum matlab-ts-mode--ei-is-m-matrix-cache))))
+    (when cache-value ;; 0 or 1
       (cl-return-from matlab-ts-mode--ei-is-m-matrix (= cache-value 1)))
 
     (let* ((end-line (line-number-at-pos (treesit-node-end matrix)))
@@ -1491,10 +1491,10 @@ If so return `(max-field-width . arguments-node), else nil."
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start struct)))
          (cache-value (when matlab-ts-mode--ei-is-m-struct-cache
-                       (gethash start-linenum matlab-ts-mode--ei-is-m-struct-cache 'miss)))
+                        (gethash start-linenum matlab-ts-mode--ei-is-m-struct-cache)))
          (max-field-width 0))
 
-    (when (and cache-value (not (eq cache-value 'miss))) ;; '(0 . nil) or (max-field-width . assignment-node)
+    (when cache-value
       (cl-return-from matlab-ts-mode--ei-is-m-struct (when (> (car cache-value) 0) cache-value)))
 
     (let* ((end-line (line-number-at-pos (treesit-node-end struct)))
@@ -1544,7 +1544,7 @@ If so return `(max-field-width . arguments-node), else nil."
       (let ((ans (when (and is-m-struct (> max-field-width 0))
                    `(,max-field-width . ,arguments-node))))
         (when matlab-ts-mode--ei-is-m-struct-cache
-          ;; Use (0 . nil) so we can differentiate between miss and not a multi-line struct
+          ;; When not an alignable multi-line struct, use (0 . nil) to indicate it as such
           (puthash start-linenum (if ans ans '(0 . nil))
                    matlab-ts-mode--ei-is-m-struct-cache))
         ans))))
@@ -1981,18 +1981,18 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                 (puthash line-num comment-offset matlab-ts-mode--ei-align-comment-cache)))))
 
         (let ((diff (- comment-offset (cdr line-comment-pair))))
-            (when (> diff 0)
-              (let* ((ei-line (nth 0 ei-info))
-                     (loc (1- (string-match "%" ei-line)))
-                     (new-pt-offset (let ((pt-offset (nth 1 ei-info)))
-                                      (when pt-offset
-                                        (if (<= loc pt-offset)
-                                            (+ pt-offset diff)
-                                          pt-offset)))))
-                (setq ei-line (concat (substring ei-line 0 loc)
-                                      (make-string diff ? )
-                                      (substring ei-line loc)))
-                (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info))))))
+          (when (> diff 0)
+            (let* ((ei-line (nth 0 ei-info))
+                   (loc (1- (string-match "%" ei-line)))
+                   (new-pt-offset (let ((pt-offset (nth 1 ei-info)))
+                                    (when pt-offset
+                                      (if (<= loc pt-offset)
+                                          (+ pt-offset diff)
+                                        pt-offset)))))
+              (setq ei-line (concat (substring ei-line 0 loc)
+                                    (make-string diff ? )
+                                    (substring ei-line loc)))
+              (setq ei-info (list ei-line new-pt-offset (nth 2 ei-info) (nth 3 ei-info))))))
 
         (setq matlab-ts-mode--ei-line-nodes-eat-comma eat-comma)))
   ei-info)
@@ -2162,7 +2162,7 @@ We examine lines between START-LINENUM and END-LINENUM inclusive."
           do
           (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
                  (node-type (or (car pair)
-                           (cl-return)))
+                                (cl-return)))
                  (node (cdr pair)))
             (setq curr-line-node-types
                   (matlab-ts-mode--ei-update-line-node-types curr-line-node-types
@@ -2402,29 +2402,27 @@ If INIT is non-nil, set to initial value, otherwise set to nil."
       (matlab-ts-mode--ei-setup beg end)
     (matlab-ts-mode--ei-cleanup))
 
-  (if init
-      (setq
-       matlab-ts-mode--ei-align-assign-cache (make-hash-table :test 'eql)
-       matlab-ts-mode--ei-align-prop-cache (make-hash-table :test 'eql)
-       matlab-ts-mode--ei-align-comment-cache (make-hash-table :test 'eql)
-       matlab-ts-mode--ei-m-matrix-col-widths-cache (make-hash-table :test 'eql)
-       matrix-ts-mode--ei-m-matrix-first-col-extra-cache (make-hash-table :test 'eql)
-       matlab-ts-mode--ei-is-m-matrix-cache (make-hash-table :test 'eql)
-       matlab-ts-mode--ei-align-matrix-cache (make-hash-table :test 'eql)
-       matlab-ts-mode--ei-is-m-struct-cache (make-hash-table :test 'eql)
-       matlab-ts-mode--ei-orig-line-node-types-cache (make-hash-table :test 'eql)
-       matlab-ts-mode--ei-get-disabled-regions-cache (matlab-ts-mode--ei-get-disabled-regions))
-    (setq
-     matlab-ts-mode--ei-align-assign-cache nil
-     matlab-ts-mode--ei-align-prop-cache nil
-     matlab-ts-mode--ei-align-comment-cache nil
-     matlab-ts-mode--ei-m-matrix-col-widths-cache nil
-     matrix-ts-mode--ei-m-matrix-first-col-extra-cache nil
-     matlab-ts-mode--ei-is-m-matrix-cache nil
-     matlab-ts-mode--ei-align-matrix-cache nil
-     matlab-ts-mode--ei-is-m-struct-cache nil
-     matlab-ts-mode--ei-orig-line-node-types-cache nil
-     matlab-ts-mode--ei-get-disabled-regions-cache nil)))
+  (setq
+   matlab-ts-mode--ei-align-assign-cache             (when init
+                                                       (make-hash-table :test 'eql))
+   matlab-ts-mode--ei-align-prop-cache               (when init
+                                                       (make-hash-table :test 'eql))
+   matlab-ts-mode--ei-align-comment-cache            (when init
+                                                       (make-hash-table :test 'eql))
+   matlab-ts-mode--ei-m-matrix-col-widths-cache      (when init
+                                                       (make-hash-table :test 'eql))
+   matrix-ts-mode--ei-m-matrix-first-col-extra-cache (when init
+                                                       (make-hash-table :test 'eql))
+   matlab-ts-mode--ei-is-m-matrix-cache              (when init
+                                                       (make-hash-table :test 'eql))
+   matlab-ts-mode--ei-align-matrix-cache             (when init
+                                                       (make-hash-table :test 'eql))
+   matlab-ts-mode--ei-is-m-struct-cache              (when init
+                                                       (make-hash-table :test 'eql))
+   matlab-ts-mode--ei-orig-line-node-types-cache     (when init
+                                                       (make-hash-table :test 'eql))
+   matlab-ts-mode--ei-get-disabled-regions-cache     (when init
+                                                       (matlab-ts-mode--ei-get-disabled-regions))))
 
 (defun matlab-ts-mode--ei-indent-region-impl (new-content-buf
                                               beg end start-pt start-linenum end-linenum)
@@ -2545,6 +2543,6 @@ This expansion of the region is done to simplify electric indent."
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
-;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace
+;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace eql
 ;; LocalWords:  geq eqeq neq memq
 ;; LocalWords:  setcar setcdr anychar
