@@ -1,10 +1,12 @@
 #!/usr/bin/perl
 # File: tests/prof/prof_assign_alignment_gen.pl
 # Abstract:
-#   Generate prof_assign_alignment.m, to profile struct handling with matlab-ts-mode, e.g. electric indent
-#   by visiting prof_assign_alignment.m and running:
+#   Generate prof_assign_alignment.m, to profile consecutive assignment statements alignement within
+#   matlab-ts-mode, e.g. electric indent by visiting prof_assign_alignment.m and running:
 #     (require 'profiler)
-#     (progn (profiler-stop) (profiler-start 'cpu) (indent-region (point-min) (point-max)) (profiler-stop) (profiler-report)))
+#     (progn (profiler-stop) (profiler-start 'cpu)
+#            (indent-region (point-min) (point-max))
+#            (profiler-stop) (profiler-report)))
 #
 
 use strict;
