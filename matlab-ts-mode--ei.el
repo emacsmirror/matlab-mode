@@ -206,6 +206,77 @@
 
     ))
 
+;; matlab-ts-mode--ei-spacing-fast
+;;    This is used to avoid scanning the matlab-ts-mode--ei-spacing rules.  This fast lookup
+;;    resolves the vast majority of pairs (especially the number-number case dominant in matrix
+;;    data) in O(1) via hash, falling back to the original linear scan only for rare unmatched
+;;    pairs.
+(defvar matlab-ts-mode--ei-spacing-fast
+  (let ((ht (make-hash-table :test 'equal))
+        ;; all-types are the MODIFIED-NODE-TYPE values returned by
+        ;; `matlab-ts-mode--ei-line-nodes-in-region'. This will need to be updated
+        ;; as `matlab-ts-mode--ei-line-nodes-in-region' evolves. We assert this below.
+        (all-types '(
+                     ;; Non-modified types that match capture nodes
+                     "identifier" "number" "string" "comment" "line_continuation"
+                     "command_argument" "command_name"
+                     "," ";" "." "(" ")" "[" "]" "{" "}"
+                     "+" "-" "*" "/" "\\" "^" ":" "="
+                     ".*" "./" ".\\" ".^" ".?" ".'"
+                     "<" ">" "<=" ">=" "==" "~="
+                     "&" "|" "&&" "||"
+                     "~" "@" "?" "'"
+                     ;; Non-modified type keywords
+                     "arguments" "break" "case" "catch" "classdef" "continue"
+                     "else" "elseif" "end" "enumeration" "events" "for" "function"
+                     "get." "global" "if" "methods" "otherwise" "parfor" "persistent"
+                     "properties" "return" "set." "spmd" "switch" "try" "while"
+                     ;; Modified types
+                     "prop-id" "prop-class-id" "enum-id" "prop-dim"
+                     "unary-op" "@-fcn-call" "dim-(" "dim-)" "lambda-)"
+                     ;; Keyword-command modified types
+                     "events-fcn" "enumeration-fcn" "methods-fcn" "arguments-fcn"
+                     ;; Safety
+                     "ERROR")
+                   )
+        (matched-node-re-ht (make-hash-table :test 'equal)))
+
+    (dolist (tuple matlab-ts-mode--ei-spacing)
+      (let* ((node-re   (nth 0 tuple))
+             (next-spec (nth 1 tuple))
+             (is-3node  (and (listp next-spec) (consp next-spec)))
+             (next-node-re (if is-3node (car next-spec) next-spec))
+             (n-spaces  (nth 2 tuple))
+
+             matched-node-re)
+
+        (if is-3node
+            ;; Skip the 3-node rule — it is handled specially in the lookup function
+            (setq matched-node-re node-re)
+          (dolist (node-type all-types)
+            (when (string-match-p node-re node-type)
+              (setq matched-node-re node-re)
+              (let (found-next-node-re)
+                (dolist (next-node-type all-types)
+                  (when (string-match-p next-node-re next-node-type)
+                    (setq found-next-node-re t)
+                    (let ((key (cons node-type next-node-type)))
+                      ;; First match rule wins
+                      (unless (gethash key ht)
+                        (puthash key n-spaces ht)))))
+                (cl-assert found-next-node-re)))))
+        (cl-assert matched-node-re)
+        (puthash matched-node-re t matched-node-re-ht)))
+    ;; Assert we've covered all tuples in the ht
+    (dolist (tuple matlab-ts-mode--ei-spacing)
+      (let ((node-re (nth 0 tuple)))
+        (cl-assert (gethash node-re matched-node-re-ht))))
+    ;; Result
+    ht)
+  "Hash (node-type . next-node-type) -> n-spaces for fast exact-pair dispatch.
+Enumerates all concrete (node-type . next-node-type) pairs implied by
+the spacing rules.  Rules are processed in order so the first match wins.")
+
 (defun matlab-ts-mode--assert-msg (msg)
   "Call error with MSG for code that shouldn't be hit."
   (error "Assert: %s" msg))
@@ -978,33 +1049,61 @@ where:
                  (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
 
          (when (not n-spaces-between)
-           (cl-loop for tuple in matlab-ts-mode--ei-spacing do
-                    (let* ((node-re (nth 0 tuple))
-                           (next-spec (nth 1 tuple))
-                           (next-node-re (if (listp next-spec) (car next-spec) next-spec))
-                           (next2-node-re (when (listp next-spec) (cdr next-spec))))
+           ;; Fast path: compiled hash dispatch — O(1) for known type pairs.
+           (setq n-spaces-between (gethash (cons node-type next-node-type)
+                                           matlab-ts-mode--ei-spacing-fast))
 
-                      (when (and (string-match-p node-re node-type)
-                                 (string-match-p next-node-re next-node-type)
-                                 (or (not next2-node-re)
-                                     (save-excursion
-                                       (goto-char (treesit-node-end next-node))
-                                       (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
-                                              (next2-node-type
-                                               (or (car pair)
-                                                   (cl-return-from
-                                                       matlab-ts-mode--ei-get-new-line))))
+           ;; Fast path: 3-node rule for power/transpose: val (^|.^) val -> 0 spaces.
+           ;; In the original rule table, this rule appears before the generic wildcard rules
+           ;; but AFTER the specific (number .^) rule.  We only override the 2-node result
+           ;; when the 3-node preconditions are met: the specific (number .^) rule already
+           ;; gives 1 space for "number .^" which is kept when next2 is not a val.
+           (when (and (or (not n-spaces-between) (= n-spaces-between 1))
+                      (or (string= node-type "identifier") (string= node-type "number"))
+                      (or (string= next-node-type "^") (string= next-node-type ".^"))
+                      ;; Rule (number .^) at line 176 precedes the 3-node rule and gives 1.
+                      ;; Only check lookahead when the pair *could* be overridden.
+                      (not (and (string= node-type "number") (string= next-node-type ".^"))))
+             (save-excursion
+               (goto-char (treesit-node-end next-node))
+               (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
+                      (next2-node-type (car pair)))
+                 (when (and next2-node-type
+                            (or (string= next2-node-type "identifier")
+                                (string= next2-node-type "number")))
+                   (setq next2-pair pair
+                         next2-n-spaces-between 0
+                         n-spaces-between 0)))))
 
-                                         (when (string-match-p next2-node-re next2-node-type)
-                                           (setq next2-pair pair)
-                                           (setq next2-n-spaces-between (nth 2 tuple))
-                                           t)))))
+           ;; Slow path fallback: linear scan (should be rare with a complete type list).
+           (when (not n-spaces-between)
+             (cl-loop for tuple in matlab-ts-mode--ei-spacing do
+                      (let* ((node-re (nth 0 tuple))
+                             (next-spec (nth 1 tuple))
+                             (next-node-re (if (listp next-spec) (car next-spec) next-spec))
+                             (next2-node-re (when (listp next-spec) (cdr next-spec))))
 
-                        (setq n-spaces-between (nth 2 tuple))
-                        (when matlab-ts-mode--electric-indent-verbose
-                          (message "-->ei-matched: %S for node=<\"%s\" %S> next-node=<\"%s\" %S>"
-                                   tuple node-type node next-node-type next-node))
-                        (cl-return)))))
+                        (when (and (string-match-p node-re node-type)
+                                   (string-match-p next-node-re next-node-type)
+                                   (or (not next2-node-re)
+                                       (save-excursion
+                                         (goto-char (treesit-node-end next-node))
+                                         (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
+                                                (next2-node-type
+                                                 (or (car pair)
+                                                     (cl-return-from
+                                                         matlab-ts-mode--ei-get-new-line))))
+
+                                           (when (string-match-p next2-node-re next2-node-type)
+                                             (setq next2-pair pair)
+                                             (setq next2-n-spaces-between (nth 2 tuple))
+                                             t)))))
+
+                          (setq n-spaces-between (nth 2 tuple))
+                          (when matlab-ts-mode--electric-indent-verbose
+                            (message "-->ei-matched: %S for node=<\"%s\" %S> next-node=<\"%s\" %S>"
+                                     tuple node-type node next-node-type next-node))
+                          (cl-return))))))
 
          (when (not n-spaces-between)
            (matlab-ts-mode--assert-msg
@@ -1888,25 +1987,25 @@ is identified as having a trailing comment."
                             a-node))
                         ;; Use scope of first node in the line
                         (or (when (string-match-p (rx bol (or "arguments"
-                                                                "end"
-                                                                "enumeration"
-                                                                "events"
-                                                                "function"
-                                                                "methods"
-                                                                "properties")
-                                                        eos)
-                                                    (treesit-node-type first-node))
-                                first-node)
-                              (treesit-parent-until
-                               first-node (rx bol (or "block"
-                                                      "cell"
-                                                      "matrix"
-                                                      "source_file"
-                                                      (seq (1+ anychar) "_clause")
-                                                      (seq (1+ anychar) "_definition")
-                                                      (seq (1+ anychar) "_definition")
-                                                      (seq (1+ anychar) "_statement"))
-                                              eol))))))
+                                                              "end"
+                                                              "enumeration"
+                                                              "events"
+                                                              "function"
+                                                              "methods"
+                                                              "properties")
+                                                      eos)
+                                                  (treesit-node-type first-node))
+                              first-node)
+                            (treesit-parent-until
+                             first-node (rx bol (or "block"
+                                                    "cell"
+                                                    "matrix"
+                                                    "source_file"
+                                                    (seq (1+ anychar) "_clause")
+                                                    (seq (1+ anychar) "_definition")
+                                                    (seq (1+ anychar) "_definition")
+                                                    (seq (1+ anychar) "_statement"))
+                                            eol))))))
                 ;; We align trailing comments when in same "scope" (same indent level):
                 ;;    x   = [1, 2, 3]; % comment 1 (aligned)
                 ;;    xyz = 2;         % comment 2 (aligned)
