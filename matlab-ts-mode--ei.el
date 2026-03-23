@@ -828,7 +828,8 @@ and not \"visual\" based."
     (setq-local matlab--eilb nil)))
 
 (defun matlab--eilb-setup ()
-  "Initialize `matlab-ts-mode--eilb' buffer used to electric indent."
+  "Initialize `matlab-ts-mode--eilb' buffer used to electric indent.
+Return t."
   (if matlab--eilb
       (with-current-buffer matlab--eilb
         (erase-buffer))
@@ -838,7 +839,8 @@ and not \"visual\" based."
                                bn "-matlab-ts-mode--ei-line*"))))
       (setq-local matlab--eilb (get-buffer-create eilb-name))
       (with-current-buffer matlab--eilb
-        (buffer-disable-undo)))))
+        (buffer-disable-undo))))
+  t)
 
 (defun matlab--eilb-add-node-text (node extra-chars &optional n-spaces-to-append)
   "Update `matlab--eilb' with NODE text and more.
@@ -1007,16 +1009,20 @@ where:
                 (matlab-ts-mode--ei-no-elements-to-indent))
         (cl-return-from matlab-ts-mode--ei-get-new-line)))
 
-    ;; Compute new electric indented line content in matlab--eilb
-    (matlab--eilb-setup)
-
     ;; Setup for `matlab-ts-mode--ei-move-to-and-get-node-pair'
     (setq matlab-ts-mode--ei-line-nodes-loc (gethash (pos-bol) matlab-ts-mode--ei-bol2loc-map))
     (when (not matlab-ts-mode--ei-line-nodes-loc)
       (matlab-ts-mode--assert-msg "No pos-bol in matlab-ts-mode--ei-bol2loc-map"))
 
     ;; --- Loop inserting spaces between language elements ---
+    ;;
+    ;; Optimization: defer matlab--eilb-setup and matlab-ts-mode--ei-insert-indent-level-spaces.
+    ;; Walk nodes in the current buffer and check whether the existing content already matches.
+    ;; Only when a mismatch is detected, set up the eilb buffer, copy the already-verified prefix,
+    ;; and continue building the rest in eilb.
     (let* (pt-offset ;; used in restoring point
+           using-eilb ;; non-nil when we've switched to building in eilb
+           (bol-pt (pos-bol))
            (pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
            (node-type (or (car pair)
                           (cl-return-from matlab-ts-mode--ei-get-new-line)))
@@ -1025,9 +1031,15 @@ where:
            orig-line-node-types
            next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
            next2-n-spaces-between
-           (eol-pt (pos-eol)))
+           (eol-pt (pos-eol))
+           (indent-has-tabs (save-excursion
+                              (let ((first-non-whitespace-char-in-line-pt (point)))
+                                (goto-char bol-pt)
+                                (re-search-forward "\t" first-non-whitespace-char-in-line-pt t)))))
 
-      (matlab-ts-mode--ei-insert-indent-level-spaces)
+      (when indent-has-tabs ;; Tabs in leading whitespace?  Tabs require eilb for untabify.
+        (setq using-eilb (matlab--eilb-setup))
+        (matlab-ts-mode--ei-insert-indent-level-spaces))
 
       (cl-loop
        while (and (< (point) eol-pt)
@@ -1115,29 +1127,65 @@ where:
                 (next-node-start (treesit-node-start next-node))
                 (extra-chars (matlab-ts-mode--ei-node-extra-chars node node-end next-node-start)))
 
-           (when (equal start-node node)
-             (setq pt-offset (+ (matlab--eilb-length) start-offset)))
+           ;; When not yet using eilb, check if existing content matches what we'd produce.
+           ;; Switch to eilb when a mismatch is found.
+           (when (not using-eilb)
+             (let* ((gap-str (buffer-substring-no-properties node-end next-node-start))
+                    (gap-matches (and (if (listp extra-chars)
+                                          nil ;; list extra-chars require eilb retroactive insert
+                                        (string= extra-chars ""))
+                                      n-spaces-between
+                                      (= (length gap-str) n-spaces-between)
+                                      (not (string-match-p "[^ ]" gap-str)))))
+               (when (not gap-matches)
+                 ;; Mismatch found: copy content from BOL to node-start into eilb and continue
+                 (let ((prefix (buffer-substring-no-properties
+                                bol-pt (treesit-node-start node))))
+                   (matlab--eilb-setup)
+                   (setq using-eilb t)
+                   (with-current-buffer matlab--eilb
+                     (insert prefix))))))
 
-           (matlab--eilb-add-node-text node extra-chars n-spaces-between))
+           (when (equal start-node node)
+             (setq pt-offset (if using-eilb
+                                 (+ (matlab--eilb-length) start-offset)
+                               (+ (- (treesit-node-start node) bol-pt) start-offset))))
+
+           (when using-eilb
+             (matlab--eilb-add-node-text node extra-chars n-spaces-between)))
 
          (setq node next-node
                node-type next-node-type)
          ))
 
       (when node ;; last node in line
-        (when (equal start-node node)
-          (setq pt-offset (+ (matlab--eilb-length) start-offset)))
-        (when matlab-ts-mode--indent-assert
-          (setq orig-line-node-types
-                (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
         (let ((extra-chars (matlab-ts-mode--ei-node-extra-chars
-                            node
-                            (min (treesit-node-end node) eol-pt)
-                            eol-pt)))
-          (matlab--eilb-add-node-text node extra-chars)))
+                            node (min (treesit-node-end node) eol-pt) eol-pt)))
+          ;; Check last node: is there trailing content after the last node?
+          (when (not using-eilb)
+            (when (or (listp extra-chars) (not (string= extra-chars "")))
+              ;; Trailing extra-chars require eilb
+              (let ((prefix (buffer-substring-no-properties bol-pt (treesit-node-start node))))
+                (matlab--eilb-setup)
+                (setq using-eilb t)
+                (with-current-buffer matlab--eilb
+                  (insert prefix)))))
+
+          (when (equal start-node node)
+            (setq pt-offset (if using-eilb
+                                (+ (matlab--eilb-length) start-offset)
+                              (+ (- (treesit-node-start node) bol-pt) start-offset))))
+          (when matlab-ts-mode--indent-assert
+            (setq orig-line-node-types
+                  (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
+          (when using-eilb
+            (matlab--eilb-add-node-text node extra-chars))))
 
       (setq matlab-ts-mode--ei-line-nodes-loc nil)
-      (list (matlab--eilb-content) pt-offset orig-line-node-types first-node-pair))))
+      (list (if using-eilb
+                (matlab--eilb-content)
+              (buffer-substring-no-properties bol-pt eol-pt))
+            pt-offset orig-line-node-types first-node-pair))))
 
 (defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-cache nil)
 
@@ -1644,7 +1692,7 @@ If so return `(max-field-width . arguments-node), else nil."
       (let ((ans (when (and is-m-struct (> max-field-width 0))
                    `(,max-field-width . ,arguments-node))))
         (when matlab-ts-mode--ei-is-m-struct-cache
-          ;; When not an alignable multi-line struct, use (0 . nil) to indicate it as such
+          ;; When not an align-able multi-line struct, use (0 . nil) to indicate it as such
           (puthash start-bol (if ans ans '(0 . nil))
                    matlab-ts-mode--ei-is-m-struct-cache))
         ans))))
@@ -2644,6 +2692,6 @@ This expansion of the region is done to simplify electric indent."
 ;; LocalWords:  SPDX gmail treesit defcustom bos eos isstring defun eol eobp setq curr cdr xr progn
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
-;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace eql
-;; LocalWords:  geq eqeq neq memq
+;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace eql consp
+;; LocalWords:  geq eqeq neq memq bols
 ;; LocalWords:  setcar setcdr anychar
