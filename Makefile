@@ -69,7 +69,7 @@ else
     BATCH_UPDATE = -f loaddefs-generate-batch $(abspath $(LOADDEFS)) $(abspath $(LOADDIRS))
 endif
 
-$(LOADDEFS): $(ELC) | .clean.tstamp
+$(LOADDEFS): | .clean.tstamp
 	"$(EMACS)" $(EMACSFLAGS) $(addprefix -L ,$(LOADPATH)) $(BATCH_UPDATE)
 
 CHECK_FOR_LEXICAL_BINDING = \
