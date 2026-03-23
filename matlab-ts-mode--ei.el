@@ -850,7 +850,7 @@ N-SPACES-TO-APPEND is the number of spaces to append between nodes."
   (let* ((node-end (treesit-node-end node))
          (eol-pt (pos-eol))
          (last-pt (if (< node-end eol-pt) node-end eol-pt))
-         (node-text (buffer-substring (treesit-node-start node) last-pt)))
+         (node-text (buffer-substring-no-properties (treesit-node-start node) last-pt)))
 
     (with-current-buffer matlab--eilb
 
@@ -971,7 +971,7 @@ Assumes that current point is at `back-to-indentation'."
 
 (defun matlab-ts-mode--ei-insert-indent-level-spaces ()
   "Insert indent-level spaces for current line expanding tabs."
-  (let ((spaces (buffer-substring (pos-bol) (point))))
+  (let ((spaces (buffer-substring-no-properties (pos-bol) (point))))
     (when (string-match "\t" spaces)
       (setq spaces (with-temp-buffer
                      (insert spaces)
@@ -1285,7 +1285,7 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
              (assign-end-pos (save-excursion (goto-char (treesit-node-end assign-node))
                                              (pos-eol)))
              (indent-spaces (- (treesit-node-start assign-node) assign-start-pos)))
-        (setq assign-str (buffer-substring assign-start-pos assign-end-pos)
+        (setq assign-str (buffer-substring-no-properties assign-start-pos assign-end-pos)
               n-levels (if (= (mod indent-spaces matlab-ts-mode--indent-level) 0)
                            (/ indent-spaces matlab-ts-mode--indent-level)
                          ;; else: not at a standard level so no need to add conditionals as the
@@ -1392,7 +1392,7 @@ region.  START-PT-LINENUM may be different from current line."
                   (if (and row-node indent-offset)
                       (let* ((col-num (length col-widths)) ;; Iterate last col down to first col
                              (indent-start-pt (point))
-                             (r-content (buffer-substring indent-start-pt (pos-eol)))
+                             (r-content (buffer-substring-no-properties indent-start-pt (pos-eol)))
                              (matrix-offset (save-excursion
                                               (goto-char (treesit-node-start t-matrix-node))
                                               (1+ (- (point) (pos-bol))))))
@@ -1445,7 +1445,7 @@ region.  START-PT-LINENUM may be different from current line."
                           (setq ei-info (list ei-line pt-offset (nth 2 ei-info) (nth 3 ei-info)))))
 
                     ;; Else a blank or continuation line w/o matrix content
-                    (setq ei-line (buffer-substring (pos-bol) (pos-eol))))
+                    (setq ei-line (buffer-substring-no-properties (pos-bol) (pos-eol))))
 
                   (when matrix-cache
                     (let* ((buf-linenum (1- (+ assign-start-linenum t-buf-row-linenum))))
@@ -2432,7 +2432,7 @@ to it's logical location when the line is updated."
                     (and start-pt-linenum (= start-pt-linenum (line-number-at-pos))))
             (matlab-ts-mode--ei-get-start-info start-pt-linenum start-pt-offset)))
          (start-node (car start-node-and-offset)) ;; may be nil
-         (orig-line (buffer-substring (pos-bol) (pos-eol)))
+         (orig-line (buffer-substring-no-properties (pos-bol) (pos-eol)))
          cached-ei-info
          ei-info
          result)
@@ -2551,7 +2551,7 @@ START-LINENUM and END-LINENUM correspond to the BEG and END points."
     (while (<= i-linenum end-linenum)
       (let ((line-ending (if (or max-end-linenum (< i-linenum end-linenum)) "\n" "")))
         (if (matlab-ts-mode--ei-in-disabled-region i-linenum)
-            (let ((curr-line (buffer-substring (pos-bol) (pos-eol))))
+            (let ((curr-line (buffer-substring-no-properties (pos-bol) (pos-eol))))
               (with-current-buffer new-content-buf
                 (insert curr-line line-ending)))
           ;; else: electric indent the line
