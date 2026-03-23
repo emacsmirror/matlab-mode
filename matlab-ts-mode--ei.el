@@ -1083,21 +1083,22 @@ where:
                              (next-node-re (if (listp next-spec) (car next-spec) next-spec))
                              (next2-node-re (when (listp next-spec) (cdr next-spec))))
 
-                        (when (and (string-match-p node-re node-type)
-                                   (string-match-p next-node-re next-node-type)
-                                   (or (not next2-node-re)
-                                       (save-excursion
-                                         (goto-char (treesit-node-end next-node))
-                                         (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
-                                                (next2-node-type
-                                                 (or (car pair)
-                                                     (cl-return-from
-                                                         matlab-ts-mode--ei-get-new-line))))
+                        (when (and
+                               (string-match-p node-re node-type)
+                               (string-match-p next-node-re next-node-type)
+                               (or (not next2-node-re)
+                                   (save-excursion
+                                     (goto-char (treesit-node-end next-node))
+                                     (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
+                                            (next2-node-type
+                                             (or (car pair)
+                                                 (cl-return-from
+                                                     matlab-ts-mode--ei-get-new-line))))
 
-                                           (when (string-match-p next2-node-re next2-node-type)
-                                             (setq next2-pair pair)
-                                             (setq next2-n-spaces-between (nth 2 tuple))
-                                             t)))))
+                                       (when (string-match-p next2-node-re next2-node-type)
+                                         (setq next2-pair pair)
+                                         (setq next2-n-spaces-between (nth 2 tuple))
+                                         t)))))
 
                           (setq n-spaces-between (nth 2 tuple))
                           (when matlab-ts-mode--electric-indent-verbose
