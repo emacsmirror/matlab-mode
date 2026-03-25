@@ -1034,7 +1034,8 @@ To debug a specific movement test file
 ACTION-FUN is a function that takes no arguments and is called
 in context of a temporary buffer containing NAME.LANG file from LANG-FILES.
 ACTION-FUN must return a string that is recorded into NAME_expected.txt.
-Within ACTION-FUN, `t-utils--buf-file' contains NAME.LANG.
+Within ACTION-FUN, `t-utils--buf-file' contains NAME.LANG contents
+with the major mode defined by the first line of NAME.LANG.
 TEST-NAME is used in messages.
 
 The result of ACTION-FUN is compared against NAME_expected.txt.  If

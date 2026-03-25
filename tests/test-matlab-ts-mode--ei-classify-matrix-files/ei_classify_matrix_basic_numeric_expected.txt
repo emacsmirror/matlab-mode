@@ -1,0 +1,25 @@
+test-matlab-ts-mode--ei-classify-matrix-action-fun result:
+---
+L5   point 51 ) => 'numeric-m-matrix | m1 = [1, 2, 3
+L6   point 65 ) => 'numeric-m-matrix |      4, 5 6];
+L8   point 80 ) => 'numeric-m-matrix | m2 = [1, 2, 3;
+L9   point 95 ) => 'numeric-m-matrix |      4, 5 6];
+L11  point 110) => 'numeric-m-matrix | m3 = [1, 2, 3
+L12  point 124) => 'numeric-m-matrix |      4, 5 6];
+L14  point 139) => 'numeric-m-matrix | m4 = [1, 2, 3; ...
+L15  point 158) => 'numeric-m-matrix |      4, 5 6];
+L17  point 173) => 'numeric-m-matrix | m5 = [1, 2, 3; ...
+L18  point 192) => 'numeric-m-matrix |        
+L19  point 200) => 'numeric-m-matrix |       4, 5, 6];
+L21  point 217) => 'numeric-m-matrix | m6 = [1, 2, 3; ...
+L22  point 236) => 'numeric-m-matrix |        % comment
+L23  point 253) => 'numeric-m-matrix |       4, 5, 6];
+L25  point 270) => 'numeric-m-matrix | m7 = [1, 2, 3; ...
+L26  point 289) => 'numeric-m-matrix | 
+L27  point 290) => 'numeric-m-matrix |        % comment
+L28  point 307) => 'numeric-m-matrix |       4, 5, 6];
+L30  point 324) => 'numeric-m-matrix | m8 = [
+L31  point 331) => 'numeric-m-matrix |        1, 2, 3 % comment 1
+L32  point 358) => 'numeric-m-matrix |        4, 5, 6 % comment 2
+L33  point 385) => 'numeric-m-matrix |        7, 8, 9 % comment 3
+L34  point 412) => 'numeric-m-matrix |      ];

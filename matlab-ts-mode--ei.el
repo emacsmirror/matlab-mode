@@ -417,6 +417,89 @@ be unary-op even though the node type is \"+\"."
 
 (defvar-local matlab-ts-mode--ei-errors-map nil) ;; Key (pos-bol), value t on an error line.
 
+;; `matlab-ts-mode--ei-m-matrix-map'
+;;   For each line of a "m-matrix", a multi-line matrix with one row per line ignoring blank and
+;;   comment lines, map the key, which is `pos-bol' to the matrix type,
+;;     'numeric-m-matrix
+;;     'non-numeric-m-matrix
+;;   from `matlab-ts-mode--ei-classify-matrix'.
+;;   Note, 'not-a-m-matrix classifications are not recorded in `matlab-ts-mode--ei-m-matrix-map'.
+(defvar-local matlab-ts-mode--ei-m-matrix-map nil)
+
+(defun matlab-ts-mode--ei-classify-matrix (matrix-node)
+  "Classify MATRIX-NODE and return its matrix type symbol.
+Return one of:
+  \\='not-a-m-matrix
+     single-line matrix or multi-line with multiple rows on one line.
+  \\='numeric-m-matrix
+     multi-line matrix where each row is on its own line and
+     contains only number, unary-op, comma, and semicolon nodes.
+  \\='non-numeric-m-matrix
+     multi-line matrix where each row is on its own line but
+     contains non-numeric entries."
+
+  (let ((mat-start (treesit-node-start matrix-node))
+        (mat-end (treesit-node-end matrix-node)))
+    ;; Check if single-line matrix
+    (if (save-excursion
+          (= (progn (goto-char mat-start) (pos-bol))
+             (progn (goto-char mat-end) (pos-bol))))
+        'not-a-m-matrix
+      ;; Multi-line matrix: examine each row child
+      (let ((child-count (treesit-node-child-count matrix-node))
+            (idx 0)
+            (is-numeric t)
+            (is-valid t) ;; valid means each row is on its own line
+            (prev-row-bol nil)) ;; track previous row's bol to detect multiple rows per line
+        (while (and is-valid (< idx child-count))
+          (let* ((child (treesit-node-child matrix-node idx))
+                 (child-type (treesit-node-type child)))
+            (when (string= child-type "row")
+              (let ((row-start (treesit-node-start child))
+                    (row-end (treesit-node-end child)))
+                ;; Check row is on a single line
+                (let ((row-bol (save-excursion (goto-char row-start) (pos-bol))))
+                  (if (or (save-excursion
+                            (not (= row-bol
+                                    (progn (goto-char row-end) (pos-bol)))))
+                          ;; Check that no previous row shares this line
+                          (and prev-row-bol (= prev-row-bol row-bol)))
+                      (setq is-valid nil)
+                    ;; Check row entries for numeric content
+                    (when is-numeric
+                      (let ((row-child-count (treesit-node-child-count child))
+                            (ridx 0))
+                        (while (and is-numeric (< ridx row-child-count))
+                          (let* ((rchild (treesit-node-child child ridx))
+                                 (rchild-type (treesit-node-type rchild)))
+                            (unless (or (string= rchild-type "number")
+                                        (string= rchild-type ",")
+                                        (string= rchild-type ";")
+                                        (string= rchild-type "unary_operator")
+                                        (string= rchild-type "comment")
+                                        (string= rchild-type "line_continuation"))
+                              (setq is-numeric nil)))
+                          (setq ridx (1+ ridx))))))
+                  (setq prev-row-bol row-bol)))))
+          (setq idx (1+ idx)))
+        ;; result
+        (cond
+         ((not is-valid) 'not-a-m-matrix)
+         (is-numeric 'numeric-m-matrix)
+         (t 'non-numeric-m-matrix))))))
+
+(defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
+  "Classify MATRIX-NODE and add its lines to `matlab-ts-mode--ei-m-matrix-map'."
+  (let ((matrix-type (matlab-ts-mode--ei-classify-matrix matrix-node)))
+    (when (not (eq matrix-type 'not-a-m-matrix))
+      (let ((mat-start (treesit-node-start matrix-node))
+            (mat-end (treesit-node-end matrix-node)))
+        (save-excursion
+          (goto-char mat-start)
+          (while (and (<= (point) mat-end) (not (eobp)))
+            (puthash (pos-bol) matrix-type matlab-ts-mode--ei-m-matrix-map)
+            (forward-line)))))))
+
 (defun matlab-ts-mode--ei-mark-error-lines (error-node)
   "Add lines of ERROR-NODE to `matlab-ts-mode--ei-errors-map'."
   (let* ((error-start-pt (treesit-node-start error-node))
@@ -447,7 +530,11 @@ be unary-op even though the node type is \"+\"."
   (when (treesit-available-p)
     (treesit-query-compile
      'matlab
-     `(;; Named nodes
+     `(
+       ;; Matrix nodes to identify multi-row matrices (m-matrices) for alignment
+       ((matrix) @matrix)
+
+       ;; Named nodes
        ((identifier) @identifier)
        ((number) @number)
        ((string) @string)
@@ -581,6 +668,9 @@ be unary-op even though the node type is \"+\"."
     (puthash 'kw_set_dot "set." ht)
     ht))
 
+;; TODO leverage this to speedup m-matrix alignment
+(defvar matlab-ts-mode--ei-activate-classify-matrix nil)
+
 (defun matlab-ts-mode--ei-line-nodes-in-region (beg end)
   "Get line nodes in region BEG to END.
 Line nodes are the language elements that we electric indent in the
@@ -595,6 +685,7 @@ parent is a unary_operator, we return MODIFIED-NODE-TYPE to be unary-op
 even though the node type is \"+\"."
 
   (setq matlab-ts-mode--ei-errors-map (make-hash-table))
+  (setq matlab-ts-mode--ei-m-matrix-map (make-hash-table))
 
   (let* ((region-nodes (treesit-query-capture (treesit-buffer-root-node 'matlab)
                                               matlab-ts-mode--ei-all-nodes-query beg end))
@@ -611,6 +702,12 @@ even though the node type is \"+\"."
          ;; Case: ERROR node
          ((eq capture 'error)
           (matlab-ts-mode--ei-mark-error-lines node)
+          (setq node nil))
+
+         ;; Case: matrix node to identify multi-line matrices for alignment
+         ((eq capture 'matrix)
+          (when matlab-ts-mode--ei-activate-classify-matrix
+            (matlab-ts-mode--ei-mark-m-matrix-lines node))
           (setq node nil))
 
          ;; Case: track when in a property dimensions node
@@ -2693,5 +2790,5 @@ This expansion of the region is done to simplify electric indent."
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
 ;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace eql consp
-;; LocalWords:  geq eqeq neq memq bols
+;; LocalWords:  geq eqeq neq memq bols ridx rchild
 ;; LocalWords:  setcar setcdr anychar

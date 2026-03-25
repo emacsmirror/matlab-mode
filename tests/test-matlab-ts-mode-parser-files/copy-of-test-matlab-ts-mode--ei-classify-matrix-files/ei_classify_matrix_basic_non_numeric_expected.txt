@@ -1,0 +1,32 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,257> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,61]@{% Following are non-numeric m-matrices:}@)
+ (assignment<63,68> left: (identifier[63,64]@{a}@) =[65,66] right: (number[67,68]@{2}@))
+ ;[68,69]
+ (assignment<70,75> left: (identifier[70,71]@{b}@) =[72,73] right: (number[74,75]@{3}@))
+ ;[75,76]
+ (assignment<78,111> left: (identifier[78,80]@{m1}@) =[81,82]
+  right: 
+   (matrix<83,111> [[83,84]
+    (row<84,92> (number[84,85]@{1}@) ,[85,86]
+     (binary_operator<87,92> left: (identifier[87,88]@{a}@) +[89,90] right: (identifier[91,92]@{b}@)))
+    (row<102,110> (number[102,103]@{3}@) ,[103,104] (number[109,110]@{4}@))
+    ][110,111]))
+ ;[111,112] (comment[114,145]@{% Following are not m-matrices:}@)
+ (assignment<146,185> left: (identifier[146,151]@{notM1}@) =[152,153]
+  right: 
+   (matrix<154,185> [[154,155]
+    (row<155,159> (number[155,156]@{1}@) ,[156,157] (number[158,159]@{2}@))
+    (row<161,164>
+     (binary_operator<161,164> left: (identifier[161,162]@{a}@) +[162,163] right: (identifier[163,164]@{b}@)))
+    (row<175,179> (number[175,176]@{5}@) ,[176,177] (number[178,179]@{6}@))
+    (row<181,184> (number[181,182]@{7}@) ,[183,183] (number[183,184]@{6}@))
+    ][184,185]))
+ ;[185,186]
+ (assignment<188,255> left: (identifier[188,193]@{notM2}@) =[194,195]
+  right: 
+   (matrix<196,255> [[196,197]
+    (row<197,221> (number[197,198]@{1}@) ,[198,199] (number[200,201]@{2}@) ,[201,202] (line_continuation[203,207]@{...\n}@) (number[216,217]@{3}@) ,[218,218]
+     (binary_operator<218,221> left: (identifier[218,219]@{a}@) +[219,220] right: (identifier[220,221]@{b}@)))
+    (row<232,254> (number[232,233]@{5}@) ,[233,234] (number[235,236]@{6}@) ,[236,237] (line_continuation[238,242]@{...\n}@) (number[251,252]@{7}@) ,[253,253] (number[253,254]@{6}@))
+    ][254,255]))
+ ;[255,256] \n[256,257])
