@@ -417,14 +417,20 @@ be unary-op even though the node type is \"+\"."
 
 (defvar-local matlab-ts-mode--ei-errors-map nil) ;; Key (pos-bol), value t on an error line.
 
-;; `matlab-ts-mode--ei-m-matrix-map'
+;; `matlab-ts-mode--ei-m-matrix-pos-bol-map'
 ;;   For each line of a "m-matrix", a multi-line matrix with one row per line ignoring blank and
-;;   comment lines, map the key, which is `pos-bol' to the matrix type,
-;;     'numeric-m-matrix
-;;     'non-numeric-m-matrix
+;;   comment lines, map the key, which is `pos-bol' to:
+;;     (cons 'numeric-m-matrix MATRIX-NODE)   for numeric matrices
+;;     '(non-numeric-m-matrix)                for non-numeric matrices
 ;;   from `matlab-ts-mode--ei-classify-matrix'.
-;;   Note, 'not-a-m-matrix classifications are not recorded in `matlab-ts-mode--ei-m-matrix-map'.
-(defvar-local matlab-ts-mode--ei-m-matrix-map nil)
+;;   Note, 'not-a-m-matrix classifications are not recorded.
+(defvar-local matlab-ts-mode--ei-m-matrix-pos-bol-map nil)
+
+;; `matlab-ts-mode--ei-m-matrix-node-map'
+;;   For each MATRIX-NODE classified as 'numeric-m-matrix, map the key MATRIX-NODE
+;;   to the (MATRIX-TYPE . COLUMN-WIDTHS) cons pair returned by
+;;   `matlab-ts-mode--ei-classify-matrix'.
+(defvar-local matlab-ts-mode--ei-m-matrix-node-map nil)
 
 (defconst matlab-ts-mode--ei-non-numeric-re
   "[^][0-9.eEiIjJ \t,;~+\n-]"
@@ -432,9 +438,15 @@ be unary-op even though the node type is \"+\"."
 Used by `matlab-ts-mode--ei-classify-matrix' to detect non-numeric content
 via `re-search-forward' instead of walking tree-sitter child nodes.")
 
+(defconst matlab-ts-mode--ei-numeric-entry-re
+  "[+~-]*[0-9][0-9.eEiIjJ+~-]*"
+  "Regexp matching a single numeric entry in a matrix row.
+Matches numbers with optional leading unary operators and suffixes
+such as scientific notation and complex unit.")
+
 (defun matlab-ts-mode--ei-classify-matrix (matrix-node)
-  "Classify MATRIX-NODE and return its matrix type symbol.
-Return one of:
+  "Classify MATRIX-NODE and return a cons pair (MATRIX-TYPE . COLUMN-WIDTHS).
+MATRIX-TYPE is one of:
   \\='not-a-m-matrix
      single-line matrix or multi-line with multiple rows on one line.
   \\='numeric-m-matrix
@@ -443,6 +455,9 @@ Return one of:
   \\='non-numeric-m-matrix
      multi-line matrix where each row is on its own line but
      contains non-numeric entries.
+
+COLUMN-WIDTHS is a list of per-column maximum entry widths when
+MATRIX-TYPE is \\='numeric-m-matrix, otherwise nil.
 
 Uses `re-search-forward' on the buffer text between the matrix
 brackets instead of walking tree-sitter child nodes."
@@ -453,12 +468,13 @@ brackets instead of walking tree-sitter child nodes."
     (if (save-excursion
           (= (progn (goto-char mat-start) (pos-bol))
              (progn (goto-char mat-end) (pos-bol))))
-        'not-a-m-matrix
+        '(not-a-m-matrix)
       ;; Multi-line matrix: scan buffer text line by line to classify.
       (save-excursion
         (goto-char mat-start)
         (let ((is-numeric t)
-              (is-valid t))
+              (is-valid t)
+              (col-widths nil)) ;; list of max widths per column
           (while (and is-valid (< (point) mat-end))
             (let* ((lstart (point))
                    (lend (min (pos-eol) mat-end)))
@@ -493,21 +509,46 @@ brackets instead of walking tree-sitter child nodes."
                 ;; Check for non-numeric content in the code portion of this line
                 (when (and is-valid is-numeric)
                   (goto-char lstart)
-                  (when (re-search-forward matlab-ts-mode--ei-non-numeric-re
-                                           code-end t)
-                    (setq is-numeric nil))))
+                  (if (re-search-forward matlab-ts-mode--ei-non-numeric-re
+                                         code-end t)
+                      (setq is-numeric nil)
+                    ;; Numeric line: collect entry widths for this row
+                    (goto-char lstart)
+                    (let ((col 0)
+                          (row-widths nil))
+                      (while (re-search-forward matlab-ts-mode--ei-numeric-entry-re
+                                                code-end t)
+                        (let ((w (- (match-end 0) (match-beginning 0))))
+                          (push w row-widths))
+                        (setq col (1+ col)))
+                      (when (> col 0)
+                        (setq row-widths (nreverse row-widths))
+                        ;; Merge row-widths into col-widths (element-wise max)
+                        (if (null col-widths)
+                            (setq col-widths row-widths)
+                          (let ((cw col-widths)
+                                (rw row-widths))
+                            (while (and cw rw)
+                              (when (> (car rw) (car cw))
+                                (setcar cw (car rw)))
+                              (setq cw (cdr cw)
+                                    rw (cdr rw)))
+                            ;; If this row has more columns, append them
+                            (when rw
+                              (setq col-widths (nconc col-widths rw))))))))))
               ;; Advance to the next line
               (goto-char lend)
               (forward-line)))
           ;; result
           (cond
-           ((not is-valid) 'not-a-m-matrix)
-           (is-numeric 'numeric-m-matrix)
-           (t 'non-numeric-m-matrix)))))))
+           ((not is-valid) '(not-a-m-matrix))
+           (is-numeric (cons 'numeric-m-matrix col-widths))
+           (t '(non-numeric-m-matrix))))))))
 
 (defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
   "Classify MATRIX-NODE and add its lines to `matlab-ts-mode--ei-m-matrix-map'."
-  (let ((matrix-type (matlab-ts-mode--ei-classify-matrix matrix-node)))
+  (let* ((result (matlab-ts-mode--ei-classify-matrix matrix-node))
+         (matrix-type (car result)))
     (when (not (eq matrix-type 'not-a-m-matrix))
       (let ((mat-start (treesit-node-start matrix-node))
             (mat-end (treesit-node-end matrix-node)))
