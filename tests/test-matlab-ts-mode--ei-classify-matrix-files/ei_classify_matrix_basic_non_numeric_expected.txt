@@ -1,4 +1,4 @@
 test-matlab-ts-mode--ei-classify-matrix-action-fun result:
 ---
-L8   point 78 ) => 'non-numeric-m-matrix | m1 = [1, a + b
-L9   point 93 ) => 'non-numeric-m-matrix |          3,     4];
+L8   point 78 ) => 'non-numeric-m-matrix col-widths=nil | m1 = [1, a + b
+L9   point 93 ) => 'non-numeric-m-matrix col-widths=nil |          3,     4];

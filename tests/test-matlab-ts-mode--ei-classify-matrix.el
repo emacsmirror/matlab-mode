@@ -4,7 +4,7 @@
 ;;; Commentary:
 ;;   Exercise matlab-ts-mode--ei-classify-matrix by calling
 ;;   matlab-ts-mode--ei-line-nodes-in-region and then
-;;   inspect matrix-type matlab-ts-mode--ei-m-matrix-map
+;;   inspect matlab-ts-mode--ei-m-matrix-pos-bol-map
 ;;
 ;;   Test cases are
 ;;      ./test-matlab-ts-mode--ei-classify-matrix-files/NAME.m
@@ -30,8 +30,9 @@ This is provided for debugging.
   "Exercise `matlab-ts-mode--ei-classify-matrix' on the current buffer.
 This is done by running `matlab-ts-mode--ei-line-nodes-in-region'
 on the test m-file in the current temporary buffer and then
-returning the contents of `matrix-type matlab-ts-mode--ei-m-matrix-map'
-along with text from the m-file as a string."
+returning the contents of `matlab-ts-mode--ei-m-matrix-pos-bol-map'
+and `matlab-ts-mode--ei-m-matrix-node-map' along with text from
+the m-file as a string."
   (let ((curr-activate matlab-ts-mode--ei-activate-classify-matrix)
         (result ""))
     (unwind-protect
@@ -39,25 +40,33 @@ along with text from the m-file as a string."
           
           (setq matlab-ts-mode--ei-activate-classify-matrix t)
 
-          ;; Compute `matlab-ts-mode--ei-m-matrix-map'
+          ;; Compute maps
           (matlab-ts-mode--ei-line-nodes-in-region (point-min) (point-max))
 
           (maphash (lambda (key _value)
                      (push key pos-bol-keys))
-                   matlab-ts-mode--ei-m-matrix-map)
+                   matlab-ts-mode--ei-m-matrix-pos-bol-map)
           (setq pos-bol-keys (sort pos-bol-keys #'<))
                 
           (dolist (pos-bol-key pos-bol-keys)
-            (setq result
-                  (concat result
-                          (format "L%-3d point %-3d) => '%s | %s\n"
-                                  (line-number-at-pos pos-bol-key)
-                                  pos-bol-key
-                                  (symbol-name (gethash pos-bol-key matlab-ts-mode--ei-m-matrix-map))
-                                  (buffer-substring pos-bol-key (save-excursion
-                                                                  (goto-char pos-bol-key)
-                                                                  (pos-eol)))
-                                  )))))
+            (let* ((entry (gethash pos-bol-key matlab-ts-mode--ei-m-matrix-pos-bol-map))
+                   (matrix-type (car entry))
+                   (matrix-node (cdr entry))
+                   (col-widths (when matrix-node
+                                 (cdr (gethash matrix-node matlab-ts-mode--ei-m-matrix-node-map))))
+                   (line-text (buffer-substring pos-bol-key (save-excursion
+                                                              (goto-char pos-bol-key)
+                                                              (pos-eol)))))
+              (setq result
+                    (concat result
+                            (format "L%-3d point %-3d) => '%s col-widths=%s | %s\n"
+                                    (line-number-at-pos pos-bol-key)
+                                    pos-bol-key
+                                    (symbol-name matrix-type)
+                                    (if col-widths
+                                        (prin1-to-string col-widths)
+                                      "nil")
+                                    line-text))))))
       ;; unwind form hander
       (setq matlab-ts-mode--ei-activate-classify-matrix curr-activate))
     result))

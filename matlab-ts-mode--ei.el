@@ -546,16 +546,23 @@ brackets instead of walking tree-sitter child nodes."
            (t '(non-numeric-m-matrix))))))))
 
 (defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
-  "Classify MATRIX-NODE and add its lines to `matlab-ts-mode--ei-m-matrix-map'."
+  "Classify MATRIX-NODE and populate matrix maps.
+Add lines to `matlab-ts-mode--ei-m-matrix-pos-bol-map' and, for
+\\='numeric-m-matrix, add the node to `matlab-ts-mode--ei-m-matrix-node-map'."
   (let* ((result (matlab-ts-mode--ei-classify-matrix matrix-node))
          (matrix-type (car result)))
     (when (not (eq matrix-type 'not-a-m-matrix))
       (let ((mat-start (treesit-node-start matrix-node))
-            (mat-end (treesit-node-end matrix-node)))
+            (mat-end (treesit-node-end matrix-node))
+            (pos-bol-value (if (eq matrix-type 'numeric-m-matrix)
+                               (cons 'numeric-m-matrix matrix-node)
+                             '(non-numeric-m-matrix))))
+        (when (eq matrix-type 'numeric-m-matrix)
+          (puthash matrix-node result matlab-ts-mode--ei-m-matrix-node-map))
         (save-excursion
           (goto-char mat-start)
           (while (and (<= (point) mat-end) (not (eobp)))
-            (puthash (pos-bol) matrix-type matlab-ts-mode--ei-m-matrix-map)
+            (puthash (pos-bol) pos-bol-value matlab-ts-mode--ei-m-matrix-pos-bol-map)
             (forward-line)))))))
 
 (defun matlab-ts-mode--ei-mark-error-lines (error-node)
@@ -743,7 +750,8 @@ parent is a unary_operator, we return MODIFIED-NODE-TYPE to be unary-op
 even though the node type is \"+\"."
 
   (setq matlab-ts-mode--ei-errors-map (make-hash-table))
-  (setq matlab-ts-mode--ei-m-matrix-map (make-hash-table))
+  (setq matlab-ts-mode--ei-m-matrix-pos-bol-map (make-hash-table))
+  (setq matlab-ts-mode--ei-m-matrix-node-map (make-hash-table))
 
   (let* ((region-nodes (treesit-query-capture (treesit-buffer-root-node 'matlab)
                                               matlab-ts-mode--ei-all-nodes-query beg end))
