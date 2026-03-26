@@ -433,10 +433,11 @@ be unary-op even though the node type is \"+\"."
 (defvar-local matlab-ts-mode--ei-m-matrix-node-map nil)
 
 (defconst matlab-ts-mode--ei-non-numeric-re
-  "[^][0-9.eEiIjJ \t,;~+\n-]"
+  "[^0-9.eEiIjJ \t,;~+\n-]"
   "Regexp matching a character that cannot appear in a numeric matrix row.
-Used by `matlab-ts-mode--ei-classify-matrix' to detect non-numeric content
-via `re-search-forward' instead of walking tree-sitter child nodes.")
+Numeric matrices contain only numbers, commas, semicolons, comments,
+and ellipsis line continuations.  Characters such as `[' and `]' indicate
+non-numeric content (e.g., nested matrices or string literals).")
 
 (defconst matlab-ts-mode--ei-numeric-entry-re
   "[+~-]*[0-9][0-9.eEiIjJ+~-]*"
@@ -547,12 +548,19 @@ nodes to verify one-row-per-line and uniform column counts."
                                  (when (re-search-forward "\\.\\.\\." eff-end t)
                                    (match-beginning 0))))
                      (code-end (if cont-pos cont-pos eff-end)))
+                ;; Compute scan boundaries that skip the matrix's own
+                ;; "[" on the first line and "]" on the last line.
+                (let ((scan-start (if (= lstart mat-start) (1+ lstart) lstart))
+                     (scan-end (if (and (>= (1- code-end) lstart)
+                                        (eq (char-after (1- code-end)) ?\]))
+                                   (1- code-end)
+                                 code-end)))
                 ;; Check for non-numeric content first.  When detected,
                 ;; stop the text scan immediately.  Text-based validity
                 ;; checks below are unreliable for non-numeric content.
-                (goto-char lstart)
+                (goto-char scan-start)
                 (if (re-search-forward matlab-ts-mode--ei-non-numeric-re
-                                       code-end t)
+                                      scan-end t)
                     (setq is-numeric nil)
                   ;; Numeric line: perform text-based validity checks.
                   ;; Check for multiple rows on one line:
@@ -600,7 +608,7 @@ nodes to verify one-row-per-line and uniform column counts."
                                   (setcar cw (car rw)))
                                 (setq cw (cdr cw)
                                       rw (cdr rw))))))))))
-                ) ;; end of if non-numeric check
+                )) ;; end of let scan-start/scan-end, if non-numeric check
               ;; Advance to the next line
               (goto-char lend)
               (forward-line)))
