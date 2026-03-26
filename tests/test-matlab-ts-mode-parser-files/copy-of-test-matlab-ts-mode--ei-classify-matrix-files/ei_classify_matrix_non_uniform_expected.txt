@@ -1,0 +1,19 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,83> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,47> left: (identifier[22,26]@{bad1}@) =[27,28]
+  right: 
+   (matrix<29,47> [[29,30]
+    (row<30,36> (number[30,31]@{1}@) ,[32,32] (number[32,33]@{2}@) ,[33,34] (number[35,36]@{3}@))
+    (row<43,46> (number[43,44]@{4}@) ,[45,45] (number[45,46]@{5}@))
+    ][46,47]))
+ ;[47,48]
+ (assignment<50,81> left: (identifier[50,54]@{bad2}@) =[55,56]
+  right: 
+   (matrix<57,81> [[57,58]
+    (row<58,70> (number[58,59]@{1}@) ,[59,60] (number[61,62]@{2}@) ,[62,63]
+     (function_call<64,70> name: (identifier[64,65]@{f}@) ([65,66]
+      (arguments<66,69> argument: (identifier[66,67]@{a}@) ,[67,68] (identifier[68,69]@{b}@))
+      )[69,70]))
+    (row<77,80> (number[77,78]@{3}@) ,[79,79] (number[79,80]@{4}@))
+    ][80,81]))
+ ;[81,82] \n[82,83])

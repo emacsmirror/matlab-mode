@@ -444,11 +444,48 @@ via `re-search-forward' instead of walking tree-sitter child nodes.")
 Matches numbers with optional leading unary operators and suffixes
 such as scientific notation and complex unit.")
 
+(defun matlab-ts-mode--ei-row-entry-count (row-node)
+  "Count the number of entries in ROW-NODE.
+Entries are children that are not separators (comma, semicolon),
+comments, or line continuations."
+  (let ((child-count (treesit-node-child-count row-node))
+        (idx 0)
+        (entry-count 0))
+    (while (< idx child-count)
+      (let ((child-type (treesit-node-type (treesit-node-child row-node idx))))
+        (unless (or (string= child-type ",")
+                    (string= child-type ";")
+                    (string= child-type "comment")
+                    (string= child-type "line_continuation"))
+          (setq entry-count (1+ entry-count))))
+      (setq idx (1+ idx)))
+    entry-count))
+
+(defun matlab-ts-mode--ei-uniform-rows-p (matrix-node)
+  "Return non-nil if all rows of MATRIX-NODE have the same entry count.
+Uses tree-sitter children to count entries per row."
+  (let ((child-count (treesit-node-child-count matrix-node))
+        (idx 0)
+        (expected-cols nil)
+        (uniform t))
+    (while (and uniform (< idx child-count))
+      (let* ((child (treesit-node-child matrix-node idx))
+             (child-type (treesit-node-type child)))
+        (when (string= child-type "row")
+          (let ((cols (matlab-ts-mode--ei-row-entry-count child)))
+            (if (null expected-cols)
+                (setq expected-cols cols)
+              (when (/= cols expected-cols)
+                (setq uniform nil))))))
+      (setq idx (1+ idx)))
+    uniform))
+
 (defun matlab-ts-mode--ei-classify-matrix (matrix-node)
   "Classify MATRIX-NODE and return a cons pair (MATRIX-TYPE . COLUMN-WIDTHS).
 MATRIX-TYPE is one of:
   \\='not-a-m-matrix
-     single-line matrix or multi-line with multiple rows on one line.
+     single-line matrix, multi-line with multiple rows on one line,
+     or rows with non-uniform column counts.
   \\='numeric-m-matrix
      multi-line matrix where each row is on its own line and
      contains only number, unary-op, comma, and semicolon nodes.
@@ -459,8 +496,9 @@ MATRIX-TYPE is one of:
 COLUMN-WIDTHS is a list of per-column maximum entry widths when
 MATRIX-TYPE is \\='numeric-m-matrix, otherwise nil.
 
-Uses `re-search-forward' on the buffer text between the matrix
-brackets instead of walking tree-sitter child nodes."
+Uses `re-search-forward' on the buffer text for the numeric matrix
+fast path.  Falls back to tree-sitter children nodes when a
+non-numeric matrix is encountered to verify uniform row length."
 
   (let ((mat-start (treesit-node-start matrix-node))
         (mat-end (treesit-node-end matrix-node)))
@@ -474,6 +512,7 @@ brackets instead of walking tree-sitter child nodes."
         (goto-char mat-start)
         (let ((is-numeric t)
               (is-valid t)
+              (num-cols nil)  ;; expected column count (set from first row with entries)
               (col-widths nil)) ;; list of max widths per column
           (while (and is-valid (< (point) mat-end))
             (let* ((lstart (point))
@@ -522,20 +561,23 @@ brackets instead of walking tree-sitter child nodes."
                           (push w row-widths))
                         (setq col (1+ col)))
                       (when (> col 0)
-                        (setq row-widths (nreverse row-widths))
-                        ;; Merge row-widths into col-widths (element-wise max)
-                        (if (null col-widths)
-                            (setq col-widths row-widths)
-                          (let ((cw col-widths)
-                                (rw row-widths))
-                            (while (and cw rw)
-                              (when (> (car rw) (car cw))
-                                (setcar cw (car rw)))
-                              (setq cw (cdr cw)
-                                    rw (cdr rw)))
-                            ;; If this row has more columns, append them
-                            (when rw
-                              (setq col-widths (nconc col-widths rw))))))))))
+                        ;; Check uniform column count
+                        (if (null num-cols)
+                            (setq num-cols col)
+                          (when (/= col num-cols)
+                            (setq is-valid nil)))
+                        (unless (not is-valid)
+                          (setq row-widths (nreverse row-widths))
+                          ;; Merge row-widths into col-widths (element-wise max)
+                          (if (null col-widths)
+                              (setq col-widths row-widths)
+                            (let ((cw col-widths)
+                                  (rw row-widths))
+                              (while (and cw rw)
+                                (when (> (car rw) (car cw))
+                                  (setcar cw (car rw)))
+                                (setq cw (cdr cw)
+                                      rw (cdr rw)))))))))))
               ;; Advance to the next line
               (goto-char lend)
               (forward-line)))
@@ -543,7 +585,10 @@ brackets instead of walking tree-sitter child nodes."
           (cond
            ((not is-valid) '(not-a-m-matrix))
            (is-numeric (cons 'numeric-m-matrix col-widths))
-           (t '(non-numeric-m-matrix))))))))
+           ;; Non-numeric: fall back to tree-sitter to verify uniform row length
+           ((matlab-ts-mode--ei-uniform-rows-p matrix-node)
+            '(non-numeric-m-matrix))
+           (t '(not-a-m-matrix))))))))
 
 (defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
   "Classify MATRIX-NODE and populate matrix maps.
