@@ -461,24 +461,37 @@ comments, or line continuations."
       (setq idx (1+ idx)))
     entry-count))
 
-(defun matlab-ts-mode--ei-uniform-rows-p (matrix-node)
-  "Return non-nil if all rows of MATRIX-NODE have the same entry count.
-Uses tree-sitter children to count entries per row."
+(defun matlab-ts-mode--ei-valid-non-numeric-p (matrix-node)
+  "Return non-nil if MATRIX-NODE is a valid non-numeric m-matrix.
+A valid non-numeric m-matrix has uniform column counts across all
+rows, each row on its own line, and no row spanning multiple lines.
+Uses tree-sitter children to inspect the matrix structure."
   (let ((child-count (treesit-node-child-count matrix-node))
         (idx 0)
         (expected-cols nil)
-        (uniform t))
-    (while (and uniform (< idx child-count))
+        (prev-row-line nil)
+        (valid t))
+    (while (and valid (< idx child-count))
       (let* ((child (treesit-node-child matrix-node idx))
              (child-type (treesit-node-type child)))
         (when (string= child-type "row")
-          (let ((cols (matlab-ts-mode--ei-row-entry-count child)))
+          (let ((cols (matlab-ts-mode--ei-row-entry-count child))
+                (row-start-line (line-number-at-pos (treesit-node-start child)))
+                (row-end-line (line-number-at-pos (treesit-node-end child))))
+            ;; Check uniform column count
             (if (null expected-cols)
                 (setq expected-cols cols)
               (when (/= cols expected-cols)
-                (setq uniform nil))))))
+                (setq valid nil)))
+            ;; Check row is on a single line
+            (when (and valid (/= row-start-line row-end-line))
+              (setq valid nil))
+            ;; Check no two rows share a line
+            (when (and valid prev-row-line (= row-start-line prev-row-line))
+              (setq valid nil))
+            (setq prev-row-line row-start-line))))
       (setq idx (1+ idx)))
-    uniform))
+    valid))
 
 (defun matlab-ts-mode--ei-classify-matrix (matrix-node)
   "Classify MATRIX-NODE and return a cons pair (MATRIX-TYPE . COLUMN-WIDTHS).
@@ -497,8 +510,9 @@ COLUMN-WIDTHS is a list of per-column maximum entry widths when
 MATRIX-TYPE is \\='numeric-m-matrix, otherwise nil.
 
 Uses `re-search-forward' on the buffer text for the numeric matrix
-fast path.  Falls back to tree-sitter children nodes when a
-non-numeric matrix is encountered to verify uniform row length."
+fast path.  Falls back to `matlab-ts-mode--ei-valid-non-numeric-p'
+when non-numeric content is encountered, using tree-sitter children
+nodes to verify one-row-per-line and uniform column counts."
 
   (let ((mat-start (treesit-node-start matrix-node))
         (mat-end (treesit-node-end matrix-node)))
@@ -508,13 +522,18 @@ non-numeric matrix is encountered to verify uniform row length."
              (progn (goto-char mat-end) (pos-bol))))
         '(not-a-m-matrix)
       ;; Multi-line matrix: scan buffer text line by line to classify.
+      ;; The text scan is only reliable for numeric content.  When
+      ;; non-numeric content is detected, stop the text scan and let
+      ;; tree-sitter validate the matrix structure, since string
+      ;; literals and other expressions can contain characters like
+      ;; ";", "...", "[", "]" that confuse text-based checks.
       (save-excursion
         (goto-char mat-start)
         (let ((is-numeric t)
               (is-valid t)
               (num-cols nil)  ;; expected column count (set from first row with entries)
               (col-widths nil)) ;; list of max widths per column
-          (while (and is-valid (< (point) mat-end))
+          (while (and is-valid is-numeric (< (point) mat-end))
             (let* ((lstart (point))
                    (lend (min (pos-eol) mat-end)))
               ;; Find effective end of code on this line (before % comment)
@@ -528,30 +547,33 @@ non-numeric matrix is encountered to verify uniform row length."
                                  (when (re-search-forward "\\.\\.\\." eff-end t)
                                    (match-beginning 0))))
                      (code-end (if cont-pos cont-pos eff-end)))
-                ;; Check for multiple rows on one line:
-                ;; A ";" followed by non-whitespace content (other than "]") means
-                ;; two rows share this line.
+                ;; Check for non-numeric content first.  When detected,
+                ;; stop the text scan immediately.  Text-based validity
+                ;; checks below are unreliable for non-numeric content.
                 (goto-char lstart)
-                (when (re-search-forward ";[ \t]*[^ \t\n]" code-end t)
-                  (unless (eq (char-before) ?\])
-                    (setq is-valid nil)))
-                ;; Check for multi-line row:
-                ;; A line with row content ending in "..." but no preceding ";"
-                ;; means the row continues on the next line.
-                (when (and is-valid cont-pos)
+                (if (re-search-forward matlab-ts-mode--ei-non-numeric-re
+                                       code-end t)
+                    (setq is-numeric nil)
+                  ;; Numeric line: perform text-based validity checks.
+                  ;; Check for multiple rows on one line:
+                  ;; A ";" followed by non-whitespace content (other than "]") means
+                  ;; two rows share this line.
                   (goto-char lstart)
-                  (let ((has-semi (re-search-forward ";" cont-pos t)))
-                    (unless has-semi
-                      (goto-char lstart)
-                      (when (re-search-forward "[^][ \t\n]" cont-pos t)
-                        (setq is-valid nil)))))
-                ;; Check for non-numeric content in the code portion of this line
-                (when (and is-valid is-numeric)
-                  (goto-char lstart)
-                  (if (re-search-forward matlab-ts-mode--ei-non-numeric-re
-                                         code-end t)
-                      (setq is-numeric nil)
-                    ;; Numeric line: collect entry widths for this row
+                  (when (re-search-forward ";[ \t]*[^ \t\n]" code-end t)
+                    (unless (eq (char-before) ?\])
+                      (setq is-valid nil)))
+                  ;; Check for multi-line row:
+                  ;; A line with row content ending in "..." but no preceding ";"
+                  ;; means the row continues on the next line.
+                  (when (and is-valid cont-pos)
+                    (goto-char lstart)
+                    (let ((has-semi (re-search-forward ";" cont-pos t)))
+                      (unless has-semi
+                        (goto-char lstart)
+                        (when (re-search-forward "[^][ \t\n]" cont-pos t)
+                          (setq is-valid nil)))))
+                  ;; Collect entry widths for this row
+                  (when is-valid
                     (goto-char lstart)
                     (let ((col 0)
                           (row-widths nil))
@@ -577,18 +599,20 @@ non-numeric matrix is encountered to verify uniform row length."
                                 (when (> (car rw) (car cw))
                                   (setcar cw (car rw)))
                                 (setq cw (cdr cw)
-                                      rw (cdr rw)))))))))))
+                                      rw (cdr rw))))))))))
+                ) ;; end of if non-numeric check
               ;; Advance to the next line
               (goto-char lend)
               (forward-line)))
           ;; result
           (cond
+           ((not is-numeric)
+            ;; Non-numeric: use tree-sitter to validate matrix structure
+            (if (matlab-ts-mode--ei-valid-non-numeric-p matrix-node)
+                '(non-numeric-m-matrix)
+              '(not-a-m-matrix)))
            ((not is-valid) '(not-a-m-matrix))
-           (is-numeric (cons 'numeric-m-matrix col-widths))
-           ;; Non-numeric: fall back to tree-sitter to verify uniform row length
-           ((matlab-ts-mode--ei-uniform-rows-p matrix-node)
-            '(non-numeric-m-matrix))
-           (t '(not-a-m-matrix))))))))
+           (t (cons 'numeric-m-matrix col-widths))))))))
 
 (defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
   "Classify MATRIX-NODE and populate matrix maps.
