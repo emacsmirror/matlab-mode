@@ -23,3 +23,13 @@ L31  point 331) => 'numeric-m-matrix |        1, 2, 3 % comment 1
 L32  point 358) => 'numeric-m-matrix |        4, 5, 6 % comment 2
 L33  point 385) => 'numeric-m-matrix |        7, 8, 9 % comment 3
 L34  point 412) => 'numeric-m-matrix |      ];
+L36  point 421) => 'numeric-m-matrix | m9 = [
+L37  point 428) => 'numeric-m-matrix |        -1,  2,  3 % comment 1!
+L38  point 459) => 'numeric-m-matrix |         4, +5,  6 % comment 2!
+L39  point 490) => 'numeric-m-matrix |         7,  8, -9 % comment 3!
+L40  point 521) => 'numeric-m-matrix |      ];
+L42  point 530) => 'numeric-m-matrix | m10 = [
+L43  point 538) => 'numeric-m-matrix |         -1,  2,  3; ... comment 1
+L44  point 572) => 'numeric-m-matrix |          4, +5,  6 % comment 2!
+L45  point 604) => 'numeric-m-matrix |          7,  8, -9 % comment 3!
+L46  point 636) => 'numeric-m-matrix |       ];

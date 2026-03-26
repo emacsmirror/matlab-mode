@@ -426,6 +426,12 @@ be unary-op even though the node type is \"+\"."
 ;;   Note, 'not-a-m-matrix classifications are not recorded in `matlab-ts-mode--ei-m-matrix-map'.
 (defvar-local matlab-ts-mode--ei-m-matrix-map nil)
 
+(defconst matlab-ts-mode--ei-non-numeric-re
+  "[^][0-9.eEiIjJ \t,;~+\n-]"
+  "Regexp matching a character that cannot appear in a numeric matrix row.
+Used by `matlab-ts-mode--ei-classify-matrix' to detect non-numeric content
+via `re-search-forward' instead of walking tree-sitter child nodes.")
+
 (defun matlab-ts-mode--ei-classify-matrix (matrix-node)
   "Classify MATRIX-NODE and return its matrix type symbol.
 Return one of:
@@ -436,7 +442,10 @@ Return one of:
      contains only number, unary-op, comma, and semicolon nodes.
   \\='non-numeric-m-matrix
      multi-line matrix where each row is on its own line but
-     contains non-numeric entries."
+     contains non-numeric entries.
+
+Uses `re-search-forward' on the buffer text between the matrix
+brackets instead of walking tree-sitter child nodes."
 
   (let ((mat-start (treesit-node-start matrix-node))
         (mat-end (treesit-node-end matrix-node)))
@@ -445,48 +454,56 @@ Return one of:
           (= (progn (goto-char mat-start) (pos-bol))
              (progn (goto-char mat-end) (pos-bol))))
         'not-a-m-matrix
-      ;; Multi-line matrix: examine each row child
-      (let ((child-count (treesit-node-child-count matrix-node))
-            (idx 0)
-            (is-numeric t)
-            (is-valid t) ;; valid means each row is on its own line
-            (prev-row-bol nil)) ;; track previous row's bol to detect multiple rows per line
-        (while (and is-valid (< idx child-count))
-          (let* ((child (treesit-node-child matrix-node idx))
-                 (child-type (treesit-node-type child)))
-            (when (string= child-type "row")
-              (let ((row-start (treesit-node-start child))
-                    (row-end (treesit-node-end child)))
-                ;; Check row is on a single line
-                (let ((row-bol (save-excursion (goto-char row-start) (pos-bol))))
-                  (if (or (save-excursion
-                            (not (= row-bol
-                                    (progn (goto-char row-end) (pos-bol)))))
-                          ;; Check that no previous row shares this line
-                          (and prev-row-bol (= prev-row-bol row-bol)))
-                      (setq is-valid nil)
-                    ;; Check row entries for numeric content
-                    (when is-numeric
-                      (let ((row-child-count (treesit-node-child-count child))
-                            (ridx 0))
-                        (while (and is-numeric (< ridx row-child-count))
-                          (let* ((rchild (treesit-node-child child ridx))
-                                 (rchild-type (treesit-node-type rchild)))
-                            (unless (or (string= rchild-type "number")
-                                        (string= rchild-type ",")
-                                        (string= rchild-type ";")
-                                        (string= rchild-type "unary_operator")
-                                        (string= rchild-type "comment")
-                                        (string= rchild-type "line_continuation"))
-                              (setq is-numeric nil)))
-                          (setq ridx (1+ ridx))))))
-                  (setq prev-row-bol row-bol)))))
-          (setq idx (1+ idx)))
-        ;; result
-        (cond
-         ((not is-valid) 'not-a-m-matrix)
-         (is-numeric 'numeric-m-matrix)
-         (t 'non-numeric-m-matrix))))))
+      ;; Multi-line matrix: scan buffer text line by line to classify.
+      (save-excursion
+        (goto-char mat-start)
+        (let ((is-numeric t)
+              (is-valid t))
+          (while (and is-valid (< (point) mat-end))
+            (let* ((lstart (point))
+                   (lend (min (pos-eol) mat-end)))
+              ;; Find effective end of code on this line (before % comment)
+              (goto-char lstart)
+              (let* ((eff-end (if (re-search-forward "%" lend t)
+                                 (match-beginning 0)
+                               lend))
+                     ;; Find line continuation (...)
+                     (cont-pos (progn
+                                 (goto-char lstart)
+                                 (when (re-search-forward "\\.\\.\\." eff-end t)
+                                   (match-beginning 0))))
+                     (code-end (if cont-pos cont-pos eff-end)))
+                ;; Check for multiple rows on one line:
+                ;; A ";" followed by non-whitespace content (other than "]") means
+                ;; two rows share this line.
+                (goto-char lstart)
+                (when (re-search-forward ";[ \t]*[^ \t\n]" code-end t)
+                  (unless (eq (char-before) ?\])
+                    (setq is-valid nil)))
+                ;; Check for multi-line row:
+                ;; A line with row content ending in "..." but no preceding ";"
+                ;; means the row continues on the next line.
+                (when (and is-valid cont-pos)
+                  (goto-char lstart)
+                  (let ((has-semi (re-search-forward ";" cont-pos t)))
+                    (unless has-semi
+                      (goto-char lstart)
+                      (when (re-search-forward "[^][ \t\n]" cont-pos t)
+                        (setq is-valid nil)))))
+                ;; Check for non-numeric content in the code portion of this line
+                (when (and is-valid is-numeric)
+                  (goto-char lstart)
+                  (when (re-search-forward matlab-ts-mode--ei-non-numeric-re
+                                           code-end t)
+                    (setq is-numeric nil))))
+              ;; Advance to the next line
+              (goto-char lend)
+              (forward-line)))
+          ;; result
+          (cond
+           ((not is-valid) 'not-a-m-matrix)
+           (is-numeric 'numeric-m-matrix)
+           (t 'non-numeric-m-matrix)))))))
 
 (defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
   "Classify MATRIX-NODE and add its lines to `matlab-ts-mode--ei-m-matrix-map'."
@@ -1624,8 +1641,8 @@ region.  START-PT-LINENUM may be different from current line."
 
 (cl-defun matlab-ts-mode--ei-is-m-matrix (matrix &optional check-for-indent-mode-minimal)
   "Is MATRIX node a multi-line matrix?
-We define a a multi-line matrix has one row per line and more than one
-column.  If optional, CHECK-FOR-INDENT-MODE-MINIMAL is non-nil, this we
+We define a a multi-line matrix has one row per line ignoring blank lines and
+comments.  If optional, CHECK-FOR-INDENT-MODE-MINIMAL is non-nil, this we
 check if matrix is in an %-indent-mode:minimal region and if so return
 nil."
   (when (and check-for-indent-mode-minimal

@@ -110,6 +110,10 @@ t-utils-run:
 disp-matlab-ts-dir:
 	@echo $(MATLAB_TS_DIR)
 
+.PHONY: prof-test
+prof-test:
+	"$(EMACS)" $(EMACSFLAGS) -L . -L prof -l t-utils.el -l $(PROF_TEST_NAME) -f $(PROF_TEST_NAME)
+
 # [EOF] tests/Makefile
 
 # LocalWords:  EMACSFLAGS setq ifneq modetests shelltests metest mstest eof utils treesit ifeq env

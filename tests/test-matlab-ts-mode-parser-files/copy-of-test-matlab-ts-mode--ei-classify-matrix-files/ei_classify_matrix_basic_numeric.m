@@ -33,6 +33,19 @@ m8 = [
        7, 8, 9 % comment 3
      ];
 
+m9 = [
+       -1,  2,  3 % comment 1!
+        4, +5,  6 % comment 2!
+        7,  8, -9 % comment 3!
+     ];
+
+m10 = [
+        -1,  2,  3; ... comment 1
+         4, +5,  6 % comment 2!
+         7,  8, -9 % comment 3!
+      ];
+
+
 % Following are not m-matrices:
 notM1 = [1, 2; 3 4;
          5, 6; 7 6];

@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,562> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,49]@{% Following are m-matrices:}@)
+(source_file<1,788> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,49]@{% Following are m-matrices:}@)
  (assignment<51,77> left: (identifier[51,53]@{m1}@) =[54,55]
   right: 
    (matrix<56,77> [[56,57]
@@ -62,20 +62,50 @@
     (comment[373,384]@{% comment 2}@)
     (row<392,399> (number[392,393]@{7}@) ,[393,394] (number[395,396]@{8}@) ,[396,397] (number[398,399]@{9}@))
     (comment[400,411]@{% comment 3}@) ][417,418]))
- ;[418,419] (comment[421,452]@{% Following are not m-matrices:}@)
- (assignment<453,492> left: (identifier[453,458]@{notM1}@) =[459,460]
+ ;[418,419]
+ (assignment<421,527> left: (identifier[421,423]@{m9}@) =[424,425]
   right: 
-   (matrix<461,492> [[461,462]
-    (row<462,466> (number[462,463]@{1}@) ,[463,464] (number[465,466]@{2}@))
-    (row<468,471> (number[468,469]@{3}@) ,[470,470] (number[470,471]@{4}@))
-    (row<482,486> (number[482,483]@{5}@) ,[483,484] (number[485,486]@{6}@))
-    (row<488,491> (number[488,489]@{7}@) ,[490,490] (number[490,491]@{6}@))
-    ][491,492]))
- ;[492,493]
- (assignment<495,560> left: (identifier[495,500]@{notM2}@) =[501,502]
+   (matrix<426,527> [[426,427]
+    (row<435,445>
+     (unary_operator<435,437> -[435,436] operand: (number[436,437]@{1}@))
+     ,[437,438] (number[440,441]@{2}@) ,[441,442] (number[444,445]@{3}@))
+    (comment[446,458]@{% comment 1!}@)
+    (row<467,476> (number[467,468]@{4}@) ,[468,469]
+     (unary_operator<470,472> +[470,471] operand: (number[471,472]@{5}@))
+     ,[472,473] (number[475,476]@{6}@))
+    (comment[477,489]@{% comment 2!}@)
+    (row<498,507> (number[498,499]@{7}@) ,[499,500] (number[502,503]@{8}@) ,[503,504]
+     (unary_operator<505,507> -[505,506] operand: (number[506,507]@{9}@)))
+    (comment[508,520]@{% comment 3!}@) ][526,527]))
+ ;[527,528]
+ (assignment<530,643> left: (identifier[530,533]@{m10}@) =[534,535]
   right: 
-   (matrix<503,560> [[503,504]
-    (row<504,526> (number[504,505]@{1}@) ,[505,506] (number[507,508]@{2}@) ,[508,509] (line_continuation[510,514]@{...\n}@) (number[523,524]@{3}@) ,[525,525] (number[525,526]@{4}@))
-    (row<537,559> (number[537,538]@{5}@) ,[538,539] (number[540,541]@{6}@) ,[541,542] (line_continuation[543,547]@{...\n}@) (number[556,557]@{7}@) ,[558,558] (number[558,559]@{6}@))
-    ][559,560]))
- ;[560,561] \n[561,562])
+   (matrix<536,643> [[536,537]
+    (row<546,556>
+     (unary_operator<546,548> -[546,547] operand: (number[547,548]@{1}@))
+     ,[548,549] (number[551,552]@{2}@) ,[552,553] (number[555,556]@{3}@))
+    (line_continuation[558,572]@{... comment 1\n}@)
+    (row<581,590> (number[581,582]@{4}@) ,[582,583]
+     (unary_operator<584,586> +[584,585] operand: (number[585,586]@{5}@))
+     ,[586,587] (number[589,590]@{6}@))
+    (comment[591,603]@{% comment 2!}@)
+    (row<613,622> (number[613,614]@{7}@) ,[614,615] (number[617,618]@{8}@) ,[618,619]
+     (unary_operator<620,622> -[620,621] operand: (number[621,622]@{9}@)))
+    (comment[623,635]@{% comment 3!}@) ][642,643]))
+ ;[643,644] (comment[647,678]@{% Following are not m-matrices:}@)
+ (assignment<679,718> left: (identifier[679,684]@{notM1}@) =[685,686]
+  right: 
+   (matrix<687,718> [[687,688]
+    (row<688,692> (number[688,689]@{1}@) ,[689,690] (number[691,692]@{2}@))
+    (row<694,697> (number[694,695]@{3}@) ,[696,696] (number[696,697]@{4}@))
+    (row<708,712> (number[708,709]@{5}@) ,[709,710] (number[711,712]@{6}@))
+    (row<714,717> (number[714,715]@{7}@) ,[716,716] (number[716,717]@{6}@))
+    ][717,718]))
+ ;[718,719]
+ (assignment<721,786> left: (identifier[721,726]@{notM2}@) =[727,728]
+  right: 
+   (matrix<729,786> [[729,730]
+    (row<730,752> (number[730,731]@{1}@) ,[731,732] (number[733,734]@{2}@) ,[734,735] (line_continuation[736,740]@{...\n}@) (number[749,750]@{3}@) ,[751,751] (number[751,752]@{4}@))
+    (row<763,785> (number[763,764]@{5}@) ,[764,765] (number[766,767]@{6}@) ,[767,768] (line_continuation[769,773]@{...\n}@) (number[782,783]@{7}@) ,[784,784] (number[784,785]@{6}@))
+    ][785,786]))
+ ;[786,787] \n[787,788])
