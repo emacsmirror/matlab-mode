@@ -13,10 +13,116 @@
 ;;; Code:
 
 (require 'matlab-ts-mode)
-(require 'matlab-ts-mode--ei)
 
 (defconst prof-cm--iterations 100
   "Number of iterations for each benchmark run.")
+
+(defconst prof-matlab-ts-mode--ei-numeric-entry-re
+  "[+~-]*[0-9][0-9.eEiIjJ+~-]*"
+  "Regexp matching a single numeric entry in a matrix row.
+Matches numbers with optional leading unary operators and suffixes
+such as scientific notation and complex unit.")
+
+(defun matlab-ts-mode--ei-classify-matrix-using-regexp (matrix-node)
+  "Classify MATRIX-NODE and return a cons pair (MATRIX-TYPE . COLUMN-WIDTHS).
+MATRIX-TYPE is one of:
+  \\='not-a-m-matrix
+     single-line matrix or multi-line with multiple rows on one line.
+  \\='numeric-m-matrix
+     multi-line matrix where each row is on its own line and
+     contains only number, unary-op, comma, and semicolon nodes.
+  \\='non-numeric-m-matrix
+     multi-line matrix where each row is on its own line but
+     contains non-numeric entries.
+
+COLUMN-WIDTHS is a list of per-column maximum entry widths when
+MATRIX-TYPE is \\='numeric-m-matrix, otherwise nil.
+
+Uses `re-search-forward' on the buffer text between the matrix
+brackets instead of walking tree-sitter child nodes."
+
+  (let ((mat-start (treesit-node-start matrix-node))
+        (mat-end (treesit-node-end matrix-node)))
+    ;; Check if single-line matrix
+    (if (save-excursion
+          (= (progn (goto-char mat-start) (pos-bol))
+             (progn (goto-char mat-end) (pos-bol))))
+        '(not-a-m-matrix)
+      ;; Multi-line matrix: scan buffer text line by line to classify.
+      (save-excursion
+        (goto-char mat-start)
+        (let ((is-numeric t)
+              (is-valid t)
+              (col-widths nil)) ;; list of max widths per column
+          (while (and is-valid (< (point) mat-end))
+            (let* ((lstart (point))
+                   (lend (min (pos-eol) mat-end)))
+              ;; Find effective end of code on this line (before % comment)
+              (goto-char lstart)
+              (let* ((eff-end (if (re-search-forward "%" lend t)
+                                 (match-beginning 0)
+                               lend))
+                     ;; Find line continuation (...)
+                     (cont-pos (progn
+                                 (goto-char lstart)
+                                 (when (re-search-forward "\\.\\.\\." eff-end t)
+                                   (match-beginning 0))))
+                     (code-end (if cont-pos cont-pos eff-end)))
+                ;; Check for multiple rows on one line:
+                ;; A ";" followed by non-whitespace content (other than "]") means
+                ;; two rows share this line.
+                (goto-char lstart)
+                (when (re-search-forward ";[ \t]*[^ \t\n]" code-end t)
+                  (unless (eq (char-before) ?\])
+                    (setq is-valid nil)))
+                ;; Check for multi-line row:
+                ;; A line with row content ending in "..." but no preceding ";"
+                ;; means the row continues on the next line.
+                (when (and is-valid cont-pos)
+                  (goto-char lstart)
+                  (let ((has-semi (re-search-forward ";" cont-pos t)))
+                    (unless has-semi
+                      (goto-char lstart)
+                      (when (re-search-forward "[^][ \t\n]" cont-pos t)
+                        (setq is-valid nil)))))
+                ;; Check for non-numeric content in the code portion of this line
+                (when (and is-valid is-numeric)
+                  (goto-char lstart)
+                  (if (re-search-forward matlab-ts-mode--ei-non-numeric-re
+                                         code-end t)
+                      (setq is-numeric nil)
+                    ;; Numeric line: collect entry widths for this row
+                    (goto-char lstart)
+                    (let ((col 0)
+                          (row-widths nil))
+                      (while (re-search-forward prof-matlab-ts-mode--ei-numeric-entry-re
+                                                code-end t)
+                        (let ((w (- (match-end 0) (match-beginning 0))))
+                          (push w row-widths))
+                        (setq col (1+ col)))
+                      (when (> col 0)
+                        (setq row-widths (nreverse row-widths))
+                        ;; Merge row-widths into col-widths (element-wise max)
+                        (if (null col-widths)
+                            (setq col-widths row-widths)
+                          (let ((cw col-widths)
+                                (rw row-widths))
+                            (while (and cw rw)
+                              (when (> (car rw) (car cw))
+                                (setcar cw (car rw)))
+                              (setq cw (cdr cw)
+                                    rw (cdr rw)))
+                            ;; If this row has more columns, append them
+                            (when rw
+                              (setq col-widths (nconc col-widths rw))))))))))
+              ;; Advance to the next line
+              (goto-char lend)
+              (forward-line)))
+          ;; result
+          (cond
+           ((not is-valid) '(not-a-m-matrix))
+           (is-numeric (cons 'numeric-m-matrix col-widths))
+           (t '(non-numeric-m-matrix))))))))
 
 (defun prof-cm--classify-matrix-using-children (matrix-node)
   "Classify MATRIX-NODE by walking its child nodes."
@@ -108,8 +214,8 @@
             ;; Benchmark using tree-sitter nodes
             (prof-cm--benchmark #'prof-cm--classify-matrix-using-children matrix-nodes
                                 prof-cm--iterations "Using tree-sitter children:")
-            ;; Benchmark using current matlab-ts-mode--ei-classify-matrix
-            (prof-cm--benchmark #'matlab-ts-mode--ei-classify-matrix matrix-nodes
+            ;; Benchmark using regexp's
+            (prof-cm--benchmark #'matlab-ts-mode--ei-classify-matrix-using-regexp matrix-nodes
                                 prof-cm--iterations "Using current:")))
       (kill-buffer temp-buffer))))
 
