@@ -1,0 +1,12 @@
+test-matlab-ts-mode--ei-classify-matrix-action-fun result:
+---
+L3   point 22 ) => 'numeric-m-matrix col-widths=(3 3 2) | m1 = [
+L4   point 29 ) => 'numeric-m-matrix col-widths=(3 3 2) |          1, 2.2,  3; % ... foo
+L5   point 60 ) => 'numeric-m-matrix col-widths=(3 3 2) |        ... foo
+L6   point 75 ) => 'numeric-m-matrix col-widths=(3 3 2) |        % ... foo
+L7   point 92 ) => 'numeric-m-matrix col-widths=(3 3 2) |        4.4,   5, 60 ... % foo
+L8   point 122) => 'numeric-m-matrix col-widths=(3 3 2) |      ];
+L11  point 132) => 'non-numeric-m-matrix col-widths=nil | n1 = ["foo", "%bar"  , "...too"
+L12  point 164) => 'non-numeric-m-matrix col-widths=nil |        ... % foo
+L13  point 181) => 'non-numeric-m-matrix col-widths=nil |        % ... foo
+L14  point 198) => 'non-numeric-m-matrix col-widths=nil |       "goo", "...too", "%foo"  ];
