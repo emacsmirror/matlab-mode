@@ -815,9 +815,6 @@ Add lines to `matlab-ts-mode--ei-m-matrix-pos-bol-map' and, for
     (puthash 'kw_set_dot "set." ht)
     ht))
 
-;; TODO leverage this to speedup m-matrix alignment
-(defvar matlab-ts-mode--ei-activate-classify-matrix nil)
-
 (defun matlab-ts-mode--ei-line-nodes-in-region (beg end)
   "Get line nodes in region BEG to END.
 Line nodes are the language elements that we electric indent in the
@@ -854,8 +851,7 @@ even though the node type is \"+\"."
 
          ;; Case: matrix node to identify multi-line matrices for alignment
          ((eq capture 'matrix)
-          (when matlab-ts-mode--ei-activate-classify-matrix
-            (matlab-ts-mode--ei-mark-m-matrix-lines node))
+          (matlab-ts-mode--ei-mark-m-matrix-lines node)
           (setq node nil))
 
          ;; Case: track when in a property dimensions node
