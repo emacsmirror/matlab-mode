@@ -97,16 +97,18 @@ modetests: metest.el
 shelltests: mstest.el
 	$(CLEAN_MATLABPATH) "$(EMACS)" $(EMACSFLAGS) -l mstest.el $(MATLAB_PROG_SETUP) -e "mstest-run-all-tests"
 
+T_UTILS_SETUP=-L .. -l ../matlab-autoload.el -L . -l t-utils.el
+
 ifneq ($(RUN_T_UTILS_TEST),)
 .PHONY: $(RUN_T_UTILS_TEST)
 $(RUN_T_UTILS_TEST):
-	"$(EMACS)" $(EMACSFLAGS) -L . -l t-utils.el $(T_UTILS_FLAGS) \
+	"$(EMACS)" $(EMACSFLAGS) $(T_UTILS_SETUP) $(T_UTILS_FLAGS) \
 	  -eval '(t-utils-run "$(RUN_T_UTILS_TEST).el")'
 endif
 
 .PHONY: t-utils-run
 t-utils-run:
-	"$(EMACS)" $(EMACSFLAGS) -L . -l t-utils.el $(T_UTILS_FLAGS) -f t-utils-run
+	"$(EMACS)" $(EMACSFLAGS) $(T_UTILS_SETUP) $(T_UTILS_FLAGS) -f t-utils-run
 
 
 .PHONY: disp-matlab-ts-dir
@@ -115,7 +117,7 @@ disp-matlab-ts-dir:
 
 .PHONY: prof-test
 prof-test:
-	"$(EMACS)" $(EMACSFLAGS) -L . -L prof -l t-utils.el -l $(PROF_TEST_NAME) -f $(PROF_TEST_NAME)
+	"$(EMACS)" $(EMACSFLAGS) $(T_UTILS_SETUP) -l t-utils.el -L prof -l $(PROF_TEST_NAME) -f $(PROF_TEST_NAME)
 
 # [EOF] tests/Makefile
 
