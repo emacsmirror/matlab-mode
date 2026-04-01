@@ -420,7 +420,10 @@ be unary-op even though the node type is \"+\"."
 ;; `matlab-ts-mode--ei-m-matrix-pos-bol-map'
 ;;   For each line of a "m-matrix", a multi-line matrix with one row per line ignoring blank and
 ;;   comment lines, map the key, which is `pos-bol' to:
-;;     (cons 'numeric-m-matrix MATRIX-NODE)   for numeric matrices
+;;     (cons 'numeric-m-matrix MATRIX-NODE)   for numeric matrices when the row line contains
+;;                                              matrix elements
+;;     (cons 'numeric-m-matrix 'empty)         for numeric matrices when the line is blank or a
+;;                                              comment / ellipsis line
 ;;     '(non-numeric-m-matrix)                for non-numeric matrices
 ;;   from `matlab-ts-mode--ei-classify-matrix'.
 ;;   Note, 'not-a-m-matrix classifications are not recorded.
@@ -643,8 +646,18 @@ Add lines to `matlab-ts-mode--ei-m-matrix-pos-bol-map' and, for
           (puthash matrix-node result matlab-ts-mode--ei-m-matrix-node-map))
         (save-excursion
           (goto-char mat-start)
+          (forward-line 0)
           (while (and (<= (point) mat-end) (not (eobp)))
-            (puthash (pos-bol) pos-bol-value matlab-ts-mode--ei-m-matrix-pos-bol-map)
+            
+            (puthash (point)
+                     (if (and (eq matrix-type 'numeric-m-matrix)
+                              (save-excursion
+                                (when (< (point) mat-start)
+                                  (goto-char (1+ mat-start)))
+                                (looking-at (rx (0+ (or " " "\t")) (or eol "%" "..." "]")))))
+                         (cons 'numeric-m-matrix 'empty)
+                       pos-bol-value)
+                     matlab-ts-mode--ei-m-matrix-pos-bol-map)
             (forward-line)))))))
 
 (defun matlab-ts-mode--ei-mark-error-lines (error-node)

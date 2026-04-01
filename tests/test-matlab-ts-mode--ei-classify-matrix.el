@@ -48,14 +48,14 @@ the m-file as a string."
       (let* ((entry (gethash pos-bol-key matlab-ts-mode--ei-m-matrix-pos-bol-map))
              (matrix-type (car entry))
              (matrix-node (cdr entry))
-             (col-widths (when matrix-node
+             (col-widths (when (and matrix-node (not (eq matrix-node 'empty)))
                            (cdr (gethash matrix-node matlab-ts-mode--ei-m-matrix-node-map))))
              (line-text (buffer-substring pos-bol-key (save-excursion
                                                         (goto-char pos-bol-key)
                                                         (pos-eol)))))
         (setq result
               (concat result
-                      (format "L%-3d point %-3d) => '%s col-widths=%s | %s\n"
+                      (format "L%-3d point %-3d) => '%-20s col-widths=%-15s | %s\n"
                               (line-number-at-pos pos-bol-key)
                               pos-bol-key
                               (symbol-name matrix-type)

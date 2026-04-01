@@ -1,6 +1,6 @@
 test-matlab-ts-mode--ei-classify-matrix-action-fun result:
 ---
-L6   point 55 ) => 'non-numeric-m-matrix col-widths=nil | good2 = [1, 2, f(a,b), [1;];
-L7   point 84 ) => 'non-numeric-m-matrix col-widths=nil |       3 4 5 6.0e1];
-L9   point 105) => 'non-numeric-m-matrix col-widths=nil | str1 = ["foo,;" "bar[]"
-L10  point 129) => 'non-numeric-m-matrix col-widths=nil |         "ff;,", "goo..."];
+L6   point 55 ) => 'non-numeric-m-matrix col-widths=nil             | good2 = [1, 2, f(a,b), [1;];
+L7   point 84 ) => 'non-numeric-m-matrix col-widths=nil             |       3 4 5 6.0e1];
+L9   point 105) => 'non-numeric-m-matrix col-widths=nil             | str1 = ["foo,;" "bar[]"
+L10  point 129) => 'non-numeric-m-matrix col-widths=nil             |         "ff;,", "goo..."];
