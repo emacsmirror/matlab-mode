@@ -15,15 +15,18 @@
 #
 # Notes:
 # ------
+#   - To run all t-utils.el based tests:
+#      make t-utils-run
 #
-#   To run a single t-utils.el based test:
-#      make RUN_T_UTILS_TEST=test-NAME
-#   For example:
-#      make RUN_T_UTILS_TEST=test-matlab-ts-mode-indent
+#   - To run a single t-utils.el based test:
+#        make RUN_T_UTILS_TEST=test-NAME
+#     For example:
+#        make RUN_T_UTILS_TEST=test-matlab-ts-mode-indent
 #
-#   To run a single t-utils.el based test with extra flags, add T_UTILS_FLAGS. For example:
-#      make T_UTILS_FLAGS="--eval '(setq treesit--indent-verbose t)'" \
-#           RUN_T_UTILS_TEST=test-matlab-ts-mode-indent
+#   - To run a single t-utils.el based test with extra flags, add T_UTILS_FLAGS.
+#     For example:
+#        make T_UTILS_FLAGS="--eval '(setq treesit--indent-verbose t)'" \
+#            RUN_T_UTILS_TEST=test-matlab-ts-mode-indent
 #
 
 EMACS ?= emacs
