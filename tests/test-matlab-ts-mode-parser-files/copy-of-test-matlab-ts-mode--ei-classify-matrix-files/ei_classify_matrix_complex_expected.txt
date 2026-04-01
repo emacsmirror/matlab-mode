@@ -1,0 +1,50 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,188> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,52> left: (identifier[22,27]@{good1}@) =[28,29]
+  right: 
+   (matrix<30,52> [[30,31]
+    (row<31,39> (number[31,32]@{1}@) ,[33,33]
+     (matrix<33,39> [[33,34]
+      (row<34,38> (number[34,35]@{2}@) ,[35,36] (number[37,38]@{3}@))
+      ][38,39]))
+    (row<46,51> (number[46,47]@{4}@) ,[48,48] (number[48,49]@{5}@) ,[50,50] (number[50,51]@{6}@))
+    ][51,52]))
+ ;[52,53]
+ (assignment<55,102> left: (identifier[55,60]@{good2}@) =[61,62]
+  right: 
+   (matrix<63,102> [[63,64]
+    (row<64,82> (number[64,65]@{1}@) ,[65,66] (number[67,68]@{2}@) ,[68,69]
+     (function_call<70,76> name: (identifier[70,71]@{f}@) ([71,72]
+      (arguments<72,75> argument: (identifier[72,73]@{a}@) ,[73,74] (identifier[74,75]@{b}@))
+      )[75,76])
+     ,[76,77]
+     (matrix<78,82> [[78,79]
+      (row<79,80> (number[79,80]@{1}@))
+      ][81,82]))
+    (row<90,101> (number[90,91]@{3}@) ,[92,92] (number[92,93]@{4}@) ,[94,94] (number[94,95]@{5}@) ,[96,96] (number[96,101]@{6.0e1}@))
+    ][101,102]))
+ ;[102,103]
+ (assignment<105,154> left: (identifier[105,109]@{str1}@) =[110,111]
+  right: 
+   (matrix<112,154> [[112,113]
+    (row<113,128>
+     (string<113,120> "[113,114] (string_content[114,119]@{foo,;}@) "[119,120])
+     ,[121,121]
+     (string<121,128> "[121,122] (string_content[122,127]@{bar[]}@) "[127,128]))
+    (row<137,153>
+     (string<137,143> "[137,138] (string_content[138,142]@{ff;,}@) "[142,143])
+     ,[143,144]
+     (string<145,153> "[145,146] (string_content[146,152]@{goo...}@) "[152,153]))
+    ][153,154]))
+ ;[154,155] \n[155,157]
+ (function_definition<157,187> function[157,165]
+  (function_output<166,168> (identifier[166,167]@{c}@) =[167,168])
+  name: (identifier[168,169]@{f}@)
+  (function_arguments<169,174> ([169,170] arguments: (identifier[170,171]@{a}@) ,[171,172] (identifier[172,173]@{b}@) )[173,174])
+  \n[174,175]
+  (block<175,184>
+   (assignment<175,182> left: (identifier[175,176]@{c}@) =[177,178]
+    right: (binary_operator<178,182> left: (identifier[178,179]@{a}@) +[180,181] right: (identifier[181,182]@{b}@)))
+   ;[182,183] \n[183,184])
+  end[184,187])
+ \n[187,188])

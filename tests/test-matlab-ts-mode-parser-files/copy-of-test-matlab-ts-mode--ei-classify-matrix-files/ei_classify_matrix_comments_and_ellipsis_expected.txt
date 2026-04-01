@@ -1,0 +1,28 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,233> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<22,128> left: (identifier[22,24]@{m1}@) =[25,26]
+  right: 
+   (matrix<27,128> [[27,28]
+    (row<38,48> (number[38,39]@{1}@) ,[39,40] (number[41,44]@{2.2}@) ,[44,45] (number[47,48]@{3}@))
+    (comment[50,59]@{% ... foo}@) (line_continuation[67,75]@{... foo\n}@) (comment[82,91]@{% ... foo}@)
+    (row<99,111> (number[99,102]@{4.4}@) ,[102,103] (number[106,107]@{5}@) ,[107,108] (number[109,111]@{60}@))
+    (line_continuation[112,127]@{... % foo\n     }@) ][127,128]))
+ ;[128,129]
+ (assignment<132,230> left: (identifier[132,134]@{n1}@) =[135,136]
+  right: 
+   (matrix<137,230> [[137,138]
+    (row<138,163>
+     (string<138,143> "[138,139] (string_content[139,142]@{foo}@) "[142,143])
+     ,[143,144]
+     (string<145,151> "[145,146] (string_content[146,150]@{%bar}@) "[150,151])
+     ,[153,154]
+     (string<155,163> "[155,156] (string_content[156,162]@{...too}@) "[162,163]))
+    (line_continuation[171,181]@{... % foo\n}@) (comment[188,197]@{% ... foo}@)
+    (row<204,227>
+     (string<204,209> "[204,205] (string_content[205,208]@{goo}@) "[208,209])
+     ,[209,210]
+     (string<211,219> "[211,212] (string_content[212,218]@{...too}@) "[218,219])
+     ,[219,220]
+     (string<221,227> "[221,222] (formatting_sequence[222,224]@{%f}@) (string_content[224,226]@{oo}@) "[226,227]))
+    ][229,230]))
+ ;[230,231] \n[231,233])
