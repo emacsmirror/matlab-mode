@@ -447,7 +447,7 @@ indicate non-numeric content.")
   "[+~-]*[a-zA-Z0-9][a-zA-Z0-9_.+~-]*"
   "Regexp matching a single numeric entry in a matrix row.
 Matches word tokens with optional leading unary operators.  Covers
-decimal, expondential, hex (0xFF), binary (0b1010), signed/unsided with
+decimal, exponential, hex (0xFF), binary (0b1010), signed/unsigned with
 numbers with word size, \(0xFFs8), identifiers (inf, nan, pi, etc.).")
 
 (defun matlab-ts-mode--ei-row-entry-count (row-node)
@@ -503,14 +503,14 @@ Uses tree-sitter children to inspect the matrix structure."
   "Classify MATRIX-NODE and return a cons pair (MATRIX-TYPE . COLUMN-WIDTHS).
 MATRIX-TYPE is one of:
   \\='not-a-m-matrix
-     single-line matrix, multi-line with multiple rows on one line,
+     Single-line matrix, multi-line with multiple rows on one line,
      or rows with non-uniform column counts.
   \\='numeric-m-matrix
-     multi-line matrix where each row is on its own line and
+     Multi-line matrix assignment where each row is on its own line and
      contains only non-expression entries (numbers, identifiers,
      unary operators).
   \\='non-numeric-m-matrix
-     multi-line matrix where each row is on its own line but
+     Multi-line matrix assignment where each row is on its own line but
      contains non-numeric entries.
 
 COLUMN-WIDTHS is a list of per-column maximum entry widths when
@@ -524,10 +524,20 @@ which uses tree-sitter children nodes to determine
 
   (let ((mat-start (treesit-node-start matrix-node))
         (mat-end (treesit-node-end matrix-node)))
-    ;; Check if single-line matrix
-    (if (save-excursion
-          (= (progn (goto-char mat-start) (pos-bol))
-             (progn (goto-char mat-end) (pos-bol))))
+    ;; Check if single-line matrix or if the first/last line has extra language elements after the
+    ;; matrix delimiter, "]" and on the same line.  For example both of these are 'not-a-m-matrix:
+    ;;    m1 = [1 2; 3 4];
+    ;;    m2 = [1 2;
+    ;;          3 4]; m3 = [1 2; 3 4];        // Simplification: don't align
+    (if (or
+         ;; Single-line matrix, e.g. m1 = [1 2; 3 4];
+         (save-excursion (= (progn (goto-char mat-start) (pos-bol))
+                            (progn (goto-char mat-end) (pos-bol))))
+         ;; Extra content after "]" on the last line? We shouldn't align these because
+         ;; it wouldn't look nice (and be complex to implement). Example:
+         ;;    m2 = [1 2;
+         ;;          3 4]; m3 = [1 2; 3 4];
+         (not (matlab-ts-mode--ei-matrix-ends-on-line matrix-node)))
         '(not-a-m-matrix)
       ;; Multi-line matrix: scan buffer text line by line to classify.
       ;; The text scan is only reliable for numeric content.  When
@@ -648,7 +658,7 @@ Add lines to `matlab-ts-mode--ei-m-matrix-pos-bol-map' and, for
           (goto-char mat-start)
           (forward-line 0)
           (while (and (<= (point) mat-end) (not (eobp)))
-            
+
             (puthash (point)
                      (if (and (eq matrix-type 'numeric-m-matrix)
                               (save-excursion
@@ -1236,6 +1246,34 @@ Assumes that current point is at `back-to-indentation'."
     (with-current-buffer matlab--eilb
       (insert spaces))))
 
+;; Internal variable that shouldn't be altered. It's used to avoid infinite recursion.
+(defvar matlab-ts-mode--ei-align-enabled t)
+
+(defun matlab-ts-mode--ei-nm-matrix-state (bol-pt)
+  "Compute numeric-m-matrix state used in obtaining a new line for BOL-PT."
+  (let* ((nm-pos-bol-value (when matlab-ts-mode--ei-align-enabled
+                             (gethash bol-pt matlab-ts-mode--ei-m-matrix-pos-bol-map)))
+         (nm-matrix-node (when (and nm-pos-bol-value
+                                    (eq (car nm-pos-bol-value) 'numeric-m-matrix)
+                                    (not (eq (cdr nm-pos-bol-value) 'empty)))
+                           (cdr nm-pos-bol-value)))
+         (nm-col-widths (when nm-matrix-node
+                          (cdr (gethash nm-matrix-node matlab-ts-mode--ei-m-matrix-node-map))))
+         (nm-first-col-extra (when nm-matrix-node
+                               (matlab-ts-mode--ei-m-matrix-first-col-extra nm-matrix-node)))
+         (nm-inside-matrix (when nm-matrix-node
+                             ;; On the first line of the matrix, wait for "[" to start tracking.
+                             ;; On subsequent row lines, we are already inside the matrix.
+                             (not (= bol-pt (save-excursion
+                                              (goto-char (treesit-node-start nm-matrix-node))
+                                              (pos-bol)))))))
+    ;; Result
+    (list nm-col-widths nm-first-col-extra nm-inside-matrix)))
+
+(defconst matlab-ts-mode--ei-matrix-syntax-nodes
+  (rx bos (or "," ";" "comment" "line_continuation" "[" "]") eos)
+  "Node types that are used in the definition of a matrix.")
+
 (cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-offset)
   "Get new line content with element spacing adjusted.
 Optional START-NODE and START-OFFSET are used to compute new pt-offset,
@@ -1289,7 +1327,13 @@ where:
            (indent-has-tabs (save-excursion
                               (let ((first-non-whitespace-char-in-line-pt (point)))
                                 (goto-char bol-pt)
-                                (re-search-forward "\t" first-non-whitespace-char-in-line-pt t)))))
+                                (re-search-forward "\t" first-non-whitespace-char-in-line-pt t))))
+           ;; Numeric m-matrix column alignment state
+           (nm-col-idx 0)
+           (nm-state (matlab-ts-mode--ei-nm-matrix-state bol-pt))
+           (nm-col-widths (nth 0 nm-state))
+           (nm-first-col-extra (nth 1 nm-state))
+           (nm-inside-matrix (nth 2 nm-state)))
 
       (when indent-has-tabs ;; Tabs in leading whitespace?  Tabs require eilb for untabify.
         (setq using-eilb (matlab--eilb-setup))
@@ -1376,6 +1420,30 @@ where:
            (matlab-ts-mode--assert-msg
             (format "ei, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
                     node-type node next-node-type next-node)))
+
+         ;; Numeric m-matrix column alignment: pad entries to their column widths
+         ;; for right-alignment.  Track the column index by counting entry nodes
+         ;; (those that are not separators or brackets).  When next-node is an
+         ;; entry, add (col-width - entry-width) extra spaces before it.
+         ;; Only track columns inside the matrix (after the "[" node).
+         (when nm-col-widths
+           (when (string= node-type "[")
+             (setq nm-inside-matrix t))
+           (when nm-inside-matrix
+             (when (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes node-type))
+               (setq nm-col-idx (1+ nm-col-idx)))
+             (when (and n-spaces-between
+                        (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes next-node-type)))
+               (let* ((next-col (1+ nm-col-idx))
+                      (raw-width (nth (1- next-col) nm-col-widths))
+                      (col-width (if (and (= next-col 1) nm-first-col-extra)
+                                     (+ raw-width nm-first-col-extra)
+                                   raw-width))
+                      (entry-width (- (treesit-node-end next-node)
+                                      (treesit-node-start next-node))))
+                 (when (and col-width (< entry-width col-width))
+                   (setq n-spaces-between (+ n-spaces-between
+                                             (- col-width entry-width))))))))
 
          (let* ((node-end (treesit-node-end node))
                 (next-node-start (treesit-node-start next-node))
@@ -1561,9 +1629,6 @@ If tmp T-MATRIX-NODE is non-nil, we use that to locate the first row."
                (when (not (re-search-forward "[^ \t]" (pos-eol) t))
                  (setq found-ans t)))))
           row-node)))))
-
-;; Internal variable that shouldn't be altered. It's used to avoid infinite recursion.
-(defvar matlab-ts-mode--ei-align-enabled t)
 
 (defun matlab-ts-mode--ei-indent-matrix-in-tmp-buf (assign-node
                                                     t-buf-start-pt-linenum start-pt-offset)
@@ -1770,7 +1835,9 @@ region.  START-PT-LINENUM may be different from current line."
     (goto-char (treesit-node-end matrix))
     (while (re-search-forward "[^ \t]" (pos-eol) t)
       (backward-char)
+      ;; xxx looking at "," ";", "%" should be sufficient?
       (let ((node (treesit-node-at (point) 'matlab)))
+        ;; xxx remove line_continuation
         (when (not (string-match-p (rx bos (or "," ";" "comment" "line_continuation") eos)
                                    (treesit-node-type node)))
           (cl-return-from matlab-ts-mode--ei-matrix-ends-on-line))
@@ -2400,11 +2467,18 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
         (setq matlab-ts-mode--ei-line-nodes-eat-comma eat-comma)))
   ei-info)
 
-(defun matlab-ts-mode--ei-align (ei-info &optional start-pt-linenum start-pt-offset)
+(cl-defun matlab-ts-mode--ei-align (ei-info &optional start-pt-linenum start-pt-offset)
   "Align elements in EI-INFO.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents.
 Optional START-PT-LINENUM and START-PT-OFFSET give the point prior to electric
 indent region."
+  ;; Skip alignment for numeric-m-matrix lines because column alignment is handled in
+  ;; `matlab-ts-mode--ei-get-new-line'.
+  (let ((pos-bol-value (gethash (pos-bol) matlab-ts-mode--ei-m-matrix-pos-bol-map)))
+    (when (and pos-bol-value
+               (eq (car pos-bol-value) 'numeric-m-matrix))
+      (cl-return-from matlab-ts-mode--ei-align ei-info)))
+
   (let ((matrix-assign-node (matlab-ts-mode--ei-point-in-m-type ei-info 'm-matrix)))
     (if matrix-assign-node
         (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-assign-node ei-info
@@ -2947,5 +3021,5 @@ This expansion of the region is done to simplify electric indent."
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
 ;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace eql consp
-;; LocalWords:  geq eqeq neq memq bols ridx rchild
+;; LocalWords:  geq eqeq neq memq bols ridx rchild defconst FFs stmt lstart nreverse rw
 ;; LocalWords:  setcar setcdr anychar

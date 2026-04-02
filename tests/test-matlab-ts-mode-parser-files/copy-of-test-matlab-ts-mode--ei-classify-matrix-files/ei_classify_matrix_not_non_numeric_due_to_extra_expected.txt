@@ -1,0 +1,45 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,477> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,221]@{% Notice the extra statements after the matrix. Fo...}@)
+ (assignment<223,228> left: (identifier[223,224]@{a}@) =[225,226] right: (number[227,228]@{1}@))
+ ;[228,229]
+ (assignment<230,237> left: (identifier[230,233]@{foo}@) =[234,235] right: (number[236,237]@{2}@))
+ ;[237,238]
+ (assignment<240,306> left: (identifier[240,247]@{notMat1}@) =[248,249]
+  right: 
+   (matrix<250,306> [[250,251] (line_continuation[252,256]@{...\n}@)
+    (row<263,276> (number[263,264]@{1}@) ,[264,265]
+     (binary_operator<268,276> left: (identifier[268,269]@{a}@) +[269,270]
+      right: (binary_operator<271,276> left: (identifier[271,274]@{foo}@) *[274,275] right: (number[275,276]@{2}@))))
+    (line_continuation[278,282]@{...\n}@)
+    (row<286,292> (number[286,289]@{333}@) ,[289,290] (number[291,292]@{4}@))
+    (line_continuation[294,298]@{...\n}@) ][305,306]))
+ ;[306,307]
+ (if_statement<308,340> if[308,310] condition: (number[311,312]@{1}@) ,[312,313]
+  (block<314,327>
+   (function_call<314,326> name: (identifier[314,318]@{disp}@) ([318,319]
+    (arguments<319,325>
+     argument: (string<319,325> '[319,320] (string_content[320,324]@{here}@) '[324,325]))
+    )[325,326])
+   \n[326,327])
+  end[337,340])
+ \n[340,342]
+ (assignment<342,408> left: (identifier[342,349]@{notMat2}@) =[350,351]
+  right: 
+   (matrix<352,408> [[352,353] (line_continuation[354,358]@{...\n}@)
+    (row<365,378> (number[365,366]@{1}@) ,[366,367]
+     (binary_operator<370,378> left: (identifier[370,371]@{a}@) +[371,372]
+      right: (binary_operator<373,378> left: (identifier[373,376]@{foo}@) *[376,377] right: (number[377,378]@{2}@))))
+    (line_continuation[380,384]@{...\n}@)
+    (row<388,394> (number[388,391]@{333}@) ,[391,392] (number[393,394]@{4}@))
+    (line_continuation[396,400]@{...\n}@) ][407,408]))
+ ;[408,409]
+ (assignment<411,474> left: (identifier[411,415]@{mat3}@) =[416,417]
+  right: 
+   (matrix<418,474> [[418,419] (line_continuation[420,424]@{...\n}@)
+    (row<431,444> (number[431,432]@{1}@) ,[432,433]
+     (binary_operator<436,444> left: (identifier[436,437]@{a}@) +[437,438]
+      right: (binary_operator<439,444> left: (identifier[439,442]@{foo}@) *[442,443] right: (number[443,444]@{2}@))))
+    (line_continuation[446,450]@{...\n}@)
+    (row<454,460> (number[454,457]@{333}@) ,[457,458] (number[459,460]@{4}@))
+    (line_continuation[462,466]@{...\n}@) ][473,474]))
+ ;[474,475] \n[476,477])

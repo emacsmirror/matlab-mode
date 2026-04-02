@@ -1,0 +1,35 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,444> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,217]@{% Notice the extra statements after the matrix. Fo...}@)
+ (assignment<219,281> left: (identifier[219,226]@{notMat1}@) =[227,228]
+  right: 
+   (matrix<229,281> [[229,230] (line_continuation[231,235]@{...\n}@)
+    (row<242,251> (number[242,243]@{1}@) ,[243,244] (number[247,251]@{2222}@))
+    (line_continuation[253,257]@{...\n}@)
+    (row<261,267> (number[261,264]@{333}@) ,[264,265] (number[266,267]@{4}@))
+    (line_continuation[269,273]@{...\n}@) ][280,281]))
+ ;[281,282]
+ (if_statement<283,315> if[283,285] condition: (number[286,287]@{1}@) ,[287,288]
+  (block<289,302>
+   (function_call<289,301> name: (identifier[289,293]@{disp}@) ([293,294]
+    (arguments<294,300>
+     argument: (string<294,300> '[294,295] (string_content[295,299]@{here}@) '[299,300]))
+    )[300,301])
+   \n[301,302])
+  end[312,315])
+ \n[315,317]
+ (assignment<317,379> left: (identifier[317,324]@{notMat2}@) =[325,326]
+  right: 
+   (matrix<327,379> [[327,328] (line_continuation[329,333]@{...\n}@)
+    (row<340,349> (number[340,341]@{1}@) ,[341,342] (number[345,349]@{2222}@))
+    (line_continuation[351,355]@{...\n}@)
+    (row<359,365> (number[359,362]@{333}@) ,[362,363] (number[364,365]@{4}@))
+    (line_continuation[367,371]@{...\n}@) ][378,379]))
+ ;[379,380]
+ (assignment<382,441> left: (identifier[382,386]@{mat3}@) =[387,388]
+  right: 
+   (matrix<389,441> [[389,390] (line_continuation[391,395]@{...\n}@)
+    (row<402,411> (number[402,403]@{1}@) ,[403,404] (number[407,411]@{2222}@))
+    (line_continuation[413,417]@{...\n}@)
+    (row<421,427> (number[421,424]@{333}@) ,[424,425] (number[426,427]@{4}@))
+    (line_continuation[429,433]@{...\n}@) ][440,441]))
+ ;[441,442] \n[443,444])

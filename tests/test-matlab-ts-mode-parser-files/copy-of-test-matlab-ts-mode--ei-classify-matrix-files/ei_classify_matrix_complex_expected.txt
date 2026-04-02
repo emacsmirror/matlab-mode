@@ -1,5 +1,5 @@
 # -*- t-utils-ts-parse-tree -*-
-(source_file<1,188> (comment[1,20]@{% -*- matlab-ts -*-}@)
+(source_file<1,219> (comment[1,20]@{% -*- matlab-ts -*-}@)
  (assignment<22,52> left: (identifier[22,27]@{good1}@) =[28,29]
   right: 
    (matrix<30,52> [[30,31]
@@ -10,41 +10,48 @@
     (row<46,51> (number[46,47]@{4}@) ,[48,48] (number[48,49]@{5}@) ,[50,50] (number[50,51]@{6}@))
     ][51,52]))
  ;[52,53]
- (assignment<55,102> left: (identifier[55,60]@{good2}@) =[61,62]
+ (assignment<55,133> left: (identifier[55,60]@{good2}@) =[61,62]
   right: 
-   (matrix<63,102> [[63,64]
-    (row<64,82> (number[64,65]@{1}@) ,[65,66] (number[67,68]@{2}@) ,[68,69]
-     (function_call<70,76> name: (identifier[70,71]@{f}@) ([71,72]
-      (arguments<72,75> argument: (identifier[72,73]@{a}@) ,[73,74] (identifier[74,75]@{b}@))
-      )[75,76])
-     ,[76,77]
-     (matrix<78,82> [[78,79]
-      (row<79,80> (number[79,80]@{1}@))
-      ][81,82]))
-    (row<90,101> (number[90,91]@{3}@) ,[92,92] (number[92,93]@{4}@) ,[94,94] (number[94,95]@{5}@) ,[96,96] (number[96,101]@{6.0e1}@))
-    ][101,102]))
- ;[102,103]
- (assignment<105,154> left: (identifier[105,109]@{str1}@) =[110,111]
+   (matrix<63,133> [[63,64]
+    (row<64,107> (number[64,65]@{1}@) ,[65,66] (number[67,68]@{2}@) ,[68,69]
+     (function_call<70,77> name: (identifier[70,71]@{f}@) ([71,72]
+      (arguments<72,76> argument: (identifier[72,73]@{a}@) ,[73,74] (identifier[75,76]@{b}@))
+      )[76,77])
+     ,[77,78]
+     (binary_operator<79,107> left: (number[79,80]@{2}@) *[81,82]
+      right: 
+       (function_call<83,107> name: (identifier[83,86]@{sum}@) ([86,87]
+        (arguments<87,106>
+         argument: 
+          (matrix<87,106> [[87,88]
+           (row<88,105> (number[88,89]@{1}@) ,[89,90] (number[91,92]@{5}@) ,[92,93] (number[94,95]@{7}@) ,[95,96]
+            (range<97,105> (number[97,99]@{11}@) :[100,101] (number[102,105]@{100}@)))
+           ][105,106]))
+        )[106,107])))
+    (row<118,132> (number[118,119]@{3}@) ,[119,120] (number[121,122]@{4}@) ,[122,123] (number[124,125]@{5}@) ,[125,126] (number[127,132]@{6.0e1}@))
+    ][132,133]))
+ ;[133,134]
+ (assignment<136,185> left: (identifier[136,140]@{str1}@) =[141,142]
   right: 
-   (matrix<112,154> [[112,113]
-    (row<113,128>
-     (string<113,120> "[113,114] (string_content[114,119]@{foo,;}@) "[119,120])
-     ,[121,121]
-     (string<121,128> "[121,122] (string_content[122,127]@{bar[]}@) "[127,128]))
-    (row<137,153>
-     (string<137,143> "[137,138] (string_content[138,142]@{ff;,}@) "[142,143])
-     ,[143,144]
-     (string<145,153> "[145,146] (string_content[146,152]@{goo...}@) "[152,153]))
-    ][153,154]))
- ;[154,155] \n[155,157]
- (function_definition<157,187> function[157,165]
-  (function_output<166,168> (identifier[166,167]@{c}@) =[167,168])
-  name: (identifier[168,169]@{f}@)
-  (function_arguments<169,174> ([169,170] arguments: (identifier[170,171]@{a}@) ,[171,172] (identifier[172,173]@{b}@) )[173,174])
-  \n[174,175]
-  (block<175,184>
-   (assignment<175,182> left: (identifier[175,176]@{c}@) =[177,178]
-    right: (binary_operator<178,182> left: (identifier[178,179]@{a}@) +[180,181] right: (identifier[181,182]@{b}@)))
-   ;[182,183] \n[183,184])
-  end[184,187])
- \n[187,188])
+   (matrix<143,185> [[143,144]
+    (row<144,159>
+     (string<144,151> "[144,145] (string_content[145,150]@{foo,;}@) "[150,151])
+     ,[152,152]
+     (string<152,159> "[152,153] (string_content[153,158]@{bar[]}@) "[158,159]))
+    (row<168,184>
+     (string<168,174> "[168,169] (string_content[169,173]@{ff;,}@) "[173,174])
+     ,[174,175]
+     (string<176,184> "[176,177] (string_content[177,183]@{goo...}@) "[183,184]))
+    ][184,185]))
+ ;[185,186] \n[186,188]
+ (function_definition<188,218> function[188,196]
+  (function_output<197,199> (identifier[197,198]@{c}@) =[198,199])
+  name: (identifier[199,200]@{f}@)
+  (function_arguments<200,205> ([200,201] arguments: (identifier[201,202]@{a}@) ,[202,203] (identifier[203,204]@{b}@) )[204,205])
+  \n[205,206]
+  (block<206,215>
+   (assignment<206,213> left: (identifier[206,207]@{c}@) =[208,209]
+    right: (binary_operator<209,213> left: (identifier[209,210]@{a}@) +[211,212] right: (identifier[212,213]@{b}@)))
+   ;[213,214] \n[214,215])
+  end[215,218])
+ \n[218,219])
