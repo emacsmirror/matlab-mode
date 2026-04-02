@@ -2782,6 +2782,7 @@ Returns the region (START-LINE . END-LINE) if disabled, else nil."
   "Free memory used during indent."
   (setq matlab-ts-mode--ei-line-nodes nil
         matlab-ts-mode--ei-errors-map nil
+        matlab-ts-mode--ei-m-matrix-pos-bol-map nil
         matlab-ts-mode--ei-bol2loc-map nil))
 
 (cl-defun matlab-ts-mode--ei-indent-elements-in-line (&optional is-indent-region
