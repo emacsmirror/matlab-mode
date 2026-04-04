@@ -539,7 +539,10 @@ which uses tree-sitter children nodes to determine
          ;;    it wouldn't look nice (and be complex to implement). Example:
          ;;       m2 = [1 2;
          ;;             3 4]; m3 = [1 2; 3 4];
-         (not (matlab-ts-mode--ei-matrix-ends-on-line matrix-node)))
+         (not (matlab-ts-mode--ei-matrix-ends-on-line matrix-node))
+         ;; xxx or has inner matrices or no ERROR nodes??? - needed?
+         )
+
         '(not-a-m-matrix)
       ;; Multi-line matrix: scan buffer text line by line to classify.
       ;; The text scan is only reliable for numeric content.  When
@@ -1876,10 +1879,11 @@ region.  START-PT-LINENUM may be different from current line."
         (goto-char (treesit-node-end node)))))
   t)
 
+;; KEY: pos-bol of (treesit-node-start matrix). VALUE: is an m-matrix, 0 (false) or 1 (true)
 (defvar-local matlab-ts-mode--ei-is-m-matrix-cache nil) ;; cache
 
 (cl-defun matlab-ts-mode--ei-is-m-matrix (matrix &optional check-for-indent-mode-minimal)
-  "Is MATRIX node a multi-line matrix?
+  "Is MATRIX node a multi-line matrix, t or nil?
 We define a a multi-line matrix has one row per line ignoring blank lines and
 comments.  If optional, CHECK-FOR-INDENT-MODE-MINIMAL is non-nil, this we
 check if matrix is in an %-indent-mode:minimal region and if so return
@@ -1889,24 +1893,24 @@ nil."
                                                      (treesit-node-start matrix))))
     (cl-return-from matlab-ts-mode--ei-is-m-matrix))
 
-  (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
+  (let* ((mat-pos-bol (save-excursion (goto-char (treesit-node-start matrix)) (pos-bol)))
          (cache-value (when matlab-ts-mode--ei-is-m-matrix-cache
-                        (gethash start-linenum matlab-ts-mode--ei-is-m-matrix-cache))))
+                        (gethash mat-pos-bol matlab-ts-mode--ei-is-m-matrix-cache))))
     (when cache-value ;; 0 or 1
       (cl-return-from matlab-ts-mode--ei-is-m-matrix (= cache-value 1)))
 
-    (let* ((end-line (line-number-at-pos (treesit-node-end matrix)))
-           (is-m-matrix (and
-                         ;; Is candidate for a multi-line matrix we can align if more than one line
-                         (> end-line start-linenum)
-                         ;; AND the "]" ends on it's own line
-                         (matlab-ts-mode--ei-matrix-ends-on-line matrix)
-                         ;; AND has no inner matrices and no ERROR nodes
-                         (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos)
-                                                               nil t)))
-                           (= (treesit-node-end s-node) (treesit-node-end matrix)))))
-           (n-rows 0)
-           n-cols)
+    (let ((is-m-matrix (and
+                        ;; Is candidate for a multi-line matrix we can align if more than one line
+                        (matlab-ts-mode--ei-is-multi-line-matrix matrix)
+                        ;; AND the "]" ends on it's own line
+                        (matlab-ts-mode--ei-matrix-ends-on-line matrix)
+                        ;; AND has no inner matrices and no ERROR nodes
+                        ;; xxx needed, see -classify
+                        (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos)
+                                                              nil t)))
+                          (= (treesit-node-end s-node) (treesit-node-end matrix)))))
+          (n-rows 0)
+          n-cols)
 
       (when is-m-matrix
         (cl-loop
@@ -1955,7 +1959,7 @@ nil."
       (let ((ans (and is-m-matrix (> n-rows 1) (>= n-cols 1))))
         (when matlab-ts-mode--ei-is-m-matrix-cache
           ;; Use 1 or 0 so we can differentiate between nil and not a multi-line matrix
-          (puthash start-linenum (if ans 1 0) matlab-ts-mode--ei-is-m-matrix-cache))
+          (puthash mat-pos-bol (if ans 1 0) matlab-ts-mode--ei-is-m-matrix-cache))
         ans))))
 
 (cl-defun matlab-ts-mode--ei-struct-ends-on-line (struct)
