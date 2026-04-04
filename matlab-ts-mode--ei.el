@@ -540,16 +540,16 @@ which uses tree-sitter children nodes to determine
          ;;       m2 = [1 2;
          ;;             3 4]; m3 = [1 2; 3 4];
          (not (matlab-ts-mode--ei-matrix-ends-on-line matrix-node))
-         ;; xxx or has inner matrices or no ERROR nodes??? - needed?
-         )
+         ;; OR has ERROR or "]" nodes within the matrix-node
+         (not (matlab-ts-mode--ei-matrix-is-clean matrix-node)))
 
         '(not-a-m-matrix)
-      ;; Multi-line matrix: scan buffer text line by line to classify.
-      ;; The text scan is only reliable for numeric content.  When
-      ;; non-numeric content is detected, stop the text scan and let
-      ;; tree-sitter validate the matrix structure, since string
-      ;; literals and other expressions can contain characters like
-      ;; ";", "...", "[", "]" that confuse text-based checks.
+
+      ;; Else: see if multi-line matrix: scan buffer text line by line to classify.  The text scan
+      ;; is only reliable for numeric content.  When non-numeric content is detected, stop the text
+      ;; scan and let tree-sitter validate the matrix structure, since string literals and other
+      ;; expressions can contain characters like ";", "...", "[", "]" that confuse text-based
+      ;; checks.
       (save-excursion
         (goto-char mat-start)
         (let ((is-numeric t)    ;; assume
@@ -1881,6 +1881,13 @@ region.  START-PT-LINENUM may be different from current line."
             (cl-return-from matlab-ts-mode--ei-matrix-ends-on-line))))))
     t))
 
+(defun matlab-ts-mode--ei-matrix-is-clean (matrix)
+  "Is MATRIX node free of errors and inner matrices?"
+  ;; TopTester: tests/test-matlab-ts-mode-electric-indent-files/electric_indent_not_clean.m
+  ;; TopTester: tests/test-matlab-ts-mode--ei-classify-matrix-files/ei_classify_matrix_not_clean.m
+  (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos) nil t)))
+    (= (treesit-node-end s-node) (treesit-node-end matrix))))
+
 ;; KEY: pos-bol of (treesit-node-start matrix). VALUE: is an m-matrix, 0 (false) or 1 (true)
 (defvar-local matlab-ts-mode--ei-is-m-matrix-cache nil) ;; cache
 
@@ -1907,10 +1914,7 @@ nil."
                         ;; AND the "]" ends on it's own line
                         (matlab-ts-mode--ei-matrix-ends-on-line matrix)
                         ;; AND has no inner matrices and no ERROR nodes
-                        ;; xxx needed, see -classify
-                        (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos)
-                                                              nil t)))
-                          (= (treesit-node-end s-node) (treesit-node-end matrix)))))
+                        (matlab-ts-mode--ei-matrix-is-clean matrix)))
           (n-rows 0)
           n-cols)
 
