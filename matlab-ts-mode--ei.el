@@ -1866,18 +1866,20 @@ region.  START-PT-LINENUM may be different from current line."
 
 (cl-defun matlab-ts-mode--ei-matrix-ends-on-line (matrix)
   "Does MATRIX end on a line by itself?"
+  ;; TopTester: test-matlab-ts-mode-electric-indent-files/electric_indent_matrix_ends_on_line.m
   (save-excursion
     (goto-char (treesit-node-end matrix))
-    (while (re-search-forward "[^ \t]" (pos-eol) t)
-      (backward-char)
-      ;; xxx looking at "," ";", "%" should be sufficient?
-      (let ((node (treesit-node-at (point) 'matlab)))
-        ;; xxx remove line_continuation
-        (when (not (string-match-p (rx bos (or "," ";" "comment" "line_continuation") eos)
-                                   (treesit-node-type node)))
-          (cl-return-from matlab-ts-mode--ei-matrix-ends-on-line))
-        (goto-char (treesit-node-end node)))))
-  t)
+    (let ((eol-pt (pos-eol)))
+      (while (re-search-forward "[^ \t]" eol-pt t)
+        (let ((matched (match-string 0)))
+          (cond
+           ((or (string= matched "%") ;; comment?
+                (and (string= matched ".") (looking-at (rx "..")))) ;; ellipsis?
+            (cl-return-from matlab-ts-mode--ei-matrix-ends-on-line t))
+           ((not (string-match-p (rx (or "," ";")) matched))
+            ;; have content after the matrix
+            (cl-return-from matlab-ts-mode--ei-matrix-ends-on-line))))))
+    t))
 
 ;; KEY: pos-bol of (treesit-node-start matrix). VALUE: is an m-matrix, 0 (false) or 1 (true)
 (defvar-local matlab-ts-mode--ei-is-m-matrix-cache nil) ;; cache
