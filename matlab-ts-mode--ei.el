@@ -420,19 +420,21 @@ be unary-op even though the node type is \"+\"."
 ;; `matlab-ts-mode--ei-m-matrix-pos-bol-map'
 ;;   For each line of a "m-matrix", a multi-line matrix with one row per line ignoring blank and
 ;;   comment lines, map the key, which is `pos-bol' to:
-;;     (cons 'numeric-m-matrix MATRIX-NODE)   for numeric matrices when the row line contains
-;;                                              matrix elements
-;;     (cons 'numeric-m-matrix 'empty)         for numeric matrices when the line is blank or a
-;;                                              comment / ellipsis line
-;;     '(non-numeric-m-matrix)                for non-numeric matrices
+;;     (cons 'numeric-m-matrix MATRIX-NODE-POS-BOL)  for numeric matrices when the row line
+;;                                                     contains matrix elements, where
+;;                                                     MATRIX-NODE-POS-BOL is the `pos-bol' of
+;;                                                     the matrix node's start position
+;;     (cons 'numeric-m-matrix 'empty)               for numeric matrices when the line is blank
+;;                                                     or a comment / ellipsis line
+;;     '(non-numeric-m-matrix)                       for non-numeric matrices
 ;;   from `matlab-ts-mode--ei-classify-matrix'.
 ;;   Note, 'not-a-m-matrix classifications are not recorded.
 (defvar-local matlab-ts-mode--ei-m-matrix-pos-bol-map nil)
 
 ;; `matlab-ts-mode--ei-m-matrix-node-map'
-;;   For each MATRIX-NODE classified as 'numeric-m-matrix, map the key MATRIX-NODE
-;;   to the (MATRIX-TYPE . COLUMN-WIDTHS) cons pair returned by
-;;   `matlab-ts-mode--ei-classify-matrix'.
+;;   For each matrix classified as 'numeric-m-matrix, map the key MATRIX-NODE-POS-BOL
+;;   (the `pos-bol' of the matrix node's start position) to the
+;;   (MATRIX-TYPE . COLUMN-WIDTHS) cons pair returned by `matlab-ts-mode--ei-classify-matrix'.
 (defvar-local matlab-ts-mode--ei-m-matrix-node-map nil)
 
 (defconst matlab-ts-mode--ei-non-numeric-re
@@ -533,10 +535,10 @@ which uses tree-sitter children nodes to determine
          ;; Single-line matrix, e.g. m1 = [1 2; 3 4];
          (save-excursion (= (progn (goto-char mat-start) (pos-bol))
                             (progn (goto-char mat-end) (pos-bol))))
-         ;; Extra content after "]" on the last line? We shouldn't align these because
-         ;; it wouldn't look nice (and be complex to implement). Example:
-         ;;    m2 = [1 2;
-         ;;          3 4]; m3 = [1 2; 3 4];
+         ;; OR extra content after "]" on the last line? We shouldn't align these because
+         ;;    it wouldn't look nice (and be complex to implement). Example:
+         ;;       m2 = [1 2;
+         ;;             3 4]; m3 = [1 2; 3 4];
          (not (matlab-ts-mode--ei-matrix-ends-on-line matrix-node)))
         '(not-a-m-matrix)
       ;; Multi-line matrix: scan buffer text line by line to classify.
@@ -647,13 +649,14 @@ Add lines to `matlab-ts-mode--ei-m-matrix-pos-bol-map' and, for
   (let* ((result (matlab-ts-mode--ei-classify-matrix matrix-node))
          (matrix-type (car result)))
     (when (not (eq matrix-type 'not-a-m-matrix))
-      (let ((mat-start (treesit-node-start matrix-node))
-            (mat-end (treesit-node-end matrix-node))
-            (pos-bol-value (if (eq matrix-type 'numeric-m-matrix)
-                               (cons 'numeric-m-matrix matrix-node)
-                             '(non-numeric-m-matrix))))
+      (let* ((mat-start (treesit-node-start matrix-node))
+             (mat-end (treesit-node-end matrix-node))
+             (matrix-node-pos-bol (save-excursion (goto-char mat-start) (pos-bol)))
+             (pos-bol-value (if (eq matrix-type 'numeric-m-matrix)
+                                (cons 'numeric-m-matrix matrix-node-pos-bol)
+                              '(non-numeric-m-matrix))))
         (when (eq matrix-type 'numeric-m-matrix)
-          (puthash matrix-node result matlab-ts-mode--ei-m-matrix-node-map))
+          (puthash matrix-node-pos-bol result matlab-ts-mode--ei-m-matrix-node-map))
         (save-excursion
           (goto-char mat-start)
           (forward-line 0)
@@ -1253,26 +1256,33 @@ Assumes that current point is at `back-to-indentation'."
   "Compute numeric-m-matrix state used in obtaining a new line for BOL-PT."
   (let* ((nm-pos-bol-value (when matlab-ts-mode--ei-align-enabled
                              (gethash bol-pt matlab-ts-mode--ei-m-matrix-pos-bol-map)))
-         (nm-matrix-node (when (and nm-pos-bol-value
-                                    (eq (car nm-pos-bol-value) 'numeric-m-matrix)
-                                    (not (eq (cdr nm-pos-bol-value) 'empty)))
-                           (cdr nm-pos-bol-value)))
-         (nm-col-widths (when nm-matrix-node
-                          (cdr (gethash nm-matrix-node matlab-ts-mode--ei-m-matrix-node-map))))
-         (nm-first-col-extra (when nm-matrix-node
-                               (matlab-ts-mode--ei-m-matrix-first-col-extra nm-matrix-node)))
-         (nm-inside-matrix (when nm-matrix-node
+         (nm-matrix-pos-bol (when (and nm-pos-bol-value
+                                       (eq (car nm-pos-bol-value) 'numeric-m-matrix)
+                                       (not (eq (cdr nm-pos-bol-value) 'empty)))
+                              (cdr nm-pos-bol-value)))
+         (nm-col-widths (when nm-matrix-pos-bol
+                          (cdr (gethash nm-matrix-pos-bol
+                                       matlab-ts-mode--ei-m-matrix-node-map))))
+         (nm-first-col-extra (when nm-matrix-pos-bol
+                               (matlab-ts-mode--ei-m-matrix-first-col-extra nm-matrix-pos-bol)))
+         (nm-inside-matrix (when nm-matrix-pos-bol
                              ;; On the first line of the matrix, wait for "[" to start tracking.
                              ;; On subsequent row lines, we are already inside the matrix.
-                             (not (= bol-pt (save-excursion
-                                              (goto-char (treesit-node-start nm-matrix-node))
-                                              (pos-bol)))))))
+                             (not (= bol-pt nm-matrix-pos-bol)))))
     ;; Result
     (list nm-col-widths nm-first-col-extra nm-inside-matrix)))
 
 (defconst matlab-ts-mode--ei-matrix-syntax-nodes
   (rx bos (or "," ";" "comment" "line_continuation" "[" "]") eos)
   "Node types that are used in the definition of a matrix.")
+
+(defun matlab-ts-mode--ei-is-multi-line-matrix (matrix-node)
+  "Is MATRIX-NODE multi-line matrix?
+Note, this does not mean it's a multi-row matrix or an m-matrix.
+It means the start line and end line are different."
+  (save-excursion
+    (not (= (progn (goto-char (treesit-node-start matrix-node)) (pos-bol))
+            (progn (goto-char (treesit-node-end matrix-node)) (pos-bol))))))
 
 (cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-offset)
   "Get new line content with element spacing adjusted.
@@ -1427,13 +1437,15 @@ where:
          ;; entry, add (col-width - entry-width) extra spaces before it.
          ;; Only track columns inside the matrix (after the "[" node).
          (when nm-col-widths
-           (when (string= node-type "[")
+           (when (and (string= node-type "[")
+                      (matlab-ts-mode--ei-is-multi-line-matrix (treesit-node-parent node)))
              (setq nm-inside-matrix t))
            (when nm-inside-matrix
              (when (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes node-type))
                (setq nm-col-idx (1+ nm-col-idx)))
              (when (and n-spaces-between
-                        (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes next-node-type)))
+                        (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes
+                                             next-node-type)))
                (let* ((next-col (1+ nm-col-idx))
                       (raw-width (nth (1- next-col) nm-col-widths))
                       (col-width (if (and (= next-col 1) nm-first-col-extra)
@@ -1509,43 +1521,63 @@ where:
               (buffer-substring-no-properties bol-pt eol-pt))
             pt-offset orig-line-node-types first-node-pair))))
 
+;; KEY: pos-bol of the matrix start line. VALUE: first-col-extra integer
 (defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-cache nil)
 
-(cl-defun matlab-ts-mode--ei-m-matrix-first-col-extra (matrix)
-  "For MATRIX indent alignment, get first-col-extra."
-  ;; For first-col-extra consider the following where matlab-ts-mode--array-indent-level is 2.
-  ;; In this case first-col-extra will be 1.
-  ;;   m = [
-  ;;         1 2
-  ;;         3 4
-  ;;       ];
-  (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
-         (first-col-extra (or (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
-                                (gethash start-linenum
-                                         matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
-                              (save-excursion
-                                (goto-char (treesit-node-start matrix))
-                                (forward-char) ;; step over the "["
-                                (let ((found-element nil))
-                                  ;; found a matrix element?
-                                  (while (and (not found-element)
-                                              (re-search-forward "[^ \t]" (pos-eol) t))
-                                    (backward-char)
-                                    (let ((node (treesit-node-at (point) 'matlab)))
-                                      (when (not (string-match-p (rx bos (or "comment"
-                                                                             "line_continuation")
-                                                                     eos)
-                                                                 (treesit-node-type node)))
-                                        (setq found-element t))
-                                      (goto-char (min (pos-eol)
-                                                      (treesit-node-end node)))))
-                                  (let ((ans (if found-element
-                                                 0
-                                               (1- matlab-ts-mode--array-indent-level))))
-                                    (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
-                                      (puthash start-linenum ans
-                                               matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
-                                    ans))))))
+(defun matlab-ts-mode--ei-m-matrix-first-col-extra (matrix-id)
+  "Get matrix first-col-extra for indent alignment.
+MATRIX-ID is either a tree-sitter matrix node or a `pos-bol'
+position (integer) of the matrix node's start line.  Result is 0 or
+`matlab-ts-mode--array-indent-level' divided by 2.  Consider the
+following where `matlab-ts-mode--array-indent-level' is 2.
+
+This will return 1
+  m1 = [
+         1 2
+         3 4
+       ];
+This will return 0
+  m2 = [1 2
+        3 4];"
+
+  (let* ((mat-pos-bol (if (treesit-node-p matrix-id)
+                          (save-excursion (goto-char (treesit-node-start matrix-id))
+                                          (pos-bol))
+                        matrix-id))
+         (first-col-extra (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
+                            (gethash mat-pos-bol
+                                     matrix-ts-mode--ei-m-matrix-first-col-extra-cache))))
+    (when (not first-col-extra)
+      (save-excursion
+        ;; Move to point after the matrix open, "["
+        (if (treesit-node-p matrix-id)
+            (progn (goto-char (treesit-node-start matrix-id))
+                   (forward-char)) ;; step over the "["
+          ;; Else matrix-id is pos-bol
+          (goto-char matrix-id)
+          ;; Move to point after matrix open, which requires finding it, consider:
+          ;;  v([1,2;3,4]) = [ 101,   21
+          ;;                  3001, 4001];
+          (let* ((eol-pt (pos-eol))
+                 (mat-open-pt (re-search-forward "\\[" eol-pt)) ;; point after the "["
+                 (have-other-mat-open (save-excursion (re-search-forward "\\[" eol-pt t))))
+            (while have-other-mat-open
+              (let ((parent (treesit-node-parent (treesit-node-at (1- mat-open-pt)))))
+                (if (and (string= (treesit-node-type parent) "matrix")
+                         (not (matlab-ts-mode--ei-is-multi-line-matrix parent)))
+                    (setq have-other-mat-open nil)
+                  (setq mat-open-pt (re-search-forward "\\[" eol-pt)))))))
+
+        (setq first-col-extra
+              (if (and (re-search-forward "[^ \t]" (pos-eol) t)
+                       (progn (backward-char)
+                              ;; have element (not a comment or ellipsis)
+                              (not (looking-at (rx (or "%" "..."))))))
+                  0
+                1))
+        (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
+          (puthash mat-pos-bol first-col-extra matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
+        ))
     first-col-extra))
 
 (defvar-local matlab-ts-mode--ei-m-matrix-col-widths-cache nil)

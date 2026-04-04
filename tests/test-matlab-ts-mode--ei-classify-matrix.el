@@ -55,7 +55,7 @@ the m-file as a string."
                                                         (pos-eol)))))
         (setq result
               (concat result
-                      (format "L%-3d point %-3d) => '%-20s col-widths=%-15s | %s\n"
+                      (format "L%-3d point %-3d => '%-20s col-widths=%-15s | %s\n"
                               (line-number-at-pos pos-bol-key)
                               pos-bol-key
                               (symbol-name matrix-type)
@@ -89,3 +89,5 @@ after validating it, rename it to
 
 (provide 'test-matlab-ts-mode--ei-classify-matrix)
 ;;; test-matlab-ts-mode--ei-classify-matrix.el ends here
+
+;; LocalWords:  bol defun maphash setq dolist gethash cdr eol prin eos treesit

@@ -1,35 +1,35 @@
 test-matlab-ts-mode--ei-classify-matrix-action-fun result:
 ---
-L5   point 51 ) => 'numeric-m-matrix     col-widths=(1 1 1)         | m1 = [1, 2, 3
-L6   point 65 ) => 'numeric-m-matrix     col-widths=(1 1 1)         |      4, 5 6];
-L8   point 80 ) => 'numeric-m-matrix     col-widths=(1 1 1)         | m2 = [1, 2, 3;
-L9   point 95 ) => 'numeric-m-matrix     col-widths=(1 1 1)         |      4, 5 6];
-L11  point 110) => 'numeric-m-matrix     col-widths=(1 1 1)         | m3 = [1, 2, 3
-L12  point 124) => 'numeric-m-matrix     col-widths=(1 1 1)         |      4, 5 6];
-L14  point 139) => 'numeric-m-matrix     col-widths=(1 1 1)         | m4 = [1, 2, 3; ...
-L15  point 158) => 'numeric-m-matrix     col-widths=(1 1 1)         |      4, 5 6];
-L17  point 173) => 'numeric-m-matrix     col-widths=(1 1 1)         | m5 = [1, 2, 3; ...
-L18  point 192) => 'numeric-m-matrix     col-widths=nil             |        
-L19  point 200) => 'numeric-m-matrix     col-widths=(1 1 1)         |       4, 5, 6];
-L21  point 217) => 'numeric-m-matrix     col-widths=(1 1 1)         | m6 = [1, 2, 3; ...
-L22  point 236) => 'numeric-m-matrix     col-widths=nil             |        % comment
-L23  point 253) => 'numeric-m-matrix     col-widths=(1 1 1)         |       4, 5, 6];
-L25  point 270) => 'numeric-m-matrix     col-widths=(1 1 1)         | m7 = [1, 2, 3; ...
-L26  point 289) => 'numeric-m-matrix     col-widths=nil             | 
-L27  point 290) => 'numeric-m-matrix     col-widths=nil             |        % comment
-L28  point 307) => 'numeric-m-matrix     col-widths=(1 1 1)         |       4, 5, 6];
-L30  point 324) => 'numeric-m-matrix     col-widths=nil             | m8 = [
-L31  point 331) => 'numeric-m-matrix     col-widths=(1 1 1)         |        1, 2, 3 % comment 1
-L32  point 358) => 'numeric-m-matrix     col-widths=(1 1 1)         |        4, 5, 6 % comment 2
-L33  point 385) => 'numeric-m-matrix     col-widths=(1 1 1)         |        7, 8, 9 % comment 3
-L34  point 412) => 'numeric-m-matrix     col-widths=nil             |      ];
-L36  point 421) => 'numeric-m-matrix     col-widths=nil             | m9 = [
-L37  point 428) => 'numeric-m-matrix     col-widths=(2 2 2)         |        -1,  2,  3 % comment 1!
-L38  point 459) => 'numeric-m-matrix     col-widths=(2 2 2)         |         4, +5,  6 % comment 2!
-L39  point 490) => 'numeric-m-matrix     col-widths=(2 2 2)         |         7,  8, -9 % comment 3!
-L40  point 521) => 'numeric-m-matrix     col-widths=nil             |      ];
-L42  point 530) => 'numeric-m-matrix     col-widths=nil             | m10 = [
-L43  point 538) => 'numeric-m-matrix     col-widths=(2 2 2)         |         -1,  2,  3; ... comment 1
-L44  point 572) => 'numeric-m-matrix     col-widths=(2 2 2)         |          4, +5,  6 % comment 2!
-L45  point 604) => 'numeric-m-matrix     col-widths=(2 2 2)         |          7,  8, -9 % comment 3!
-L46  point 636) => 'numeric-m-matrix     col-widths=nil             |       ];
+L5   point 51  => 'numeric-m-matrix     col-widths=(1 1 1)         | m1 = [1, 2, 3
+L6   point 65  => 'numeric-m-matrix     col-widths=(1 1 1)         |      4, 5 6];
+L8   point 80  => 'numeric-m-matrix     col-widths=(1 1 1)         | m2 = [1, 2, 3;
+L9   point 95  => 'numeric-m-matrix     col-widths=(1 1 1)         |      4, 5 6];
+L11  point 110 => 'numeric-m-matrix     col-widths=(1 1 1)         | m3 = [1, 2, 3
+L12  point 124 => 'numeric-m-matrix     col-widths=(1 1 1)         |      4, 5 6];
+L14  point 139 => 'numeric-m-matrix     col-widths=(1 1 1)         | m4 = [1, 2, 3; ...
+L15  point 158 => 'numeric-m-matrix     col-widths=(1 1 1)         |      4, 5 6];
+L17  point 173 => 'numeric-m-matrix     col-widths=(1 1 1)         | m5 = [1, 2, 3; ...
+L18  point 192 => 'numeric-m-matrix     col-widths=nil             |        
+L19  point 200 => 'numeric-m-matrix     col-widths=(1 1 1)         |       4, 5, 6];
+L21  point 217 => 'numeric-m-matrix     col-widths=(1 1 1)         | m6 = [1, 2, 3; ...
+L22  point 236 => 'numeric-m-matrix     col-widths=nil             |        % comment
+L23  point 253 => 'numeric-m-matrix     col-widths=(1 1 1)         |       4, 5, 6];
+L25  point 270 => 'numeric-m-matrix     col-widths=(1 1 1)         | m7 = [1, 2, 3; ...
+L26  point 289 => 'numeric-m-matrix     col-widths=nil             | 
+L27  point 290 => 'numeric-m-matrix     col-widths=nil             |        % comment
+L28  point 307 => 'numeric-m-matrix     col-widths=(1 1 1)         |       4, 5, 6];
+L30  point 324 => 'numeric-m-matrix     col-widths=nil             | m8 = [
+L31  point 331 => 'numeric-m-matrix     col-widths=(1 1 1)         |        1, 2, 3 % comment 1
+L32  point 358 => 'numeric-m-matrix     col-widths=(1 1 1)         |        4, 5, 6 % comment 2
+L33  point 385 => 'numeric-m-matrix     col-widths=(1 1 1)         |        7, 8, 9 % comment 3
+L34  point 412 => 'numeric-m-matrix     col-widths=nil             |      ];
+L36  point 421 => 'numeric-m-matrix     col-widths=nil             | m9 = [
+L37  point 428 => 'numeric-m-matrix     col-widths=(2 2 2)         |        -1,  2,  3 % comment 1!
+L38  point 459 => 'numeric-m-matrix     col-widths=(2 2 2)         |         4, +5,  6 % comment 2!
+L39  point 490 => 'numeric-m-matrix     col-widths=(2 2 2)         |         7,  8, -9 % comment 3!
+L40  point 521 => 'numeric-m-matrix     col-widths=nil             |      ];
+L42  point 530 => 'numeric-m-matrix     col-widths=nil             | m10 = [
+L43  point 538 => 'numeric-m-matrix     col-widths=(2 2 2)         |         -1,  2,  3; ... comment 1
+L44  point 572 => 'numeric-m-matrix     col-widths=(2 2 2)         |          4, +5,  6 % comment 2!
+L45  point 604 => 'numeric-m-matrix     col-widths=(2 2 2)         |          7,  8, -9 % comment 3!
+L46  point 636 => 'numeric-m-matrix     col-widths=nil             |       ];
