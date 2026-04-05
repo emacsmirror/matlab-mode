@@ -1888,8 +1888,8 @@ region.  START-PT-LINENUM may be different from current line."
   (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos) nil t)))
     (= (treesit-node-end s-node) (treesit-node-end matrix))))
 
-;; KEY: pos-bol of (treesit-node-start matrix). VALUE: is an m-matrix, 0 (false) or 1 (true)
-(defvar-local matlab-ts-mode--ei-is-m-matrix-cache nil) ;; cache
+;; KEY: start-linenum of (treesit-node-start matrix). VALUE: is an m-matrix, 0 (false) or 1 (true)
+(defvar-local matlab-ts-mode--ei-is-m-matrix-cache nil)
 
 (cl-defun matlab-ts-mode--ei-is-m-matrix (matrix &optional check-for-indent-mode-minimal)
   "Is MATRIX node a multi-line matrix, t or nil?
@@ -1902,9 +1902,9 @@ nil."
                                                      (treesit-node-start matrix))))
     (cl-return-from matlab-ts-mode--ei-is-m-matrix))
 
-  (let* ((mat-pos-bol (save-excursion (goto-char (treesit-node-start matrix)) (pos-bol)))
+  (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
          (cache-value (when matlab-ts-mode--ei-is-m-matrix-cache
-                        (gethash mat-pos-bol matlab-ts-mode--ei-is-m-matrix-cache))))
+                        (gethash start-linenum matlab-ts-mode--ei-is-m-matrix-cache))))
     (when cache-value ;; 0 or 1
       (cl-return-from matlab-ts-mode--ei-is-m-matrix (= cache-value 1)))
 
@@ -1965,7 +1965,7 @@ nil."
       (let ((ans (and is-m-matrix (> n-rows 1) (>= n-cols 1))))
         (when matlab-ts-mode--ei-is-m-matrix-cache
           ;; Use 1 or 0 so we can differentiate between nil and not a multi-line matrix
-          (puthash mat-pos-bol (if ans 1 0) matlab-ts-mode--ei-is-m-matrix-cache))
+          (puthash start-linenum (if ans 1 0) matlab-ts-mode--ei-is-m-matrix-cache))
         ans))))
 
 (cl-defun matlab-ts-mode--ei-struct-ends-on-line (struct)
