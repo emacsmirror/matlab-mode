@@ -1643,7 +1643,7 @@ If tmp T-MATRIX-NODE is non-nil, we use that to locate the first row."
             child1))
       ;; else on 2nd or later line, find the row
       (matlab-ts-mode--ei-fast-back-to-indentation)
-      (when (looking-at "[^ \t\n\r]")
+      (when (looking-at "[^ \t\n]")
         (let (row-node
               found-ans)
           (cl-loop
@@ -1788,7 +1788,7 @@ region.  START-PT-LINENUM may be different from current line."
                 (let* ((row-node (when (>= t-curr-linenum t-matrix-node-linenum)
                                    (matlab-ts-mode--ei-get-m-matrix-row-in-line
                                     (when (= t-curr-linenum t-matrix-node-linenum) t-matrix-node))))
-                       (indent-offset (when (looking-at "[^ \t\n\r]+") (matlab--ei-offset)))
+                       (indent-offset (when (looking-at "[^ \t\n]+") (matlab--ei-offset)))
                        ei-line
                        pt-offset)
                   (matlab--eilb-setup)
@@ -2792,7 +2792,7 @@ Returns the region (START-LINE . END-LINE) if disabled, else nil."
     ;; Move up to handle matrix with blank lines
     (when (not (bobp))
       (goto-char beg)
-      (when (re-search-forward "[^ \t\n\r]" nil t)
+      (when (re-search-forward "[^ \t\n]" nil t)
         (backward-char)
         (let ((matrix-node (treesit-parent-until (treesit-node-at (point)) (rx bol "matrix" eol))))
           (when matrix-node
@@ -2810,7 +2810,7 @@ Returns the region (START-LINE . END-LINE) if disabled, else nil."
     ;; Move down to handle matrix with blank lines
     (when (not (eobp))
       (goto-char end)
-      (when (re-search-backward "[^ \t\n\r]" nil t)
+      (when (re-search-backward "[^ \t\n]" nil t)
         (let ((matrix-node (treesit-parent-until (treesit-node-at (point)) (rx bol "matrix" eol))))
           (when matrix-node
             (goto-char (treesit-node-end matrix-node))
@@ -3009,11 +3009,62 @@ START-LINENUM and END-LINENUM correspond to the BEG and END points."
     (treesit-indent-region beg end)
     (point)))
 
+(defun matlab-ts-mode--ei-clean-cr (beg end)
+  "Convert CRLF to LF and convert lone CR to LF in whole buffer.
+Adjusts BEG and END indent region markers.
+Returns (cons NEW-BEG NEW-END)."
+  (save-excursion
+    (save-restriction
+      (widen)
+
+      (when (string-match "dos$" (symbol-name buffer-file-coding-system))
+        ;; File has CRLF and Emacs loaded them as LF's. If we leave coding as dos, then Emacs will
+        ;; write them back-out as CRLF. Therefore, we switch to unix coding, which tells emacs to
+        ;; write out the LF's out as is and lets us see the CR (\r) below.
+        ;;
+        ;; Note, setting the coding-system to utf-8-unix marks the buffer as dirty because when the
+        ;; file is save the CRLF's will become LF's.
+        (set-buffer-file-coding-system 'utf-8-unix))
+
+      ;; Can have a file whos first 50 lines are LF, then 51 - 55 are CRLF, then remainder are LF
+      ;; (this occurs when editing files on different platforms).
+      (goto-char (point-min))
+      (while (re-search-forward "\r$" nil t) ;; CRLF => LF
+        (replace-match "")
+        (when (<= (point) beg)
+          (setq beg (1- beg)))
+        (when (<= (point) end)
+          (setq end (1- end))))
+
+      ;; Now handle the case of \r only, which MATLAB treats as a newline, e.g.
+      ;;   foo1.m
+      ;;   ------
+      ;;   m = [10^M20]^J         // man ascii: ^M == \r  and ^J == \n
+      ;;
+      ;;   >> foo1
+      ;;   m =
+      ;;       10
+      ;;       20
+      ;;
+      ;;   hexdump -C foo1.m
+      ;;   00000000  6d 20 3d 20 5b 31 30 0d  32 30 5d 0a              |m = [10.20].|
+      ;;                                  \r           \n
+      (goto-char (point-min))
+      (while (re-search-forward "\r" nil t) ;; CR => LF
+        (replace-match "\n"))))
+  ;; Updated beg end indent region points
+  (cons beg end))
+
 (defun matlab-ts-mode--ei-indent-region (beg end)
   "Indent BEG END region by adjusting spacing around elements.
 If BEG is not at start of line, it is moved to start of the line.
 If END is not at end of line, it is moved to end of the line.
 This expansion of the region is done to simplify electric indent."
+
+  (let ((updated-beg-end (matlab-ts-mode--ei-clean-cr beg end)))
+    (setq beg (car updated-beg-end)
+          end (cdr updated-beg-end)))
+
   (let ((new-content-buf (get-buffer-create
                           (generate-new-buffer-name " *temp-matlab-indent-region*"))))
     (unwind-protect
@@ -3065,5 +3116,5 @@ This expansion of the region is done to simplify electric indent."
 ;; LocalWords:  listp alist dolist setf tmp buf utils linenum nums bobp pcase untabify SPC eilb prev
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
 ;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace eql consp
-;; LocalWords:  geq eqeq neq memq bols ridx rchild defconst FFs stmt lstart nreverse rw
-;; LocalWords:  setcar setcdr anychar
+;; LocalWords:  geq eqeq neq memq bols ridx rchild defconst FFs stmt lstart nreverse rw CRLF LF LF's
+;; LocalWords:  setcar setcdr anychar CRLF's hexdump

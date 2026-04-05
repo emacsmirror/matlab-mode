@@ -554,9 +554,6 @@ skipped."
 
   (insert-file-contents file)
 
-  ;; We're testing a programming language which is using utf-8-unix encoding
-  (set-buffer-file-coding-system 'utf-8-unix)
-
   ;; Check for corrupted characters (these can crash Emacs via the language server parser)
   (when (not skip-corrupt-check)
     (goto-char (point-min))
@@ -564,10 +561,6 @@ skipped."
       (error "%s appears corrupt, non-printable utf8 character at point %d: %c"
              file (point) (char-before))))
 
-  ;; CRLF -> LF for consistency between Unix and Windows
-  (goto-char (point-min))
-  (while (re-search-forward "\r" nil t)
-    (replace-match ""))
   (goto-char (point-min))
 
   ;; Set major-mode using file-major-mode if specified,
@@ -1522,6 +1515,11 @@ This test:
     `indent-for-tab-command' and blank lines are inserted by calling
     `newline'.`
 
+    If it is not possible to indent the file using the indented
+    contents, you can disable the this check without generating a
+    warning by adding a comment to lang-file which contains:
+      t-utils-test-indent: no-indent-using-indented-contents [- <REASON>]
+
  3. Indent the contents of lang-file line-by-line when there are no
     error nodes in lang-file.  In a temporary buffer
       - Insert the string-trim'd first line of lang-file
@@ -1543,8 +1541,8 @@ This test:
       .../tests/test-LANGUAGE-ts-mode-indent-files/indent_fcn.skip.typing.txt
 
     If it is not possible to indent the file line-by-line, you can disable
-    the line-by-line indent without generating a warning by adding in a
-    comment to lang-file:
+    the line-by-line indent without generating a warning by adding a
+    comment to lang-file which contains:
       t-utils-test-indent: no-line-by-line-indent - <REASON>
 
 Example test setup (the *_expected.LANG and *_expected_msgs.LANG are generated
@@ -1607,6 +1605,7 @@ To debug a specific indent test file
                              (insert-file-contents-literally expected-file)
                              (buffer-string))))
                do-line-by-line-indent
+               do-indent-using-indented-contents
                lang-file-major-mode
                error-node)
 
@@ -1662,6 +1661,10 @@ To debug a specific indent test file
                 (setq do-line-by-line-indent
                       (not (string-match-p "t-utils-test-indent:[ \t]*no-line-by-line-indent" got)))
 
+                (setq do-indent-using-indented-contents
+                      (not (string-match-p
+                            "t-utils-test-indent:[ \t]*no-indent-using-indented-contents" got)))
+
                 (set-buffer-modified-p nil)
 
                 (let ((indent-error-msg (t-utils--baseline-check
@@ -1678,17 +1681,18 @@ To debug a specific indent test file
 
           ;; Now, simulate typing lang-file and indent it (exercise TAB and RET)
           (when (not error-node)
-            (message "START: %s <indent-using-unindented-contents> %s" test-name lang-file)
-            (let ((start-time (current-time))
-                  (unindented-error-msg (t-utils--test-indent-unindented
-                                         lang-file lang-file-major-mode
-                                         expected expected-file
-                                         line-manipulator)))
-              (message "%s: %s <indent-using-unindented-contents> %s %s" test-name lang-file
-                       (if unindented-error-msg "FAIL" "PASS")
-                       (t-utils--took start-time))
-              (when unindented-error-msg
-                (push unindented-error-msg error-msgs)))
+            (when do-indent-using-indented-contents
+              (message "START: %s <indent-using-unindented-contents> %s" test-name lang-file)
+              (let ((start-time (current-time))
+                    (unindented-error-msg (t-utils--test-indent-unindented
+                                           lang-file lang-file-major-mode
+                                           expected expected-file
+                                           line-manipulator)))
+                (message "%s: %s <indent-using-unindented-contents> %s %s" test-name lang-file
+                         (if unindented-error-msg "FAIL" "PASS")
+                         (t-utils--took start-time))
+                (when unindented-error-msg
+                  (push unindented-error-msg error-msgs))))
 
             ;; Indent line-by-line if
             ;;  1)  lang-file does not contain:
