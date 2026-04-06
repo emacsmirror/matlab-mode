@@ -482,21 +482,22 @@ Uses tree-sitter children to inspect the matrix structure."
     valid))
 
 (defun matlab-ts-mode--ei-classify-matrix (matrix-node)
-  "Classify MATRIX-NODE and return a cons pair (MATRIX-TYPE . COLUMN-WIDTHS).
-MATRIX-TYPE is one of:
-  \\='not-a-m-matrix
+  "Get classification of MATRIX-NODE.
+Returns one of:
+  (list \\='not-a-m-matrix)
      Single-line matrix, multi-line with multiple rows on one line,
      or rows with non-uniform column counts.
-  \\='numeric-m-matrix
+  (list \\='numeric-m-matrix FIRST-COL-EXTRA COLUMN-WIDTHS)
      Multi-line matrix assignment where each row is on its own line and
      contains only non-expression entries (numbers, identifiers,
      unary operators).
-  \\='non-numeric-m-matrix
+     COLUMN-WIDTHS is a list of per-column maximum entry widths.
+  (list \\='non-numeric-m-matrix FIRST-COL-EXTRA)
      Multi-line matrix assignment where each row is on its own line but
      contains non-numeric entries.
 
-COLUMN-WIDTHS is a list of per-column maximum entry widths when
-MATRIX-TYPE is \\='numeric-m-matrix, otherwise nil.
+Where FIRST-COL-EXTRA is either 1 or 0 computed by
+`matlab-ts-mode--ei-m-matrix-first-col-extra'.
 
 Uses `re-search-forward' on the buffer text to identify
 \\='numeric-m-matrix for performance.  When the regexp scan does not
@@ -619,29 +620,38 @@ which uses tree-sitter children nodes to determine
           ;; result
           (if (and is-numeric is-valid)
               ;; Text scan confirmed numeric with valid structure.
-              (cons 'numeric-m-matrix col-widths)
+              (list 'numeric-m-matrix
+                    (matlab-ts-mode--ei-m-matrix-first-col-extra matrix-node)
+                    col-widths)
             ;; Not numeric: use tree-sitter to validate matrix structure.
             (if (matlab-ts-mode--ei-valid-non-numeric-p matrix-node)
-                '(non-numeric-m-matrix)
+                (list 'non-numeric-m-matrix
+                      (matlab-ts-mode--ei-m-matrix-first-col-extra matrix-node))
               '(not-a-m-matrix))))))))
 
 (defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
   "Classify MATRIX-NODE and corresponding mark newlines.
-This adds a \\='m-matrix-info text property to the newline of each
-matrix row line for \\='numeric-m-matrix and \\='non-numeric-m-matrix
-classifications from `matlab-ts-mode--ei-classify-matrix'.  the
-value of \\='m-matrix-info text property is either:
-  \\='(non-numeric-m-matrix)
-or
-  \\='(numeric-m-matrix . COLUMN-WIDTHS) where COLUMN-WIDTHS is
-  a list of per-column maximum element entry widths.
+Add text property
+  (list MATRIX-TYPE FIRST-COL-OFFSET COLUMN-WIDTHS FIRST-LINE)
+to the newline of each matrix row line for MATRIX-TYPE:
+  \\='numeric-m-matrix or \\='non-numeric-m-matrix.
+MATRIX-TYPE FIRST-COL-OFFSET COLUMN-WIDTHS are from
+`matlab-ts-mode--ei-classify-matrix'
+FIRST-LINE is only present for the first line of a \\='numeric-m-matrix
+and is t.
 For example,
-  m1 = [
-         1,   2      // \n has text prop \\='(numeric-m-matrix (1 3))
-         3,   4      // \n has text prop \\='(numeric-m-matrix (1 3))
-         5, 600      // \n has text prop \\='(numeric-m-matrix (1 3))
-       ];"
+  m1 = [            // \n prop (list \\='numeric-m-matrix 1)
+         1,   2     // \n prop (list \\='numeric-m-matrix 1 \\='(1 3))
+         % comment  // \n prop (list \\='numeric-m-matrix 1)
+         3,   4     // \n prop (list \\='numeric-m-matrix 1 \\='(1 3))
+         5, 600     // \n prop (list \\='numeric-m-matrix 1 \\='(1 3))
+       ];           // \n prop (list \\='numeric-m-matrix 1)
+  m2 = [1,   2      // \n prop (list \\='numeric-m-matrix 0 \\='(1 3) t)
+        % comment   // \n prop (list \\='numeric-m-matrix 0)
+        3,   4      // \n prop (list \\='numeric-m-matrix 0 \\='(1 3))
+        5, 600];    // \n prop (list \\='numeric-m-matrix 0 \\='(1 3))"
   (let* ((classify-result (matlab-ts-mode--ei-classify-matrix matrix-node))
+         (first-line t)
          (matrix-type (car classify-result)))
     (when (not (eq matrix-type 'not-a-m-matrix))
       (let ((mat-start (treesit-node-start matrix-node))
@@ -649,14 +659,21 @@ For example,
         (save-excursion
           (goto-char mat-start)
           (forward-line 0)
-          (while (and (<= (point) mat-end) (not (eobp)))
-            (when (save-excursion ;; have row content?
-                    (when (< (point) mat-start)
-                      (goto-char (1+ mat-start)))
-                    (not (looking-at (rx (0+ (or " " "\t")) (or eol "%" "..." "]")))))
-              (let ((eol-pt (pos-eol)))
-                (put-text-property eol-pt (1+ eol-pt) 'm-matrix-info classify-result)))
-            (forward-line)))))))
+          (with-silent-modifications
+            (while (and (<= (point) mat-end) (not (eobp)))
+              (let (m-matrix-info)
+                (if (save-excursion ;; have row content?
+                      (when (< (point) mat-start)
+                        (goto-char (1+ mat-start)))
+                      (not (looking-at (rx (0+ (or " " "\t")) (or eol "%" "..." "]")))))
+                      (setq m-matrix-info (if (and first-line (eq matrix-type 'numeric-m-matrix))
+                                              (append classify-result '(t))
+                                            classify-result))
+                  (setq m-matrix-info (list (nth 0 classify-result) (nth 1 classify-result))))
+                (let ((eol-pt (pos-eol)))
+                  (put-text-property eol-pt (1+ eol-pt) 'm-matrix-info m-matrix-info)))
+              (setq first-line nil)
+              (forward-line))))))))
 
 (defun matlab-ts-mode--ei-mark-error-lines (error-node)
   "Add lines of ERROR-NODE to `matlab-ts-mode--ei-errors-map'."
@@ -1235,33 +1252,6 @@ Assumes that current point is at `back-to-indentation'."
 ;; Internal variable that shouldn't be altered. It's used to avoid infinite recursion.
 (defvar matlab-ts-mode--ei-align-enabled t)
 
-(defun matlab-ts-mode--ei-nm-matrix-state (bol-pt)
-  "Compute numeric-m-matrix state used in obtaining a new line for BOL-PT.
-Uses the \\='m-matrix-info text property on the newline at end of line."
-  (let* ((eol-pt (save-excursion (goto-char bol-pt) (pos-eol)))
-         (m-matrix-info (when matlab-ts-mode--ei-align-enabled
-                          (get-text-property eol-pt 'm-matrix-info)))
-         (nm-col-widths (when (and m-matrix-info
-                                   (eq (car m-matrix-info) 'numeric-m-matrix))
-                          (cdr m-matrix-info)))
-         (nm-matrix-node (when nm-col-widths
-                           (save-excursion
-                             (goto-char bol-pt)
-                             (back-to-indentation)
-                             (treesit-parent-until (treesit-node-at (point) 'matlab)
-                                                   "matrix"))))
-         (nm-first-col-extra (when nm-matrix-node
-                               (matlab-ts-mode--ei-m-matrix-first-col-extra nm-matrix-node)))
-         (nm-inside-matrix (when nm-col-widths
-                             ;; On the first line of the matrix, wait for "[" to start tracking.
-                             ;; On subsequent row lines, we are already inside the matrix.
-                             ;; Check: does this line contain a "[" that opens the matrix?
-                             (save-excursion
-                               (goto-char bol-pt)
-                               (not (re-search-forward "\\[" (pos-eol) t))))))
-    ;; Result
-    (list nm-col-widths nm-first-col-extra nm-inside-matrix)))
-
 (defconst matlab-ts-mode--ei-matrix-syntax-nodes
   (rx bos (or "," ";" "comment" "line_continuation" "[" "]") eos)
   "Node types that are used in the definition of a matrix.")
@@ -1328,12 +1318,14 @@ where:
                               (let ((first-non-whitespace-char-in-line-pt (point)))
                                 (goto-char bol-pt)
                                 (re-search-forward "\t" first-non-whitespace-char-in-line-pt t))))
-           ;; Numeric m-matrix column alignment state
+           ;; Numeric m-matrix column alignment
            (nm-col-idx 0)
-           (nm-state (matlab-ts-mode--ei-nm-matrix-state bol-pt))
-           (nm-col-widths (nth 0 nm-state))
-           (nm-first-col-extra (nth 1 nm-state))
-           (nm-inside-matrix (nth 2 nm-state)))
+           (m-matrix-info (when matlab-ts-mode--ei-align-enabled
+                            (get-text-property eol-pt 'm-matrix-info)))
+           (nm-first-col-extra (nth 1 m-matrix-info)) ;; 0 or 1
+           (nm-col-widths (nth 2 m-matrix-info)) ;; can be nil
+           (nm-first-line (nth 3 m-matrix-info)) ;; t or nil
+           (nm-inside-matrix (and nm-col-widths (not nm-first-line))))
 
       (when indent-has-tabs ;; Tabs in leading whitespace?  Tabs require eilb for untabify.
         (setq using-eilb (matlab--eilb-setup))
@@ -1427,7 +1419,10 @@ where:
          ;; entry, add (col-width - entry-width) extra spaces before it.
          ;; Only track columns inside the matrix (after the "[" node).
          (when nm-col-widths
-           (when (and (string= node-type "[")
+           (when (and (not nm-inside-matrix)
+                      (string= node-type "[")
+                      ;; Consider: v([1,2;3,4]) = [ 101,   21     // following matches 2nd "["
+                      ;;                           3001, 4001];
                       (matlab-ts-mode--ei-is-multi-line-matrix (treesit-node-parent node)))
              (setq nm-inside-matrix t))
            (when nm-inside-matrix
@@ -1511,12 +1506,12 @@ where:
               (buffer-substring-no-properties bol-pt eol-pt))
             pt-offset orig-line-node-types first-node-pair))))
 
-;; KEY: pos-bol of the matrix start line. VALUE: first-col-extra integer
+;; KEY: matrix start linenum. VALUE: first-col-extra integer
 (defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-cache nil)
 
-(defun matlab-ts-mode--ei-m-matrix-first-col-extra (matrix-id)
+(defun matlab-ts-mode--ei-m-matrix-first-col-extra (matrix-node)
   "Get matrix first-col-extra for indent alignment.
-MATRIX-ID is either a tree-sitter matrix node or a `pos-bol'
+MATRIX-NODE is either a tree-sitter matrix node or a `pos-bol'
 position (integer) of the matrix node's start line.  Result is 0 or
 `matlab-ts-mode--array-indent-level' divided by 2.  Consider the
 following where `matlab-ts-mode--array-indent-level' is 2.
@@ -1530,33 +1525,15 @@ This will return 0
   m2 = [1 2
         3 4];"
 
-  (let* ((mat-pos-bol (if (treesit-node-p matrix-id)
-                          (save-excursion (goto-char (treesit-node-start matrix-id))
-                                          (pos-bol))
-                        matrix-id))
+  (let* ((mat-start-linenum (line-number-at-pos (treesit-node-start matrix-node)))
          (first-col-extra (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
-                            (gethash mat-pos-bol
+                            (gethash mat-start-linenum
                                      matrix-ts-mode--ei-m-matrix-first-col-extra-cache))))
     (when (not first-col-extra)
       (save-excursion
         ;; Move to point after the matrix open, "["
-        (if (treesit-node-p matrix-id)
-            (progn (goto-char (treesit-node-start matrix-id))
-                   (forward-char)) ;; step over the "["
-          ;; Else matrix-id is pos-bol
-          (goto-char matrix-id)
-          ;; Move to point after matrix open, which requires finding it, consider:
-          ;;  v([1,2;3,4]) = [ 101,   21
-          ;;                  3001, 4001];
-          (let* ((eol-pt (pos-eol))
-                 (mat-open-pt (re-search-forward "\\[" eol-pt)) ;; point after the "["
-                 (have-other-mat-open (save-excursion (re-search-forward "\\[" eol-pt t))))
-            (while have-other-mat-open
-              (let ((parent (treesit-node-parent (treesit-node-at (1- mat-open-pt)))))
-                (if (and (string= (treesit-node-type parent) "matrix")
-                         (not (matlab-ts-mode--ei-is-multi-line-matrix parent)))
-                    (setq have-other-mat-open nil)
-                  (setq mat-open-pt (re-search-forward "\\[" eol-pt)))))))
+        (goto-char (treesit-node-start matrix-node))
+        (forward-char) ;; step over the "["
 
         (setq first-col-extra
               (if (and (re-search-forward "[^ \t]" (pos-eol) t)
@@ -1566,8 +1543,9 @@ This will return 0
                   0
                 1))
         (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
-          (puthash mat-pos-bol first-col-extra matrix-ts-mode--ei-m-matrix-first-col-extra-cache))
-        ))
+          (puthash mat-start-linenum first-col-extra
+                   matrix-ts-mode--ei-m-matrix-first-col-extra-cache))))
+    ;; result is 0 or 1
     first-col-extra))
 
 (defvar-local matlab-ts-mode--ei-m-matrix-col-widths-cache nil)
@@ -2505,7 +2483,7 @@ indent region."
   ;; `matlab-ts-mode--ei-get-new-line'.
   (let ((m-matrix-info (get-text-property (pos-eol) 'm-matrix-info)))
     (when (and m-matrix-info
-               (eq (car m-matrix-info) 'numeric-m-matrix))
+               (eq (nth 0 m-matrix-info) 'numeric-m-matrix))
       (cl-return-from matlab-ts-mode--ei-align ei-info)))
 
   (let ((matrix-assign-node (matlab-ts-mode--ei-point-in-m-type ei-info 'm-matrix)))
@@ -2809,7 +2787,8 @@ Returns the region (START-LINE . END-LINE) if disabled, else nil."
 
 (defun matlab-ts-mode--ei-cleanup ()
   "Free memory used during indent."
-  (remove-text-properties (point-min) (point-max) '(m-matrix-info nil))
+  (with-silent-modifications
+    (remove-text-properties (point-min) (point-max) '(m-matrix-info nil)))
   (setq matlab-ts-mode--ei-line-nodes nil
         matlab-ts-mode--ei-errors-map nil
         matlab-ts-mode--ei-bol2loc-map nil))
@@ -2956,9 +2935,12 @@ START-LINENUM and END-LINENUM correspond to the BEG and END points."
 
     (forward-line 0)
     (while (<= i-linenum end-linenum)
-      (let ((line-ending (if (or max-end-linenum (< i-linenum end-linenum)) "\n" "")))
+      (let* ((eol-pt (pos-eol))
+             (line-ending (if (or max-end-linenum (< i-linenum end-linenum))
+                              (buffer-substring eol-pt (1+ eol-pt))
+                            "")))
         (if (matlab-ts-mode--ei-in-disabled-region i-linenum)
-            (let ((curr-line (buffer-substring-no-properties (pos-bol) (pos-eol))))
+            (let ((curr-line (buffer-substring-no-properties (pos-bol) eol-pt)))
               (with-current-buffer new-content-buf
                 (insert curr-line line-ending)))
           ;; else: electric indent the line
@@ -2983,6 +2965,7 @@ START-LINENUM and END-LINENUM correspond to the BEG and END points."
       (save-excursion
         (goto-char beg)
         (delete-region beg end)
+        ;; xxx copy text properties
         (insert (with-current-buffer new-content-buf (buffer-string)))
         (when matlab-ts-mode--indent-assert
           (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))

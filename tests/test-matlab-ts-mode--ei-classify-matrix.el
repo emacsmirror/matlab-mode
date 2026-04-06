@@ -41,18 +41,19 @@ with text from the m-file as a string."
       (goto-char (point-min))
       (while (not (eobp))
         (let* ((eol-pt (pos-eol))
-               (entry (get-text-property eol-pt 'm-matrix-info)))
-          (when entry
-            (let* ((matrix-type (car entry))
-                   (col-widths (when (eq matrix-type 'numeric-m-matrix)
-                                 (cdr entry)))
+               (m-matrix-info (get-text-property eol-pt 'm-matrix-info)))
+          (when m-matrix-info
+            (let* ((matrix-type (nth 0 m-matrix-info))
+                   (first-col-extra (nth 1 m-matrix-info))
+                   (col-widths (nth 2 m-matrix-info))
                    (line-text (buffer-substring (pos-bol) eol-pt)))
               (setq result
                     (concat result
-                            (format "L%-3d point %-3d => '%-20s col-widths=%-15s | %s\n"
+                            (format "L%-3d point %-3d => '%-20s e=%d col-widths=%-15s | %s\n"
                                     (line-number-at-pos)
                                     (pos-bol)
                                     (symbol-name matrix-type)
+                                    first-col-extra
                                     (if col-widths
                                         (prin1-to-string col-widths)
                                       "nil")
