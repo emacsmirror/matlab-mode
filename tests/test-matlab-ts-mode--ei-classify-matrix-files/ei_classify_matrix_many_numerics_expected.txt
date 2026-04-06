@@ -1,6 +1,5 @@
 test-matlab-ts-mode--ei-classify-matrix-action-fun result:
 ---
-L3   point 22  => 'numeric-m-matrix     col-widths=nil             | M = [
 L4   point 28  => 'numeric-m-matrix     col-widths=(9)             |               1 % Integer
 L5   point 54  => 'numeric-m-matrix     col-widths=(9)             |             -42 % Negative integer
 L6   point 89  => 'numeric-m-matrix     col-widths=(9)             |         3.14159 % Float (decimal)
@@ -21,57 +20,35 @@ L20  point 651 => 'numeric-m-matrix     col-widths=(9)             |            
 L21  point 702 => 'numeric-m-matrix     col-widths=(9)             |           myFcn % Any valid matlab identifier should be treated as a numeric value
 L22  point 785 => 'numeric-m-matrix     col-widths=(9)             |         5.0d-15; % Fortan style floating point numbers
 L23  point 840 => 'numeric-m-matrix     col-widths=(9)             |         5.0D-15; % Fortan style floating point numbers
-L24  point 895 => 'numeric-m-matrix     col-widths=nil             | 
-L25  point 896 => 'numeric-m-matrix     col-widths=nil             | 
-L26  point 897 => 'numeric-m-matrix     col-widths=nil             |       % Signed/unsigned
-L27  point 921 => 'numeric-m-matrix     col-widths=nil             |       % ----
-L28  point 934 => 'numeric-m-matrix     col-widths=nil             |       % https://github.com/acristoffers/tree-sitter-matlab/issues/82 
-L29  point 1004 => 'numeric-m-matrix     col-widths=nil             |       % https://www.mathworks.com/help/matlab/matlab_prog/specify-hexadecimal-and-binary-numbers.html
-L30  point 1106 => 'numeric-m-matrix     col-widths=nil             |       % 
-L31  point 1115 => 'numeric-m-matrix     col-widths=nil             |       % To specify unsigned 8-, 16-, 32-, and 64-bit integer types, use the suffixes u8, u16, u32,
-L32  point 1214 => 'numeric-m-matrix     col-widths=nil             |       % and u64 (upper case U is also fine).
-L33  point 1259 => 'numeric-m-matrix     col-widths=nil             | 
-L34  point 1260 => 'numeric-m-matrix     col-widths=nil             |       % To specify signed 8-, 16-, 32-, and 64-bit integer types, use the suffixes s8, s16, s32, and
-L35  point 1361 => 'numeric-m-matrix     col-widths=nil             |       % s64 (upper case S is also fine).
-L36  point 1402 => 'numeric-m-matrix     col-widths=nil             | 
 L37  point 1403 => 'numeric-m-matrix     col-widths=(9)             |          0xFFs8
 L38  point 1419 => 'numeric-m-matrix     col-widths=(9)             |         0xFFs16
 L39  point 1435 => 'numeric-m-matrix     col-widths=(9)             |         0xFFs32
 L40  point 1451 => 'numeric-m-matrix     col-widths=(9)             |         0xFFs64
-L41  point 1467 => 'numeric-m-matrix     col-widths=nil             | 
 L42  point 1468 => 'numeric-m-matrix     col-widths=(9)             |          0xFFu8
 L43  point 1484 => 'numeric-m-matrix     col-widths=(9)             |         0xFFu16
 L44  point 1500 => 'numeric-m-matrix     col-widths=(9)             |         0xFFu32
 L45  point 1516 => 'numeric-m-matrix     col-widths=(9)             |         0xFFu64
-L46  point 1532 => 'numeric-m-matrix     col-widths=nil             | 
 L47  point 1533 => 'numeric-m-matrix     col-widths=(9)             |        0b0101s8
 L48  point 1549 => 'numeric-m-matrix     col-widths=(9)             |       0b0101s16
 L49  point 1565 => 'numeric-m-matrix     col-widths=(9)             |       0b0101s32
 L50  point 1581 => 'numeric-m-matrix     col-widths=(9)             |       0b0101s64
-L51  point 1597 => 'numeric-m-matrix     col-widths=nil             | 
 L52  point 1598 => 'numeric-m-matrix     col-widths=(9)             |        0b0101u8
 L53  point 1614 => 'numeric-m-matrix     col-widths=(9)             |       0b0101u16
 L54  point 1630 => 'numeric-m-matrix     col-widths=(9)             |       0b0101u32
 L55  point 1646 => 'numeric-m-matrix     col-widths=(9)             |       0b0101u64
-L56  point 1662 => 'numeric-m-matrix     col-widths=nil             | 
 L57  point 1663 => 'numeric-m-matrix     col-widths=(9)             |          0XFFS8
 L58  point 1679 => 'numeric-m-matrix     col-widths=(9)             |         0XFFS16
 L59  point 1695 => 'numeric-m-matrix     col-widths=(9)             |         0XFFS32
 L60  point 1711 => 'numeric-m-matrix     col-widths=(9)             |         0XFFS64
-L61  point 1727 => 'numeric-m-matrix     col-widths=nil             | 
 L62  point 1728 => 'numeric-m-matrix     col-widths=(9)             |          0XFFU8
 L63  point 1744 => 'numeric-m-matrix     col-widths=(9)             |         0XFFU16
 L64  point 1760 => 'numeric-m-matrix     col-widths=(9)             |         0XFFU32
 L65  point 1776 => 'numeric-m-matrix     col-widths=(9)             |         0XFFU64
-L66  point 1792 => 'numeric-m-matrix     col-widths=nil             | 
 L67  point 1793 => 'numeric-m-matrix     col-widths=(9)             |        0B0101S8
 L68  point 1809 => 'numeric-m-matrix     col-widths=(9)             |       0B0101S16
 L69  point 1825 => 'numeric-m-matrix     col-widths=(9)             |       0B0101S32
 L70  point 1841 => 'numeric-m-matrix     col-widths=(9)             |       0B0101S64
-L71  point 1857 => 'numeric-m-matrix     col-widths=nil             | 
 L72  point 1858 => 'numeric-m-matrix     col-widths=(9)             |        0B0101U8
 L73  point 1874 => 'numeric-m-matrix     col-widths=(9)             |       0B0101U16
 L74  point 1890 => 'numeric-m-matrix     col-widths=(9)             |       0B0101U32
 L75  point 1906 => 'numeric-m-matrix     col-widths=(9)             |       0B0101U64
-L76  point 1922 => 'numeric-m-matrix     col-widths=nil             | 
-L77  point 1923 => 'numeric-m-matrix     col-widths=nil             |     ];
