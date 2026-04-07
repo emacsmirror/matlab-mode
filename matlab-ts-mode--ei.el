@@ -1863,8 +1863,9 @@ comments.  If optional, CHECK-FOR-INDENT-MODE-MINIMAL is non-nil, this we
 check if matrix is in an %-indent-mode:minimal region and if so return
 nil."
   (when (and check-for-indent-mode-minimal
-             (matlab-ts-mode--ei-in-disabled-region (line-number-at-pos
-                                                     (treesit-node-start matrix))))
+             (matlab-ts-mode--ei-in-disabled-region (save-excursion
+                                                      (goto-char (treesit-node-start matrix))
+                                                      (pos-eol))))
     (cl-return-from matlab-ts-mode--ei-is-m-matrix))
 
   (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
@@ -2664,8 +2665,6 @@ We examine lines between START-LINENUM and END-LINENUM inclusive."
   (setq matlab-ts-mode--ei-line-nodes nil
         matlab-ts-mode--ei-line-nodes-loc nil))
 
-(defvar-local matlab-ts-mode--ei-get-disabled-regions-cache nil)
-
 (defun matlab-ts-mode--ei-get-disabled-regions ()
   "Return regions disabled by %-indent-mode=minimal comments.
 Electric indent can be disabled then enabled using comments:
@@ -2682,8 +2681,8 @@ modified.  For example,
       end
   %-indent-mode=full
 
-is indented to the following.  Notice that thew whitespace in line
-elements are not modified.
+is indented to the following.  Notice that whitespace in between the
+line elements is not modified.
 
   %-indent-mode=minimal
   if a >    1
@@ -2697,49 +2696,80 @@ If we remove the %-indent-mode=* comments, indent produces:
       disp(\"a > 1\")
   end
 
-Returns:
-    \\='((START-LINE1 . END-LINE1) (START-LINE2 . END-LINE2) ...))
-where START-LINE1 corresponds to the first %-indent-mode=minimal comment,
-END-LINE1 corresponds to the first %-indent-mode=full comment and so on."
-  (or matlab-ts-mode--ei-get-disabled-regions-cache
-      (let (result
-            start-line)
-        (save-excursion
-          (save-restriction
-            (goto-char (point-min))
-            (while (re-search-forward (rx bol (0+ (or " " "\t"))
-                                          (group (or "%-indent-mode=minimal" "%-indent-mode=full"))
-                                          word-end)
-                                      nil t)
-              (let ((directive (match-string 1)))
-                (pcase directive
-                  ("%-indent-mode=minimal"
-                   (when (not start-line)
-                     (setq start-line (line-number-at-pos))))
-                  ("%-indent-mode=full"
-                   (when start-line
-                     (push `(,start-line . ,(line-number-at-pos)) result)
-                     (setq start-line nil)))
-                  (_
-                   (matlab-ts-mode--assert-msg (format "bad directive, %s" directive))))))
-            (when start-line
-              (push `(,start-line . ,(line-number-at-pos (point-max))) result))))
-        ;; Always return non-nil for caching and (-1 . 0) will never be used.
-        (or (reverse result) '((-1 . 0))))))
+Returns nil if no disabled regions, else returns:
+    \\='((REG-BOL-POS1 . REG-EOL-POS1) (REG-BOL-POS2 . REG-EOL-POS2) ...)
+where
+  REG-BOL-POS1 corresponds to the `pos-bol' of the first %-indent-mode=minimal
+  REG-EOL-POS1 corresponds to the `pos-eol' of the first %-indent-mode=full
+and so on."
+  (let (result
+        reg-bol-pos)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (while (re-search-forward (rx bol (0+ (or " " "\t"))
+                                      (group (or "%-indent-mode=minimal" "%-indent-mode=full"))
+                                      word-end)
+                                  nil t)
+          (let ((directive (match-string 1)))
+            (pcase directive
+              ("%-indent-mode=minimal"
+               (when (not reg-bol-pos)
+                 (setq reg-bol-pos (pos-bol))))
+              ("%-indent-mode=full"
+               (when reg-bol-pos
+                 (push `(,reg-bol-pos . ,(pos-eol)) result)
+                 (setq reg-bol-pos nil)))
+              (_
+               (matlab-ts-mode--assert-msg (format "bad directive, %s" directive))))))
+        (when reg-bol-pos
+          ;; Last character is a newline, point-max is one past that.
+          (push `(,reg-bol-pos . ,(1- (point-max))) result))))
+    (reverse result)))
 
-(defun matlab-ts-mode--ei-in-disabled-region (&optional linenum)
-  "Is LINENUM in a disabled region?
-LINENUM defaults to the current line.
-Returns the region (START-LINE . END-LINE) if disabled, else nil."
-  (when (not linenum)
-    (setq linenum (line-number-at-pos)))
-  (let ((disabled-regions (matlab-ts-mode--ei-get-disabled-regions)))
-    (cl-loop for region in disabled-regions do
-             (let ((region-start (car region))
-                   (region-end (cdr region)))
-               (when (and (>= linenum region-start)
-                          (<= linenum region-end))
-                 (cl-return region))))))
+;; Cache has value 'have-disabled-regions or 'no-disabled-regions
+(defvar-local matlab-ts-mode--ei-disabled-regions-cache nil)
+
+(defun matlab-ts-mode--ei-set-disabled-regions-cache (init)
+  "If INIT is t, setup disabled regions cache, else clear it.
+The cache consists of `matlab-ts-mode--ei-disabled-regions-cache' and
+\\='m-ei-disabled t property on the newline characters.
+Assumes there are no buffer restrictions in place."
+  (with-silent-modifications
+    (if init
+        (let ((disabled-regions (matlab-ts-mode--ei-get-disabled-regions)))
+          (if disabled-regions
+              (save-excursion
+                (dolist (region disabled-regions)
+                  (let ((reg-bol-pos (car region))
+                        (reg-eol-pos (cdr region)))
+                    (goto-char reg-bol-pos)
+                    (while (< (point) reg-eol-pos)
+                      (let ((eol-pt (pos-eol)))
+                        (put-text-property eol-pt (1+ eol-pt) 'm-ei-disabled t))
+                      (forward-line))))
+                (setq matlab-ts-mode--ei-disabled-regions-cache 'have-disabled-regions))
+            (setq matlab-ts-mode--ei-disabled-regions-cache 'no-disabled-regions)))
+    ;; Else clear the cache
+    (setq matlab-ts-mode--ei-disabled-regions-cache nil)
+    (remove-text-properties (point-min) (point-max) '(m-ei-disabled)))))
+
+(defun matlab-ts-mode--ei-in-disabled-region (&optional eol-pt)
+  "Is EOL-PT, defaulting to `pos-eol' within a disabled region?"
+  (if matlab-ts-mode--ei-disabled-regions-cache
+      (if (eq matlab-ts-mode--ei-disabled-regions-cache 'no-disabled-regions)
+          nil ;; no disabled regions in the buffer, so not in a disabled region.
+        (get-text-property (or eol-pt (pos-eol)) 'm-ei-disabled))
+    (let ((disabled-regions (matlab-ts-mode--ei-get-disabled-regions))
+          (pt (or eol-pt (point))))
+      (when disabled-regions
+        (cl-loop for region in disabled-regions do
+                 (let ((reg-bol-pos (car region))
+                       (reg-eol-pos (cdr region)))
+                   (when (and (>= pt reg-bol-pos)
+                              (<= pt reg-eol-pos))
+                     (cl-return t))))))))
 
 (defun matlab-ts-mode--ei-setup (beg end)
   "Setup for indent in region BEG to END."
@@ -2788,7 +2818,7 @@ Returns the region (START-LINE . END-LINE) if disabled, else nil."
 (defun matlab-ts-mode--ei-cleanup ()
   "Free memory used during indent."
   (with-silent-modifications
-    (remove-text-properties (point-min) (point-max) '(m-matrix-info nil)))
+    (remove-text-properties (point-min) (point-max) '(m-matrix-info)))
   (setq matlab-ts-mode--ei-line-nodes nil
         matlab-ts-mode--ei-errors-map nil
         matlab-ts-mode--ei-bol2loc-map nil))
@@ -2907,8 +2937,9 @@ If INIT is non-nil, set to initial value, otherwise set to nil."
                                                        (make-hash-table :test 'eql))
    matlab-ts-mode--ei-orig-line-node-types-cache     (when init
                                                        (make-hash-table :test 'eql))
-   matlab-ts-mode--ei-get-disabled-regions-cache     (when init
-                                                       (matlab-ts-mode--ei-get-disabled-regions))))
+
+   matlab-ts-mode--ei-disabled-regions-cache (matlab-ts-mode--ei-set-disabled-regions-cache init)
+   ))
 
 (defun matlab-ts-mode--ei-indent-region-impl (new-content-buf
                                               beg end start-pt start-linenum end-linenum)
@@ -2939,7 +2970,7 @@ START-LINENUM and END-LINENUM correspond to the BEG and END points."
              (line-ending (if (or max-end-linenum (< i-linenum end-linenum))
                               (buffer-substring eol-pt (1+ eol-pt))
                             "")))
-        (if (matlab-ts-mode--ei-in-disabled-region i-linenum)
+        (if (matlab-ts-mode--ei-in-disabled-region eol-pt)
             (let ((curr-line (buffer-substring-no-properties (pos-bol) eol-pt)))
               (with-current-buffer new-content-buf
                 (insert curr-line line-ending)))
@@ -3038,15 +3069,17 @@ This expansion of the region is done to simplify electric indent."
                           (generate-new-buffer-name " *temp-matlab-indent-region*"))))
     (unwind-protect
         (let* ((start-pt (point))
+               (end-eol-pt (save-excursion (goto-char end)
+                                           (pos-eol)))
                (start-linenum (line-number-at-pos beg))
                (end-linenum (save-excursion (goto-char end)
                                             (- (line-number-at-pos)
                                                (if (= (point) (pos-bol)) 1 0))))
-               (start-disabled (matlab-ts-mode--ei-in-disabled-region start-linenum))
-               (end-disabled (matlab-ts-mode--ei-in-disabled-region end-linenum))
+               (start-disabled (matlab-ts-mode--ei-in-disabled-region))
+               (end-disabled (matlab-ts-mode--ei-in-disabled-region end-eol-pt))
                end-pt)
 
-          (if (and start-disabled (equal start-disabled end-disabled))
+          (if (and start-disabled end-disabled)
               (treesit-indent-region beg end) ;; adjust indent-level only
             ;; Else electric indent
             (save-excursion
@@ -3074,6 +3107,7 @@ This expansion of the region is done to simplify electric indent."
             (goto-char end-pt)))
 
       ;; unwind-protect cleanup:
+      ;; TODO - see if we need (widen)
       (matlab--eilb-kill)
       (matlab-ts-mode--ei-set-region-caches nil)
       (kill-buffer new-content-buf))))
