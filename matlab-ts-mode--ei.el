@@ -2968,7 +2968,7 @@ START-LINENUM and END-LINENUM correspond to the BEG and END points."
     (while (<= i-linenum end-linenum)
       (let* ((eol-pt (pos-eol))
              (line-ending (if (or max-end-linenum (< i-linenum end-linenum))
-                              (buffer-substring eol-pt (1+ eol-pt))
+                              (buffer-substring eol-pt (1+ eol-pt)) ;; copy our text properties
                             "")))
         (if (matlab-ts-mode--ei-in-disabled-region eol-pt)
             (let ((curr-line (buffer-substring-no-properties (pos-bol) eol-pt)))
@@ -2996,7 +2996,6 @@ START-LINENUM and END-LINENUM correspond to the BEG and END points."
       (save-excursion
         (goto-char beg)
         (delete-region beg end)
-        ;; xxx copy text properties
         (insert (with-current-buffer new-content-buf (buffer-string)))
         (when matlab-ts-mode--indent-assert
           (matlab-ts-mode--ei-assert-line-nodes-match start-linenum end-linenum))
