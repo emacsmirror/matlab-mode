@@ -3012,6 +3012,7 @@ START-LINENUM and END-LINENUM correspond to the BEG and END points."
   "Convert CRLF to LF and convert lone CR to LF in whole buffer.
 Adjusts BEG and END indent region markers.
 Returns (cons NEW-BEG NEW-END)."
+  ;; TopTester: tests/test-matlab-ts-mode-electric-indent-files/electric_indent_mat_with_cr_chars.m
   (save-excursion
     (save-restriction
       (widen)
@@ -3028,29 +3029,27 @@ Returns (cons NEW-BEG NEW-END)."
       ;; Can have a file whos first 50 lines are LF, then 51 - 55 are CRLF, then remainder are LF
       ;; (this occurs when editing files on different platforms).
       (goto-char (point-min))
-      (while (re-search-forward "\r$" nil t) ;; CRLF => LF
-        (replace-match "")
-        (when (<= (point) beg)
-          (setq beg (1- beg)))
-        (when (<= (point) end)
-          (setq end (1- end))))
-
-      ;; Now handle the case of \r only, which MATLAB treats as a newline, e.g.
-      ;;   foo1.m
-      ;;   ------
-      ;;   m = [10^M20]^J         // man ascii: ^M == \r  and ^J == \n
-      ;;
-      ;;   >> foo1
-      ;;   m =
-      ;;       10
-      ;;       20
-      ;;
-      ;;   hexdump -C foo1.m
-      ;;   00000000  6d 20 3d 20 5b 31 30 0d  32 30 5d 0a              |m = [10.20].|
-      ;;                                  \r           \n
-      (goto-char (point-min))
-      (while (re-search-forward "\r" nil t) ;; CR => LF
-        (replace-match "\n"))))
+      (while (re-search-forward "\r" nil t)
+        (if (looking-at "$" t) ;; CRLF => LF?
+            (progn (replace-match "")
+                   (when (<= (point) beg)
+                     (setq beg (1- beg)))
+                   (when (<= (point) end)
+                     (setq end (1- end))))
+          ;; Else handle the case of \r only, which MATLAB treats as a newline, e.g.
+          ;;   foo1.m
+          ;;   ------
+          ;;   m = [10^M20]^J         // man ascii: ^M == \r  and ^J == \n
+          ;;
+          ;;   >> foo1
+          ;;   m =
+          ;;       10
+          ;;       20
+          ;;
+          ;;   hexdump -C foo1.m
+          ;;   00000000  6d 20 3d 20 5b 31 30 0d  32 30 5d 0a              |m = [10.20].|
+          ;;                                  \r           \n
+          (replace-match "\n")))))
   ;; Updated beg end indent region points
   (cons beg end))
 
