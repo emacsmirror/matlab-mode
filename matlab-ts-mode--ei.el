@@ -630,7 +630,7 @@ which uses tree-sitter children nodes to determine
               '(not-a-m-matrix))))))))
 
 (defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
-  "Classify MATRIX-NODE and corresponding mark newlines.
+  "Classify MATRIX-NODE and mark matrix lines.
 Add text property
   (list MATRIX-TYPE FIRST-COL-OFFSET COLUMN-WIDTHS FIRST-LINE)
 to the newline of each matrix row line for MATRIX-TYPE:
