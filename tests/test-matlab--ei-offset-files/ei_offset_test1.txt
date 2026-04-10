@@ -1,0 +1,11 @@
+# -*- text -*-
+
+In each line, an ampersand represents the offset location
+
+case1 & some text
+
+& case2 some text
+
+case3 some text&
+
+case4 with tab before offset		& other text

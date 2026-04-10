@@ -1,0 +1,20 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,295> (comment[1,20]@{% -*- matlab-ts -*-}@) \n[20,22] (comment[22,232]@{%\{ \n  Case1: \n  (t-utils-xr \n\n  (re-search-fo...}@)
+ (assignment<234,237> left: (identifier[234,235]@{a}@) =[235,236] right: (number[236,237]@{1}@))
+ ;[237,238]
+ (assignment<239,258> left: (identifier[239,243]@{bVar}@) =[244,245]
+  right: 
+   (matrix<246,258> [[246,247]
+    (row<247,254> (number[247,248]@{1}@) ,[249,249] (number[249,250]@{2}@) ,[251,251] (number[251,254]@{300}@))
+    ][257,258]))
+ ;[258,259]
+ (assignment<260,286> left: (identifier[260,268]@{cLongVar}@) =[269,270]
+  right: 
+   (binary_operator<271,286> left: (number[271,273]@{10}@) +[273,274]
+    right: 
+     (function_call<274,286> name: (identifier[274,275]@{f}@) ([275,276]
+      (arguments<276,285> argument: (number[276,277]@{3}@) ,[277,278] (number[278,279]@{4}@) ,[279,280] (number[284,285]@{5}@))
+      )[285,286])))
+ ;[288,289]
+ (assignment<290,293> left: (identifier[290,291]@{x}@) =[291,292] right: (number[292,293]@{2}@))
+ ;[293,294] \n[294,295])

@@ -2869,7 +2869,7 @@ results in:
   (when matlab-ts-mode--electric-indent
     (save-restriction
       (widen)
-      (matlab-ts-mode--ei-workaround-143 (pos-bol) (pos-eol) (point))
+      (matlab-ts-mode--ei-workaround-143 (pos-bol) (pos-eol))
       (matlab-ts-mode--ei-indent-elements-in-line))))
 
 (defun matlab-ts-mode-tab-indent (&optional _arg)

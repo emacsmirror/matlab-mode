@@ -1,0 +1,53 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_start_pt_area_at_end.m:5:2:
+
+  Case1: (t-utils-xr 
+
+  (re-search-forward "x=2;")
+  (indent-region (save-excursion (re-search-backward "^a")) (point))
+
+  (t-utils-xr-print-code (save-excursion (re-search-backward "^a")) (point-max))
+  )
+
+- Invoking      : (re-search-forward "x=2;")
+  Start point   :  235
+  Moved to point:  300
+  : 17:4: x=2;
+  :           ^
+  No buffer modifications
+
+- Invoking      : (indent-region (save-excursion (re-search-backward "^a")) (point))
+  Start point   :  300
+  Moved to point:  319
+  : 17:13: x        = 2;
+  :                     ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -11,7 +11,7 @@
+   )
+ %}
+ 
+-a=1;
+-bVar = [1 2 300   ];
+-cLongVar = 10+f(3,4,    5)  ;
+-x=2;
++a        = 1;
++bVar     = [1, 2, 300];
++cLongVar = 10 + f(3, 4, 5);
++x        = 2;
+  #+end_src diff
+
+- Invoking      : (t-utils-xr-print-code (save-excursion (re-search-backward "^a")) (point-max))
+  Start point   :  319
+  No point movement
+  standard-output:
+  #+begin_src matlab-ts
+a        = 1;
+bVar     = [1, 2, 300];
+cLongVar = 10 + f(3, 4, 5);
+x        = 2;
+  #+end_src
+  No buffer modifications

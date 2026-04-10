@@ -112,9 +112,7 @@
 
 - Invoking      : (indent-region (point-min) (point-max))
   Start point   :  416
-  Moved to point:  420
-  : 1:4:     a            {mustBeNumeric, mustBeReal}
-  :          ^
+  No point movement
   Buffer modified:
   #+begin_src diff
 --- start_contents
@@ -127,7 +125,7 @@
   #+end_src diff
 
 - Invoking      : (widen)
-  Start point   :  420
+  Start point   :  416
   No point movement
   Buffer modified:
   #+begin_src diff
@@ -167,7 +165,7 @@
   #+end_src diff
 
 - Invoking      : (re-search-backward "^fun")
-  Start point   :  420
+  Start point   :  416
   Moved to point:  341
   : 24:0: function electric_indent_xr_narrow_to_region(a, longInputVar, c)
   :       ^

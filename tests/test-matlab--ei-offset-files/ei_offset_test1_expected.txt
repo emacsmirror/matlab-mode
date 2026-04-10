@@ -1,0 +1,8 @@
+test-matlab--ei-offset-action-fun result:
+---
+Line content                                                Offset
+----------------------------------------------------------  ------
+case1 & some text                                                6
+& case2 some text                                                0
+case3 some text&                                                15
+case4 with tab before offset		& other text        30
