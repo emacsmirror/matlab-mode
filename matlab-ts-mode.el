@@ -2774,6 +2774,21 @@ Example:
 
 (defvar matlab-ts-mode--newline-entered-linenum nil)
 
+(defvar matlab-ts-mode--error-query (when (treesit-available-p)
+                                         (treesit-query-compile 'matlab '((ERROR) @e))))
+(defun matlab-ts-mode--query-errors ()
+  "Query tree-sitter for ERROR's and populate `matlab-ts-mode--ei-errors-map'."
+  (let ((curr-err-map matlab-ts-mode--ei-errors-map)
+        (error-nodes (treesit-query-capture (treesit-buffer-root-node 'matlab)
+                                            matlab-ts-mode--error-query nil nil t)))
+    (setq matlab-ts-mode--ei-errors-map (make-hash-table))
+    (dolist (error-node error-nodes)
+      (matlab-ts-mode--ei-mark-error-lines error-node))
+    (let ((err-map matlab-ts-mode--ei-errors-map))
+      (setq matlab-ts-mode--ei-errors-map curr-err-map)
+      ;; result
+      err-map)))
+
 (defun matlab-ts-mode--get-region-for-tab-indent ()
   "Return (cons BEG END) to indent.
 BEG and END are both start of a line.
@@ -2835,7 +2850,10 @@ results in:
                                                 (point)))))))))
 
           ;; Don't indent error lines (excluding current line)
-          (let ((err-map (matlab-ts-mode--ei-query-errors)))
+          ;; TODO - can we avoid the query because we are going to do
+          ;;        matlab-ts-mode--ei-line-nodes-in-region and
+          ;;        that gets errors which avoids indent?
+          (let ((err-map (matlab-ts-mode--query-errors)))
             (cl-loop
              for direction in '(-1 1) do
              (goto-char start-bol)

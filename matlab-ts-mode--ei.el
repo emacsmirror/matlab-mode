@@ -637,21 +637,37 @@ to the newline of each matrix row line for MATRIX-TYPE:
   \\='numeric-m-matrix or \\='non-numeric-m-matrix.
 MATRIX-TYPE FIRST-COL-OFFSET COLUMN-WIDTHS are from
 `matlab-ts-mode--ei-classify-matrix'
-FIRST-LINE is only present for the first line of a \\='numeric-m-matrix
-and is t.
-For example,
-  m1 = [            // \n prop (list \\='numeric-m-matrix 1)
+FIRST-LINE is t for the line containging the matrix
+start, \"[\", of a \\='numeric-m-matrix.
+
+\\='numeric-m-matrix examples:
+  m1 = [1,   2      // \n prop (list \\='numeric-m-matrix 0 \\='(1 3)  t)
+        % comment   // \n prop (list \\='numeric-m-matrix 0)
+        3,   4      // \n prop (list \\='numeric-m-matrix 0 \\='(1 3))
+        5, 600];    // \n prop (list \\='numeric-m-matrix 0 \\='(1 3))
+
+  m2 = [            // \n prop (list \\='numeric-m-matrix 1)
          1,   2     // \n prop (list \\='numeric-m-matrix 1 \\='(1 3))
          % comment  // \n prop (list \\='numeric-m-matrix 1)
          3,   4     // \n prop (list \\='numeric-m-matrix 1 \\='(1 3))
          5, 600     // \n prop (list \\='numeric-m-matrix 1 \\='(1 3))
        ];           // \n prop (list \\='numeric-m-matrix 1)
-  m2 = [1,   2      // \n prop (list \\='numeric-m-matrix 0 \\='(1 3) t)
-        % comment   // \n prop (list \\='numeric-m-matrix 0)
-        3,   4      // \n prop (list \\='numeric-m-matrix 0 \\='(1 3))
-        5, 600];    // \n prop (list \\='numeric-m-matrix 0 \\='(1 3))"
+
+\\='non-numeric-m-matrix example, notice no column widths or first-line
+  m3 = [  1,  a+b   // \n prop (list \\='non-numeric-m-matrix 0)
+          % comment // \n prop (list \\='non-numeric-m-matrix 0)
+          c- d, 1   // \n prop (list \\='non-numeric-m-matrix 0)
+          5, 600];  // \n prop (list \\='non-numeric-m-matrix 0)
+
+  m4 = [            // \n prop (list \\='non-numeric-m-matrix 1)
+         1,  a+b    // \n prop (list \\='non-numeric-m-matrix 1)
+         % comment  // \n prop (list \\='non-numeric-m-matrix 1)
+         c- d, 1    // \n prop (list \\='non-numeric-m-matrix 1)
+         5, 600     // \n prop (list \\='non-numeric-m-matrix 1)
+       ];           // \n prop (list \\='non-numeric-m-matrix 1)"
+
   (let* ((classify-result (matlab-ts-mode--ei-classify-matrix matrix-node))
-         (first-line t)
+         (first-line t) ;; line containing the start of the matrix, "["
          (matrix-type (car classify-result)))
     (when (not (eq matrix-type 'not-a-m-matrix))
       (let ((mat-start (treesit-node-start matrix-node))
@@ -666,7 +682,7 @@ For example,
                       (when (< (point) mat-start)
                         (goto-char (1+ mat-start)))
                       (not (looking-at (rx (0+ (or " " "\t")) (or eol "%" "..." "]")))))
-                      (setq m-matrix-info (if (and first-line (eq matrix-type 'numeric-m-matrix))
+                    (setq m-matrix-info (if (and first-line (eq matrix-type 'numeric-m-matrix))
                                               (append classify-result '(t))
                                             classify-result))
                   (setq m-matrix-info (list (nth 0 classify-result) (nth 1 classify-result))))
@@ -684,22 +700,6 @@ For example,
       (while (and (<= (point) error-end-pt) (not (eobp)))
         (puthash (pos-bol) t matlab-ts-mode--ei-errors-map)
         (forward-line)))))
-
-(defvar matlab-ts-mode--ei-error-query (when (treesit-available-p)
-                                         (treesit-query-compile 'matlab '((ERROR) @e))))
-
-(defun matlab-ts-mode--ei-query-errors ()
-  "Query tree-sitter for ERROR's and populate `matlab-ts-mode--ei-errors-map'."
-  (let ((curr-err-map matlab-ts-mode--ei-errors-map)
-        (error-nodes (treesit-query-capture (treesit-buffer-root-node 'matlab)
-                                            matlab-ts-mode--ei-error-query nil nil t)))
-    (setq matlab-ts-mode--ei-errors-map (make-hash-table))
-    (dolist (error-node error-nodes)
-      (matlab-ts-mode--ei-mark-error-lines error-node))
-    (let ((err-map matlab-ts-mode--ei-errors-map))
-      (setq matlab-ts-mode--ei-errors-map curr-err-map)
-      ;; result
-      err-map)))
 
 (defvar matlab-ts-mode--ei-all-nodes-query
   (when (treesit-available-p)
@@ -1335,8 +1335,8 @@ where:
            (m-matrix-info (when matlab-ts-mode--ei-align-enabled
                             (get-text-property eol-pt 'm-matrix-info)))
            (nm-first-col-extra (nth 1 m-matrix-info)) ;; 0 or 1
-           (nm-col-widths (nth 2 m-matrix-info)) ;; can be nil
-           (nm-first-line (nth 3 m-matrix-info)) ;; t or nil
+           (nm-col-widths (nth 2 m-matrix-info)) ;; list of numbers, nil when not a numeric m-matrix
+           (nm-first-line (nth 3 m-matrix-info)) ;; line containing the "[" of the matrix
            (nm-inside-matrix (and nm-col-widths (not nm-first-line))))
 
       (when indent-has-tabs ;; Tabs in leading whitespace?  Tabs require eilb for untabify.
