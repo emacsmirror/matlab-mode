@@ -1364,7 +1364,21 @@ where:
            (nm-first-col-extra (nth 1 m-matrix-info)) ;; 0 or 1
            (nm-col-widths (nth 2 m-matrix-info)) ;; list of numbers, nil when not a numeric m-matrix
            (nm-row-on-first-line (nth 3 m-matrix-info)) ;; line containing the "[" of the matrix
-           (nm-inside-matrix (and nm-col-widths (not nm-row-on-first-line))))
+           (nm-inside-matrix (and nm-col-widths (not nm-row-on-first-line)))
+           ;; Pre-scan: map each entry's start position to its width.
+           ;; This avoids expensive treesit-node-parent calls during
+           ;; the main loop.  For numeric-m-matrix, entries are word
+           ;; tokens optionally preceded by unary +/-.
+           (nm-entry-starts
+            (when nm-col-widths
+              (let ((ht (make-hash-table :test 'eq)))
+                (save-excursion
+                  (goto-char bol-pt)
+                  (while (re-search-forward matlab-ts-mode--ei-numeric-entry-re eol-pt t)
+                    (puthash (match-beginning 0)
+                             (- (match-end 0) (match-beginning 0))
+                             ht)))
+                ht))))
 
       (when indent-has-tabs ;; Tabs in leading whitespace?  Tabs require eilb for untabify.
         (setq using-eilb (matlab--eilb-setup))
@@ -1452,11 +1466,12 @@ where:
             (format "ei, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
                     node-type node next-node-type next-node)))
 
-         ;; Numeric m-matrix column alignment: pad entries to their column widths
-         ;; for right-alignment.  Track the column index by counting entry nodes
-         ;; (those that are not separators or brackets).  When next-node is an
-         ;; entry, add (col-width - entry-width) extra spaces before it.
-         ;; Only track columns inside the matrix (after the "[" node).
+         ;; Numeric m-matrix column alignment: pad entries to their column
+         ;; widths for right-alignment.  Uses the pre-scanned nm-entry-starts
+         ;; hash (built from matlab-ts-mode--ei-numeric-entry-re) to identify
+         ;; entry boundaries by buffer position — no treesit-node-parent calls.
+         ;; When next-node starts a new entry, add (col-width - entry-width)
+         ;; extra spaces before it.
          (when nm-col-widths
            (when (and (not nm-inside-matrix)
                       (string= node-type "[")
@@ -1465,21 +1480,32 @@ where:
                       (matlab-ts-mode--ei-is-multi-line-matrix (treesit-node-parent node)))
              (setq nm-inside-matrix t))
            (when nm-inside-matrix
-             (when (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes node-type))
-               (setq nm-col-idx (1+ nm-col-idx)))
-             (when (and n-spaces-between
-                        (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes
-                                             next-node-type)))
-               (let* ((next-col (1+ nm-col-idx))
-                      (raw-width (nth (1- next-col) nm-col-widths))
-                      (col-width (if (and (= next-col 1) nm-first-col-extra)
-                                     (+ raw-width nm-first-col-extra)
-                                   raw-width))
-                      (entry-width (- (treesit-node-end next-node)
-                                      (treesit-node-start next-node))))
-                 (when (and col-width (< entry-width col-width))
-                   (setq n-spaces-between (+ n-spaces-between
-                                             (- col-width entry-width))))))))
+             ;; Increment column index when node starts a new entry.
+             ;; Skip separator/bracket nodes even when their position
+             ;; coincides with an entry (zero-width hidden commas share
+             ;; the start position of the next entry).
+             (let ((entry-w (gethash (treesit-node-start node) nm-entry-starts)))
+               (when (and entry-w
+                          (not (string-match-p
+                                (rx bos (or "," ";" "[" "]") eos) node-type)))
+                 (setq nm-col-idx (1+ nm-col-idx))))
+             ;; Compute padding when next-node starts a new entry and
+             ;; the current node is a separator (",", ";") or "[".
+             ;; Padding is NOT applied between entries directly
+             ;; because hidden comma insertion (list extra-chars in
+             ;; matlab--eilb-add-node-text) reorders the comma before
+             ;; trailing spaces, corrupting the padding.
+             (let ((next-entry-w (gethash (treesit-node-start next-node) nm-entry-starts)))
+               (when (and n-spaces-between next-entry-w
+                          (string-match-p (rx bos (or "," ";" "[") eos) node-type))
+                 (let* ((next-col (1+ nm-col-idx))
+                        (raw-width (nth (1- next-col) nm-col-widths))
+                        (col-width (if (and (= next-col 1) nm-first-col-extra)
+                                       (+ raw-width nm-first-col-extra)
+                                     raw-width)))
+                   (when (and col-width (< next-entry-w col-width))
+                     (setq n-spaces-between (+ n-spaces-between
+                                               (- col-width next-entry-w)))))))))
 
          (let* ((node-end (treesit-node-end node))
                 (next-node-start (treesit-node-start next-node))
