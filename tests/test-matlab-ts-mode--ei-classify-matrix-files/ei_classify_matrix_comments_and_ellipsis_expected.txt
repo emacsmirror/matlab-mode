@@ -1,12 +1,12 @@
 test-matlab-ts-mode--ei-classify-matrix-action-fun result:
 ---
-L3   point 22  => 'numeric-m-matrix     e=1 col-widths=nil             | m1 = [
-L4   point 29  => 'numeric-m-matrix     e=1 col-widths=(3 3 2)         |          1, 2.2,  3; % ... foo
-L5   point 60  => 'numeric-m-matrix     e=1 col-widths=nil             |        ... foo
-L6   point 75  => 'numeric-m-matrix     e=1 col-widths=nil             |        % ... foo
-L7   point 92  => 'numeric-m-matrix     e=1 col-widths=(3 3 2)         |        4.4,   5, 60 ... % foo
-L8   point 122 => 'numeric-m-matrix     e=1 col-widths=nil             |      ];
-L11  point 132 => 'non-numeric-m-matrix e=0 col-widths=nil             | n1 = ["foo", "%bar"  , "...too"
-L12  point 164 => 'non-numeric-m-matrix e=0 col-widths=nil             |        ... % foo
-L13  point 181 => 'non-numeric-m-matrix e=0 col-widths=nil             |        % ... foo
-L14  point 198 => 'non-numeric-m-matrix e=0 col-widths=nil             |       "goo", "...too", "%foo"  ];
+L3   (numeric-m-matrix 1 nil nil 0)           | m1 = [
+L4   (numeric-m-matrix 1 (3 3 2))             |          1, 2.2,  3; % ... foo
+L5   (numeric-m-matrix 1)                     |        ... foo
+L6   (numeric-m-matrix 1)                     |        % ... foo
+L7   (numeric-m-matrix 1 (3 3 2))             |        4.4,   5, 60 ... % foo
+L8   (numeric-m-matrix 1)                     |      ];
+L11  (non-numeric-m-matrix 0 nil t 0)         | n1 = ["foo", "%bar"  , "...too"
+L12  (non-numeric-m-matrix 0)                 |        ... % foo
+L13  (non-numeric-m-matrix 0)                 |        % ... foo
+L14  (non-numeric-m-matrix 0)                 |       "goo", "...too", "%foo"  ];

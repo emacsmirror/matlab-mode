@@ -1,4 +1,4 @@
 test-matlab-ts-mode--ei-classify-matrix-action-fun result:
 ---
-L3   point 22  => 'numeric-m-matrix     e=0 col-widths=(4 4)           | v([1,2;3,4]) = [ 101,   21
-L4   point 49  => 'numeric-m-matrix     e=0 col-widths=(4 4)           |                 3001, 4001];
+L3   (numeric-m-matrix 0 (4 4) t 1)           | v([1,2;3,4]) = [ 101,   21
+L4   (numeric-m-matrix 0 (4 4))               |                 3001, 4001];

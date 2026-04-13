@@ -2291,62 +2291,51 @@ Example:
   "Return anchor for `matlab-ts-mode--i-arg-namespace-fcn-prop-matcher'."
   matlab-ts-mode--i-arg-namespace-fcn-prop-anchor-value)
 
-(defun matlab-ts-mode--i-matrix-element ()
-  "Get the matrix element node at point."
-  (let* ((node (treesit-node-at (point)))
-         (parent (treesit-node-parent node)))
-    (while (and parent
-                (not (string= (treesit-node-type parent) "row")))
-      (setq node parent
-            parent (treesit-node-parent parent)))
-    (cl-assert parent)
-    node))
-
 (defvar matlab-ts-mode--i-row-matcher-pair nil)
 
 (cl-defun matlab-ts-mode--i-row-matcher (node parent _bol &rest _)
-  "Is NODE, PARENT in a matrix with first row on the \"[\" or \"{\" line?
+  "NODE, PARENT matcher for row nodes of cell and matrices.
 Example:
-   m = [1, 2
-        3, 4]       <== TAB to here."
-
+   m1 = [100, 2
+           3, 4]       <== TAB to here.
+   m2 = [
+          100, 2
+            3, 4       <== TAB to here.
+        ]"
   (when (or (not node)
             (not (string= (treesit-node-type node) "row")))
     (cl-return-from matlab-ts-mode--i-row-matcher))
 
   ;; When electric indent AND parent node is a multi-line matrix (m-matrix)
-  (when (and matlab-ts-mode--electric-indent
-             (string= "matrix" (treesit-node-type parent))
-             (matlab-ts-mode--ei-is-m-matrix parent t))
-    ;; Align to first column width
-    ;;       m1 = [   23      |    m2 = [45678      |    m3 = [  23
-    ;; TAB>        45678]     |             23]     |           333
-    ;;                                              |          4444]
-    (let* ((first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra parent))
-           (column-widths (matlab-ts-mode--ei-m-matrix-col-widths parent first-col-extra t))
-           (n-el-spaces (if (equal (treesit-node-type (treesit-node-child node 0)) "string")
-                            0
-                          (let ((el-width (save-excursion
-                                            (goto-char (treesit-node-start node))
-                                            (let ((el (matlab-ts-mode--i-matrix-element)))
-                                              (- (treesit-node-end el) (treesit-node-start el))))))
-                            (- (alist-get 1 column-widths) el-width)))))
-      (setq matlab-ts-mode--i-row-matcher-pair (cons (treesit-node-start parent) (1+ n-el-spaces)))
-      (cl-return-from matlab-ts-mode--i-row-matcher t)))
+  ;; Align to first column width
+  ;;       m1 = [   23      |    m2 = [45678      |    m3 = [  23
+  ;; TAB>        45678]     |             23]     |           333
+  ;;                                              |          4444]
+  (when (and (string= "matrix" (treesit-node-type parent))
+             matlab-ts-mode--electric-indent)
+    (if-let* ((first-col-width (matlab-ts-mode--ei-get-mat-first-col-width-for-i-row parent)))
+        (let ((n-el-spaces (if (equal (treesit-node-type (treesit-node-child node 0)) "string")
+                               0
+                             (let* ((el (treesit-node-child node 0)) ;; 1st matrix row element
+                                    (el-width (- (treesit-node-end el) (treesit-node-start el))))
+                               (- first-col-width el-width)))))
+          (setq matlab-ts-mode--i-row-matcher-pair
+                (cons (treesit-node-start parent) (1+ n-el-spaces)))
+          (cl-return-from matlab-ts-mode--i-row-matcher t))))
 
-  (when (string-match-p (rx bos (or "cell" "matrix") eos) (treesit-node-type parent))
-    (save-excursion
-      (goto-char (treesit-node-start parent))
-      (forward-char)
-      (when (and (looking-at "[ \t]")
-                 (re-search-forward "[^ \t]" (pos-eol) t))
-        (backward-char))
-      ;; Have something after the "[", e.g. "[  123" or "[ ..."?
-      (let ((node-at-pt (treesit-node-at (point))))
-        (when (and (looking-at "[^ \t\r\n]")
-                   (not (equal (treesit-node-type node-at-pt) "line_continuation")))
-          (setq matlab-ts-mode--i-row-matcher-pair (cons (treesit-node-start node-at-pt) 0))
-          t)))))
+  ;; Have row of either a matrix or cell
+  (save-excursion
+    (goto-char (treesit-node-start parent))
+    (forward-char)
+    (when (and (looking-at "[ \t]")
+               (re-search-forward "[^ \t]" (pos-eol) t))
+      (backward-char))
+    ;; Have something after the "[", e.g. "[  123" or "[ ..."?
+    (let ((node-at-pt (treesit-node-at (point))))
+      (when (and (looking-at "[^ \t\r\n]")
+                 (not (equal (treesit-node-type node-at-pt) "line_continuation")))
+        (setq matlab-ts-mode--i-row-matcher-pair (cons (treesit-node-start node-at-pt) 0))
+        t))))
 
 (defun matlab-ts-mode--i-row-matcher-anchor (&rest _)
   "Return anchor for `matlab-ts-mode--i-row-matcher'."

@@ -43,21 +43,12 @@ with text from the m-file as a string."
         (let* ((eol-pt (pos-eol))
                (m-matrix-info (get-text-property eol-pt 'm-matrix-info)))
           (when m-matrix-info
-            (let* ((matrix-type (nth 0 m-matrix-info))
-                   (first-col-extra (nth 1 m-matrix-info))
-                   (col-widths (nth 2 m-matrix-info))
-                   (line-text (buffer-substring (pos-bol) eol-pt)))
-              (setq result
-                    (concat result
-                            (format "L%-3d point %-3d => '%-20s e=%d col-widths=%-15s | %s\n"
-                                    (line-number-at-pos)
-                                    (pos-bol)
-                                    (symbol-name matrix-type)
-                                    first-col-extra
-                                    (if col-widths
-                                        (prin1-to-string col-widths)
-                                      "nil")
-                                    line-text))))))
+            (let ((line-text (buffer-substring (pos-bol) eol-pt)))
+              (setq result (concat result (format "L%-3d %-40s | %s\n"
+                                                  (line-number-at-pos)
+                                                  (format "%S" m-matrix-info)
+                                                  line-text)))
+              )))
         (forward-line)))
     result))
 

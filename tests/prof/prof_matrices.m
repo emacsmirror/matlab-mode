@@ -2,9 +2,12 @@
 % Abstract:
 %    Use this file to exercise matrix alignment.
 %
-%    To profile:
+%    To profile/benchmark:
+%      (require 'benchmark)
 %      (require 'profiler)
 %      (progn (profiler-stop) (profiler-start 'cpu) (indent-region (point-min) (point-max)) (profiler-stop) (profiler-report))
+%      (benchmark-elapse (progn (profiler-stop) (profiler-start 'cpu) (indent-region (point-min) (point-max)) (profiler-stop) (profiler-report)))
+%      (benchmark-elapse (indent-region (point-min) (point-max)))
 
 % To create m1,
 %  m1Var = [[1:15]; randi([1, 10000000], 10000, 15)];
