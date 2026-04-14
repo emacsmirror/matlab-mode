@@ -1,0 +1,60 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,825> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,170]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@)
+ (assignment<172,253> left: (identifier[172,180]@{mNumeric}@) =[181,182]
+  right: 
+   (matrix<183,253> [[183,184]
+    (row<192,198> (number[192,193]@{1}@) ,[194,194] (identifier[194,195]@{a}@) ,[196,196]
+     (unary_operator<196,198> +[196,197] operand: (identifier[197,198]@{b}@)))
+    (row<206,212> (number[206,207]@{2}@) ,[208,208] (number[208,209]@{2}@) ,[209,210]
+     (unary_operator<210,212> +[210,211] operand: (number[211,212]@{2}@)))
+    (row<220,226> (number[220,221]@{3}@) ,[222,222] (identifier[222,223]@{a}@) ,[223,224]
+     (unary_operator<224,226> -[224,225] operand: (identifier[225,226]@{b}@)))
+    (row<234,246> (number[234,237]@{4.1}@) ,[238,238] (number[238,241]@{4.1}@) ,[242,242]
+     (unary_operator<242,246> -[242,243] operand: (number[243,246]@{4.3}@)))
+    ][252,253]))
+ ;[253,254]
+ (assignment<256,823> left: (identifier[256,265]@{mNumeric2}@) =[266,267]
+  right: 
+   (matrix<268,823> [[268,269]
+    (row<269,277> (number[269,270]@{1}@) ,[273,273] (number[273,277]@{2e-3}@))
+    (row<292,300> (number[292,293]@{2}@) ,[294,294] (number[294,300]@{2.1e-3}@))
+    (row<315,323> (number[315,316]@{3}@) ,[319,319] (number[319,323]@{2E-3}@))
+    (row<338,346> (number[338,339]@{4}@) ,[340,340] (number[340,346]@{2.1E-3}@))
+    (row<361,369> (number[361,362]@{5}@) ,[365,365] (number[365,369]@{2d-3}@))
+    (row<384,392> (number[384,385]@{6}@) ,[386,386] (number[386,392]@{2.1d-3}@))
+    (row<407,415> (number[407,408]@{7}@) ,[411,411] (number[411,415]@{2D-3}@))
+    (row<430,438> (number[430,431]@{8}@) ,[432,432] (number[432,438]@{2.1D-3}@))
+    (row<454,462> (number[454,455]@{1}@) ,[455,456]
+     (unary_operator<457,462> -[457,458] operand: (number[458,462]@{2e-3}@)))
+    (row<477,486> (number[477,478]@{2}@) ,[478,479]
+     (unary_operator<479,486> -[479,480] operand: (number[480,486]@{2.1e-3}@)))
+    (row<501,508> (number[501,502]@{3}@) ,[502,503]
+     (unary_operator<503,508> -[503,504] operand: (number[504,508]@{2E-3}@)))
+    (row<523,532> (number[523,524]@{4}@) ,[524,525]
+     (unary_operator<525,532> -[525,526] operand: (number[526,532]@{2.1E-3}@)))
+    (row<547,558> (number[547,552]@{54321}@) ,[552,553]
+     (unary_operator<553,558> -[553,554] operand: (number[554,558]@{2d-3}@)))
+    (row<573,582> (number[573,574]@{6}@) ,[574,575]
+     (unary_operator<575,582> -[575,576] operand: (number[576,582]@{2.1d-3}@)))
+    (row<597,604> (number[597,598]@{7}@) ,[598,599]
+     (unary_operator<599,604> -[599,600] operand: (number[600,604]@{2D-3}@)))
+    (row<619,628> (number[619,620]@{8}@) ,[620,621]
+     (unary_operator<621,628> -[621,622] operand: (number[622,628]@{2.1D-3}@)))
+    (row<644,652> (number[644,645]@{1}@) ,[647,647]
+     (unary_operator<647,652> +[647,648] operand: (number[648,652]@{2e-3}@)))
+    (row<667,676> (number[667,668]@{2}@) ,[669,669]
+     (unary_operator<669,676> +[669,670] operand: (number[670,676]@{2.1e-3}@)))
+    (row<691,700> (number[691,692]@{3}@) ,[695,695]
+     (unary_operator<695,700> +[695,696] operand: (number[696,700]@{2E-3}@)))
+    (row<715,724> (number[715,716]@{4}@) ,[717,717]
+     (unary_operator<717,724> +[717,718] operand: (number[718,724]@{2.1E-3}@)))
+    (row<739,748> (number[739,740]@{5}@) ,[743,743]
+     (unary_operator<743,748> +[743,744] operand: (number[744,748]@{2d-3}@)))
+    (row<763,772> (number[763,764]@{6}@) ,[765,765]
+     (unary_operator<765,772> +[765,766] operand: (number[766,772]@{2.1d-3}@)))
+    (row<787,796> (number[787,788]@{7}@) ,[791,791]
+     (unary_operator<791,796> +[791,792] operand: (number[792,796]@{2D-3}@)))
+    (row<811,822> (number[811,812]@{8}@) ,[813,813]
+     (unary_operator<813,822> +[813,814] operand: (number[814,822]@{2.123D-3}@)))
+    ][822,823]))
+ ;[823,824] \n[824,825])

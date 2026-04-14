@@ -1,0 +1,74 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_non_numeric_matrix.m:3:9:
+
+  Case1: (t-utils-xr (re-search-forward (rx "a+")) "C-a" "C-i")
+
+- Invoking      : (re-search-forward (rx "a+"))
+  Start point   :   85
+  Moved to point:  109
+  : 6:15:           1, a+b
+  :                      ^
+  No buffer modifications
+
+- Invoking      : "C-a" = move-beginning-of-line
+  Start point   :  109
+  Moved to point:   94
+  : 6:0:           1, a+b
+  :      ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :   94
+  Moved to point:  103
+  : 6:9:          1, a + b
+  :               ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -3,8 +3,8 @@
+ % Case1: (t-utils-xr (re-search-forward (rx "a+")) "C-a" "C-i")
+ 
+ n1 = [
+-          1, a+b
+-          % comment
++         1, a + b
++       % comment
+            c-d,     1
+               5   600
+          ];
+  #+end_src diff
+
+* Executing commands from electric_indent_xr_non_numeric_matrix.m:12:9:
+
+  Case2: (t-utils-xr (re-search-forward (rx "a+")) "C-i")
+
+- Invoking      : (re-search-forward (rx "a+"))
+  Start point   :  243
+  Moved to point:  267
+  : 15:15:           1, a+b
+  :                       ^
+  No buffer modifications
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  267
+  Moved to point:  268
+  : 15:16:          1, a + b
+  :                        ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -12,8 +12,8 @@
+ % Case2: (t-utils-xr (re-search-forward (rx "a+")) "C-i")
+ 
+ n2 = [
+-          1, a+b
+-          % comment
++         1, a + b
++       % comment
+            c-d,     1
+               5   600
+          ];
+  #+end_src diff

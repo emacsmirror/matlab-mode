@@ -1,0 +1,26 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,347> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,85]@{% Case1: (t-utils-xr (re-search-forward (rx "a+"))...}@)
+ (assignment<87,185> left: (identifier[87,89]@{n1}@) =[90,91]
+  right: 
+   (matrix<92,185> [[92,93]
+    (row<104,110> (number[104,105]@{1}@) ,[105,106]
+     (binary_operator<107,110> left: (identifier[107,108]@{a}@) +[108,109] right: (identifier[109,110]@{b}@)))
+    (comment[121,130]@{% comment}@)
+    (row<142,152>
+     (binary_operator<142,145> left: (identifier[142,143]@{c}@) -[143,144] right: (identifier[144,145]@{d}@))
+     ,[145,146] (number[151,152]@{1}@))
+    (row<167,174> (number[167,168]@{5}@) ,[171,171] (number[171,174]@{600}@))
+    ][184,185]))
+ ;[185,186] (comment[188,245]@{% Case2: (t-utils-xr (re-search-forward (rx "a+"))...}@)
+ (assignment<247,345> left: (identifier[247,249]@{n2}@) =[250,251]
+  right: 
+   (matrix<252,345> [[252,253]
+    (row<264,270> (number[264,265]@{1}@) ,[265,266]
+     (binary_operator<267,270> left: (identifier[267,268]@{a}@) +[268,269] right: (identifier[269,270]@{b}@)))
+    (comment[281,290]@{% comment}@)
+    (row<302,312>
+     (binary_operator<302,305> left: (identifier[302,303]@{c}@) -[303,304] right: (identifier[304,305]@{d}@))
+     ,[305,306] (number[311,312]@{1}@))
+    (row<327,334> (number[327,328]@{5}@) ,[331,331] (number[331,334]@{600}@))
+    ][344,345]))
+ ;[345,346] \n[346,347])
