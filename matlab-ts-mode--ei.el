@@ -1505,6 +1505,16 @@ where:
          ;; (those that are not separators or brackets).  When next-node is an
          ;; entry, add (col-width - entry-width) extra spaces before it.
          ;; Only track columns inside the matrix (after the "[" node).
+         ;;
+         ;; Unary operators (e.g. the "+" in "+2e-3") are part of the next
+         ;; entry, not separate entries.  classify-matrix counts a unary prefix
+         ;; and its operand as a single entry.  Therefore:
+         ;;   - Do not increment nm-col-idx for "unary-op" nodes.
+         ;;   - When next-node is "unary-op", compute entry-width from the
+         ;;     unary operator through its parent unary_operator node (which
+         ;;     spans both the sign and the operand).
+         ;;   - When node is "unary-op" (processing the operand), skip
+         ;;     alignment padding since it was already applied.
          (when nm-col-widths
            (when (and (not nm-inside-matrix)
                       (string= node-type "[")
@@ -1513,18 +1523,27 @@ where:
                       (matlab-ts-mode--ei-is-multi-line-matrix (treesit-node-parent node)))
              (setq nm-inside-matrix t))
            (when nm-inside-matrix
-             (when (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes node-type))
+             (when (not (or (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes node-type)
+                            (string= node-type "unary-op")))
                (setq nm-col-idx (1+ nm-col-idx)))
              (when (and n-spaces-between
                         (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes
-                                             next-node-type)))
+                                             next-node-type))
+                        (not (string= node-type "unary-op")))
                (let* ((next-col (1+ nm-col-idx))
                       (raw-width (nth (1- next-col) nm-col-widths))
                       (col-width (if (and (= next-col 1) nm-first-col-extra)
                                      (+ raw-width nm-first-col-extra)
                                    raw-width))
-                      (entry-width (- (treesit-node-end next-node)
-                                      (treesit-node-start next-node))))
+                      (entry-width
+                       (if (string= next-node-type "unary-op")
+                           ;; Unary entry: width spans the parent unary_operator node
+                           ;; which includes both the sign and the operand.
+                           (let ((unary-parent (treesit-node-parent next-node)))
+                             (- (treesit-node-end unary-parent)
+                                (treesit-node-start unary-parent)))
+                         (- (treesit-node-end next-node)
+                            (treesit-node-start next-node)))))
                  (when (and col-width (< entry-width col-width))
                    (setq n-spaces-between (+ n-spaces-between
                                              (- col-width entry-width))))))))
