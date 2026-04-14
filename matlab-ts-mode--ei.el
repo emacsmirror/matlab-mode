@@ -426,11 +426,13 @@ Expression-forming characters such as brackets, quotes, and `@'
 indicate non-numeric content.")
 
 (defconst matlab-ts-mode--ei-numeric-entry-re
-  "[+~-]*[a-zA-Z0-9][a-zA-Z0-9_.+~-]*"
-  "Regexp matching a single numeric entry in a matrix row.
-Matches word tokens with optional leading unary operators.  Covers
-decimal, exponential, hex (0xFF), binary (0b1010), signed/unsigned with
-numbers with word size, \(0xFFs8), identifiers (inf, nan, pi, etc.).")
+  "[a-zA-Z0-9][a-zA-Z0-9_.]*"
+  "Regexp matching a single numeric entry word token in a matrix row.
+Matches alphanumeric tokens with dots and underscores.  Exponent
+signs (e.g. the + in 1.23e+5 or the - in 5.0d-15) are extended by
+the scanning loop in `matlab-ts-mode--ei-classify-matrix' after the
+initial match.  Does not include leading unary operators; those are
+also handled by the scanning loop.")
 
 (defun matlab-ts-mode--ei-row-entry-count (row-node)
   "Count the number of entries in ROW-NODE.
@@ -573,17 +575,63 @@ which uses tree-sitter children nodes to determine
                     (when (re-search-forward ";[ \t]*[^ \t\n]" code-end t)
                       (unless (eq (char-before) ?\])
                         (setq is-valid nil)))
-                    ;; Collect entry widths for this row
-                    (when is-valid
-                      (goto-char lstart)
+                    ;; Collect entry widths for this row.
+                    ;; Each numeric entry is an optional unary +/-/~
+                    ;; prefix followed by a word token.  A +/- is unary
+                    ;; when there is no space after it and the preceding
+                    ;; non-whitespace character is a separator (space,
+                    ;; comma, semicolon, "[") or it is at scan-start.
+                    ;; Otherwise, +/- is a binary operator and the row
+                    ;; is non-numeric.
+                    (when (and is-valid is-numeric)
+                      (goto-char scan-start)
                       (let ((col 0)
                             (row-widths nil))
-                        (while (re-search-forward matlab-ts-mode--ei-numeric-entry-re
-                                                  code-end t)
-                          (let ((w (- (match-end 0) (match-beginning 0))))
-                            (push w row-widths))
-                          (setq col (1+ col)))
-                        (when (> col 0)
+                        (while (and is-numeric
+                                    (progn (skip-chars-forward " \t,;" scan-end)
+                                           (< (point) scan-end)))
+                          (let ((entry-start (point))
+                                (ch (char-after)))
+                            (cond
+                             ;; Unary +/-/~: no space after, preceded by
+                             ;; separator or at scan-start.
+                             ((and (memq ch '(?+ ?- ?~))
+                                   (< (1+ (point)) scan-end)
+                                   (not (memq (char-after (1+ (point))) '(?\s ?\t)))
+                                   (or (= (point) scan-start)
+                                       (memq (char-before) '(?\s ?\t ?, ?\; ?\[))))
+                              (forward-char)
+                              (if (looking-at matlab-ts-mode--ei-numeric-entry-re)
+                                  (progn
+                                    (goto-char (match-end 0))
+                                    ;; Extend for exponent sign: e.g. 1.23e+5, 5.0d-15
+                                    (when (and (memq (char-before) '(?e ?E ?d ?D))
+                                              (< (point) scan-end)
+                                              (memq (char-after) '(?+ ?-))
+                                              (looking-at "[+-][a-zA-Z0-9][a-zA-Z0-9_.]*"))
+                                      (goto-char (match-end 0)))
+                                    (let ((w (- (point) entry-start)))
+                                      (push w row-widths)
+                                      (setq col (1+ col))))
+                                (setq is-numeric nil)))
+                             ;; Binary +/-: mark non-numeric
+                             ((memq ch '(?+ ?-))
+                              (setq is-numeric nil))
+                             ;; Word token without unary prefix
+                             ((looking-at matlab-ts-mode--ei-numeric-entry-re)
+                              (goto-char (match-end 0))
+                              ;; Extend for exponent sign: e.g. 1.23e+5, 5.0d-15
+                              (when (and (memq (char-before) '(?e ?E ?d ?D))
+                                        (< (point) scan-end)
+                                        (memq (char-after) '(?+ ?-))
+                                        (looking-at "[+-][a-zA-Z0-9][a-zA-Z0-9_.]*"))
+                                (goto-char (match-end 0)))
+                              (let ((w (- (point) entry-start)))
+                                (push w row-widths)
+                                (setq col (1+ col))))
+                             ;; Unmatched content
+                             (t (setq is-numeric nil)))))
+                        (when (and is-numeric (> col 0))
                           ;; Check for multi-line row: a line with entries
                           ;; and "..." but no ";" may continue onto the next
                           ;; line.  Allow it when the entry count matches the

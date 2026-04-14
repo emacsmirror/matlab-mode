@@ -1,0 +1,116 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,1235> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,90]@{% Non-numeric matrices: binary +/- operators make ...}@)
+ (assignment<92,141> left: (identifier[92,104]@{mNonNumeric1}@) =[105,106]
+  right: 
+   (matrix<107,141> [[107,108]
+    (row<116,121> (number[116,117]@{1}@) ,[118,118]
+     (binary_operator<118,121> left: (identifier[118,119]@{a}@) +[119,120] right: (identifier[120,121]@{b}@)))
+    (row<129,134> (number[129,130]@{3}@) ,[131,131]
+     (binary_operator<131,134> left: (identifier[131,132]@{a}@) -[132,133] right: (identifier[133,134]@{b}@)))
+    ][140,141]))
+ ;[141,142]
+ (assignment<144,195> left: (identifier[144,156]@{mNonNumeric2}@) =[157,158]
+  right: 
+   (matrix<159,195> [[159,160]
+    (row<168,174> (number[168,169]@{1}@) ,[170,170]
+     (binary_operator<170,174> left: (identifier[170,171]@{a}@) +[171,172] right: (identifier[173,174]@{b}@)))
+    (row<182,188> (number[182,183]@{3}@) ,[184,184]
+     (binary_operator<184,188> left: (identifier[184,185]@{a}@) -[185,186] right: (identifier[187,188]@{b}@)))
+    ][194,195]))
+ ;[195,196]
+ (assignment<198,251> left: (identifier[198,210]@{mNonNumeric3}@) =[211,212]
+  right: 
+   (matrix<213,251> [[213,214]
+    (row<222,229> (number[222,223]@{1}@) ,[224,224]
+     (binary_operator<224,229> left: (identifier[224,225]@{a}@) +[226,227] right: (identifier[228,229]@{b}@)))
+    (row<237,244> (number[237,238]@{3}@) ,[239,239]
+     (binary_operator<239,244> left: (identifier[239,240]@{a}@) -[241,242] right: (identifier[243,244]@{b}@)))
+    ][250,251]))
+ ;[251,252] (comment[254,310]@{% Numeric matrices: unary +/- are valid numeric en...}@)
+ (assignment<312,394> left: (identifier[312,321]@{mNumeric1}@) =[322,323]
+  right: 
+   (matrix<324,394> [[324,325]
+    (row<333,339> (number[333,334]@{1}@) ,[335,335] (identifier[335,336]@{a}@) ,[337,337]
+     (unary_operator<337,339> +[337,338] operand: (identifier[338,339]@{b}@)))
+    (row<347,353> (number[347,348]@{2}@) ,[349,349] (number[349,350]@{2}@) ,[350,351]
+     (unary_operator<351,353> +[351,352] operand: (number[352,353]@{2}@)))
+    (row<361,367> (number[361,362]@{3}@) ,[363,363] (identifier[363,364]@{a}@) ,[364,365]
+     (unary_operator<365,367> -[365,366] operand: (identifier[366,367]@{b}@)))
+    (row<375,387> (number[375,378]@{4.1}@) ,[379,379] (number[379,382]@{4.1}@) ,[383,383]
+     (unary_operator<383,387> -[383,384] operand: (number[384,387]@{4.3}@)))
+    ][393,394]))
+ ;[394,395] (comment[397,430]@{% Numeric matrices with exponents}@)
+ (assignment<431,998> left: (identifier[431,440]@{mNumeric2}@) =[441,442]
+  right: 
+   (matrix<443,998> [[443,444]
+    (row<444,452> (number[444,445]@{1}@) ,[448,448] (number[448,452]@{2e-3}@))
+    (row<467,475> (number[467,468]@{2}@) ,[469,469] (number[469,475]@{2.1e-3}@))
+    (row<490,498> (number[490,491]@{3}@) ,[494,494] (number[494,498]@{2E-3}@))
+    (row<513,521> (number[513,514]@{4}@) ,[515,515] (number[515,521]@{2.1E-3}@))
+    (row<536,544> (number[536,537]@{5}@) ,[540,540] (number[540,544]@{2d-3}@))
+    (row<559,567> (number[559,560]@{6}@) ,[561,561] (number[561,567]@{2.1d-3}@))
+    (row<582,590> (number[582,583]@{7}@) ,[586,586] (number[586,590]@{2D-3}@))
+    (row<605,613> (number[605,606]@{8}@) ,[607,607] (number[607,613]@{2.1D-3}@))
+    (row<629,637> (number[629,630]@{1}@) ,[630,631]
+     (unary_operator<632,637> -[632,633] operand: (number[633,637]@{2e-3}@)))
+    (row<652,661> (number[652,653]@{2}@) ,[653,654]
+     (unary_operator<654,661> -[654,655] operand: (number[655,661]@{2.1e-3}@)))
+    (row<676,683> (number[676,677]@{3}@) ,[677,678]
+     (unary_operator<678,683> -[678,679] operand: (number[679,683]@{2E-3}@)))
+    (row<698,707> (number[698,699]@{4}@) ,[699,700]
+     (unary_operator<700,707> -[700,701] operand: (number[701,707]@{2.1E-3}@)))
+    (row<722,733> (number[722,727]@{54321}@) ,[727,728]
+     (unary_operator<728,733> -[728,729] operand: (number[729,733]@{2d-3}@)))
+    (row<748,757> (number[748,749]@{6}@) ,[749,750]
+     (unary_operator<750,757> -[750,751] operand: (number[751,757]@{2.1d-3}@)))
+    (row<772,779> (number[772,773]@{7}@) ,[773,774]
+     (unary_operator<774,779> -[774,775] operand: (number[775,779]@{2D-3}@)))
+    (row<794,803> (number[794,795]@{8}@) ,[795,796]
+     (unary_operator<796,803> -[796,797] operand: (number[797,803]@{2.1D-3}@)))
+    (row<819,827> (number[819,820]@{1}@) ,[822,822]
+     (unary_operator<822,827> +[822,823] operand: (number[823,827]@{2e-3}@)))
+    (row<842,851> (number[842,843]@{2}@) ,[844,844]
+     (unary_operator<844,851> +[844,845] operand: (number[845,851]@{2.1e-3}@)))
+    (row<866,875> (number[866,867]@{3}@) ,[870,870]
+     (unary_operator<870,875> +[870,871] operand: (number[871,875]@{2E-3}@)))
+    (row<890,899> (number[890,891]@{4}@) ,[892,892]
+     (unary_operator<892,899> +[892,893] operand: (number[893,899]@{2.1E-3}@)))
+    (row<914,923> (number[914,915]@{5}@) ,[918,918]
+     (unary_operator<918,923> +[918,919] operand: (number[919,923]@{2d-3}@)))
+    (row<938,947> (number[938,939]@{6}@) ,[940,940]
+     (unary_operator<940,947> +[940,941] operand: (number[941,947]@{2.1d-3}@)))
+    (row<962,971> (number[962,963]@{7}@) ,[966,966]
+     (unary_operator<966,971> +[966,967] operand: (number[967,971]@{2D-3}@)))
+    (row<986,997> (number[986,987]@{8}@) ,[988,988]
+     (unary_operator<988,997> +[988,989] operand: (number[989,997]@{2.123D-3}@)))
+    ][997,998]))
+ ;[998,999] (comment[1001,1030]@{% Unary minus at start of row}@)
+ (assignment<1031,1080> left: (identifier[1031,1042]@{mUnaryStart}@) =[1043,1044]
+  right: 
+   (matrix<1045,1080> [[1045,1046]
+    (row<1054,1059>
+     (unary_operator<1054,1056> -[1054,1055] operand: (number[1055,1056]@{1}@))
+     ,[1058,1058] (number[1058,1059]@{2}@))
+    (row<1068,1072> (number[1068,1069]@{3}@) ,[1070,1070]
+     (unary_operator<1070,1072> +[1070,1071] operand: (number[1071,1072]@{4}@)))
+    ][1079,1080]))
+ ;[1080,1081] (comment[1083,1101]@{% Unary with tilde}@)
+ (assignment<1102,1151> left: (identifier[1102,1113]@{mUnaryTilde}@) =[1114,1115]
+  right: 
+   (matrix<1116,1151> [[1116,1117]
+    (row<1125,1130>
+     (not_operator<1125,1127> ~[1125,1126] (identifier[1126,1127]@{a}@))
+     ,[1129,1129] (number[1129,1130]@{2}@))
+    (row<1139,1143> (number[1139,1140]@{3}@) ,[1142,1142] (number[1142,1143]@{4}@))
+    ][1150,1151]))
+ ;[1151,1152] (comment[1154,1180]@{% Single column with unary}@)
+ (assignment<1181,1233> left: (identifier[1181,1191]@{mSingleCol}@) =[1192,1193]
+  right: 
+   (matrix<1194,1233> [[1194,1195]
+    (row<1203,1205>
+     (unary_operator<1203,1205> -[1203,1204] operand: (number[1204,1205]@{1}@)))
+    (row<1213,1215>
+     (unary_operator<1213,1215> +[1213,1214] operand: (number[1214,1215]@{2}@)))
+    (row<1224,1225> (number[1224,1225]@{3}@))
+    ][1232,1233]))
+ ;[1233,1234] \n[1234,1235])
