@@ -1031,10 +1031,11 @@ Within ACTION-FUN, `t-utils--buf-file' contains NAME.LANG contents
 with the major mode defined by the first line of NAME.LANG.
 TEST-NAME is used in messages.
 
-The result of ACTION-FUN is compared against NAME_expected.txt.  If
-my_test_expected.txt does not exist or result does not match the existing
-my_test_expected.txt, my_test_expected.txt~ is generated and if it looks
-correct, you should rename it to my_test_expected.txt.
+The result of ACTION-FUN, if not nil, is compared against
+NAME_expected.txt.  If my_test_expected.txt does not exist or result
+does not match the existing my_test_expected.txt, my_test_expected.txt~
+is generated and if it looks correct, you should rename it to
+my_test_expected.txt.
 
 Example test setup:
 
@@ -1106,14 +1107,13 @@ containing the LANGUAGE tree-sitter parse errors.
 
           (t-utils--insert-file-for-test lang-file)
 
-          (let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
-                 (got (concat (symbol-name action-fun) " result:\n---\n"
-                              (funcall action-fun))))
-
-            (let ((error-msg (t-utils--baseline-check test-name start-time
-                                                      lang-file got expected-file)))
-              (when error-msg
-                (push error-msg error-msgs)))))))
+          (if-let* ((expected-file (replace-regexp-in-string "\\.[^.]+\\'" "_expected.txt" lang-file))
+                    (action-result (funcall action-fun))
+                    (got (concat (symbol-name action-fun) " result:\n---\n" action-result)))
+              (let ((error-msg (t-utils--baseline-check test-name start-time
+                                                        lang-file got expected-file)))
+                (when error-msg
+                  (push error-msg error-msgs)))))))
     ;; Validate t-utils-test-outline-search-function result
     (setq error-msgs (reverse error-msgs))
     (should (equal error-msgs '()))))
