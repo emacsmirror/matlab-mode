@@ -606,9 +606,9 @@ which uses tree-sitter children nodes to determine
                                     (goto-char (match-end 0))
                                     ;; Extend for exponent sign: e.g. 1.23e+5, 5.0d-15
                                     (when (and (memq (char-before) '(?e ?E ?d ?D))
-                                              (< (point) scan-end)
-                                              (memq (char-after) '(?+ ?-))
-                                              (looking-at "[+-][a-zA-Z0-9][a-zA-Z0-9_.]*"))
+                                               (< (point) scan-end)
+                                               (memq (char-after) '(?+ ?-))
+                                               (looking-at "[+-][a-zA-Z0-9][a-zA-Z0-9_.]*"))
                                       (goto-char (match-end 0)))
                                     (let ((w (- (point) entry-start)))
                                       (push w row-widths)
@@ -622,9 +622,9 @@ which uses tree-sitter children nodes to determine
                               (goto-char (match-end 0))
                               ;; Extend for exponent sign: e.g. 1.23e+5, 5.0d-15
                               (when (and (memq (char-before) '(?e ?E ?d ?D))
-                                        (< (point) scan-end)
-                                        (memq (char-after) '(?+ ?-))
-                                        (looking-at "[+-][a-zA-Z0-9][a-zA-Z0-9_.]*"))
+                                         (< (point) scan-end)
+                                         (memq (char-after) '(?+ ?-))
+                                         (looking-at "[+-][a-zA-Z0-9][a-zA-Z0-9_.]*"))
                                 (goto-char (match-end 0)))
                               (let ((w (- (point) entry-start)))
                                 (push w row-widths)
@@ -2916,7 +2916,8 @@ Assumes there are no buffer restrictions in place."
             (setq end (point)))))))
 
   (setq matlab-ts-mode--ei-line-nodes-eat-comma nil)
-  (setq matlab-ts-mode--ei-line-nodes (matlab-ts-mode--ei-line-nodes-in-region beg end)))
+  (setq matlab-ts-mode--ei-line-nodes (matlab-ts-mode--ei-line-nodes-in-region beg end))
+  nil)
 
 (defun matlab-ts-mode--ei-cleanup ()
   "Free memory used during indent."
@@ -3312,7 +3313,6 @@ indent."
     ;; Logical buffer point maintained (adjusted as appropriate)
     (when buffer-pt
       (goto-char buffer-pt))))
-
 
 (provide 'matlab-ts-mode--ei)
 ;;; matlab-ts-mode--ei.el ends here
