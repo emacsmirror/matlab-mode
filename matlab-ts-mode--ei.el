@@ -1,4 +1,4 @@
-;;; matlab-ts-mode--ei.el --- MATLAB electric indent -*- lexical-binding: t -*-
+;; matlab-ts-mode--ei.el --- MATLAB electric indent -*- lexical-binding: t -*-
 
 ;; Version: 8.1.2
 ;; URL: https://github.com/mathworks/Emacs-MATLAB-Mode
@@ -489,17 +489,17 @@ Returns one of:
   (list \\='not-a-m-matrix)
      Single-line matrix, multi-line with multiple rows on one line,
      or rows with non-uniform column counts.
-  (list \\='numeric-m-matrix FIRST-COL-EXTRA COLUMN-WIDTHS)
+  (list \\='numeric-m-matrix FIRST-COL-OFFSET COLUMN-WIDTHS)
      Multi-line matrix assignment where each row is on its own line and
      contains only non-expression entries (numbers, identifiers,
      unary operators).
      COLUMN-WIDTHS is a list of per-column maximum entry widths.
-  (list \\='non-numeric-m-matrix FIRST-COL-EXTRA)
+  (list \\='non-numeric-m-matrix FIRST-COL-OFFSET)
      Multi-line matrix assignment where each row is on its own line but
      contains non-numeric entries.
 
-Where FIRST-COL-EXTRA is either 1 or 0 computed by
-`matlab-ts-mode--ei-m-matrix-first-col-extra'.
+Where FIRST-COL-OFFSET is either 1 or 0 computed by
+`matlab-ts-mode--ei-m-matrix-first-col-offset'.
 
 Uses `re-search-forward' on the buffer text to identify
 \\='numeric-m-matrix for performance.  When the regexp scan does not
@@ -669,12 +669,12 @@ which uses tree-sitter children nodes to determine
           (if (and is-numeric is-valid)
               ;; Text scan confirmed numeric with valid structure.
               (list 'numeric-m-matrix
-                    (matlab-ts-mode--ei-m-matrix-first-col-extra matrix-node)
+                    (matlab-ts-mode--ei-m-matrix-first-col-offset matrix-node)
                     col-widths)
             ;; Not numeric: use tree-sitter to validate matrix structure.
             (if (matlab-ts-mode--ei-valid-non-numeric-p matrix-node)
                 (list 'non-numeric-m-matrix
-                      (matlab-ts-mode--ei-m-matrix-first-col-extra matrix-node))
+                      (matlab-ts-mode--ei-m-matrix-first-col-offset matrix-node))
               '(not-a-m-matrix))))))))
 
 (defun matlab-ts-mode--ei-mark-m-matrix-lines (matrix-node)
@@ -1351,11 +1351,11 @@ It means the start line and end line are different."
             (progn (goto-char (treesit-node-end matrix-node)) (pos-bol))))))
 
 (cl-defun matlab-ts-mode--ei-get-nm-matrix-line (bol-pt eol-pt nm-col-widths
-                                                        nm-first-col-extra
+                                                        nm-first-col-offset
                                                         start-node start-node-offset)
   "Build new line for a numeric m-matrix interior row.
 BOL-PT and EOL-PT delimit the line.  NM-COL-WIDTHS is the list of
-per-column max entry widths.  NM-FIRST-COL-EXTRA is 0 or 1.
+per-column max entry widths.  NM-FIRST-COL-OFFSET is 0 or 1.
 START-NODE and START-NODE-OFFSET are used to compute PT-OFFSET.
 
 Scans the line for three classes of items:
@@ -1543,8 +1543,8 @@ Returns nil to fall back to the general alignment algorithm."
                (let* ((entry-width (- entry-end entry-start))
                       (raw-width (nth col-idx nm-col-widths))
                       (col-width (if (and (= col-idx 0)
-                                          nm-first-col-extra)
-                                     (+ raw-width nm-first-col-extra)
+                                          nm-first-col-offset)
+                                     (+ raw-width nm-first-col-offset)
                                    raw-width))
                       (pad (if col-width
                                (max 0 (- col-width entry-width))
@@ -1622,7 +1622,7 @@ Returns (list NEW-LINE PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-PAIR)."
          (nm-col-idx 0)
          (m-matrix-info (when matlab-ts-mode--ei-align-enabled
                           (get-text-property eol-pt 'm-matrix-info)))
-         (nm-first-col-extra (nth 1 m-matrix-info))
+         (nm-first-col-offset (nth 1 m-matrix-info))
          (nm-col-widths (nth 2 m-matrix-info))
          (nm-row-on-first-line (nth 3 m-matrix-info))
          (nm-inside-matrix (and nm-col-widths (not nm-row-on-first-line))))
@@ -1727,8 +1727,8 @@ Returns (list NEW-LINE PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-PAIR)."
                       (not (string= node-type "unary-op")))
              (let* ((next-col (1+ nm-col-idx))
                     (raw-width (nth (1- next-col) nm-col-widths))
-                    (col-width (if (and (= next-col 1) nm-first-col-extra)
-                                   (+ raw-width nm-first-col-extra)
+                    (col-width (if (and (= next-col 1) nm-first-col-offset)
+                                   (+ raw-width nm-first-col-offset)
                                  raw-width))
                     (entry-width
                      (if (string= next-node-type "unary-op")
@@ -1855,11 +1855,8 @@ where:
 
     (matlab-ts-mode--ei-get-general-new-line start-node start-node-offset)))
 
-;; KEY: matrix start linenum. VALUE: first-col-extra integer
-(defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-cache nil)
-
-(defun matlab-ts-mode--ei-m-matrix-first-col-extra (matrix-node)
-  "Get matrix first-col-extra for indent alignment.
+(defun matlab-ts-mode--ei-m-matrix-first-col-offset (matrix-node)
+  "Get matrix first-col-offset for indent alignment.
 MATRIX-NODE is either a tree-sitter matrix node or a `pos-bol'
 position (integer) of the matrix node's start line.  Result is 0 or
 `matlab-ts-mode--array-indent-level' divided by 2.  Consider the
@@ -1874,33 +1871,23 @@ This will return 0
   m2 = [1 2
         3 4];"
 
-  (let* ((mat-start-linenum (line-number-at-pos (treesit-node-start matrix-node)))
-         (first-col-extra (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
-                            (gethash mat-start-linenum
-                                     matrix-ts-mode--ei-m-matrix-first-col-extra-cache))))
-    (when (not first-col-extra)
-      (save-excursion
-        ;; Move to point after the matrix open, "["
-        (goto-char (treesit-node-start matrix-node))
-        (forward-char) ;; step over the "["
+  (save-excursion
+    ;; Move to point after the matrix open, "["
+    (goto-char (treesit-node-start matrix-node))
+    (forward-char) ;; step over the "["
 
-        (setq first-col-extra
-              (if (and (re-search-forward "[^ \t]" (pos-eol) t)
-                       (progn (backward-char)
-                              ;; have element (not a comment or ellipsis)
-                              (not (looking-at (rx (or "%" "..."))))))
-                  0
-                1))
-        (when matrix-ts-mode--ei-m-matrix-first-col-extra-cache
-          (puthash mat-start-linenum first-col-extra
-                   matrix-ts-mode--ei-m-matrix-first-col-extra-cache))))
-    ;; result is 0 or 1
-    first-col-extra))
+    ;; Result is 0 or 1
+    (if (and (re-search-forward "[^ \t]" (pos-eol) t)
+             (progn (backward-char)
+                    ;; have element (not a comment or ellipsis)
+                    (not (looking-at (rx (or "%" "..."))))))
+        0
+      1)))
 
 (defvar-local matlab-ts-mode--ei-m-matrix-col-widths-cache nil)
 
-(defun matlab-ts-mode--ei-m-matrix-col-widths (matrix first-col-extra &optional first-col-only)
-  "Get multi-line MATRIX column widths adding in FIRST-COL-EXTRA to first column.
+(defun matlab-ts-mode--ei-m-matrix-col-widths (matrix first-col-offset &optional first-col-only)
+  "Get multi-line MATRIX column widths adding in FIRST-COL-OFFSET to first column.
 If optional FIRST-COL-ONLY is non-nil, then return only the width of the
 first column in MATRIX.
 Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
@@ -1926,8 +1913,8 @@ Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
                (when first-col-only
                  (cl-return))
                )))))
-      (when (> first-col-extra 0)
-        (let ((col1-width (+ (alist-get 1 column-widths) first-col-extra)))
+      (when (> first-col-offset 0)
+        (let ((col1-width (+ (alist-get 1 column-widths) first-col-offset)))
           (setf (alist-get 1 column-widths) col1-width)))
 
       (when matlab-ts-mode--ei-m-matrix-col-widths-cache
@@ -2084,15 +2071,18 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                                     (matlab-ts-mode--ei-fast-back-to-indentation)
                                     (treesit-parent-until (treesit-node-at (point) 'matlab)
                                                           "assignment")))
-                   (t-matrix-node (if t-assign-node
-                                      (treesit-node-child-by-field-name t-assign-node "right")
-                                    (treesit-node-parent (treesit-search-subtree ;; else a property
-                                                          (treesit-buffer-root-node)
-                                                          (rx bos "[" eos) nil t))))
-                   (t-matrix-node-linenum (line-number-at-pos (treesit-node-start t-matrix-node)))
-                   (first-col-extra (matlab-ts-mode--ei-m-matrix-first-col-extra t-matrix-node))
-                   (col-widths (matlab-ts-mode--ei-m-matrix-col-widths t-matrix-node
-                                                                       first-col-extra)))
+                   (t-mx-node (if t-assign-node
+                                  (treesit-node-child-by-field-name t-assign-node "right")
+                                (treesit-node-parent (treesit-search-subtree ;; else a property
+                                                      (treesit-buffer-root-node)
+                                                      (rx bos "[" eos) nil t))))
+                   (t-mx-node-linenum (line-number-at-pos (treesit-node-start t-mx-node)))
+                   (first-col-offset (let ((mi (get-text-property (pos-eol) 'm-matrix-info)))
+                                       (if mi
+                                           (nth 1 mi)
+                                         ;; TODO - we should be able to eliminate this call
+                                         (matlab-ts-mode--ei-m-matrix-first-col-offset t-mx-node))))
+                   (col-widths (matlab-ts-mode--ei-m-matrix-col-widths t-mx-node first-col-offset)))
               ;; Move to the line of interest when directly indenting a line rather than a region.
               (when (and (not matrix-cache)
                          (> t-buf-ei-linenum 1))
@@ -2101,9 +2091,9 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
               ;; Adjust column widths
               (while (< (setq t-curr-linenum (line-number-at-pos)) t-end-linenum)
                 (matlab-ts-mode--ei-fast-back-to-indentation)
-                (let* ((row-node (when (>= t-curr-linenum t-matrix-node-linenum)
+                (let* ((row-node (when (>= t-curr-linenum t-mx-node-linenum)
                                    (matlab-ts-mode--ei-get-m-matrix-row-in-line
-                                    (when (= t-curr-linenum t-matrix-node-linenum) t-matrix-node))))
+                                    (when (= t-curr-linenum t-mx-node-linenum) t-mx-node))))
                        (indent-offset (when (looking-at "[^ \t\n]+") (matlab--ei-offset)))
                        ei-line
                        pt-offset)
@@ -2113,7 +2103,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
                              (indent-start-pt (point))
                              (r-content (buffer-substring-no-properties indent-start-pt (pos-eol)))
                              (matrix-offset (save-excursion
-                                              (goto-char (treesit-node-start t-matrix-node))
+                                              (goto-char (treesit-node-start t-mx-node))
                                               (1+ (- (point) (pos-bol))))))
                         (setq pt-offset (if start-pt-linenum
                                             (when (= t-buf-start-pt-linenum t-curr-linenum)
@@ -3344,8 +3334,6 @@ to nil."
    matlab-ts-mode--ei-align-comment-cache            (when init
                                                        (make-hash-table :test 'eql))
    matlab-ts-mode--ei-m-matrix-col-widths-cache      (when init
-                                                       (make-hash-table :test 'eql))
-   matrix-ts-mode--ei-m-matrix-first-col-extra-cache (when init
                                                        (make-hash-table :test 'eql))
    matlab-ts-mode--ei-align-matrix-cache             (when init
                                                        (make-hash-table :test 'eql))
