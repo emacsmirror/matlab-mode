@@ -3230,6 +3230,13 @@ Logical point is maintained, i.e. point is updated as needed."
         ;;                                  \r           \n
         (replace-match "\n")))
 
+    ;; Add final newline if missing
+    (goto-char (point-max))
+    (when (not (looking-at "^$"))
+      (when (= end (point))
+        (setq end (1+ end)))
+      (insert "\n"))
+
     (goto-char buffer-pt) ;; maintain logical buffer point
     ;; Result: updated beg end indent region points
     (cons beg end)))

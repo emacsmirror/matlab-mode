@@ -1,0 +1,9 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,135> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,109]@{% Case1: (t-utils-xr (re-search-forward ";") (dele...}@)
+ (assignment<111,133> left: (identifier[111,113]@{m1}@) =[114,115]
+  right: 
+   (matrix<116,133> [[116,117]
+    (row<117,120> (number[117,118]@{1}@) ,[118,119] (number[119,120]@{2}@))
+    (row<127,132> (number[127,128]@{3}@) ,[129,129] (number[129,132]@{100}@))
+    ][132,133]))
+ ;[133,134] \n[134,135])

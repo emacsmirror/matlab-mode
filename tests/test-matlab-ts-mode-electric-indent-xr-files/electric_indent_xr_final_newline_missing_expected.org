@@ -1,0 +1,48 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_final_newline_missing.m:3:9:
+
+  Case1: (t-utils-xr (re-search-forward ";") (delete-region (point) (point-max)) "C-i")
+
+- Invoking      : (re-search-forward ";")
+  Start point   :  109
+  Moved to point:  134
+  : 6:13:       3 100];
+  :                    ^
+  No buffer modifications
+
+- Invoking      : (delete-region (point) (point-max))
+  Start point   :  134
+  No point movement
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -3,4 +3,4 @@
+ % Case1: (t-utils-xr (re-search-forward ";") (delete-region (point) (point-max)) "C-i")
+ 
+ m1 = [1,2
+-      3 100];
++      3 100];
+\ No newline at end of file
+  #+end_src diff
+
+- Invoking      : "C-i" = matlab-ts-mode-tab-indent
+  Start point   :  134
+  Moved to point:  138
+  : 6:14:       3, 100];
+  :                     ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -2,5 +2,5 @@
+ 
+ % Case1: (t-utils-xr (re-search-forward ";") (delete-region (point) (point-max)) "C-i")
+ 
+-m1 = [1,2
+-      3 100];
+\ No newline at end of file
++m1 = [1,   2
++      3, 100];
+  #+end_src diff
