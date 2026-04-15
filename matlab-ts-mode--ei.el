@@ -1350,6 +1350,461 @@ It means the start line and end line are different."
     (not (= (progn (goto-char (treesit-node-start matrix-node)) (pos-bol))
             (progn (goto-char (treesit-node-end matrix-node)) (pos-bol))))))
 
+(cl-defun matlab-ts-mode--ei-get-nm-matrix-line (bol-pt eol-pt nm-col-widths
+                                                        nm-first-col-extra
+                                                        start-node start-node-offset)
+  "Build new line for a numeric m-matrix interior row.
+BOL-PT and EOL-PT delimit the line.  NM-COL-WIDTHS is the list of
+per-column max entry widths.  NM-FIRST-COL-EXTRA is 0 or 1.
+START-NODE and START-NODE-OFFSET are used to compute PT-OFFSET.
+
+Scans the line for three classes of items:
+  1. Matrix elements - non-whitespace tokens that are not punctuation
+     or decorators.
+  2. Punctuation - commas and semicolons between elements.
+  3. Decorators - comments (%), line continuations (...), and closing
+     bracket (]) optionally followed by commas/semicolons then a
+     comment or line continuation.
+
+Uses the eilb buffer, switching to it only when a mismatch is detected.
+
+Returns result for `matlab-ts-mode--ei-get-new-line':
+  (list NEW-LINE PT-OFFSET)
+
+This does not return the ORIG-LINE-NODE-TYPES FIRST-NODE-PAIR items that
+`matlab-ts-mode--ei-get-new-line' returns because these two items are
+used by the functions called by `matlab-ts-mode--ei-align' and
+`matlab-ts-mode--ei-align' doesn't do any additional alignment
+for \\='numeric-m-matrix lines.
+
+Returns nil to fall back to the general alignment algorithm."
+  (save-excursion
+    (goto-char bol-pt)
+    (let* ((indent-pt (progn (matlab-ts-mode--ei-fast-back-to-indentation) (point)))
+           (indent-level-spaces (buffer-substring-no-properties bol-pt indent-pt))
+           (code-start (point))
+           (start-node-start (when start-node (treesit-node-start start-node)))
+           using-eilb
+           pt-offset
+           running-offset
+           (col-idx 0))
+
+      ;; Replace TABs in indent-level-spaces
+      (when (string-match-p "\t" indent-level-spaces)
+        (setq indent-level-spaces (with-temp-buffer (insert indent-level-spaces)
+                                                    (untabify (point-min) (point-max))
+                                                    (buffer-string)))
+        (setq using-eilb (matlab--eilb-setup))
+        (with-current-buffer matlab--eilb (insert indent-level-spaces)))
+
+      (setq running-offset (length indent-level-spaces))
+
+      ;; Forward scan from code-start.
+      (goto-char code-start)
+      (cl-loop
+       while (< (point) eol-pt)
+       do
+       ;; Skip whitespace and punctuation between entries.
+       (let ((gap-start (point)))
+
+         (skip-chars-forward " \t,;" eol-pt)
+         (when (= (point) eol-pt)
+           ;; Trailing punctuation at end of line: collect and emit.
+           (let ((trail-punct ""))
+             (save-excursion
+               (goto-char gap-start)
+               (while (< (point) eol-pt)
+                 (let ((c (char-after)))
+                   (when (or (eq c ?,) (eq c ?\;))
+                     (setq trail-punct (concat trail-punct (string c)))))
+                 (forward-char)))
+             (when (> (length trail-punct) 0)
+               (let ((actual (buffer-substring-no-properties gap-start eol-pt)))
+                 (when (not using-eilb)
+                   (when (not (string= trail-punct actual))
+                     (let ((prefix (buffer-substring-no-properties bol-pt gap-start)))
+                       (setq using-eilb (matlab--eilb-setup))
+                       (with-current-buffer matlab--eilb (insert prefix)))))
+                 (when using-eilb
+                   (with-current-buffer matlab--eilb (insert trail-punct))))))
+           (cl-return))
+
+         ;; ** Found something on the matrix line, ch is what we are looking-at **
+         (let ((ch (char-after)))
+
+           ;; --- Decorator: comment or line continuation ---
+           (when (or (eq ch ?%)
+                     (and (eq ch ?.) (looking-at "\\.\\.\\.")))
+             (let* ((decorator-start (point))
+                    (punct "")
+                    (decorator-text (buffer-substring-no-properties decorator-start eol-pt))
+                    expected actual)
+               ;; Collect punctuation from gap, removing spaces.
+               (save-excursion
+                 (goto-char gap-start)
+                 (while (< (point) decorator-start)
+                   (let ((c (char-after)))
+                     (when (or (eq c ?,) (eq c ?\;))
+                       (setq punct (concat punct (string c)))))
+                   (forward-char)))
+               (setq expected (concat punct " " decorator-text)
+                     actual (buffer-substring-no-properties gap-start eol-pt))
+               ;; PT-OFFSET for decorator.
+               (when (and start-node-start (not pt-offset)
+                          (>= start-node-start decorator-start))
+                 (setq pt-offset (+ running-offset (length punct) 1 start-node-offset)))
+               ;; PT-OFFSET for gap punctuation.
+               (when (and start-node-start (not pt-offset)
+                          (>= start-node-start gap-start)
+                          (< start-node-start decorator-start))
+                 (setq pt-offset running-offset))
+               (when (not using-eilb)
+                 (when (not (string= expected actual))
+                   (let ((prefix (buffer-substring-no-properties bol-pt gap-start)))
+                     (setq using-eilb (matlab--eilb-setup))
+                     (with-current-buffer matlab--eilb (insert prefix)))))
+               (when using-eilb
+                 (with-current-buffer matlab--eilb (insert expected))))
+             (cl-return))
+
+           ;; --- Decorator: closing bracket "]" ---
+           (when (eq ch ?\])
+             (let ((bracket-pos (point))
+                   (pre-punct ""))
+               ;; Collect punctuation from gap before "]".
+               (save-excursion
+                 (goto-char gap-start)
+                 (while (< (point) bracket-pos)
+                   (let ((c (char-after)))
+                     (when (or (eq c ?,) (eq c ?\;))
+                       (setq pre-punct (concat pre-punct (string c)))))
+                   (forward-char)))
+               ;; Scan past "]".
+               (forward-char)
+               ;; Collect commas/semicolons after "]", skipping spaces.
+               (let ((post-punct ""))
+                 (skip-chars-forward " \t" eol-pt)
+                 (while (and (< (point) eol-pt)
+                             (let ((c (char-after)))
+                               (or (eq c ?,) (eq c ?\;))))
+                   (setq post-punct (concat post-punct (string (char-after))))
+                   (forward-char)
+                   (skip-chars-forward " \t" eol-pt))
+                 ;; What follows must be eol, comment, or line continuation.
+                 (skip-chars-forward " \t" eol-pt)
+                 (let (suffix)
+                   (cond
+                    ((>= (point) eol-pt)
+                     (setq suffix nil))
+                    ((eq (char-after) ?%)
+                     (setq suffix (buffer-substring-no-properties (point) eol-pt)))
+                    ((looking-at "\\.\\.\\.")
+                     (setq suffix (buffer-substring-no-properties (point) eol-pt)))
+                    ;; Unexpected content: fall back.
+                    (t (cl-return-from
+                           matlab-ts-mode--ei-get-nm-matrix-line)))
+                   (let* ((tail (concat pre-punct "]" post-punct (when suffix (concat " " suffix))))
+                          (actual (buffer-substring-no-properties gap-start eol-pt)))
+                     ;; PT-OFFSET.
+                     (when (and start-node-start (not pt-offset)
+                                (>= start-node-start gap-start))
+                       (cond
+                        ((and suffix
+                              (>= start-node-start (- eol-pt (length suffix))))
+                         (setq pt-offset (+ running-offset (length pre-punct) 1
+                                            (length post-punct) 1 start-node-offset)))
+                        ((>= start-node-start bracket-pos)
+                         (setq pt-offset (+ running-offset (length pre-punct) start-node-offset)))
+                        (t
+                         (setq pt-offset running-offset))))
+                     (when (not using-eilb)
+                       (when (not (string= tail actual))
+                         (let ((prefix (buffer-substring-no-properties bol-pt gap-start)))
+                           (setq using-eilb (matlab--eilb-setup))
+                           (with-current-buffer matlab--eilb (insert prefix)))))
+                     (when using-eilb
+                       (with-current-buffer matlab--eilb (insert tail)))
+                     (setq running-offset (+ running-offset (length tail)))))))
+             (cl-return))
+
+           ;; --- Matrix element ---
+           ;; Since classification already validated this as a numeric-m-matrix,
+           ;; a matrix element is simply a run of non-whitespace, non-delimiter
+           ;; characters (includes unary operators, digits, letters, dots, etc.).
+           (let ((entry-start (point))
+                 entry-end)
+             (skip-chars-forward "-+~0-9a-zA-Z_." eol-pt)
+             (if (> (point) entry-start)
+                 (setq entry-end (point))
+               ;; Unmatched: skip to avoid infinite loop.
+               (forward-char))
+
+             (when entry-end
+               (let* ((entry-width (- entry-end entry-start))
+                      (raw-width (nth col-idx nm-col-widths))
+                      (col-width (if (and (= col-idx 0)
+                                          nm-first-col-extra)
+                                     (+ raw-width nm-first-col-extra)
+                                   raw-width))
+                      (pad (if col-width
+                               (max 0 (- col-width entry-width))
+                             0))
+                      (expected-gap (if (> col-idx 0)
+                                        (concat "," (make-string (1+ pad) ? ))
+                                      ""))
+                      (actual-gap (buffer-substring-no-properties gap-start entry-start)))
+
+                 ;; Check gap match and switch to eilb if needed.
+                 (when (not using-eilb)
+                   (when (not (string= expected-gap actual-gap))
+                     (let ((prefix (buffer-substring-no-properties bol-pt gap-start)))
+                       (setq using-eilb (matlab--eilb-setup))
+                       (with-current-buffer matlab--eilb (insert prefix)))))
+
+                 ;; PT-OFFSET for gap punctuation.
+                 (when (and start-node-start (not pt-offset)
+                            (>= start-node-start gap-start)
+                            (< start-node-start entry-start))
+                   (setq pt-offset running-offset))
+
+                 ;; Emit gap.
+                 (when using-eilb
+                   (with-current-buffer matlab--eilb (insert expected-gap)))
+                 (setq running-offset (+ running-offset (length expected-gap)))
+
+                 ;; PT-OFFSET for entry.
+                 (when (and start-node-start (not pt-offset)
+                            (>= start-node-start entry-start)
+                            (< start-node-start entry-end))
+                   (setq pt-offset (+ running-offset start-node-offset)))
+
+                 ;; Emit entry.
+                 (when using-eilb
+                   (let ((entry-text (buffer-substring-no-properties entry-start entry-end)))
+                     (with-current-buffer matlab--eilb (insert entry-text))))
+                 (setq running-offset (+ running-offset entry-width))
+                 (setq col-idx (1+ col-idx))))))))
+
+      ;; Result for matlab-ts-mode--ei-get-nm-matrix-line
+      (list (if using-eilb
+                (matlab--eilb-content)
+              (buffer-substring-no-properties bol-pt eol-pt))
+            pt-offset))))
+
+(cl-defun matlab-ts-mode--ei-get-general-new-line (start-node start-node-offset)
+  "Get new line via general node-walking path.
+START-NODE and START-NODE-OFFSET are used to compute PT-OFFSET.
+Assumes point is at the first non-whitespace character and
+`matlab-ts-mode--ei-line-nodes-loc' is set up.
+
+Returns (list NEW-LINE PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-PAIR)."
+  ;; Optimization: defer eilb setup.  Walk nodes in the current buffer and check
+  ;; whether existing content already matches.  Only when a mismatch is detected,
+  ;; set up the eilb buffer, copy the already-verified prefix, and continue in eilb.
+  (let* (pt-offset ;; used in restoring point
+         using-eilb ;; non-nil when we've switched to building in eilb
+         (bol-pt (pos-bol))
+         (pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
+         (node-type (or (car pair)
+                        ;; no nodes on line
+                        (cl-return-from matlab-ts-mode--ei-get-general-new-line)))
+         (node (cdr pair))
+         (first-node-pair pair)
+         orig-line-node-types
+         next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
+         next2-n-spaces-between
+         (eol-pt (pos-eol))
+         (indent-has-tabs (save-excursion
+                            (let ((first-non-ws (point)))
+                              (goto-char bol-pt)
+                              (re-search-forward "\t" first-non-ws t))))
+         ;; Numeric m-matrix column alignment (for the "[" line only)
+         (nm-col-idx 0)
+         (m-matrix-info (when matlab-ts-mode--ei-align-enabled
+                          (get-text-property eol-pt 'm-matrix-info)))
+         (nm-first-col-extra (nth 1 m-matrix-info))
+         (nm-col-widths (nth 2 m-matrix-info))
+         (nm-row-on-first-line (nth 3 m-matrix-info))
+         (nm-inside-matrix (and nm-col-widths (not nm-row-on-first-line))))
+
+    (when indent-has-tabs ;; Tabs in leading whitespace?  Tabs require eilb for untabify.
+      (setq using-eilb (matlab--eilb-setup))
+      (matlab-ts-mode--ei-insert-indent-level-spaces))
+
+    (cl-loop
+     while (and (< (point) eol-pt)
+                (< (treesit-node-end node) eol-pt))
+     do
+     (let* ((next-pair (progn
+                         (goto-char (treesit-node-end node))
+                         (or next2-pair
+                             (matlab-ts-mode--ei-move-to-and-get-node-pair))))
+            (next-node-type (or (car next-pair) (cl-return)))
+            (next-node (cdr next-pair))
+            (n-spaces-between next2-n-spaces-between))
+
+       (setq next2-pair nil
+             next2-n-spaces-between nil)
+
+       (when matlab-ts-mode--indent-assert
+         (setq orig-line-node-types
+               (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
+
+       ;; --- Compute n-spaces-between ---
+       (when (not n-spaces-between)
+         ;; Fast path: compiled hash dispatch — O(1) for known type pairs.
+         (setq n-spaces-between (gethash (cons node-type next-node-type)
+                                         matlab-ts-mode--ei-spacing-fast))
+
+         ;; Fast path: 3-node rule for power/transpose: val (^|.^) val -> 0 spaces.
+         (when (and (or (not n-spaces-between) (= n-spaces-between 1))
+                    (or (string= node-type "identifier") (string= node-type "number"))
+                    (or (string= next-node-type "^") (string= next-node-type ".^"))
+                    (not (and (string= node-type "number") (string= next-node-type ".^"))))
+           (save-excursion
+             (goto-char (treesit-node-end next-node))
+             (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
+                    (next2-node-type (car pair)))
+               (when (and next2-node-type
+                          (or (string= next2-node-type "identifier")
+                              (string= next2-node-type "number")))
+                 (setq next2-pair pair
+                       next2-n-spaces-between 0
+                       n-spaces-between 0)))))
+
+         ;; Slow path fallback: linear scan (should be rare with a complete type list).
+         (when (not n-spaces-between)
+           (cl-loop for tuple in matlab-ts-mode--ei-spacing do
+                    (let* ((node-re (nth 0 tuple))
+                           (next-spec (nth 1 tuple))
+                           (next-node-re (if (listp next-spec) (car next-spec) next-spec))
+                           (next2-node-re (when (listp next-spec) (cdr next-spec))))
+
+                      (when (and
+                             (string-match-p node-re node-type)
+                             (string-match-p next-node-re next-node-type)
+                             (or (not next2-node-re)
+                                 (save-excursion
+                                   (goto-char (treesit-node-end next-node))
+                                   (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
+                                          (next2-node-type
+                                           (or (car pair)
+                                               (cl-return-from
+                                                   matlab-ts-mode--ei-get-general-new-line))))
+
+                                     (when (string-match-p next2-node-re next2-node-type)
+                                       (setq next2-pair pair)
+                                       (setq next2-n-spaces-between (nth 2 tuple))
+                                       t)))))
+
+                        (setq n-spaces-between (nth 2 tuple))
+                        (when matlab-ts-mode--electric-indent-verbose
+                          (message
+                           "-->ei-matched: %S for node=<\"%s\" %S> next-node=<\"%s\" %S>"
+                           tuple node-type node next-node-type next-node))
+                        (cl-return))))))
+
+       (when (not n-spaces-between)
+         (matlab-ts-mode--assert-msg
+          (format "ei, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
+                  node-type node next-node-type next-node)))
+
+       ;; Numeric m-matrix column alignment for the "[" line with a first row.
+       (when nm-col-widths
+         (when (and (not nm-inside-matrix)
+                    (string= node-type "[")
+                    ;; Consider: v([1,2;3,4]) = [ 101,   21     // following matches 2nd "["
+                    ;;                           3001, 4001];
+                    (matlab-ts-mode--ei-is-multi-line-matrix (treesit-node-parent node)))
+           (setq nm-inside-matrix t))
+         (when nm-inside-matrix
+           (when (not (or (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes node-type)
+                          (string= node-type "unary-op")))
+             (setq nm-col-idx (1+ nm-col-idx)))
+           (when (and n-spaces-between
+                      (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes
+                                           next-node-type))
+                      (not (string= node-type "unary-op")))
+             (let* ((next-col (1+ nm-col-idx))
+                    (raw-width (nth (1- next-col) nm-col-widths))
+                    (col-width (if (and (= next-col 1) nm-first-col-extra)
+                                   (+ raw-width nm-first-col-extra)
+                                 raw-width))
+                    (entry-width
+                     (if (string= next-node-type "unary-op")
+                         ;; Unary entry: width spans the parent unary_operator node
+                         ;; which includes both the sign and the operand.
+                         (let ((unary-parent (treesit-node-parent next-node)))
+                           (- (treesit-node-end unary-parent)
+                              (treesit-node-start unary-parent)))
+                       (- (treesit-node-end next-node)
+                          (treesit-node-start next-node)))))
+               (when (and col-width (< entry-width col-width))
+                 (setq n-spaces-between (+ n-spaces-between
+                                           (- col-width entry-width))))))))
+
+       ;; --- Extra chars and gap matching ---
+       ;; When not yet using eilb, check if existing content matches what we'd produce.
+       ;; Switch to eilb when a mismatch is found.
+       (let* ((node-end (treesit-node-end node))
+              (next-node-start (treesit-node-start next-node))
+              (extra-chars (matlab-ts-mode--ei-node-extra-chars
+                            node node-end next-node-start)))
+
+         (when (not using-eilb)
+           (let* ((gap-str (buffer-substring-no-properties node-end next-node-start))
+                  (gap-matches (and (if (listp extra-chars)
+                                        nil ;; list extra-chars require eilb retroactive insert
+                                      (string= extra-chars ""))
+                                    n-spaces-between
+                                    (= (length gap-str) n-spaces-between)
+                                    (not (string-match-p "[^ ]" gap-str)))))
+             (when (not gap-matches)
+               ;; Mismatch found: copy content from BOL to node-start into eilb and continue
+               (let ((prefix (buffer-substring-no-properties
+                              bol-pt (treesit-node-start node))))
+                 (setq using-eilb (matlab--eilb-setup))
+                 (with-current-buffer matlab--eilb
+                   (insert prefix))))))
+
+         (when (equal start-node node)
+           (setq pt-offset (if using-eilb
+                               (+ (matlab--eilb-length) start-node-offset)
+                             (+ (- (treesit-node-start node) bol-pt) start-node-offset))))
+
+         (when using-eilb
+           (matlab--eilb-add-node-text node extra-chars n-spaces-between)))
+
+       (setq node next-node
+             node-type next-node-type)))
+
+    ;; --- Last node on the line ---
+    (when node
+      (let ((extra-chars (matlab-ts-mode--ei-node-extra-chars
+                          node (min (treesit-node-end node) eol-pt) eol-pt)))
+        (when (not using-eilb)
+          (when (or (listp extra-chars) (not (string= extra-chars "")))
+            (let ((prefix (buffer-substring-no-properties bol-pt (treesit-node-start node))))
+              (setq using-eilb (matlab--eilb-setup))
+              (with-current-buffer matlab--eilb
+                (insert prefix)))))
+
+        (when (equal start-node node)
+          (setq pt-offset (if using-eilb
+                              (+ (matlab--eilb-length) start-node-offset)
+                            (+ (- (treesit-node-start node) bol-pt) start-node-offset))))
+        (when matlab-ts-mode--indent-assert
+          (setq orig-line-node-types
+                (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
+        (when using-eilb
+          (matlab--eilb-add-node-text node extra-chars))))
+
+    (setq matlab-ts-mode--ei-line-nodes-loc nil)
+    (list (if using-eilb
+              (matlab--eilb-content)
+            (buffer-substring-no-properties bol-pt eol-pt))
+          pt-offset orig-line-node-types first-node-pair)))
+
 (cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-node-offset)
   "Get new line content with element spacing adjusted.
 Optional START-NODE and START-NODE-OFFSET are used to compute new pt-offset,
@@ -1370,7 +1825,7 @@ where:
    It will be nil if START-NODE and START-NODE-OFFSET are not provided.
  - ORIG-LINE-NODE-TYPES is the nodes in the original line when
    `matlab-ts-mode--indent-assert' is active, otherwise nil.
- - FIRST-NODE-PAIR-IN-LINE is (node . modified-node-type)"
+ - FIRST-NODE-PAIR-IN-LINE is (node-type . node)"
   (save-excursion
     ;; Move to first non-whitespace character on the line
     (let ((have-non-empty-line (matlab-ts-mode--ei-fast-back-to-indentation)))
@@ -1378,239 +1833,27 @@ where:
                 (matlab-ts-mode--ei-no-elements-to-indent))
         (cl-return-from matlab-ts-mode--ei-get-new-line)))
 
-    ;; Setup for `matlab-ts-mode--ei-move-to-and-get-node-pair'
+    ;; Check for numeric m-matrix interior row: use regexp-based fast path
+    ;; that avoids tree-sitter node walking entirely.  Returns nil when
+    ;; the line has unexpected trailing content and we should fall back.
+    (let* ((eol-pt (pos-eol))
+           (m-matrix-info (when matlab-ts-mode--ei-align-enabled
+                            (get-text-property eol-pt 'm-matrix-info)))
+           (nm-col-widths (nth 2 m-matrix-info))
+           (nm-row-on-first-line (nth 3 m-matrix-info)))
+      (when (and nm-col-widths (not nm-row-on-first-line))
+        (let ((result (matlab-ts-mode--ei-get-nm-matrix-line
+                       (pos-bol) eol-pt nm-col-widths (nth 1 m-matrix-info)
+                       start-node start-node-offset)))
+          (when result
+            (cl-return-from matlab-ts-mode--ei-get-new-line result)))))
+
+    ;; General path: setup node list and walk nodes.
     (setq matlab-ts-mode--ei-line-nodes-loc (gethash (pos-bol) matlab-ts-mode--ei-bol2loc-map))
     (when (not matlab-ts-mode--ei-line-nodes-loc)
       (matlab-ts-mode--assert-msg "No pos-bol in matlab-ts-mode--ei-bol2loc-map"))
 
-    ;; --- Loop inserting spaces between language elements ---
-    ;;
-    ;; Optimization: defer matlab--eilb-setup and matlab-ts-mode--ei-insert-indent-level-spaces.
-    ;; Walk nodes in the current buffer and check whether the existing content already matches.
-    ;; Only when a mismatch is detected, set up the eilb buffer, copy the already-verified prefix,
-    ;; and continue building the rest in eilb.
-    (let* (pt-offset ;; used in restoring point
-           using-eilb ;; non-nil when we've switched to building in eilb
-           (bol-pt (pos-bol))
-           (pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
-           (node-type (or (car pair)
-                          (cl-return-from matlab-ts-mode--ei-get-new-line)))
-           (node (cdr pair))
-           (first-node-pair pair)
-           orig-line-node-types
-           next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
-           next2-n-spaces-between
-           (eol-pt (pos-eol))
-           (indent-has-tabs (save-excursion
-                              (let ((first-non-whitespace-char-in-line-pt (point)))
-                                (goto-char bol-pt)
-                                (re-search-forward "\t" first-non-whitespace-char-in-line-pt t))))
-           ;; Numeric m-matrix column alignment
-           (nm-col-idx 0)
-           (m-matrix-info (when matlab-ts-mode--ei-align-enabled
-                            (get-text-property eol-pt 'm-matrix-info)))
-           (nm-first-col-extra (nth 1 m-matrix-info)) ;; 0 or 1
-           (nm-col-widths (nth 2 m-matrix-info)) ;; list of numbers, nil when not a numeric m-matrix
-           (nm-row-on-first-line (nth 3 m-matrix-info)) ;; line containing the "[" of the matrix
-           (nm-inside-matrix (and nm-col-widths (not nm-row-on-first-line))))
-
-      (when indent-has-tabs ;; Tabs in leading whitespace?  Tabs require eilb for untabify.
-        (setq using-eilb (matlab--eilb-setup))
-        (matlab-ts-mode--ei-insert-indent-level-spaces))
-
-      (cl-loop
-       while (and (< (point) eol-pt)
-                  (< (treesit-node-end node) eol-pt))
-       do
-       (let* ((next-pair (progn
-                           (goto-char (treesit-node-end node))
-                           (or next2-pair
-                               (matlab-ts-mode--ei-move-to-and-get-node-pair))))
-              (next-node-type (or (car next-pair) (cl-return)))
-              (next-node (cdr next-pair))
-              (n-spaces-between next2-n-spaces-between))
-
-         (setq next2-pair nil
-               next2-n-spaces-between nil)
-
-         (when matlab-ts-mode--indent-assert
-           (setq orig-line-node-types
-                 (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
-
-         (when (not n-spaces-between)
-           ;; Fast path: compiled hash dispatch — O(1) for known type pairs.
-           (setq n-spaces-between (gethash (cons node-type next-node-type)
-                                           matlab-ts-mode--ei-spacing-fast))
-
-           ;; Fast path: 3-node rule for power/transpose: val (^|.^) val -> 0 spaces.
-           ;; In the original rule table, this rule appears before the generic wildcard rules
-           ;; but AFTER the specific (number .^) rule.  We only override the 2-node result
-           ;; when the 3-node preconditions are met: the specific (number .^) rule already
-           ;; gives 1 space for "number .^" which is kept when next2 is not a val.
-           (when (and (or (not n-spaces-between) (= n-spaces-between 1))
-                      (or (string= node-type "identifier") (string= node-type "number"))
-                      (or (string= next-node-type "^") (string= next-node-type ".^"))
-                      ;; Rule (number .^) at line 176 precedes the 3-node rule and gives 1.
-                      ;; Only check lookahead when the pair *could* be overridden.
-                      (not (and (string= node-type "number") (string= next-node-type ".^"))))
-             (save-excursion
-               (goto-char (treesit-node-end next-node))
-               (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
-                      (next2-node-type (car pair)))
-                 (when (and next2-node-type
-                            (or (string= next2-node-type "identifier")
-                                (string= next2-node-type "number")))
-                   (setq next2-pair pair
-                         next2-n-spaces-between 0
-                         n-spaces-between 0)))))
-
-           ;; Slow path fallback: linear scan (should be rare with a complete type list).
-           (when (not n-spaces-between)
-             (cl-loop for tuple in matlab-ts-mode--ei-spacing do
-                      (let* ((node-re (nth 0 tuple))
-                             (next-spec (nth 1 tuple))
-                             (next-node-re (if (listp next-spec) (car next-spec) next-spec))
-                             (next2-node-re (when (listp next-spec) (cdr next-spec))))
-
-                        (when (and
-                               (string-match-p node-re node-type)
-                               (string-match-p next-node-re next-node-type)
-                               (or (not next2-node-re)
-                                   (save-excursion
-                                     (goto-char (treesit-node-end next-node))
-                                     (let* ((pair (matlab-ts-mode--ei-move-to-and-get-node-pair))
-                                            (next2-node-type
-                                             (or (car pair)
-                                                 (cl-return-from
-                                                     matlab-ts-mode--ei-get-new-line))))
-
-                                       (when (string-match-p next2-node-re next2-node-type)
-                                         (setq next2-pair pair)
-                                         (setq next2-n-spaces-between (nth 2 tuple))
-                                         t)))))
-
-                          (setq n-spaces-between (nth 2 tuple))
-                          (when matlab-ts-mode--electric-indent-verbose
-                            (message "-->ei-matched: %S for node=<\"%s\" %S> next-node=<\"%s\" %S>"
-                                     tuple node-type node next-node-type next-node))
-                          (cl-return))))))
-
-         (when (not n-spaces-between)
-           (matlab-ts-mode--assert-msg
-            (format "ei, unhandled node <\"%s\" %S> and next-node <\"%s\" %S>"
-                    node-type node next-node-type next-node)))
-
-         ;; Numeric m-matrix column alignment: pad entries to their column widths
-         ;; for right-alignment.  Track the column index by counting entry nodes
-         ;; (those that are not separators or brackets).  When next-node is an
-         ;; entry, add (col-width - entry-width) extra spaces before it.
-         ;; Only track columns inside the matrix (after the "[" node).
-         ;;
-         ;; Unary operators (e.g. the "+" in "+2e-3") are part of the next
-         ;; entry, not separate entries.  classify-matrix counts a unary prefix
-         ;; and its operand as a single entry.  Therefore:
-         ;;   - Do not increment nm-col-idx for "unary-op" nodes.
-         ;;   - When next-node is "unary-op", compute entry-width from the
-         ;;     unary operator through its parent unary_operator node (which
-         ;;     spans both the sign and the operand).
-         ;;   - When node is "unary-op" (processing the operand), skip
-         ;;     alignment padding since it was already applied.
-         (when nm-col-widths
-           (when (and (not nm-inside-matrix)
-                      (string= node-type "[")
-                      ;; Consider: v([1,2;3,4]) = [ 101,   21     // following matches 2nd "["
-                      ;;                           3001, 4001];
-                      (matlab-ts-mode--ei-is-multi-line-matrix (treesit-node-parent node)))
-             (setq nm-inside-matrix t))
-           (when nm-inside-matrix
-             (when (not (or (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes node-type)
-                            (string= node-type "unary-op")))
-               (setq nm-col-idx (1+ nm-col-idx)))
-             (when (and n-spaces-between
-                        (not (string-match-p matlab-ts-mode--ei-matrix-syntax-nodes
-                                             next-node-type))
-                        (not (string= node-type "unary-op")))
-               (let* ((next-col (1+ nm-col-idx))
-                      (raw-width (nth (1- next-col) nm-col-widths))
-                      (col-width (if (and (= next-col 1) nm-first-col-extra)
-                                     (+ raw-width nm-first-col-extra)
-                                   raw-width))
-                      (entry-width
-                       (if (string= next-node-type "unary-op")
-                           ;; Unary entry: width spans the parent unary_operator node
-                           ;; which includes both the sign and the operand.
-                           (let ((unary-parent (treesit-node-parent next-node)))
-                             (- (treesit-node-end unary-parent)
-                                (treesit-node-start unary-parent)))
-                         (- (treesit-node-end next-node)
-                            (treesit-node-start next-node)))))
-                 (when (and col-width (< entry-width col-width))
-                   (setq n-spaces-between (+ n-spaces-between
-                                             (- col-width entry-width))))))))
-
-         (let* ((node-end (treesit-node-end node))
-                (next-node-start (treesit-node-start next-node))
-                (extra-chars (matlab-ts-mode--ei-node-extra-chars node node-end next-node-start)))
-
-           ;; When not yet using eilb, check if existing content matches what we'd produce.
-           ;; Switch to eilb when a mismatch is found.
-           (when (not using-eilb)
-             (let* ((gap-str (buffer-substring-no-properties node-end next-node-start))
-                    (gap-matches (and (if (listp extra-chars)
-                                          nil ;; list extra-chars require eilb retroactive insert
-                                        (string= extra-chars ""))
-                                      n-spaces-between
-                                      (= (length gap-str) n-spaces-between)
-                                      (not (string-match-p "[^ ]" gap-str)))))
-               (when (not gap-matches)
-                 ;; Mismatch found: copy content from BOL to node-start into eilb and continue
-                 (let ((prefix (buffer-substring-no-properties
-                                bol-pt (treesit-node-start node))))
-                   (matlab--eilb-setup)
-                   (setq using-eilb t)
-                   (with-current-buffer matlab--eilb
-                     (insert prefix))))))
-
-           (when (equal start-node node)
-             (setq pt-offset (if using-eilb
-                                 (+ (matlab--eilb-length) start-node-offset)
-                               (+ (- (treesit-node-start node) bol-pt) start-node-offset))))
-
-           (when using-eilb
-             (matlab--eilb-add-node-text node extra-chars n-spaces-between)))
-
-         (setq node next-node
-               node-type next-node-type)
-         ))
-
-      (when node ;; last node in line
-        (let ((extra-chars (matlab-ts-mode--ei-node-extra-chars
-                            node (min (treesit-node-end node) eol-pt) eol-pt)))
-          ;; Check last node: is there trailing content after the last node?
-          (when (not using-eilb)
-            (when (or (listp extra-chars) (not (string= extra-chars "")))
-              ;; Trailing extra-chars require eilb
-              (let ((prefix (buffer-substring-no-properties bol-pt (treesit-node-start node))))
-                (matlab--eilb-setup)
-                (setq using-eilb t)
-                (with-current-buffer matlab--eilb
-                  (insert prefix)))))
-
-          (when (equal start-node node)
-            (setq pt-offset (if using-eilb
-                                (+ (matlab--eilb-length) start-node-offset)
-                              (+ (- (treesit-node-start node) bol-pt) start-node-offset))))
-          (when matlab-ts-mode--indent-assert
-            (setq orig-line-node-types
-                  (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
-          (when using-eilb
-            (matlab--eilb-add-node-text node extra-chars))))
-
-      (setq matlab-ts-mode--ei-line-nodes-loc nil)
-      (list (if using-eilb
-                (matlab--eilb-content)
-              (buffer-substring-no-properties bol-pt eol-pt))
-            pt-offset orig-line-node-types first-node-pair))))
+    (matlab-ts-mode--ei-get-general-new-line start-node start-node-offset)))
 
 ;; KEY: matrix start linenum. VALUE: first-col-extra integer
 (defvar-local matrix-ts-mode--ei-m-matrix-first-col-extra-cache nil)
@@ -3322,4 +3565,4 @@ indent."
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
 ;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace eql consp
 ;; LocalWords:  geq eqeq neq memq bols ridx rchild defconst FFs stmt lstart nreverse rw CRLF LF LF's
-;; LocalWords:  setcar setcdr anychar CRLF's hexdump
+;; LocalWords:  setcar setcdr anychar CRLF's hexdump ws
