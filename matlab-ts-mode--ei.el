@@ -3173,67 +3173,73 @@ When IS-INDENT-REGION is t, we return tuple
 When IS-INDENT-REGION is nil, we update the line and adjust the point
 to maintain its logical location."
 
-  (when (not is-indent-region)
-    (matlab-ts-mode--ei-setup (pos-bol) (pos-eol)))
-
-  (when (matlab-ts-mode--ei-in-disabled-region)
-    (cl-return-from matlab-ts-mode--ei-indent-elements-in-line))
-
-  (let* ((start-node-and-offset (when (eq start-pt-area 'start-pt-area-in-region)
-                                  (matlab-ts-mode--ei-get-start-info is-indent-region)))
-         (start-node (car start-node-and-offset)) ;; may be nil
-         (start-node-offset (cdr start-node-and-offset))
-         (orig-line (buffer-substring-no-properties (pos-bol) (pos-eol)))
-         cached-ei-info
-         ei-info
-         result)
-
-    ;; TODO check the 'm-matrix-info property, letting us skip the cache
-    (if (and matlab-ts-mode--ei-align-matrix-cache
-             (setq cached-ei-info
-                   (gethash (line-number-at-pos) matlab-ts-mode--ei-align-matrix-cache)))
-        ;; TopTester: test-matlab-ts-mode-electric-indent-files/electric_indent_matrix_cols.m
-        (setq ei-info cached-ei-info)
-      (setq ei-info (matlab-ts-mode--ei-get-new-line start-node start-node-offset)))
-
-    (if ei-info
-        (setq result
-              (progn
-                (when (and (not cached-ei-info) matlab-ts-mode--ei-align-enabled)
-                  (setq ei-info (matlab-ts-mode--ei-align ei-info)))
-                (let* ((ei-line (or (nth 0 ei-info) orig-line))
-                       ;; new-start-pt-offset is non-nil if start-node-offset is non-nil
-                       (new-start-pt-offset (nth 1 ei-info))
-                       (orig-line-node-types (nth 2 ei-info))
-                       (updated (and ei-info (not (string= orig-line ei-line)))))
-                  (when (and updated new-start-pt-offset start-node (looking-at "[ \t]*$"))
-                    ;; TODO - is this needed? Can we hit this?
-                    (setq new-start-pt-offset (length ei-line))) ;; at eol
-
-                  (when (and matlab-ts-mode--indent-assert updated)
-                    (when matlab-ts-mode--ei-orig-line-node-types-cache
-                      (puthash (line-number-at-pos) orig-line-node-types
-                               matlab-ts-mode--ei-orig-line-node-types-cache))
-                    (matlab-ts-mode--ei-assert-line-match ei-line orig-line))
-
-                  (if is-indent-region
-                      (list ei-line updated new-start-pt-offset) ;; result
-                    ;; Else updated the line if needed (TAB on a line to electric indents it).
-                    (when updated
-                      (delete-region (pos-bol) (pos-eol))
-                      (insert ei-line)
-                      (when new-start-pt-offset
-                        (goto-char (+ (pos-bol) new-start-pt-offset))))
-                    nil ;; return nil for TAB indent
-                    ))))
-      ;; else nothing updated
-      (when is-indent-region
-        (setq result (list orig-line))))
+  (let ((bol-pt (pos-bol))
+        (eol-pt (pos-eol)))
 
     (when (not is-indent-region)
-      (matlab-ts-mode--ei-cleanup)
-      (matlab--eilb-kill))
-    result))
+      (matlab-ts-mode--ei-setup bol-pt eol-pt))
+
+    (when (matlab-ts-mode--ei-in-disabled-region)
+      (cl-return-from matlab-ts-mode--ei-indent-elements-in-line))
+
+    (let* ((start-node-and-offset (when (eq start-pt-area 'start-pt-area-in-region)
+                                    (matlab-ts-mode--ei-get-start-info is-indent-region)))
+           (start-node (car start-node-and-offset)) ;; may be nil
+           (start-node-offset (cdr start-node-and-offset))
+           (orig-line (buffer-substring-no-properties bol-pt eol-pt))
+           cached-ei-info
+           ei-info
+           result)
+
+      (if (and (not (let ((m-matrix-info (get-text-property eol-pt 'm-matrix-info)))
+                      ;; 'numeric-m-matrix lines are fully handled by
+                      ;; `matlab-ts-mode--ei-get-new-line' and there's no caching for them
+                      (and m-matrix-info (eq (car m-matrix-info) 'numeric-m-matrix))))
+               matlab-ts-mode--ei-align-matrix-cache
+               (setq cached-ei-info
+                     (gethash (line-number-at-pos) matlab-ts-mode--ei-align-matrix-cache)))
+          ;; TopTester: electric_indent_non_numeric_m_matrix.m
+          (setq ei-info cached-ei-info)
+        (setq ei-info (matlab-ts-mode--ei-get-new-line start-node start-node-offset)))
+
+      (if ei-info
+          (setq result
+                (progn
+                  (when (and (not cached-ei-info) matlab-ts-mode--ei-align-enabled)
+                    (setq ei-info (matlab-ts-mode--ei-align ei-info)))
+                  (let* ((ei-line (or (nth 0 ei-info) orig-line))
+                         ;; new-start-pt-offset is non-nil if start-node-offset is non-nil
+                         (new-start-pt-offset (nth 1 ei-info))
+                         (orig-line-node-types (nth 2 ei-info))
+                         (updated (and ei-info (not (string= orig-line ei-line)))))
+                    (when (and updated new-start-pt-offset start-node (looking-at "[ \t]*$"))
+                      ;; TODO - is this needed? Can we hit this?
+                      (setq new-start-pt-offset (length ei-line))) ;; at eol
+
+                    (when (and matlab-ts-mode--indent-assert updated)
+                      (when matlab-ts-mode--ei-orig-line-node-types-cache
+                        (puthash (line-number-at-pos) orig-line-node-types
+                                 matlab-ts-mode--ei-orig-line-node-types-cache))
+                      (matlab-ts-mode--ei-assert-line-match ei-line orig-line))
+
+                    (if is-indent-region
+                        (list ei-line updated new-start-pt-offset) ;; result
+                      ;; Else updated the line if needed (TAB on a line to electric indents it).
+                      (when updated
+                        (delete-region bol-pt eol-pt)
+                        (insert ei-line)
+                        (when new-start-pt-offset
+                          (goto-char (+ (pos-bol) new-start-pt-offset))))
+                      nil ;; return nil for TAB indent
+                      ))))
+        ;; else nothing updated
+        (when is-indent-region
+          (setq result (list orig-line))))
+
+      (when (not is-indent-region)
+        (matlab-ts-mode--ei-cleanup)
+        (matlab--eilb-kill))
+      result)))
 
 (defun matlab-ts-mode--ei-move-to-logical-start-pt (beg end start-pt-area start-pt-offset)
   "Move point to its logical start point accounting for indent.

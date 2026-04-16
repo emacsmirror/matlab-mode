@@ -1,0 +1,45 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,215> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,118]@{% t-utils-test-indent: no-line-by-line-indent - ca...}@)
+ (assignment<120,213> left: (identifier[120,122]@{m1}@) =[123,124]
+  right: 
+   (matrix<125,213> [[125,126]
+    (row<126,144>
+     (binary_operator<126,129> left: (identifier[126,127]@{a}@) +[127,128] right: (identifier[128,129]@{b}@))
+     ,[130,130]
+     (binary_operator<130,134> left: (identifier[130,131]@{a}@) +[131,132] right: (identifier[133,134]@{b}@))
+     ,[135,135]
+     (binary_operator<135,138> left: (identifier[135,136]@{a}@) -[136,137] right: (identifier[137,138]@{b}@))
+     ,[138,139]
+     (binary_operator<140,144> left: (identifier[140,141]@{a}@) -[141,142] right: (identifier[143,144]@{b}@)))
+    (row<153,175>
+     (binary_operator<153,161>
+      left: 
+       (function_call<153,159> name: (identifier[153,156]@{exp}@) ([156,157]
+        (arguments<157,158> argument: (identifier[157,158]@{a}@))
+        )[158,159])
+      +[159,160] right: (identifier[160,161]@{b}@))
+     ,[162,162]
+     (binary_operator<162,166> left: (identifier[162,163]@{a}@) +[163,164] right: (identifier[165,166]@{b}@))
+     ,[167,167]
+     (binary_operator<167,170> left: (identifier[167,168]@{a}@) -[168,169] right: (identifier[169,170]@{b}@))
+     ,[171,171]
+     (binary_operator<171,175> left: (identifier[171,172]@{a}@) -[172,173] right: (identifier[174,175]@{b}@)))
+    (row<182,212>
+     (binary_operator<182,198>
+      left: 
+       (function_call<182,190> name: (identifier[182,185]@{foo}@) ([185,186]
+        (arguments<186,189> argument: (identifier[186,187]@{a}@) ,[187,188] (number[188,189]@{1}@))
+        )[189,190])
+      +[190,191]
+      right: 
+       (function_call<191,198> name: (identifier[191,195]@{foo2}@) ([195,196]
+        (arguments<196,197> argument: (identifier[196,197]@{b}@))
+        )[197,198]))
+     ,[199,199]
+     (binary_operator<199,203> left: (identifier[199,200]@{a}@) +[200,201] right: (identifier[202,203]@{b}@))
+     ,[204,204]
+     (binary_operator<204,207> left: (identifier[204,205]@{a}@) -[205,206] right: (identifier[206,207]@{b}@))
+     ,[208,208]
+     (binary_operator<208,212> left: (identifier[208,209]@{a}@) -[209,210] right: (identifier[211,212]@{b}@)))
+    ][212,213]))
+ ;[213,214] \n[214,215])
