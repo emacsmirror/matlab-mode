@@ -1,0 +1,5 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,123> (comment[1,20]@{% -*- matlab-ts -*-}@)
+ (assignment<34,121> left: (identifier[34,37]@{out}@) =[38,39] (line_continuation[40,83]@{... comment about content to be aded later\n}@)
+  right: (matrix<99,121> [[99,100] ][120,121]))
+ ;[121,122] \n[122,123])
