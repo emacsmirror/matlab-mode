@@ -89,8 +89,6 @@
 
 (defvar matlab-ts-mode--ei-val-re (rx bos (or "identifier" "number") eos))
 
-;; TODO optimize following by grouping together, also improve comments.  Perhaps write an optimizer
-;; function so rows can remain.
 (defvar matlab-ts-mode--ei-spacing
   ;; In a given line, we walk across the nodes adjusting spaces between NODE and NEXT-NODE to
   ;; have N-SPACES-BETWEEN them.
