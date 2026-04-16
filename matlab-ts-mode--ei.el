@@ -1911,7 +1911,8 @@ Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
                (when first-col-only
                  (cl-return))
                )))))
-      (when (> first-col-offset 0)
+      (when (and column-widths ;; non-empty matrix
+                 (> first-col-offset 0))
         (let ((col1-width (+ (alist-get 1 column-widths) first-col-offset)))
           (setf (alist-get 1 column-widths) col1-width)))
 
