@@ -2580,8 +2580,8 @@ node that ends on same line and has items to align."
              (prop-node (treesit-node-parent prop-id-node)))
         ;; skip multi-line nodes for alignment (properties / arguments can span multiple lines)
         (when (and prop-node
-                   (= (line-number-at-pos (treesit-node-start prop-node))
-                      (line-number-at-pos (treesit-node-end prop-node)))
+                   (= (save-excursion (goto-char (treesit-node-start prop-node)) (pos-eol))
+                      (save-excursion (goto-char (treesit-node-end prop-node)) (pos-eol)))
                    (> (length (treesit-node-children prop-node)) 1))
           prop-id-node))))
 
