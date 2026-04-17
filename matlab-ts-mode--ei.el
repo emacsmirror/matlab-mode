@@ -2498,6 +2498,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO."
     offset))
 
 ;; This is used to cache aligned assignments for indent-region
+;; KEY: `pos-bol', VALUE: assign-offset
 (defvar-local matlab-ts-mode--ei-align-assign-cache nil)
 
 (defun matlab-ts-mode--ei-align-assignments (ei-info)
