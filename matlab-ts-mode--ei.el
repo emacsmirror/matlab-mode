@@ -1802,7 +1802,10 @@ Returns (list NEW-LINE PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-PAIR)."
     (setq matlab-ts-mode--ei-line-nodes-loc nil)
     (list (if using-eilb
               (matlab--eilb-content)
-            (buffer-substring-no-properties bol-pt eol-pt))
+            (buffer-substring-no-properties bol-pt (progn ;; last non-whitespace char in the line
+                                                     (goto-char eol-pt)
+                                                     (re-search-backward "[^ \t]" bol-pt)
+                                                     (1+ (point)))))
           pt-offset orig-line-node-types first-node-pair)))
 
 (cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-node-offset)
@@ -1836,17 +1839,16 @@ where:
     ;; Check for numeric m-matrix interior row: use regexp-based fast path
     ;; that avoids tree-sitter node walking entirely.  Returns nil when
     ;; the line has unexpected trailing content and we should fall back.
-    (let* ((eol-pt (pos-eol))
-           (m-matrix-info (when matlab-ts-mode--ei-align-enabled
-                            (get-text-property eol-pt 'm-matrix-info)))
-           (nm-col-widths (nth 2 m-matrix-info))
-           (nm-row-on-first-line (nth 3 m-matrix-info)))
-      (when (and nm-col-widths (not nm-row-on-first-line))
-        (let ((result (matlab-ts-mode--ei-get-nm-matrix-line
-                       (pos-bol) eol-pt nm-col-widths (nth 1 m-matrix-info)
-                       start-node start-node-offset)))
-          (when result
-            (cl-return-from matlab-ts-mode--ei-get-new-line result)))))
+    (if-let* ((eol-pt (pos-eol))
+              (m-matrix-info (when matlab-ts-mode--ei-align-enabled
+                               (get-text-property eol-pt 'm-matrix-info)))
+              (nm-col-widths (nth 2 m-matrix-info))
+              (nm-row-on-first-line (nth 3 m-matrix-info)))
+      (when (not nm-row-on-first-line)
+        (if-let* ((result (matlab-ts-mode--ei-get-nm-matrix-line
+                           (pos-bol) eol-pt nm-col-widths (nth 1 m-matrix-info)
+                           start-node start-node-offset)))
+            (cl-return-from matlab-ts-mode--ei-get-new-line result))))
 
     ;; General path: setup node list and walk nodes.
     (setq matlab-ts-mode--ei-line-nodes-loc (gethash (pos-bol) matlab-ts-mode--ei-bol2loc-map))

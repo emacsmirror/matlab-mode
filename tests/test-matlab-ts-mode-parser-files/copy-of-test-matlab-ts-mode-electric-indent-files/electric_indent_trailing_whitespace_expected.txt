@@ -1,0 +1,12 @@
+# -*- t-utils-ts-parse-tree -*-
+(source_file<1,348> (comment[1,20]@{% -*- matlab-ts -*-}@) (comment[22,127]@{% t-utils-test-indent: no-line-by-line-indent - wh...}@) (comment[129,205]@{% lines have trailing whitespace tabs and spaces -...}@) \n[205,207]
+ (class_definition<207,344> classdef[207,215] name: (identifier[216,251]@{electric_indent_trailing_whitespace}@) \n[252,253] \n[256,257]
+  (properties<261,333> properties[261,271] \n[275,277]
+   (property<285,295> name: (identifier[285,288]@{one}@)
+    (default_value<289,295> =[289,290] (number[294,295]@{1}@)))
+   \n[300,301] \n[305,306]
+   (property<314,321> name: (identifier[314,317]@{two}@)
+    (default_value<318,321> =[318,319] (number[320,321]@{2}@)))
+   \n[324,326] end[330,333])
+  \n[336,337] \n[340,341] end[341,344])
+ \n[347,348])
