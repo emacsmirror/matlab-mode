@@ -2043,8 +2043,8 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
 ;; It will be non-nil when called from indent-region.
 (defvar-local matlab-ts-mode--ei-align-matrix-cache nil)
 
-(cl-defun matlab-ts-mode--ei-align-line-in-m-matrix (assign-node ei-info)
-  "Align current line with EI-INFO in a multi-line matrix of ASSIGN-NODE.
+(cl-defun matlab-ts-mode--ei-align-line-in-nnm-matrix (assign-node ei-info)
+  "Align current line with EI-INFO in a \\='non-numeric-m-matrix of ASSIGN-NODE.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   (let* ((matrix-cache matlab-ts-mode--ei-align-matrix-cache) ;; non-nil if indenting a region
          (assign-start-linenum (line-number-at-pos (treesit-node-start assign-node)))
@@ -2812,7 +2812,7 @@ indent region."
 
   (let ((matrix-assign-node (matlab-ts-mode--ei-point-in-m-type ei-info 'm-matrix)))
     (if matrix-assign-node
-        (setq ei-info (matlab-ts-mode--ei-align-line-in-m-matrix matrix-assign-node ei-info))
+        (setq ei-info (matlab-ts-mode--ei-align-line-in-nnm-matrix matrix-assign-node ei-info))
       (let ((tuple (matlab-ts-mode--ei-point-in-m-type ei-info 'm-struct)))
         (if tuple
             (setq ei-info (matlab-ts-mode--ei-align-line-in-m-struct tuple ei-info))
