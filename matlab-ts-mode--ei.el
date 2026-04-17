@@ -1884,6 +1884,7 @@ This will return 0
         0
       1)))
 
+;; KEY: mat-start-bol-pt: VALUE column-widths
 (defvar-local matlab-ts-mode--ei-m-matrix-col-widths-cache nil)
 
 (defun matlab-ts-mode--ei-m-matrix-col-widths (matrix first-col-offset &optional first-col-only)
@@ -1892,9 +1893,9 @@ If optional FIRST-COL-ONLY is non-nil, then return only the width of the
 first column in MATRIX.
 Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
 
-  (let* ((start-linenum (line-number-at-pos (treesit-node-start matrix)))
+  (let* ((mat-start-bol-pt (save-excursion (goto-char (treesit-node-start matrix)) (pos-eol)))
          (column-widths (when matlab-ts-mode--ei-m-matrix-col-widths-cache
-                          (gethash start-linenum matlab-ts-mode--ei-m-matrix-col-widths-cache))))
+                          (gethash mat-start-bol-pt matlab-ts-mode--ei-m-matrix-col-widths-cache))))
     (when (not column-widths)
       (dolist (m-child (treesit-node-children matrix))
         (when (string= (treesit-node-type m-child) "row")
@@ -1919,7 +1920,7 @@ Returns alist where each element in the alist is (COLUMN-NUM . WIDTH)"
           (setf (alist-get 1 column-widths) col1-width)))
 
       (when matlab-ts-mode--ei-m-matrix-col-widths-cache
-        (puthash start-linenum column-widths matlab-ts-mode--ei-m-matrix-col-widths-cache)))
+        (puthash mat-start-bol-pt column-widths matlab-ts-mode--ei-m-matrix-col-widths-cache)))
 
     column-widths))
 
