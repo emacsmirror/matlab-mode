@@ -1940,8 +1940,8 @@ If tmp T-MATRIX-NODE is non-nil, we use that to locate the first row."
         ;;  4, 5, 6]
         (let ((child1 (treesit-node-child t-matrix-node 1)))
           (when (and (string= (treesit-node-type child1) "row")
-                     (= (line-number-at-pos (treesit-node-start t-matrix-node))
-                        (line-number-at-pos (treesit-node-start child1))))
+                     (= (save-excursion (goto-char (treesit-node-start t-matrix-node)) (pos-eol))
+                        (save-excursion (goto-char (treesit-node-start child1)) (pos-eol))))
             ;; row-now on same line as use-matrix-node
             child1))
       ;; else on 2nd or later line, find the row
