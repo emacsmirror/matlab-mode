@@ -1195,16 +1195,18 @@ Return t."
         (buffer-disable-undo))))
   t)
 
-(defun matlab--eilb-add-node-text (node extra-chars &optional n-spaces-to-append)
+(defun matlab--eilb-add-node-text (node eol-c-pt extra-chars &optional n-spaces-to-append)
   "Update `matlab--eilb' with NODE text and more.
-EXTRA-CHARS string is appended to EL-LINE after NODE text.
-EXTRA-CHARS, when \\='(string), the string is appended to last
-non-whitespace in EL-LINE, then NODE text is appended.
-N-SPACES-TO-APPEND is the number of spaces to append between nodes."
+EXTRA-CHARS string is appended to EL-LINE after NODE text.  EXTRA-CHARS,
+when \\='(string), the string is appended to last non-whitespace in
+EL-LINE, then NODE text truncated by EOL-C-PT as needed is appended.
+EOL-C-PT is the end-of-line-content which is `pos-eol' when there's no
+trailing whitespace, otherwise it's the end of content ignoring the
+trailing whitespace.  N-SPACES-TO-APPEND is the number of spaces to
+append between nodes."
 
   (let* ((node-end (treesit-node-end node))
-         (eol-pt (pos-eol))
-         (last-pt (if (< node-end eol-pt) node-end eol-pt))
+         (last-pt (if (< node-end eol-c-pt) node-end eol-c-pt))
          (node-text (buffer-substring-no-properties (treesit-node-start node) last-pt)))
 
     (with-current-buffer matlab--eilb
@@ -1614,6 +1616,11 @@ Returns (list NEW-LINE PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-PAIR)."
          next2-pair ;; used when we have: (NODE-RE (NEXT-NODE-RE NEXT2-NODE-RE) N-SPACES-BETWEEN)
          next2-n-spaces-between
          (eol-pt (pos-eol))
+         (eol-c-pt (if (memq (char-before eol-pt) '(?\t ?\ )) ;; eol content pt w/o trailing space
+                       (save-excursion (goto-char eol-pt)
+                                       (re-search-backward "[^ \t]" bol-pt)
+                                       (1+ (point)))
+                     eol-pt))
          (indent-has-tabs (save-excursion
                             (let ((first-non-ws (point)))
                               (goto-char bol-pt)
@@ -1773,40 +1780,37 @@ Returns (list NEW-LINE PT-OFFSET ORIG-LINE-NODE-TYPES FIRST-NODE-PAIR)."
                              (+ (- (treesit-node-start node) bol-pt) start-node-offset))))
 
          (when using-eilb
-           (matlab--eilb-add-node-text node extra-chars n-spaces-between)))
+           (matlab--eilb-add-node-text node eol-c-pt extra-chars n-spaces-between)))
 
        (setq node next-node
              node-type next-node-type)))
 
-    ;; --- Last node on the line ---
-    (when node
-      (let ((extra-chars (matlab-ts-mode--ei-node-extra-chars
-                          node (min (treesit-node-end node) eol-pt) eol-pt)))
-        (when (not using-eilb)
-          (when (or (listp extra-chars) (not (string= extra-chars "")))
-            (let ((prefix (buffer-substring-no-properties bol-pt (treesit-node-start node))))
-              (setq using-eilb (matlab--eilb-setup))
-              (with-current-buffer matlab--eilb
-                (insert prefix)))))
+      ;; --- Last node on the line ---
+      (when node
+        (let ((extra-chars (matlab-ts-mode--ei-node-extra-chars
+                            node (min (treesit-node-end node) eol-c-pt) eol-c-pt)))
+          (when (not using-eilb)
+            (when (or (listp extra-chars) (not (string= extra-chars "")))
+              (let ((prefix (buffer-substring-no-properties bol-pt (treesit-node-start node))))
+                (setq using-eilb (matlab--eilb-setup))
+                (with-current-buffer matlab--eilb
+                  (insert prefix)))))
 
-        (when (equal start-node node)
-          (setq pt-offset (if using-eilb
-                              (+ (matlab--eilb-length) start-node-offset)
-                            (+ (- (treesit-node-start node) bol-pt) start-node-offset))))
-        (when matlab-ts-mode--indent-assert
-          (setq orig-line-node-types
-                (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
-        (when using-eilb
-          (matlab--eilb-add-node-text node extra-chars))))
+          (when (equal start-node node)
+            (setq pt-offset (if using-eilb
+                                (+ (matlab--eilb-length) start-node-offset)
+                              (+ (- (treesit-node-start node) bol-pt) start-node-offset))))
+          (when matlab-ts-mode--indent-assert
+            (setq orig-line-node-types
+                  (matlab-ts-mode--ei-update-line-node-types orig-line-node-types node node-type)))
+          (when using-eilb
+            (matlab--eilb-add-node-text node eol-c-pt extra-chars))))
 
-    (setq matlab-ts-mode--ei-line-nodes-loc nil)
-    (list (if using-eilb
-              (matlab--eilb-content)
-            (buffer-substring-no-properties bol-pt (progn ;; last non-whitespace char in the line
-                                                     (goto-char eol-pt)
-                                                     (re-search-backward "[^ \t]" bol-pt)
-                                                     (1+ (point)))))
-          pt-offset orig-line-node-types first-node-pair)))
+      (setq matlab-ts-mode--ei-line-nodes-loc nil)
+      (list (if using-eilb
+                (matlab--eilb-content)
+              (buffer-substring-no-properties bol-pt eol-c-pt))
+            pt-offset orig-line-node-types first-node-pair)))
 
 (cl-defun matlab-ts-mode--ei-get-new-line (&optional start-node start-node-offset)
   "Get new line content with element spacing adjusted.

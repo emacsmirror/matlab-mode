@@ -14,7 +14,7 @@
 - Invoking      : "C-i" = matlab-ts-mode-tab-indent
   Start point   :   89
   Moved to point:   90
-  : 5:9:     a([1, 2], :) = ...                                          
+  : 5:9:     a([1, 2], :) = ...
   :               ^
   Buffer modified:
   #+begin_src diff
@@ -27,7 +27,7 @@
 -a([  1 ,   2], :) = ...                                          
 -    [ 1,2   3; ...
 -  100 200,300];
-+    a([1, 2], :) = ...                                          
++    a([1, 2], :) = ...
 +        [  1,   2,   3; ...
 +         100, 200, 300];
  end
@@ -40,7 +40,7 @@
   Case2: (t-utils-xr (re-search-backward "^if") (t-utils-xr-print-code (point) (re-search-forward "end\n")))
 
 - Invoking      : (re-search-backward "^if")
-  Start point   :  312
+  Start point   :  270
   Moved to point:   76
   : 4:0: if x
   :      ^
@@ -49,13 +49,13 @@
 - Invoking      : (t-utils-xr-print-code (point) (re-search-forward "end
 "))
   Start point   :   76
-  Moved to point:  203
+  Moved to point:  161
   : 9:0: 
   :      ^
   standard-output:
   #+begin_src matlab-ts
 if x
-    a([1, 2], :) = ...                                          
+    a([1, 2], :) = ...
         [  1,   2,   3; ...
          100, 200, 300];
 end
