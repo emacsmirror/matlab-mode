@@ -2041,14 +2041,16 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
           (string-rectangle start-point end-point (make-string (* n-extra-levels 4) ? )))))
     (cons assign-end-linenum t-buf-start-pt-offset)))
 
-;; This is used to cache matrix alignments for indent-region
+;; This is used to cache 'non-numeric-m-matrix alignments for indent-region
 ;; It will be non-nil when called from indent-region.
-(defvar-local matlab-ts-mode--ei-align-matrix-cache nil)
+;; TODO - cache using pos-eol on a text property for better performance
+;; KEY: linenum; VALUE: ei-info
+(defvar-local matlab-ts-mode--ei-align-nnm-matrix-cache nil)
 
 (cl-defun matlab-ts-mode--ei-align-line-in-nnm-matrix (assign-node ei-info)
   "Align current line with EI-INFO in a \\='non-numeric-m-matrix of ASSIGN-NODE.
 See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
-  (let* ((matrix-cache matlab-ts-mode--ei-align-matrix-cache) ;; non-nil if indenting a region
+  (let* ((matrix-cache matlab-ts-mode--ei-align-nnm-matrix-cache) ;; non-nil if indenting a region
          (assign-start-linenum (line-number-at-pos (treesit-node-start assign-node)))
          (start-pt-prop-pos (next-single-property-change (point-min) 'm-ei-start-pt-offset))
          (start-pt-linenum (when start-pt-prop-pos
@@ -2058,7 +2060,7 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
          (t-buf-start-pt-linenum (when start-pt-linenum
                                    (1+ (- start-pt-linenum assign-start-linenum))))
          (t-buf-ei-linenum (1+ (- (line-number-at-pos) assign-start-linenum)))
-         (t-buf-row-linenum (if matlab-ts-mode--ei-align-matrix-cache 1 t-buf-ei-linenum)))
+         (t-buf-row-linenum (if matlab-ts-mode--ei-align-nnm-matrix-cache 1 t-buf-ei-linenum)))
 
     (with-temp-buffer
       (unwind-protect
@@ -3198,13 +3200,13 @@ to maintain its logical location."
            ei-info
            result)
 
-      (if (and (not (let ((m-matrix-info (get-text-property eol-pt 'm-matrix-info)))
-                      ;; 'numeric-m-matrix lines are fully handled by
-                      ;; `matlab-ts-mode--ei-get-new-line' and there's no caching for them
-                      (and m-matrix-info (eq (car m-matrix-info) 'numeric-m-matrix))))
-               matlab-ts-mode--ei-align-matrix-cache
+      (if (and (let ((m-matrix-info (get-text-property eol-pt 'm-matrix-info)))
+                 ;; 'numeric-m-matrix lines are fully handled by
+                 ;; `matlab-ts-mode--ei-get-new-line' and there's no caching for them
+                 (and m-matrix-info (eq (car m-matrix-info) 'non-numeric-m-matrix)))
+               matlab-ts-mode--ei-align-nnm-matrix-cache
                (setq cached-ei-info
-                     (gethash (line-number-at-pos) matlab-ts-mode--ei-align-matrix-cache)))
+                     (gethash (line-number-at-pos) matlab-ts-mode--ei-align-nnm-matrix-cache)))
           ;; TopTester: electric_indent_non_numeric_m_matrix.m
           (setq ei-info cached-ei-info)
         (setq ei-info (matlab-ts-mode--ei-get-new-line start-node start-node-offset)))
@@ -3346,7 +3348,7 @@ to nil."
                                                        (make-hash-table :test 'eql))
    matlab-ts-mode--ei-m-matrix-col-widths-cache      (when init
                                                        (make-hash-table :test 'eql))
-   matlab-ts-mode--ei-align-matrix-cache             (when init
+   matlab-ts-mode--ei-align-nnm-matrix-cache         (when init
                                                        (make-hash-table :test 'eql))
    matlab-ts-mode--ei-is-m-struct-cache              (when init
                                                        (make-hash-table :test 'eql))
@@ -3564,4 +3566,4 @@ indent."
 ;; LocalWords:  linenums reindent bol fubar repeat:ans defmacro bn impl puthash caadr caar gethash
 ;; LocalWords:  ERROR's repeat:nil lang xyz cdar lparen rparen lbrack rbrack lbrace rbrace eql consp
 ;; LocalWords:  geq eqeq neq memq bols ridx rchild defconst FFs stmt lstart nreverse rw CRLF LF LF's
-;; LocalWords:  setcar setcdr anychar CRLF's hexdump ws
+;; LocalWords:  setcar setcdr anychar CRLF's hexdump ws nnm
