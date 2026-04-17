@@ -2250,8 +2250,9 @@ containing the \"[\":
                       (first-col-width (let ((column-widths (nth 2 m-matrix-info)))
                                          (if column-widths
                                              (car column-widths)
-                                           (let ((col-widths-alist (matlab-ts-mode--ei-m-matrix-col-widths
-                                                                    matrix 0 t)))
+                                           (let ((col-widths-alist
+                                                  (matlab-ts-mode--ei-m-matrix-col-widths
+                                                   matrix 0 t)))
                                              (alist-get 1 col-widths-alist))))))
                 (setq first-col-offset-plus-width (+ first-col-offset first-col-width))))
         (when do-cleanup
@@ -2455,8 +2456,10 @@ Note, \\='m-struct returns (list assignment-node max-field-width arguments-node)
                                                             next-node "name"))
                                         "struct")
                                ;; TopTester: electric_indent_struct_on_next_line.m
-                               (= (line-number-at-pos (treesit-node-start assign-node))
-                                  (line-number-at-pos (treesit-node-start next-node))))
+                               (= (save-excursion (goto-char (treesit-node-start assign-node))
+                                                  (pos-eol))
+                                  (save-excursion (goto-char (treesit-node-start next-node))
+                                                  (pos-eol))))
                       (let ((pair (matlab-ts-mode--ei-is-m-struct next-node))) ;; cdr => arguments
                         (when (and pair (> (car pair) 0)) ;; max-field-width > 0?
                           (list assign-node (car pair) (cdr pair))))))))))
