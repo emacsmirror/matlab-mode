@@ -3,6 +3,19 @@
 
 # Copyright (C) 2025-2026 Free Software Foundation, Inc.
 
+* Release 8.2.0 Apr-19-2026
+
+1. matlab-ts-mode: structural changes to electric indent for improved performance
+
+   - Numeric matrices are now aligned directly without additional tree-sitter API queries
+     For example, a file with large numeric multi-line matrices (one row per line) went from
+     ~100s to 5s for indent-region on the buffer.
+   - Several optimizations and eliminations of tree-sitter API calls
+   - Many additional small performance improvements that add up.
+   - Added TODO comments in the code for possible future optimizations
+
+2. whitespace at end of lines is now removed during indent
+
 * Release 8.1.2 Mar-15-2026
 
 1. matlab-ts-mode: improved performance of electric indent.
