@@ -1518,7 +1518,7 @@ This test:
     If it is not possible to indent the file using the indented
     contents, you can disable the this check without generating a
     warning by adding a comment to lang-file which contains:
-      t-utils-test-indent: no-indent-using-indented-contents [- <REASON>]
+      t-utils-test-indent: no-indent-using-unindented-contents [- <REASON>]
 
  3. Indent the contents of lang-file line-by-line when there are no
     error nodes in lang-file.  In a temporary buffer
@@ -1605,7 +1605,7 @@ To debug a specific indent test file
                              (insert-file-contents-literally expected-file)
                              (buffer-string))))
                do-line-by-line-indent
-               do-indent-using-indented-contents
+               do-indent-using-unindented-contents
                lang-file-major-mode
                error-node)
 
@@ -1661,9 +1661,9 @@ To debug a specific indent test file
                 (setq do-line-by-line-indent
                       (not (string-match-p "t-utils-test-indent:[ \t]*no-line-by-line-indent" got)))
 
-                (setq do-indent-using-indented-contents
+                (setq do-indent-using-unindented-contents
                       (not (string-match-p
-                            "t-utils-test-indent:[ \t]*no-indent-using-indented-contents" got)))
+                            "t-utils-test-indent:[ \t]*no-indent-using-unindented-contents" got)))
 
                 (set-buffer-modified-p nil)
 
@@ -1681,7 +1681,7 @@ To debug a specific indent test file
 
           ;; Now, simulate typing lang-file and indent it (exercise TAB and RET)
           (when (not error-node)
-            (when do-indent-using-indented-contents
+            (when do-indent-using-unindented-contents
               (message "START: %s <indent-using-unindented-contents> %s" test-name lang-file)
               (let ((start-time (current-time))
                     (unindented-error-msg (t-utils--test-indent-unindented

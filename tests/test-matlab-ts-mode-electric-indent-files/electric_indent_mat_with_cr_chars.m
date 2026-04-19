@@ -1,7 +1,7 @@
 % -*- matlab-ts -*-
 
 % t-utils-test-indent: no-line-by-line-indent - unable to align when we don't see later lines
-% t-utils-test-indent: no-indent-using-indented-contents - can't because of the ^M (\r) characters
+% t-utils-test-indent: no-indent-using-unindented-contents - can't because of the ^M (\r) characters
 
 m1 = [
  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15

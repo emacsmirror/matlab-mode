@@ -1,7 +1,7 @@
 % -*- matlab-ts -*- %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
 
 % t-utils-test-indent: no-line-by-line-indent - unable to align when we don't see later lines %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
-% t-utils-test-indent: no-indent-using-indented-contents - can't because of the ^M (\r) characters %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
+% t-utils-test-indent: no-indent-using-unindented-contents - can't because of the ^M (\r) characters %  <{Matched rule: (matlab-ts-mode--i-block-comment-end-matcher matlab-ts-mode--i-block-comment-end-anchor 0)}>
 
 m1 = [ %  <{Matched rule: (matlab-ts-mode--i-top-level matlab-ts-mode--column-0 0)}>
              1,       2,       3,       4,       5,       6,       7,       8,       9,      10,      11,      12,      13,      14,      15 %  <{Matched rule: (matlab-ts-mode--i-row-matcher matlab-ts-mode--i-row-matcher-anchor matlab-ts-mode--i-row-matcher-offset)}>
