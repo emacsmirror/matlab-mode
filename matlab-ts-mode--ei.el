@@ -3529,7 +3529,7 @@ indent."
 
                   (save-excursion
                     (goto-char end)
-                    (if (looking-at (rx bol))
+                    (if (and (> end beg) (looking-at (rx bol)))
                         (setq end (1- (pos-bol)))
                       (setq end (pos-eol))))
 

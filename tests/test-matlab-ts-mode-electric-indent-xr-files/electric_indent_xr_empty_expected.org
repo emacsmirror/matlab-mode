@@ -1,0 +1,26 @@
+#+startup: showall
+
+* Executing commands from electric_indent_xr_empty.m:4:9:
+
+  case1: (t-utils-xr (delete-region (point-min) (point-max)) (indent-region (point-min) (point-max)))
+
+- Invoking      : (delete-region (point-min) (point-max))
+  Start point   :  165
+  Moved to point:    1
+  : 1:0: 
+  :      ^
+  Buffer modified:
+  #+begin_src diff
+--- start_contents
++++ end_contents
+@@ -1,4 +0,0 @@
+-% -*- matlab-ts -*-
+-
+-% exercise indent region on an empty file
+-% case1: (t-utils-xr (delete-region (point-min) (point-max)) (indent-region (point-min) (point-max)))
+  #+end_src diff
+
+- Invoking      : (indent-region (point-min) (point-max))
+  Start point   :    1
+  No point movement
+  No buffer modifications
