@@ -544,6 +544,7 @@ which uses tree-sitter children nodes to determine
                    (lend (min (pos-eol) mat-end)))
               ;; Find effective end of code on this line (before % comment)
               (goto-char lstart)
+              ;; TODO - can we simplify the locating of code-end by only one regex search
               (let* ((eff-end (if (re-search-forward "%" lend t)
                                   (match-beginning 0)
                                 lend))
@@ -2048,9 +2049,17 @@ Returns the line number after the ASSIGN-NODE in the tmp-buf."
           (string-rectangle start-point end-point (make-string (* n-extra-levels 4) ? )))))
     (cons assign-end-linenum t-buf-start-pt-offset)))
 
-;; This is used to cache 'non-numeric-m-matrix alignments for indent-region
-;; It will be non-nil when called from indent-region.
-;; TODO - cache using pos-eol on a text property for better performance
+;; matlab-ts-mode--ei-align-nnm-matrix-cache
+;;   - This is used to cache 'non-numeric-m-matrix alignments for indent-region
+;;     It will be non-nil when called from indent-region.
+;; TODO - improve performance
+;;   - We indent from start to end and thus after indenting a matrix, we don't need to keep the
+;;     cache for prior matrices.
+;;   - Replace this cache with a "persistent" temp-buf that remains for the duration of the indent.
+;;   - Indent in the temp-buf and add text properties to the newlines, pos-eol, in the buffer being
+;;     indented (the code buffer) that contain the pos-bol of the aligned line in the temp buf.
+;;   - This will avoid copying lines into a hash and growing memory.
+;;
 ;; KEY: linenum; VALUE: ei-info
 (defvar-local matlab-ts-mode--ei-align-nnm-matrix-cache nil)
 
@@ -2201,6 +2210,11 @@ See `matlab-ts-mode--ei-get-new-line' for EI-INFO contents."
   "Is MATRIX node free of errors and inner matrices?"
   ;; TopTester: tests/test-matlab-ts-mode-electric-indent-files/electric_indent_not_clean.m
   ;; TopTester: tests/test-matlab-ts-mode--ei-classify-matrix-files/ei_classify_matrix_not_clean.m
+
+  ;; TODO - performance improvement.
+  ;;   1. use the capture info from matlab-ts-mode--ei-line-nodes-in-region
+  ;;   2. Use regex to search for "]" and if found check if in a string or not via a capture
+  ;;      Numeric matrices won't have a "]" in a string.
   (let ((s-node (treesit-search-subtree matrix (rx bos (or "ERROR" "]") eos) nil t)))
     (= (treesit-node-end s-node) (treesit-node-end matrix))))
 
